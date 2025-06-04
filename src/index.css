@@ -1,0 +1,156 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    @apply antialiased;
+  }
+  
+  body {
+    @apply text-gray-900 bg-gray-50;
+  }
+}
+
+@layer utilities {
+  .text-shadow-glow {
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+  }
+}
+
+@keyframes shine {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 1s ease-out forwards;
+}
+
+.animate-fade-in-delay-1 {
+  animation: fade-in 1s ease-out 0.2s forwards;
+  opacity: 0;
+}
+
+.animate-fade-in-delay-2 {
+  animation: fade-in 1s ease-out 0.4s forwards;
+  opacity: 0;
+}
+
+/* Toast Animations */
+@keyframes toast-slide-in {
+  0% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes toast-slide-out {
+  0% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+.toast-item {
+  animation: toast-slide-in 0.3s ease-out;
+}
+
+.toast-item.leaving {
+  animation: toast-slide-out 0.3s ease-in;
+}
+
+/* Toast Container Z-Index */
+.toast-container {
+  z-index: 9999;
+}
+
+/* Custom scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #374151, #1f2937);
+  border-radius: 10px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #4b5563, #374151);
+  background-clip: padding-box;
+}
+
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #374151 transparent;
+}
+
+/* BEATNEXUS Logo Animations */
+@keyframes logo-glow {
+  0%, 100% {
+    filter: drop-shadow(0 0 20px rgba(34, 211, 238, 0.4)) 
+            drop-shadow(0 0 40px rgba(168, 85, 247, 0.3)) 
+            drop-shadow(0 0 60px rgba(236, 72, 153, 0.2));
+  }
+  50% {
+    filter: drop-shadow(0 0 30px rgba(34, 211, 238, 0.6)) 
+            drop-shadow(0 0 60px rgba(168, 85, 247, 0.5)) 
+            drop-shadow(0 0 90px rgba(236, 72, 153, 0.4));
+  }
+}
+
+@keyframes logo-pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+}
+
+.logo-glow {
+  animation: logo-glow 3s ease-in-out infinite, logo-pulse 2s ease-in-out infinite;
+}

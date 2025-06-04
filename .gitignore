@@ -1,0 +1,52 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# Testing
+/coverage
+
+# Production
+/build
+/dist
+/dist-ssr
+/out
+/public
+/.next/
+.env.local
+.env.*.local
+
+# Misc
+.DS_Store
+*.sqlite
+*.sqlite-journal
+*.log
+
+# Editor directories and files
+.vscode/
+.idea/
+*.swp
+*.swo
+.cache/
+.eslintcache
+.prettiercache
+
+# Supabase related
+/supabase/.env
+/supabase/.supabase/
+/supabase/db
+/supabase/functions/*/node_modules/ # If Edge Functions have their own node_modules
+# If you have specific generated files in supabase dir not in .gitignore
+# e.g., /supabase/types.ts
+
+# Cursor IDE specific files
+.cursor/

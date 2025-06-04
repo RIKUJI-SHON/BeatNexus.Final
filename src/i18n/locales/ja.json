@@ -1,0 +1,965 @@
+{
+  "common": {
+    "upgrade": "アップグレード",
+    "login": "ログイン",
+    "signup": "新規登録",
+    "support": "サポート",
+    "community": "コミュニティ",
+    "battles": "バトル",
+    "shop": "ショップ",
+    "home": "ホーム",
+    "ranking": "ランキング",
+    "createPost": "投稿を作成",
+    "logout": "ログアウト",
+    "howToGuide": "使い方"
+  },
+  "subscription": {
+    "title": "プランを選択",
+    "subtitle": "あなたのビートボックスの旅をサポートする最適なプランをお選びください",
+    "billing": {
+      "monthly": "月払い",
+      "yearly": "年払い",
+      "discount": "20% OFF"
+    },
+    "plans": {
+      "free": {
+        "name": "Free",
+        "description": "基本機能を体験",
+        "features": [
+          "月3本まで投稿可能",
+          "広告あり",
+          "Boostトークン 0/月",
+          "基本プロフィール"
+        ],
+        "button": "無料で始める"
+      },
+      "crew": {
+        "name": "Crew",
+        "description": "より多くの投稿と特典",
+        "features": [
+          "月10本まで投稿可能",
+          "広告なし",
+          "Boostトークン 5/月",
+          "カスタムプロフィールカラー選択",
+          "プライオリティサポート"
+        ],
+        "button": "始める",
+        "popular": "人気プラン"
+      },
+      "pro": {
+        "name": "Pro",
+        "description": "完全なクリエイター体験",
+        "features": [
+          "無制限投稿",
+          "広告なし",
+          "Boostトークン 15/月",
+          "プロファイルバッジ＆テーマ",
+          "プライオリティマッチング",
+          "詳細な統計データ"
+        ],
+        "button": "アップグレード"
+      }
+    },
+    "features": {
+      "title": "すべての機能を比較",
+      "unlimited": {
+        "title": "投稿制限なし",
+        "description": "Proプランで無制限に投稿可能"
+      },
+      "boost": {
+        "title": "Boostトークン",
+        "description": "バトルの露出を増やすためのトークン"
+      },
+      "customization": {
+        "title": "カスタマイズ",
+        "description": "プロフィールやテーマをカスタマイズ"
+      },
+      "badges": {
+        "title": "特別バッジ",
+        "description": "プロユーザー専用のバッジ"
+      }
+    }
+  },
+  "battle": {
+    "title": "対戦詳細",
+    "loading": "対戦情報を読み込み中...",
+    "notFound": "対戦が見つかりません",
+    "voteA": "Aに投票",
+    "voteB": "Bに投票",
+    "voting": "投票中...",
+    "voteSuccess": "投票しました！",
+    "voteError": "投票に失敗しました: {{message}}",
+    "alreadyVoted": "この対戦には既に投票済みです。",
+    "loginToVote": "投票するにはログインしてください。"
+  },
+  "battleCard": {
+    "votingEndsIn": "残り{{days}}日 {{hours}}時間",
+    "votingEndsInHours": "残り{{hours}}時間 {{minutes}}分",
+    "votingEndsInMinutes": "残り{{minutes}}分 {{seconds}}秒",
+    "votingEndsInSeconds": "残り{{seconds}}秒",
+    "votingEnded": "投票終了",
+    "contestantA": "参加者A",
+    "contestantB": "参加者B",
+    "unknownUser": "不明なユーザー",
+    "votes": "票",
+    "totalVotes": "総投票数",
+    "comments": "コメント",
+    "voteButton": "このバトルに投票する",
+    "battleFormats": {
+      "MAIN_BATTLE": "メインバトル",
+      "MINI_BATTLE": "ミニバトル",
+      "THEME_CHALLENGE": "テーマチャレンジ"
+    },
+    "errors": {
+      "navigationFailed": "バトルページへの移動に失敗しました。もう一度お試しください。"
+    }
+  },
+  "battleFilters": {
+    "searchPlaceholder": "ユーザー名で検索...",
+    "myBattles": "MY BATTLES",
+    "allFormats": "すべての形式",
+    "recent": "最新",
+    "trending": "人気",
+    "endingSoon": "終了間近",
+    "completed": "完了済み"
+  },
+  "upload": {
+  },
+  "footer": {
+    "description": "ビートボックスコミュニティの次なるステップ。初心者からプロまでが集い、アートを高めます。",
+    "quickLinks": "クイックリンク",
+    "tournaments": "トーナメント",
+    "resources": "リソース",
+    "tutorials": "チュートリアル",
+    "communityForum": "コミュニティフォーラム",
+    "boostPlans": "ブーストプラン",
+    "faq": "よくある質問",
+    "contactUs": "お問い合わせ",
+    "contactMessage": "ご質問やフィードバックがありますか？私たちのチームにご連絡ください！",
+    "allRightsReserved": "無断複写・転載を禁じます。",
+    "termsOfService": "利用規約",
+    "privacyPolicy": "プライバシーポリシー",
+    "cookiePolicy": "クッキーポリシー"
+  },
+  "home": {
+    "hero": {
+      "title": {
+        "main": "BEATNEXUS",
+        "highlighted": ""
+      },
+      "subtitle": {
+        "main": "ビートボクサーの究極のプラットフォーム。",
+        "battle": "バトル",
+        "share": "共有",
+        "connect": "繋がり",
+        "and": "そして",
+        "grow": "成長",
+        "join": "を通じてグローバルコミュニティに参加し、スキルを次のレベルへ。"
+      },
+      "button": {
+        "startBattle": "バトルを始める",
+        "watchBattles": "バトルを観戦 & 投票"
+      }
+    },
+    "shadows": {
+      "title": {
+        "main": "影でビートボックスするのにうんざりしていませんか",
+        "highlighted": ""
+      },
+      "subtitle": "ビートボックスシーンは爆発的に拡大していますが、多くのアーティストが同じハードルに直面しています。",
+      "card1": {
+        "title": "「観る」は増えているが…",
+        "description": "…しかし、「する」ことやアートフォームに「留まる」ことは追いついていません。最初の火花の後、多くが道を見失います。"
+      },
+      "card2": {
+        "title": "初心者のボトルネック",
+        "description": "初心者は次のステップ、練習相手、または上達する場所を見つけるのに苦労し、しばしば孤立感を感じます。"
+      },
+      "card3": {
+        "title": "コミュニティと機会のギャップ",
+        "description": "情熱的なビートボクサーには中心的なハブがありません。新しい才能が認められる機会は限られています。"
+      }
+    },
+    "elevate": {
+      "title": {
+        "main": "ビートを",
+        "highlighted": "高めるために必要なすべて"
+      },
+      "card1": {
+        "title": "オンラインバトル",
+        "description": "オーディオ/ビデオを投稿し、世界中の対戦相手と1対1でバトル。投票を得てBPを獲得し、ランクを上げましょう！"
+      },
+      "card2": {
+        "title": "グローバルコミュニティ",
+        "description": "世界中のビートボクサーと繋がりましょう。テクニックを共有し、ディスカッションに参加し、協力者を見つけ、友達を作りましょう。"
+      },
+      "card3": {
+        "title": "ランキングとトーナメント",
+        "description": "シーズンランキングであなたのスキルを証明しましょう。栄光と報酬のためにエキサイティングなオンライントーナメントで競いましょう。"
+      },
+      "card4": {
+        "title": "スキル成長ハブ",
+        "description": "学習リソースにアクセスし、仲間やAIから建設的なフィードバックを得て、進捗を追跡しましょう。"
+      }
+    },
+    "ready": {
+      "title": {
+        "main": "音を立てる準備はいいか",
+        "highlighted": ""
+      },
+      "subtitle": "あなたのビートボックスの旅はここから始まります。今すぐBeatNexusに参加し、革命の一部になりましょう。",
+      "button": "無料で登録してバトル！",
+      "availability": "iOSおよびAndroidでも利用可能（近日公開！）"
+    }
+  },
+  "battlesPage": {
+    "welcome": {
+      "title": "ようこそ",
+      "subtitle": "世界中のビートボクサーと繋がり、スキルを試し、共に成長しましょう。",
+      "stats": {
+        "activeBattles": "開催中のバトル",
+        "completedBattles": "完了したバトル",
+        "totalSubmissions": "投稿動画数",
+        "communityMembers": "コミュニティメンバー",
+        "votesCast": "総投票数"
+      },
+      "buttons": {
+        "watchBattles": "バトルを観戦 & 投票",
+        "postBeat": "ビートを投稿！"
+      },
+      "guide": {
+        "newHere": "初めての方はこちら",
+        "checkGuide": "ハウツーガイドをチェック"
+      }
+    },
+    "activeBattles": {
+      "title": "開催中のバトル",
+      "subtitle": "お気に入りのパフォーマンスに投票しよう",
+      "createBattleButton": "バトルを作成"
+    },
+    "status": {
+      "loadingBattles": "バトルを読み込み中...",
+      "errorLoadingBattles": "バトルの読み込みエラー",
+      "tryAgainButton": "再試行",
+      "noBattlesFound": "バトルが見つかりません",
+      "noBattlesMatchSearch": "検索条件に一致するバトルはありません",
+      "beTheFirstToCreate": "最初のバトルを作成して、競争を始めましょう！",
+      "loadingCompletedBattles": "完了したバトルを読み込み中...",
+      "noCompletedBattles": "完了したバトルはまだありません",
+      "checkBackSoonCompleted": "過去のバトルの結果はここに表示されます。",
+      "loadingRankings": "ランキングを読み込み中...",
+      "noRankingsAvailable": "利用可能なランキングはまだありません。"
+    },
+    "rankings": {
+      "title": "トップビートボクサー",
+      "viewFullButton": "",
+      "noRankingsYet": "まだランキングがありません",
+      "table": {
+        "rank": "ランク",
+        "player": "プレイヤー",
+        "bp": "BP"
+      }
+    },
+    "createBattle": {
+      "title": "新しいバトルを作成",
+      "description": "挑戦する準備はできましたか？動画を投稿してコミュニティに挑戦しましょう。",
+      "button": "新しいバトルを開始"
+    },
+    "howTo": {
+      "title": "BeatNexusの仕組み",
+      "description": "バトルの投稿方法、投票方法、ランキングの登り方を学びましょう。",
+      "button": "ガイドを読む"
+    }
+  },
+  "archivedBattleCard": {
+    "playerA": "プレイヤーA",
+    "playerB": "プレイヤーB",
+    "me": "自分",
+    "votesSuffix": "票",
+    "result": {
+      "draw": "引き分け",
+      "win": "勝利",
+      "loss": "敗北"
+    },
+    "watchReplayButton": "リプレイを視聴"
+  },
+  "settingsPage": {
+    "title": "設定",
+    "loading": "設定を読み込み中...",
+    "preferences": {
+      "title": "環境設定",
+      "saveButton": "設定を保存",
+      "savingButton": "保存中...",
+      "unsavedChanges": "未保存の変更があります"
+    },
+    "language": {
+      "title": "言語",
+      "description": "プラットフォームの表示言語を選択してください。",
+      "english": "English",
+      "japanese": "日本語"
+    },
+    "accountManagement": {
+      "title": "アカウント管理"
+    },
+    "changePassword": {
+      "title": "パスワード変更",
+      "description": "アカウントのパスワードを更新します。",
+      "button": "パスワードを変更"
+    },
+    "dangerZone": {
+      "title": "危険ゾーン"
+    },
+    "deleteAccount": {
+      "title": "アカウント削除",
+      "description": "アカウントと関連するすべてのデータを完全に削除します。この操作は元に戻せません。",
+      "button": "アカウントを削除"
+    },
+    "passwordModal": {
+      "title": "パスワードの変更",
+      "newPassword": "新しいパスワード",
+      "confirmPassword": "新しいパスワード（確認）",
+      "updateButton": "パスワードを更新",
+      "updatingButton": "更新中...",
+      "cancelButton": "キャンセル"
+    },
+    "deleteModal": {
+      "title": "アカウントの削除",
+      "confirmationMessage": "本当にアカウントを削除しますか？この操作は元に戻すことができず、プロフィール情報、対戦履歴、投稿など、すべてのデータが完全に削除されます。",
+      "confirmButton": "削除を確定",
+      "deletingButton": "削除中...",
+      "cancelButton": "キャンセル"
+    },
+    "toasts": {
+      "errorTitle": "エラー",
+      "successTitle": "成功",
+      "loadLanguageError": "言語設定の読み込みに失敗しました。",
+      "mustBeLoggedIn": "設定を変更するにはログインする必要があります。",
+      "noChanges": "変更がありません。",
+      "languageUpdateSuccess": "言語を{{language}}に更新しました。",
+      "languageUpdateError": "言語設定の更新に失敗しました。",
+      "passwordsDoNotMatch": "パスワードが一致しません。",
+      "passwordTooShort": "パスワードは6文字以上である必要があります。",
+      "mustBeLoggedInPassword": "パスワードを変更するにはログインする必要があります。",
+      "passwordUpdateSuccess": "パスワードを正常に更新しました。",
+      "passwordUpdateFailed": "パスワードの更新に失敗しました。",
+      "mustBeLoggedInDelete": "アカウントを削除するにはログインする必要があります。",
+      "accountDeleteSuccess": "アカウントが正常に削除されました。",
+      "accountDeleteFailed": "アカウントの削除に失敗しました。"
+    }
+  },
+  "profilePage": {
+    "userNotFound": {
+      "title": "ユーザーが見つかりません",
+      "description": "お探しのプロフィールは存在しません。ユーザーIDが間違っているか、アカウントが削除された可能性があります。",
+      "homeButton": "ホームページへ"
+    },
+    "profileUnavailable": {
+      "title": "プロフィール利用不可",
+      "description": "プロフィールを表示するにはログインするか、URLでユーザーを指定してください。"
+    },
+    "seasonRating": "シーズンレート",
+    "rank": {
+      "currentRank": "現在のランク",
+      "nextRank": "次のランク",
+      "points": "ポイント",
+      "pointsToNext": "ポイント不足",
+      "progress": "進捗",
+      "complete": "完了",
+      "maxRank": "最高ランク達成！",
+      "legendaryPlayer": "あなたは伝説のプレイヤーです"
+    },
+    "stats": {
+      "battles": "バトル数",
+      "wins": "勝利数",
+      "active": "進行中",
+      "archived": "アーカイブ済"
+    },
+    "edit": {
+      "usernamePlaceholder": "ユーザー名を入力",
+      "bioPlaceholder": "自己紹介を入力してください...",
+      "saveButton": "変更を保存",
+      "cancelButton": "キャンセル",
+      "editButton": "プロフィールを編集",
+      "noBio": "このユーザーは自己紹介をまだ設定していません。"
+    },
+    "tabs": {
+      "currentBattles": "現在のバトル",
+      "battleHistory": "対戦履歴",
+      "posts": "投稿"
+    },
+    "battles": {
+      "noActiveBattlesTitle": "進行中のバトルはありません",
+      "noActiveBattlesDescription": "このユーザーは現在進行中のバトルに参加していません。後でもう一度確認してください！",
+      "noArchivedBattlesTitle": "対戦履歴がありません",
+      "noArchivedBattlesDescription": "このユーザーの過去の対戦履歴はありません。"
+    },
+    "posts": {
+      "deleteConfirmation": "この投稿を本当に削除しますか？",
+      "editButton": "編集",
+      "deleteButton": "削除",
+      "saveButton": "保存",
+      "cancelButton": "キャンセル",
+      "noPostsTitle": "投稿がありません",
+      "noPostsDescription": "このユーザーはまだ投稿をしていません。"
+    },
+    "toasts": {
+      "errorTitle": "エラー",
+      "successTitle": "成功",
+      "loadProfileError": "プロフィールを読み込めませんでした。",
+      "avatarUpdateSuccess": "アバターが正常に更新されました！",
+      "profileUpdateFailedDB": "データベースでのプロフィール更新に失敗しました。",
+      "profileUpdateSuccess": "プロフィールが正常に更新されました！",
+      "profileUpdateFailed": "プロフィールの更新に失敗しました。"
+    }
+  },
+  "battleView": {
+    "title": "BeatNexus",
+    "subtitle": "バトルアリーナ",
+    "votingEndsIn": "投票終了まで",
+    "votingEnded": "投票終了",
+    "timeUnits": {
+      "days": "日",
+      "hours": "時間",
+      "minutes": "分"
+    },
+    "loading": "読み込み中...",
+    "participatingInBattle": "参加中のバトル",
+    "votedFor": "投票済み",
+    "cancellingVote": "投票をキャンセル中...",
+    "cancelVote": "投票をキャンセル",
+    "voteFor": "投票する",
+    "totalVotes": "総投票数",
+    "comments": "コメント",
+    "votes": "票",
+    "leading": "リード中",
+    "addComment": "コメントを追加...",
+    "postComment": "コメントを投稿"
+  },
+  "toasts": {
+    "error": "エラー",
+    "success": "成功",
+    "warning": "警告",
+    "info": "情報"
+  },
+  "communityPage": {
+    "toasts": {
+      "loadPostsError": "投稿の読み込みに失敗しました。",
+      "postSuccess": "投稿しました！",
+      "postError": "投稿に失敗しました。",
+      "deleteSuccess": "投稿を削除しました。",
+      "deleteError": "投稿の削除に失敗しました。",
+      "updateSuccess": "投稿を更新しました。",
+      "updateError": "投稿の更新に失敗しました。",
+      "likeError": "いいねの更新に失敗しました。",
+      "loadCommentsError": "コメントの読み込みに失敗しました。",
+      "commentSuccess": "コメントを投稿しました！",
+      "commentError": "コメントの投稿に失敗しました。"
+    }
+  },
+  "battleStore": {
+    "toasts": {
+      "authError": "認証エラー",
+      "loginRequired": "ログインが必要です",
+      "checkLoginStatus": "ログイン状態を確認してください",
+      "databaseError": "データベースエラー",
+      "cannotVoteOwn": "自分のバトルには投票できません",
+      "alreadyVoted": "このバトルにはすでに投票済みです",
+      "votingEnded": "このバトルの投票は終了しています",
+      "votingExpired": "投票期間が終了しています",
+      "battleNotFound": "バトルが見つかりません",
+      "voteError": "投票に失敗しました",
+      "voteSuccess": "プレイヤー{{player}}に投票しました",
+      "voteCompleted": "投票完了",
+      "votingProcess": "投票処理",
+      "unexpectedResponse": "投票処理は完了しましたが、レスポンス形式が予期されていません",
+      "functionNotConfigured": "データベース関数が正しく設定されていません",
+      "cancelVoteError": "投票取り消しエラー",
+      "cancelVoteSuccess": "プレイヤー{{player}}への投票を取り消しました",
+      "cancelVoteCompleted": "投票取り消し",
+      "noVoteToCancel": "このバトルには投票していません",
+      "cannotCancelExpired": "投票期間が終了しており、取り消しできません",
+      "cannotCancelEnded": "このバトルの投票は終了しており、取り消しできません",
+      "systemError": "システムエラー",
+      "cancelProcessCompleted": "投票取り消し処理は完了しましたが、レスポンス形式が予期されていません",
+      "cancelFailed": "投票の取り消しに失敗しました"
+    }
+  },
+  "myBattlesPage": {
+    "title": "マイバトル",
+    "subtitle": "あなたのバトルの状況を確認できます",
+    "tabs": {
+      "active": "進行中",
+      "waiting": "待機中",
+      "completed": "履歴"
+    },
+    "stats": {
+      "wins": "勝利数",
+      "winRate": "勝率",
+      "totalVotes": "総投票数"
+    },
+    "loading": "読み込み中...",
+    "error": {
+      "loadFailed": "データの読み込みに失敗しました",
+      "retry": "再試行"
+    },
+    "empty": {
+      "activeBattles": {
+        "title": "進行中のバトルはありません",
+        "description": "新しいバトルを始めて、あなたのスキルを披露しましょう！",
+        "button": "バトルを始める"
+      },
+      "waitingSubmissions": {
+        "title": "待機中の投稿はありません",
+        "description": "現在、マッチング待ちの投稿はありません。"
+      },
+      "completedBattles": {
+        "title": "バトル履歴はありません",
+        "description": "完了したバトルはここに表示されます。新しいバトルに参加して履歴を作りましょう！",
+        "button": "バトルを始める"
+      },
+      "loadingHistory": "履歴を読み込み中..."
+    },
+    "alerts": {
+      "replayComingSoon": "{{format}} バトルのリプレイ機能は今後実装予定です。"
+    },
+    "waitingSubmissionCard": {
+      "battleFormats": {
+        "MAIN_BATTLE": "メインバトル",
+        "MINI_BATTLE": "ミニバトル",
+        "THEME_CHALLENGE": "テーマチャレンジ"
+      },
+      "postedAt": "投稿日時: {{time}}前",
+      "searchingOpponent": "対戦相手を探しています...",
+      "searchingDescription": "あなたのスキルレベルに合った対戦相手を探しています。しばらくお待ちください。",
+      "videoUrl": "動画URL: {{url}}",
+      "withdrawButton": "取り下げる",
+      "withdrawConfirm": "この投稿を取り下げますか？",
+      "withdrawError": "投稿の取り下げに失敗しました"
+    }
+  },
+  "postPage": {
+    "title": "バトル動画を投稿",
+    "subtitle": "あなたのスキルを披露して、コミュニティに挑戦しましょう",
+    "backButton": "戻る",
+    "selectFormat": {
+      "label": "バトル形式を選択",
+      "mainBattle": "メインバトル (60-120秒)",
+      "miniBattle": "ミニバトル (30-59秒)",
+      "themeChallenge": "スキル/テーマチャレンジ"
+    },
+    "upload": {
+      "dropHere": "動画をここにドロップ",
+      "orBrowse": "またはクリックしてファイルを選択 (MP4, WebM, MOV | 最大75MB)",
+      "selectVideo": "動画を選択"
+    },
+    "guidelines": {
+      "title": "動画ガイドライン",
+      "audioQuality": {
+        "title": "音質",
+        "description": "クリアな音質が重要です。可能であれば外部マイクを使用してください。"
+      },
+      "videoLengthSize": {
+        "title": "動画の長さとサイズ",
+        "description": "フォーマットのガイドライン（メインバトルは60-120秒）に従ってください。最適なパフォーマンスのために、ファイルサイズは75MB以下に抑えてください。"
+      },
+      "facePolicy": {
+        "title": "顔出しポリシー",
+        "description": "顔出しは任意ですが、口元の表示を推奨します。"
+      },
+      "lipSyncPolicy": {
+        "title": "リップシンクおよび非同時録音の禁止",
+        "description": "同時に撮影および録音されなければならず、リップシンクやライブパフォーマンスの誤った印象を与える可能性のあるその他のビデオ技術は厳しく禁止されています。"
+      },
+      "allowedEffects": {
+        "title": "許可されるエフェクト",
+        "description": "録音の明瞭度、存在感、全体的な聴きやすさを向上させる「マスタリング」ツールは許可されています。ただし、パフォーマンス自体を根本的に変更するものではありません。"
+      },
+      "notAllowed": {
+        "title": "禁止事項",
+        "description": "背景音楽、バッキングトラック、著作権のあるコンテンツ。"
+      }
+    },
+    "preview": {
+      "title": "動画プレビュー"
+    },
+    "processing": {
+      "title": "動画を処理中...",
+      "analyzing": "動画の解析と設定の確認を行っています...",
+      "optimizing": "画質を最適化しています。しばらくお待ちください...",
+      "finalizing": "最終調整を行っています...",
+      "loadingVideo": "動画を読み込み中...",
+      "calculatingCompression": "圧縮設定を計算中...",
+      "preparingStream": "ストリームを準備中...",
+      "startingRecording": "録画を開始中...",
+      "completingRecording": "録画を完了中...",
+      "fastProcessing": "高速処理を開始中...",
+      "checkingDuration": "動画の長さを確認中...",
+      "preparingPreview": "プレビューを準備中...",
+      "complete": "完了",
+      "analyzing_video": "動画を解析中...",
+      "recording": "録画中...",
+      "remaining": "残り約{{seconds}}秒"
+    },
+    "errors": {
+      "problemOccurred": "問題が発生しました",
+      "videoLoadFailed": "動画ファイルの読み込みに失敗しました",
+      "unsupportedBrowser": "この機能はお使いのブラウザではサポートされていません",
+      "playbackFailed": "動画の再生に失敗しました。ブラウザの設定を確認してください。",
+      "recordingFailed": "録画中にエラーが発生しました",
+      "processingError": "処理エラー",
+      "videoProcessingFailed": "動画ファイルの処理に失敗しました",
+      "fileTooBig": "ファイルサイズが制限を超えています。現在: {{current}}MB（制限: 75MB）",
+      "compressionFailed": "自動圧縮に失敗しました。「高速圧縮」または「簡単な方法」をお試しください。",
+      "fastCompressionFailed": "高速圧縮に失敗しました。「簡単な方法」で手動対応をお試しください。",
+      "fileSizeStillLarge": "圧縮後のファイルサイズ: {{size}}MB。さらに圧縮が必要です。",
+      "compressionSuggestion": "動画のファイルサイズを小さくするために、以下の方法をお試しください：\n\n1. スマホの設定で動画品質を「標準」に変更\n2. 動画編集アプリで解像度を下げる\n3. 動画の長さを短くする\n4. 動画を再撮影する",
+      "uploadTooLarge": "ファイルサイズが大きすぎます（{{size}}MB）。動画を圧縮してからアップロードしてください。",
+      "retakeVideo": "動画を撮り直してから再度アップロードしてください。",
+      "invalidDuration": "動画の長さが規定範囲外です。",
+      "mainBattleTooShort": "メインバトルの動画が短すぎます（{{duration}}秒）。{{required}}秒の動画を投稿してください。\n\n💡 ヒント: 動画編集アプリで長さを調整するか、より長いパフォーマンスを録画してください。",
+      "mainBattleTooLong": "メインバトルの動画が長すぎます（{{duration}}秒）。{{required}}秒の動画を投稿してください。\n\n💡 ヒント: 動画編集アプリで不要な部分をカットするか、より短いパフォーマンスを録画してください。",
+      "miniBattleTooShort": "ミニバトルの動画が短すぎます（{{duration}}秒）。{{required}}秒の動画を投稿してください。\n\n💡 ヒント: より長いパフォーマンスを録画するか、メインバトル形式（60-120秒）への変更をご検討ください。",
+      "miniBattleTooLong": "ミニバトルの動画が長すぎます（{{duration}}秒）。{{required}}秒の動画を投稿してください。\n\n💡 ヒント: 動画編集アプリで短くするか、メインバトル形式（60-120秒）への変更をご検討ください。",
+      "themeTooShort": "テーマチャレンジの動画が短すぎます（{{duration}}秒）。{{required}}秒の動画を投稿してください。\n\n💡 ヒント: より長いパフォーマンスを録画してください。",
+      "themeTooLong": "テーマチャレンジの動画が長すぎます（{{duration}}秒）。{{required}}秒の動画を投稿してください。\n\n💡 ヒント: 動画編集アプリで短くしてください。",
+      "changeBattleFormat": "バトル形式を変更",
+      "selectDifferentVideo": "別の動画を選択"
+    },
+    "compression": {
+      "autoAvailable": "自動画質調整が利用可能です",
+      "videoDuration": "動画の長さ:",
+      "fileSize": "ファイルサイズ:",
+      "durationOk": "{{duration}}秒 ✓",
+      "fileSizeLarge": "{{size}}MB ⚠️",
+      "description": "動画の長さは規定範囲内ですが、ファイルサイズが大きすぎます。音質を保ったまま画質を自動調整してファイルサイズを最適化できます。",
+      "autoAdjustments": "自動調整内容:",
+      "resolutionOptimization": "解像度の最適化（4K→1080p等）",
+      "bitrateAdjustment": "ビットレートの調整",
+      "audioQualityMaintained": "音質は高品質を維持（128kbps）",
+      "fileSizeTooLarge": "ファイルサイズが大きすぎます",
+      "currentFileSize": "現在のファイルサイズ: {{size}}MB (制限: 75MB)",
+      "recommendedSolutions": "推奨される解決方法:",
+      "retakeVideo": "動画を撮り直す",
+      "recommended": "推奨",
+      "proceedAnyway": "このまま続行",
+      "forTesting": "テスト用",
+      "compressionRatio": "圧縮率: {{ratio}}%",
+      "format": "フォーマット: {{format}}",
+      "compressionStarting": "圧縮を開始中...",
+      "finalizing": "最終処理中...",
+      "autoCompress": "自動圧縮",
+      "optimizeSize": "サイズを最適化"
+    },
+    "submissionGuidelines": {
+      "title": "動画投稿ガイドライン",
+      "followFormatLength": "フォーマットの長さ要件に従ってください",
+      "ensureAudioQuality": "クリアな音質を確保してください",
+      "faceOptional": "顔出しは任意ですが、口元の表示を推奨",
+      "noBackgroundMusic": "背景音楽やバッキングトラックは禁止",
+      "agreeGuidelines": "動画投稿ガイドラインを読み、同意します",
+      "understandFacePolicy": "顔出しは任意で、口元の表示が推奨されることを理解しています",
+      "confirmOwnPerformance": "これは私自身のパフォーマンスであり、禁止されたコンテンツは含まれていません"
+    },
+    "buttons": {
+      "cancel": "キャンセル",
+      "submitToBattlePool": "投稿",
+      "viewMyBattles": "マイバトルを見る",
+      "submitAnother": "別の動画を投稿"
+    },
+    "success": {
+      "title": "動画の投稿が完了しました！",
+      "description": "動画がアップロードされ、まもなく他のビートボクサーとマッチングされます。バトルが開始されたら通知いたします。"
+    }
+  },
+  "comingSoon": {
+    "title": "Coming Soon",
+    "subtitle": "素晴らしいHow-toガイドを準備中です！BeatNexusの全ての機能を分かりやすく説明します。",
+    "features": {
+      "stepByStep": "ステップバイステップ",
+      "stepByStepDesc": "初心者でも安心の詳細ガイド",
+      "proTips": "プロのコツ",
+      "proTipsDesc": "上級者のテクニックと戦略",
+      "videoGuides": "動画ガイド",
+      "videoGuidesDesc": "実際の操作を動画で解説"
+    },
+    "launch": {
+      "title": "🚀 近日公開",
+      "description": "より良いガイドをお届けするため、準備を進めています。もう少しお待ちください！"
+    },
+    "meanwhile": "その間に、バトルを探索してみませんか？",
+    "exploreBattles": "バトルを見る"
+  },
+  "rankingPage": {
+    "title": "グローバルランキング",
+    "description": "バトル結果に基づくEloレーティングシステムによるビートボクサーランキング",
+    "searchPlaceholder": "ユーザー名で検索...",
+    "loading": "ランキング読み込み中...",
+    "eloRating": "Eloレーティング",
+    "table": {
+      "rank": "順位",
+      "user": "ユーザー",
+      "rating": "レーティング",
+      "seasonPoints": "シーズンポイント",
+      "winRate": "勝率"
+    },
+    "tiers": {
+      "grandmaster": "グランドマスター",
+      "master": "マスター",
+      "expert": "エキスパート",
+      "advanced": "アドバンス",
+      "intermediate": "インターミディエイト",
+      "beginner": "ビギナー",
+      "unranked": "ランク無し"
+    },
+    "winLossRecord": "{{wins}}勝 - {{losses}}敗",
+    "noUsersFound": "ユーザーが見つかりません",
+    "noRankingsYet": "まだランキングがありません",
+    "tryDifferentSearch": "別の検索キーワードをお試しください",
+    "rankingsWillAppear": "ユーザーがバトルに参加するとランキングが表示されます",
+    "error": {
+      "title": "ランキングの読み込みに失敗しました",
+      "tryAgain": "再試行"
+    }
+  },
+  "toasts": {
+    "submissionAddedToPool": "バトルキューに追加されました！プログレッシブマッチングシステムにより、20分間隔でレート範囲が拡大されます。",
+    "submissionError": "投稿に失敗しました",
+    "submissionWithdrawn": "バトルキューから削除されました",
+    "withdrawError": "削除に失敗しました"
+  },
+  "waitingPool": {
+    "title": "バトル待機中",
+    "description": "現在マッチング待ちの投稿一覧です",
+    "waitingTime": "待機時間: {{time}}",
+    "ratingRange": "レーティング許容範囲: ±{{range}}",
+    "attempts": "マッチング試行回数: {{count}}回",
+    "expandingSoon": "まもなく許容範囲が拡大されます",
+    "noWaitingSubmissions": "現在待機中の投稿はありません",
+    "matchingSoon": "対戦相手とのマッチングを行っています...",
+    "poolExplanation": "新しい待機プール方式では、より公平なマッチングのため、投稿後に適切な対戦相手が見つかるまで待機します。レーティング差を考慮したマッチングにより、よりバランスの取れたバトルが可能になります。"
+  },
+  "tournament": {
+    "title": "トーナメント",
+    "subtitle": "シーズン最強の決戦場",
+    "comingSoon": "🔥 近日開幕予定 🔥",
+    "features": {
+      "eliteOnly": {
+        "title": "エリート限定",
+        "description": "シーズンランキング上位者のみが参加できる特別なトーナメント。最高レベルのビートボクサーたちとの真剣勝負。"
+      },
+      "seasonal": {
+        "title": "シーズン制",
+        "description": "3ヶ月ごとに開催される大規模トーナメント。新シーズンごとに新しいチャンピオンが誕生します。"
+      },
+      "bigPrizes": {
+        "title": "豪華賞品",
+        "description": "優勝者には限定トロフィーと特別な称号を贈呈。上位入賞者にも素敵な報酬をご用意。"
+      }
+    },
+    "structure": {
+      "title": "トーナメント構造",
+      "step1": {
+        "title": "予選ラウンド",
+        "description": "シーズンランキング上位32名が参加。1対1のバトル形式で勝者を決定。"
+      },
+      "step2": {
+        "title": "決勝トーナメント",
+        "description": "予選を勝ち抜いた16名による本戦。ダブルエリミネーション方式。"
+      },
+      "step3": {
+        "title": "グランドファイナル",
+        "description": "最後の2名による頂上決戦。BeatNexusの真の王者を決める戦い。"
+      }
+    },
+    "launch": {
+      "title": "🏆 シーズン1トーナメント準備中",
+      "description": "現在、初回トーナメントの準備を進めています。シーズンランキングで上位を目指し、トーナメント参加権を獲得しましょう！",
+      "checkRankings": "ランキングを確認",
+      "practiceNow": "今すぐ練習"
+    }
+  },
+  "faq": {
+    "title": "よくある質問",
+    "subtitle": "BeatNexusについてよく寄せられる質問にお答えします。",
+    "categories": {
+      "gettingStarted": "はじめに",
+      "battles": "バトル",
+      "technical": "技術的な質問",
+      "community": "コミュニティ"
+    },
+    "items": {
+      "howToStart": {
+        "question": "BeatNexusを始めるにはどうすればよいですか？",
+        "answer": "アカウントを作成して、プロフィールを設定するだけで始められます。まずは他のバトルを観戦して、投票することから始めてみましょう。準備ができたら、動画を投稿してバトルに参加できます。"
+      },
+      "isFree": {
+        "question": "BeatNexusは無料で使えますか？",
+        "answer": "はい、BeatNexusは基本的な機能は全て無料でご利用いただけます。バトルの投稿、観戦、投票など、メインの機能は無料で楽しめます。"
+      },
+      "beginnerFriendly": {
+        "question": "初心者でも参加できますか？",
+        "answer": "もちろんです！BeatNexusは初心者からプロまで、すべてのレベルのビートボクサーを歓迎します。レーティングシステムにより、あなたのスキルレベルに適した対戦相手とマッチングされます。"
+      },
+      "battleTypes": {
+        "question": "バトルの種類は何がありますか？",
+        "answer": "3つのバトル形式があります：メインバトル（60-120秒）、ミニバトル（30-59秒）、テーマチャレンジ（特定のテーマやスキル）。初心者の方にはミニバトルから始めることをお勧めします。"
+      },
+      "votingPeriod": {
+        "question": "投票期間はどのくらいですか？",
+        "answer": "投票期間は5分間です。バトルが開始されてから5分以内に投票を行ってください。投票期間が終了すると、結果が発表されます。"
+      },
+      "matching": {
+        "question": "対戦相手はどのように決まりますか？",
+        "answer": "レーティングシステムを使用して、あなたのスキルレベルに近い対戦相手を自動的に見つけます。待機プール方式により、より公平なマッチングを実現しています。"
+      },
+      "showFace": {
+        "question": "顔を出す必要がありますか？",
+        "answer": "顔出しは必須ではありません。ただし、口元が見えるようにすることで、より良い評価を得られる可能性があります。あなたが快適に感じる範囲で撮影してください。"
+      },
+      "videoFormats": {
+        "question": "対応している動画形式は何ですか？",
+        "answer": "MP4、WebM、MOVの形式に対応しています。ファイルサイズは75MB以下に制限されています。最高の体験のために、クリアな音質で録画することをお勧めします。"
+      },
+      "uploadFailed": {
+        "question": "動画のアップロードが失敗します",
+        "answer": "ファイルサイズ（75MB以下）と形式（MP4、WebM、MOV）を確認してください。インターネット接続も確認し、ブラウザを再読み込みしてお試しください。"
+      },
+      "mobile": {
+        "question": "スマートフォンでも使えますか？",
+        "answer": "はい、BeatNexusはモバイルブラウザでも利用できます。専用のモバイルアプリも近日公開予定です。"
+      },
+      "ranking": {
+        "question": "ランキングはどのように決まりますか？",
+        "answer": "Eloレーティングシステムを使用しています。勝利するとレーティングが上がり、敗北すると下がります。シーズンごとにリセットされ、上位者はトーナメントに参加できます。"
+      },
+      "prohibited": {
+        "question": "禁止事項はありますか？",
+        "answer": "背景音楽、バッキングトラック、著作権のあるコンテンツの使用は禁止されています。また、不適切な内容や他者を不快にさせる行為も禁止されています。"
+      }
+    },
+    "stillNeedHelp": {
+      "title": "まだ解決しませんか？",
+      "description": "ここに載っていない質問やお困りのことがあれば、お気軽にお問い合わせください。",
+      "contactSupport": "サポートに連絡",
+      "readGuide": "使い方ガイドを読む"
+    }
+  },
+  "notifications": {
+    "title": "お知らせ",
+    "empty": "新しいお知らせはありません",
+    "markAllRead": "すべて削除",
+    "viewAll": "すべて表示",
+    "timeAgo": {
+      "justNow": "たった今",
+      "minutes": "{{count}}分前",
+      "hours": "{{count}}時間前",
+      "days": "{{count}}日前"
+    },
+    "battleMatched": {
+      "title": "バトルマッチング完了！",
+      "message": "対戦相手が見つかりました。バトルが開始されました！"
+    },
+    "battleCompleted": {
+      "title": "バトル結果発表！",
+      "winMessage": "おめでとうございます！あなたの勝利です！",
+      "loseMessage": "惜敗でした。次回頑張りましょう！",
+      "drawMessage": "引き分けでした。素晴らしいバトルでした！"
+    }
+  },
+  "latestBattles": {
+    "title": "最新のバトル",
+    "description": "お気に入りのパフォーマンスに投票しよう",
+    "createBattle": "バトルを作成",
+    "loading": "バトルを読み込み中...",
+    "error": {
+      "title": "バトルの読み込みエラー",
+      "tryAgain": "再試行"
+    },
+    "noBattles": {
+      "title": "まだバトルがありません",
+      "description": "最初のバトルを作成して競争を始めましょう！",
+      "createFirst": "最初のバトルを作成"
+    },
+    "viewMore": "もっと見る",
+    "ranking": {
+      "title": "トップランキング",
+      "viewAll": "すべて見る",
+      "noRankings": {
+        "title": "まだランキングがありません",
+        "description": "ユーザーがバトルに参加するとランキングが表示されます"
+      },
+      "seasonEnds": "シーズン終了まで{{days}}日"
+    }
+  },
+  "archive": {
+    "title": "アーカイブ機能",
+    "description": "重要なバトルを永続保存できます",
+    "limit": "月3つまで",
+    "status": {
+      "title": "アーカイブ使用状況",
+      "usage": "今月の使用状況",
+      "remaining": "残り",
+      "limit": "制限"
+    },
+    "button": {
+      "archive": "アーカイブ",
+      "archived": "保存済み",
+      "processing": "処理中..."
+    },
+    "info": {
+      "title": "アーカイブ機能について",
+      "important": "重要",
+      "deletionWarning": "動画は通常、バトル終了から3日後に自動削除されます。",
+      "features": {
+        "title": "機能:",
+        "preserve": "• 重要なバトル動画を永続保存",
+        "limit": "• 月3つまでアーカイブ可能",
+        "history": "• バトル履歴とレート変動は常に保持"
+      }
+    },
+    "messages": {
+      "success": {
+        "archived": "バトルをアーカイブしました",
+        "unarchived": "アーカイブを解除しました"
+      },
+      "error": {
+        "limitReached": "月のアーカイブ制限に達しています (3/3)",
+        "notFound": "バトルが見つかりません",
+        "alreadyArchived": "既にアーカイブされています",
+        "failed": "アーカイブ操作に失敗しました"
+      }
+    }
+  },
+  "battleReplay": {
+    "title": "バトルリプレイ",
+    "backButton": "戻る",
+    "notFound": {
+      "title": "バトルが見つかりません",
+      "description": "お探しのバトルリプレイは存在しないか、削除された可能性があります。",
+      "backButton": "戻る",
+      "myBattlesButton": "マイバトルへ"
+    },
+    "result": {
+      "battleResult": "バトル結果"
+    },
+    "playerInfo": {
+      "playerA": "プレイヤーA",
+      "playerB": "プレイヤーB",
+      "totalVotes": "総投票数"
+    },
+    "videoNotAvailable": {
+      "title": "動画は保存されていません",
+      "participantMessage": "この動画はアーカイブされておらず、表示できません。",
+      "nonParticipantMessage": "このバトルの動画を視聴するには、バトルの参加者である必要があります。"
+    }
+  },
+  "pagination": {
+    "previous": "前へ",
+    "next": "次へ",
+    "page": "ページ",
+    "of": "/",
+    "goToPage": "ページへ移動:",
+    "showing": "{{start}}〜{{end}}件目 / 全{{total}}件",
+    "noResults": "結果がありません"
+  }
+}

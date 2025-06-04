@@ -1,0 +1,1181 @@
+{
+  "common": {
+    "upgrade": "Upgrade",
+    "login": "Login",
+    "signup": "Sign Up",
+    "support": "Support",
+    "community": "Community",
+    "battles": "Battles",
+    "shop": "Shop",
+    "home": "Home",
+    "ranking": "Ranking",
+    "createPost": "Create Post",
+    "logout": "Logout",
+    "howToGuide": "How-to Guide"
+  },
+  "subscription": {
+    "title": "Choose Your Plan",
+    "subtitle": "Select the perfect plan to support your beatboxing journey",
+    "billing": {
+      "monthly": "Monthly",
+      "yearly": "Yearly",
+      "discount": "20% OFF"
+    },
+    "plans": {
+      "free": {
+        "name": "Free",
+        "description": "Experience basic features",
+        "features": [
+          "3 posts per month",
+          "With ads",
+          "0 Boost tokens per month",
+          "Basic profile"
+        ],
+        "button": "Start Free"
+      },
+      "crew": {
+        "name": "Crew",
+        "description": "More posts and perks",
+        "features": [
+          "10 posts per month",
+          "Ad-free experience",
+          "5 Boost tokens per month",
+          "Custom profile colors",
+          "Priority support"
+        ],
+        "button": "Get Started",
+        "popular": "Popular Plan"
+      },
+      "pro": {
+        "name": "Pro",
+        "description": "Complete creator experience",
+        "features": [
+          "Unlimited posts",
+          "Ad-free experience",
+          "15 Boost tokens per month",
+          "Profile badges & themes",
+          "Priority matching",
+          "Detailed statistics"
+        ],
+        "button": "Upgrade"
+      }
+    },
+    "features": {
+      "title": "Compare All Features",
+      "unlimited": {
+        "title": "Unlimited Posts",
+        "description": "Post unlimited battles with Pro plan"
+      },
+      "boost": {
+        "title": "Boost Tokens",
+        "description": "Tokens to increase battle exposure"
+      },
+      "customization": {
+        "title": "Customization",
+        "description": "Customize your profile and themes"
+      },
+      "badges": {
+        "title": "Special Badges",
+        "description": "Exclusive badges for Pro users"
+      }
+    }
+  },
+  "battle": {
+    "title": "Battle Detail",
+    "loading": "Loading battle details...",
+    "notFound": "Battle not found",
+    "voteA": "Vote for A",
+    "voteB": "Vote for B",
+    "voting": "Voting...",
+    "voteSuccess": "Vote cast successfully!",
+    "voteError": "Failed to cast vote: {{message}}",
+    "alreadyVoted": "You have already voted in this battle.",
+    "loginToVote": "Please login to vote."
+  },
+  "battleCard": {
+    "votingEndsIn": "{{days}}d {{hours}}h left",
+    "votingEndsInHours": "{{hours}}h {{minutes}}m left",
+    "votingEndsInMinutes": "{{minutes}}m {{seconds}}s left",
+    "votingEndsInSeconds": "{{seconds}}s left",
+    "votingEnded": "Voting Ended",
+    "contestantA": "Contestant A",
+    "contestantB": "Contestant B",
+    "unknownUser": "Unknown User",
+    "votes": "votes",
+    "totalVotes": "Total Votes",
+    "comments": "Comments",
+    "voteButton": "Vote on this battle",
+    "battleFormats": {
+      "MAIN_BATTLE": "Main Battle",
+      "MINI_BATTLE": "Mini Battle",
+      "THEME_CHALLENGE": "Theme Challenge"
+    },
+    "errors": {
+      "navigationFailed": "Failed to navigate to battle page. Please try again."
+    }
+  },
+  "battleFilters": {
+    "searchPlaceholder": "Search by username...",
+    "myBattles": "MY BATTLES",
+    "allFormats": "All Formats",
+    "recent": "Recent",
+    "trending": "Trending",
+    "endingSoon": "Ending Soon",
+    "completed": "Completed"
+  },
+  "upload": {
+  },
+  "footer": {
+    "description": "The next step for the beatboxing community. Bringing together beginners and pros to elevate the art.",
+    "quickLinks": "Quick Links",
+    "tournaments": "Tournaments",
+    "resources": "Resources",
+    "tutorials": "Tutorials",
+    "communityForum": "Community Forum",
+    "boostPlans": "Boost Plans",
+    "faq": "FAQ",
+    "contactUs": "Contact Us",
+    "contactMessage": "Have a question or feedback? Reach out to our team!",
+    "allRightsReserved": "All rights reserved.",
+    "termsOfService": "Terms of Service",
+    "privacyPolicy": "Privacy Policy",
+    "cookiePolicy": "Cookie Policy"
+  },
+  "home": {
+    "hero": {
+      "title": {
+        "main": "BEATNEXUS",
+        "highlighted": ""
+      },
+      "subtitle": {
+        "main": "The ultimate platform for beatboxers to",
+        "battle": "battle",
+        "share": "share",
+        "connect": "connect",
+        "and": "and",
+        "grow": "grow",
+        "join": "Join a global community and take your skills to the next level."
+      },
+      "button": {
+        "startBattle": "Start Your Battle",
+        "watchBattles": "Watch Battles & Vote"
+      }
+    },
+    "shadows": {
+      "title": {
+        "main": "Tired of Beatboxing in the",
+        "highlighted": "Shadows"
+      },
+      "subtitle": "The beatbox scene is exploding, but many artists face the same hurdles.",
+      "card1": {
+        "title": "\"Watching\" is growing...",
+        "description": "...but \"doing\" and \"staying\" in the art form isn't keeping up. Many get lost after the initial spark."
+      },
+      "card2": {
+        "title": "Beginner's Bottleneck",
+        "description": "Newcomers struggle to find their next step, practice partners, or a place to improve, often feeling isolated."
+      },
+      "card3": {
+        "title": "Community & Opportunity Gap",
+        "description": "Passionate beatboxers lack a central hub. Opportunities for new talents to get recognized are limited."
+      }
+    },
+    "elevate": {
+      "title": {
+        "main": "Everything You Need to",
+        "highlighted": "Elevate Your Beat"
+      },
+      "card1": {
+        "title": "Online Battles",
+        "description": "Post your audio/video, battle 1-on-1 with global opponents. Get votes, earn BP, and climb the ranks!"
+      },
+      "card2": {
+        "title": "Global Community",
+        "description": "Connect with beatboxers worldwide. Share techniques, join discussions, find collaborators, and make friends."
+      },
+      "card3": {
+        "title": "Rankings & Tournaments",
+        "description": "Prove your skills in seasonal rankings. Compete in exciting online tournaments for glory and rewards."
+      },
+      "card4": {
+        "title": "Skill Growth Hub",
+        "description": "Access learning resources, get constructive feedback from peers and AI, and track your progress."
+      }
+    },
+    "ready": {
+      "title": {
+        "main": "Ready to Make Some",
+        "highlighted": "Noise"
+      },
+      "subtitle": "Your beatbox journey starts here. Join BeatNexus today and become part of the revolution.",
+      "button": "Sign Up For Free & Battle!",
+      "availability": "Also available on iOS and Android (Coming Soon!)"
+    }
+  },
+  "battlesPage": {
+    "welcome": {
+      "title": "Welcome to",
+      "subtitle": "Connect with beatboxers worldwide, test your skills, and grow together.",
+      "stats": {
+        "activeBattles": "Active Battles",
+        "completedBattles": "Completed Battles",
+        "totalSubmissions": "Total Submissions",
+        "communityMembers": "Community Members",
+        "votesCast": "Votes Cast"
+      },
+      "buttons": {
+        "watchBattles": "Watch Battles & Vote",
+        "postBeat": "Post Your Beat!"
+      },
+      "guide": {
+        "newHere": "New here?",
+        "checkGuide": "Check out our How-to Guide"
+      }
+    },
+    "activeBattles": {
+      "title": "Active Battles",
+      "subtitle": "Vote on your favorite performances",
+      "createBattleButton": "Create Battle"
+    },
+    "status": {
+      "loadingBattles": "Loading battles...",
+      "errorLoadingBattles": "Error Loading Battles",
+      "tryAgainButton": "Try Again",
+      "noBattlesFound": "No Battles Found",
+      "noBattlesMatchSearch": "No battles match your search criteria",
+      "beTheFirstToCreate": "Be the first to create a battle and start the competition!",
+      "loadingCompletedBattles": "Loading completed battles...",
+      "noCompletedBattles": "No Completed Battles Yet",
+      "checkBackSoonCompleted": "Check back soon to see the results of past clashes.",
+      "loadingRankings": "Loading rankings...",
+      "noRankingsAvailable": "No rankings available yet."
+    },
+    "rankings": {
+      "title": "Top Beatboxers",
+      "viewFullButton": "",
+      "noRankingsYet": "No Rankings Yet",
+      "table": {
+        "rank": "Rank",
+        "player": "Player",
+        "bp": "BP"
+      }
+    },
+    "createBattle": {
+      "title": "Create a New Battle",
+      "description": "Ready to throw down? Post your video and challenge the community.",
+      "button": "Start New Battle"
+    },
+    "howTo": {
+      "title": "How BeatNexus Works",
+      "description": "Learn how to post battles, vote, and climb the leaderboards.",
+      "button": "Read the Guide"
+    }
+  },
+  "archivedBattleCard": {
+    "playerA": "Player A",
+    "playerB": "Player B",
+    "me": "Me",
+    "votesSuffix": "votes",
+    "result": {
+      "draw": "Draw",
+      "win": "Win",
+      "loss": "Loss"
+    },
+    "watchReplayButton": "Watch Replay"
+  },
+  "settingsPage": {
+    "title": "Settings",
+    "loading": "Loading settings...",
+    "preferences": {
+      "title": "Preferences",
+      "saveButton": "Save Settings",
+      "savingButton": "Saving...",
+      "unsavedChanges": "You have unsaved changes"
+    },
+    "language": {
+      "title": "Language",
+      "description": "Choose your preferred language for the platform.",
+      "english": "English",
+      "japanese": "日本語"
+    },
+    "accountManagement": {
+      "title": "Account Management"
+    },
+    "changePassword": {
+      "title": "Change Password",
+      "description": "Update your account password.",
+      "button": "Change Password"
+    },
+    "dangerZone": {
+      "title": "Danger Zone"
+    },
+    "deleteAccount": {
+      "title": "Delete Account",
+      "description": "Permanently delete your account and all associated data. This action cannot be undone.",
+      "button": "Delete Account"
+    },
+    "passwordModal": {
+      "title": "Change Your Password",
+      "newPassword": "New Password",
+      "confirmPassword": "Confirm New Password",
+      "updateButton": "Update Password",
+      "updatingButton": "Updating...",
+      "cancelButton": "Cancel"
+    },
+    "deleteModal": {
+      "title": "Delete Your Account",
+      "confirmationMessage": "Are you sure you want to delete your account? This action is irreversible and will permanently remove all your data, including profile information, battle history, and posts.",
+      "confirmButton": "Confirm Deletion",
+      "deletingButton": "Deleting...",
+      "cancelButton": "Cancel"
+    },
+    "toasts": {
+      "errorTitle": "Error",
+      "successTitle": "Success",
+      "loadLanguageError": "Failed to load language preference.",
+      "mustBeLoggedIn": "You must be logged in to change settings.",
+      "noChanges": "No changes to save.",
+      "languageUpdateSuccess": "Language updated to {{language}}.",
+      "languageUpdateError": "Failed to update language preference.",
+      "passwordsDoNotMatch": "Passwords do not match.",
+      "passwordTooShort": "Password must be at least 6 characters long.",
+      "mustBeLoggedInPassword": "You must be logged in to change your password.",
+      "passwordUpdateSuccess": "Password updated successfully.",
+      "passwordUpdateFailed": "Failed to update password.",
+      "mustBeLoggedInDelete": "You must be logged in to delete your account.",
+      "accountDeleteSuccess": "Your account has been successfully deleted.",
+      "accountDeleteFailed": "Failed to delete account."
+    }
+  },
+  "profilePage": {
+    "userNotFound": {
+      "title": "User Not Found",
+      "description": "The profile you are looking for does not exist. This could be because the user ID is incorrect or the account has been deleted.",
+      "homeButton": "Go to Homepage"
+    },
+    "profileUnavailable": {
+      "title": "Profile Unavailable",
+      "description": "Please log in to view your profile, or specify a user in the URL."
+    },
+    "seasonRating": "Season Rating",
+    "rank": {
+      "currentRank": "Current Rank",
+      "nextRank": "Next Rank",
+      "points": "Points",
+      "pointsToNext": "points to next",
+      "progress": "Progress",
+      "complete": "complete",
+      "maxRank": "Maximum Rank Achieved!",
+      "legendaryPlayer": "You are a legendary player"
+    },
+    "stats": {
+      "battles": "Battles",
+      "wins": "Wins",
+      "active": "Active",
+      "archived": "Archived"
+    },
+    "edit": {
+      "usernamePlaceholder": "Enter your username",
+      "bioPlaceholder": "Tell us about yourself...",
+      "saveButton": "Save Changes",
+      "cancelButton": "Cancel",
+      "editButton": "Edit Profile",
+      "noBio": "This user has not provided a bio yet."
+    },
+    "tabs": {
+      "currentBattles": "Current Battles",
+      "battleHistory": "Battle History",
+      "posts": "Posts"
+    },
+    "battles": {
+      "noActiveBattlesTitle": "No Active Battles",
+      "noActiveBattlesDescription": "This user is not currently in any active battles. Check back later!",
+      "noArchivedBattlesTitle": "No Battle History",
+      "noArchivedBattlesDescription": "This user has no past battles recorded."
+    },
+    "posts": {
+      "deleteConfirmation": "Are you sure you want to delete this post?",
+      "editButton": "Edit",
+      "deleteButton": "Delete",
+      "saveButton": "Save",
+      "cancelButton": "Cancel",
+      "noPostsTitle": "No Posts",
+      "noPostsDescription": "This user hasn't made any posts yet."
+    },
+    "toasts": {
+      "errorTitle": "Error",
+      "successTitle": "Success",
+      "loadProfileError": "Could not load profile.",
+      "avatarUpdateSuccess": "Avatar updated successfully!",
+      "profileUpdateFailedDB": "Failed to update profile in database.",
+      "profileUpdateSuccess": "Profile updated successfully!",
+      "profileUpdateFailed": "Failed to update profile."
+    }
+  },
+  "rankingPage": {
+    "title": "Global Rankings",
+    "description": "Beatboxer rating rankings calculated using the Elo rating system based on battle results.",
+    "searchPlaceholder": "Search by username...",
+    "loading": "Loading rankings...",
+    "eloRating": "Elo Rating",
+    "table": {
+      "rank": "Rank",
+      "user": "User",
+      "rating": "Rating",
+      "seasonPoints": "Season Points",
+      "winRate": "Win Rate"
+    },
+    "tiers": {
+      "grandmaster": "Grandmaster",
+      "master": "Master",
+      "expert": "Expert",
+      "advanced": "Advanced",
+      "intermediate": "Intermediate",
+      "beginner": "Beginner",
+      "unranked": "Unranked"
+    },
+    "winLossRecord": "{{wins}}W - {{losses}}L",
+    "noUsersFound": "No users found",
+    "noRankingsYet": "No rankings yet",
+    "tryDifferentSearch": "Try a different search term",
+    "rankingsWillAppear": "Rankings will appear as users participate in battles",
+    "error": {
+      "title": "Failed to Load Rankings",
+      "tryAgain": "Try Again"
+    }
+  },
+  "postPage": {
+    "title": "Submit Your Battle Video",
+    "subtitle": "Show off your skills and challenge the community",
+    "backButton": "Back",
+    "selectFormat": {
+      "label": "Select Battle Format",
+      "mainBattle": "Main Battle (60-120 seconds)",
+      "miniBattle": "Mini Battle (30-59 seconds)",
+      "themeChallenge": "Skill/Theme Challenge"
+    },
+    "upload": {
+      "dropHere": "Drop your video here",
+      "orBrowse": "or click to browse files (MP4, WebM, MOV | Max 75MB)",
+      "selectVideo": "Select Video"
+    },
+    "guidelines": {
+      "title": "Video Guidelines",
+      "audioQuality": {
+        "title": "Audio Quality",
+        "description": "Clear audio is crucial. Use an external mic if possible."
+      },
+      "videoLengthSize": {
+        "title": "Video Length & Size",
+        "description": "Follow format guidelines (60-120s for main battles). Keep file size under 75MB for best performance."
+      },
+      "facePolicy": {
+        "title": "Face Policy",
+        "description": "Showing your face is optional, but showing your mouth area is recommended."
+      },
+      "lipSyncPolicy": {
+        "title": "Lip Sync & Non-Simultaneous Recording Prohibition",
+        "description": "Videos must be filmed and recorded simultaneously. Lip syncing or other video techniques that may give a false impression of live performance are strictly prohibited."
+      },
+      "allowedEffects": {
+        "title": "Allowed Effects",
+        "description": "Effects that are generally considered 'mastering' tools to improve recording clarity, presence, and overall listenability are permitted, but must not fundamentally alter the performance itself."
+      },
+      "notAllowed": {
+        "title": "Not Allowed",
+        "description": "Background music, backing tracks, or copyrighted content."
+      }
+    },
+    "preview": {
+      "title": "Video Preview"
+    },
+    "processing": {
+      "title": "Processing video...",
+      "analyzing": "Analyzing video and checking settings...",
+      "optimizing": "Optimizing video quality. Please wait...",
+      "finalizing": "Performing final adjustments...",
+      "loadingVideo": "Loading video...",
+      "calculatingCompression": "Calculating compression settings...",
+      "preparingStream": "Preparing stream...",
+      "startingRecording": "Starting recording...",
+      "completingRecording": "Completing recording...",
+      "fastProcessing": "Starting fast processing...",
+      "checkingDuration": "Checking video duration...",
+      "preparingPreview": "Preparing preview...",
+      "complete": "Complete",
+      "analyzing_video": "Analyzing video...",
+      "recording": "Recording...",
+      "remaining": "Remaining ~{{seconds}}s"
+    },
+    "errors": {
+      "problemOccurred": "Problem occurred",
+      "videoLoadFailed": "Failed to load video file",
+      "unsupportedBrowser": "This feature is not supported in your browser",
+      "playbackFailed": "Failed to play video. Please check your browser settings.",
+      "recordingFailed": "Error occurred during recording",
+      "processingError": "Processing error",
+      "videoProcessingFailed": "Failed to process video file",
+      "fileTooBig": "File size exceeds limit. Current: {{current}}MB (Limit: 75MB)",
+      "compressionFailed": "Automatic compression failed. Please try 'Fast Compression' or 'Simple Method'.",
+      "fastCompressionFailed": "Fast compression failed. Please try 'Simple Method' for manual handling.",
+      "fileSizeStillLarge": "Compressed file size: {{size}}MB. Further compression needed.",
+      "compressionSuggestion": "To reduce your video file size, please try the following methods:\n\n1. Change phone settings to 'Standard' video quality\n2. Lower resolution using video editing apps\n3. Shorten video length\n4. Re-record the video",
+      "uploadTooLarge": "File size is too large ({{size}}MB). Please compress the video before uploading.",
+      "retakeVideo": "Please retake the video and upload again.",
+      "invalidDuration": "Video duration is outside the specified range.",
+      "mainBattleTooShort": "Main Battle video is too short ({{duration}}s). Please upload a video of {{required}} seconds.\n\n💡 Tip: Use a video editing app to adjust the length or record a longer performance.",
+      "mainBattleTooLong": "Main Battle video is too long ({{duration}}s). Please upload a video of {{required}} seconds.\n\n💡 Tip: Use a video editing app to trim unnecessary parts or record a shorter performance.",
+      "miniBattleTooShort": "Mini Battle video is too short ({{duration}}s). Please upload a video of {{required}} seconds.\n\n💡 Tip: Record a longer performance or consider switching to Main Battle format (60-120 seconds).",
+      "miniBattleTooLong": "Mini Battle video is too long ({{duration}}s). Please upload a video of {{required}} seconds.\n\n💡 Tip: Use a video editing app to shorten it or consider switching to Main Battle format (60-120 seconds).",
+      "themeTooShort": "Theme Challenge video is too short ({{duration}}s). Please upload a video of {{required}} seconds.\n\n💡 Tip: Record a longer performance.",
+      "themeTooLong": "Theme Challenge video is too long ({{duration}}s). Please upload a video of {{required}} seconds.\n\n💡 Tip: Use a video editing app to shorten it.",
+      "changeBattleFormat": "Change Battle Format",
+      "selectDifferentVideo": "Select Different Video"
+    },
+    "compression": {
+      "autoAvailable": "Automatic quality adjustment is available",
+      "videoDuration": "Video duration:",
+      "fileSize": "File size:",
+      "durationOk": "{{duration}}s ✓",
+      "fileSizeLarge": "{{size}}MB ⚠️",
+      "description": "The video length is within the specified range, but the file size is too large. We can automatically adjust the video quality while preserving audio quality to optimize file size.",
+      "autoAdjustments": "Automatic adjustments:",
+      "resolutionOptimization": "Resolution optimization (4K→1080p etc.)",
+      "bitrateAdjustment": "Bitrate adjustment",
+      "audioQualityMaintained": "High audio quality maintained (128kbps)",
+      "fileSizeTooLarge": "File size is too large",
+      "currentFileSize": "Current file size: {{size}}MB (Limit: 75MB)",
+      "recommendedSolutions": "Recommended solutions:",
+      "retakeVideo": "Retake video",
+      "recommended": "Recommended",
+      "proceedAnyway": "Proceed anyway",
+      "forTesting": "For testing",
+      "compressionRatio": "Compression ratio: {{ratio}}%",
+      "format": "Format: {{format}}",
+      "compressionStarting": "Starting compression...",
+      "finalizing": "Final processing...",
+      "autoCompress": "Auto Compress",
+      "optimizeSize": "Optimize Size"
+    },
+    "submissionGuidelines": {
+      "title": "Video Submission Guidelines",
+      "followFormatLength": "Follow the format length requirements",
+      "ensureAudioQuality": "Ensure clear audio quality",
+      "faceOptional": "Showing your face is optional, but mouth area is recommended",
+      "noBackgroundMusic": "No background music or backing tracks",
+      "agreeGuidelines": "I have read and agree to the Video Submission Guidelines",
+      "understandFacePolicy": "I understand that showing my face is optional, and showing my mouth area is recommended",
+      "confirmOwnPerformance": "I confirm this is my own performance and does not contain prohibited content"
+    },
+    "buttons": {
+      "cancel": "Cancel",
+      "submitToBattlePool": "Submit to Battle Pool",
+      "viewMyBattles": "View My Battles",
+      "submitAnother": "Submit Another"
+    },
+    "success": {
+      "title": "Video Submitted Successfully!",
+      "description": "Your video has been uploaded and will be matched with another beatboxer soon. We'll notify you when your battle goes live."
+    }
+  },
+  "battleView": {
+    "title": "BeatNexus",
+    "subtitle": "Battle Arena",
+    "votingEndsIn": "Voting ends in",
+    "votingEnded": "Voting Ended",
+    "timeUnits": {
+      "days": "days",
+      "hours": "hours",
+      "minutes": "minutes"
+    },
+    "loading": "Loading...",
+    "participatingInBattle": "Participating in Battle",
+    "votedFor": "VOTED FOR",
+    "cancellingVote": "Cancelling Vote...",
+    "cancelVote": "Cancel Vote",
+    "voteFor": "Vote for",
+    "totalVotes": "Total Votes",
+    "comments": "Comments",
+    "votes": "votes",
+    "leading": "Leading",
+    "addComment": "Add your comment...",
+    "postComment": "Post Comment"
+  },
+  "toasts": {
+    "error": "Error",
+    "success": "Success",
+    "warning": "Warning",
+    "info": "Info",
+    "submissionAddedToPool": "Added to battle queue! Progressive matchmaking system expands rating range every 20 minutes.",
+    "submissionError": "Submission failed",
+    "submissionWithdrawn": "Withdrawn from battle queue",
+    "withdrawError": "Withdrawal failed"
+  },
+  "communityPage": {
+    "toasts": {
+      "loadPostsError": "Failed to load posts.",
+      "postSuccess": "Post created successfully!",
+      "postError": "Failed to create post.",
+      "deleteSuccess": "Post deleted successfully.",
+      "deleteError": "Failed to delete post.",
+      "updateSuccess": "Post updated successfully.",
+      "updateError": "Failed to update post.",
+      "likeError": "Failed to update like.",
+      "loadCommentsError": "Failed to load comments.",
+      "commentSuccess": "Comment posted successfully!",
+      "commentError": "Failed to post comment."
+    }
+  },
+  "battleStore": {
+    "toasts": {
+      "authError": "Authentication Error",
+      "loginRequired": "Login required",
+      "checkLoginStatus": "Please check your login status",
+      "databaseError": "Database Error",
+      "cannotVoteOwn": "You cannot vote for your own battle",
+      "alreadyVoted": "You have already voted in this battle",
+      "votingEnded": "Voting for this battle has ended",
+      "votingExpired": "Voting period has expired",
+      "battleNotFound": "Battle not found",
+      "voteError": "Failed to vote",
+      "voteSuccess": "Voted for Player {{player}}",
+      "voteCompleted": "Vote Completed",
+      "votingProcess": "Vote Processing",
+      "unexpectedResponse": "Vote processing completed but response format was unexpected",
+      "functionNotConfigured": "Database function is not properly configured",
+      "cancelVoteError": "Cancel Vote Error",
+      "cancelVoteSuccess": "Cancelled vote for Player {{player}}",
+      "cancelVoteCompleted": "Vote Cancelled",
+      "noVoteToCancel": "You have not voted in this battle",
+      "cannotCancelExpired": "Voting period has expired and cannot be cancelled",
+      "cannotCancelEnded": "Voting for this battle has ended and cannot be cancelled",
+      "systemError": "System Error",
+      "cancelProcessCompleted": "Vote cancellation processing completed but response format was unexpected",
+      "cancelFailed": "Failed to cancel vote"
+    }
+  },
+  "myBattlesPage": {
+    "title": "My Battles",
+    "subtitle": "View your battle status and history",
+    "tabs": {
+      "active": "Active",
+      "waiting": "Waiting",
+      "completed": "History"
+    },
+    "stats": {
+      "wins": "Wins",
+      "winRate": "Win Rate",
+      "totalVotes": "Total Votes"
+    },
+    "loading": "Loading...",
+    "error": {
+      "loadFailed": "Failed to load data",
+      "retry": "Retry"
+    },
+    "empty": {
+      "activeBattles": {
+        "title": "No Active Battles",
+        "description": "Start a new battle and showcase your skills!",
+        "button": "Start Battle"
+      },
+      "waitingSubmissions": {
+        "title": "No Waiting Submissions",
+        "description": "You currently have no submissions waiting for opponents."
+      },
+      "completedBattles": {
+        "title": "No Battle History",
+        "description": "Completed battles will appear here. Join new battles to build your history!",
+        "button": "Start Battle"
+      },
+      "loadingHistory": "Loading history..."
+    },
+    "alerts": {
+      "replayComingSoon": "{{format}} battle replay feature is coming soon."
+    },
+    "waitingSubmissionCard": {
+      "battleFormats": {
+        "MAIN_BATTLE": "Main Battle",
+        "MINI_BATTLE": "Mini Battle",
+        "THEME_CHALLENGE": "Theme Challenge"
+      },
+      "postedAt": "Posted: {{time}} ago",
+      "searchingOpponent": "Searching for opponent...",
+      "searchingDescription": "We're finding an opponent that matches your skill level. Please wait a moment.",
+      "videoUrl": "Video URL: {{url}}",
+      "withdrawButton": "Withdraw",
+      "withdrawConfirm": "Are you sure you want to withdraw this submission?",
+      "withdrawError": "Failed to withdraw submission"
+    }
+  },
+  "howToGuide": {
+    "title": "How-to Guide",
+    "subtitle": "Master BeatNexus like a pro!",
+    "hero": {
+      "title": "Welcome to the World of Beatboxing!",
+      "description": "Whether you're a beginner or a pro, BeatNexus will make your beatboxing journey more exciting. Let's start this adventure together!"
+    },
+    "sections": {
+      "gettingStarted": {
+        "title": "🚀 Getting Started",
+        "description": "Learn the basics of BeatNexus and start having fun right away!",
+        "steps": [
+          {
+            "icon": "👤",
+            "title": "Create Your Profile",
+            "description": "Express your personality and get ready to join the community!",
+            "details": [
+              "Set a unique username",
+              "Share your favorite styles and goals in your bio",
+              "Show your personality with a profile picture"
+            ]
+          },
+          {
+            "icon": "🎬",
+            "title": "Post Your First Video",
+            "description": "It doesn't have to be perfect. Everyone started as a beginner!",
+            "details": [
+              "Even smartphone recording is enough to get started",
+              "We recommend starting with 30-second mini battles",
+              "Focus on audio quality: record in a quiet place"
+            ]
+          },
+          {
+            "icon": "⚔️",
+            "title": "Join Battles",
+            "description": "Auto-matching will find the perfect opponent for you!",
+            "details": [
+              "Automatic matching with opponents of similar skill level",
+              "Voting period is 5 minutes (previously 7 days)",
+              "Win or lose, it's a valuable experience for growth"
+            ]
+          }
+        ]
+      },
+      "battleTypes": {
+        "title": "🎯 Battle Types",
+        "description": "Choose from 3 battle formats and find your style!",
+        "tipsLabel": "💡 Tips:",
+        "types": [
+          {
+            "name": "Main Battle",
+            "duration": "60-90 seconds",
+            "icon": "👑",
+            "description": "Full-scale battle to showcase your skills thoroughly",
+            "tips": [
+              "Think about structure: intro → development → climax",
+              "Combine various techniques to impress",
+              "Stay focused until the final pose"
+            ],
+            "perfect": "Perfect for those who want to show polished performances"
+          },
+          {
+            "name": "Mini Battle",
+            "duration": "30-45 seconds",
+            "icon": "⚡",
+            "description": "Quick battle condensing your charm in a short time",
+            "tips": [
+              "Focus on impact: capture hearts in the first 5 seconds",
+              "Show off your signature moves without holding back",
+              "Every moment counts in this short format"
+            ],
+            "perfect": "Perfect for beginners who want to start easily or busy people"
+          },
+          {
+            "name": "Theme Challenge",
+            "duration": "flexible",
+            "icon": "🎨",
+            "description": "Creative battle challenging specific techniques or themes",
+            "tips": [
+              "Take a unique approach to the theme",
+              "Don't fear technical challenges",
+              "Value perspectives different from others"
+            ],
+            "perfect": "Perfect for adventurers who want to try new techniques"
+          }
+        ]
+      },
+      "votingTips": {
+        "title": "🗳️ Voting Tips",
+        "description": "Become a great voter and energize the community!",
+        "guidelines": [
+          {
+            "icon": "🎵",
+            "title": "Focus on Musicality",
+            "description": "Rhythm, groove, and musical completeness"
+          },
+          {
+            "icon": "💫",
+            "title": "Technical Skills",
+            "description": "Precision, difficulty, and variety of techniques"
+          },
+          {
+            "icon": "🎭",
+            "title": "Entertainment Value",
+            "description": "Fun to watch, moving, memorable"
+          },
+          {
+            "icon": "🔥",
+            "title": "Originality",
+            "description": "Creativity, innovation, and personality"
+          }
+        ],
+        "fairPlay": {
+          "title": "Spirit of Fair Play",
+          "points": [
+            "Judge based on skill, not personal preference",
+            "Watch both videos carefully before voting",
+            "Support with constructive comments",
+            "Always maintain respect"
+          ]
+        }
+      },
+      "community": {
+        "title": "🤝 Enjoy the Community",
+        "description": "Connect with beatboxers worldwide and grow together!",
+        "features": [
+          {
+            "icon": "💬",
+            "title": "Comment Feature",
+            "description": "Comment on battle videos to deepen interactions",
+            "tips": [
+              "Try to give positive feedback",
+              "Mentioning specific techniques is appreciated",
+              "Questions and technical advice are welcome"
+            ]
+          },
+          {
+            "icon": "🏆",
+            "title": "Ranking System",
+            "description": "Prove your skills with seasonal rankings",
+            "tips": [
+              "Consistent participation is key to ranking up",
+              "Not just battle wins, but vote count matters too",
+              "Special rewards at the end of each season"
+            ]
+          },
+          {
+            "icon": "👥",
+            "title": "Forum",
+            "description": "A place for technical questions and information exchange",
+            "tips": [
+              "Beginner questions are very welcome",
+              "Share technique names and practice methods",
+              "Check for regional event information too"
+            ]
+          }
+        ]
+      },
+      "tips": {
+        "title": "🎤 Tips for Improvement",
+        "description": "Pro secrets for leveling up!",
+        "categories": [
+          {
+            "title": "Recording Tips",
+            "icon": "📹",
+            "tips": [
+              "Record in bright places (face visibility)",
+              "Fix your phone to prevent shaking",
+              "Not too close, not too far from mic (~30cm)",
+              "Keep background simple (you're the star!)"
+            ]
+          },
+          {
+            "title": "Practice Methods",
+            "icon": "🎯",
+            "tips": [
+              "Consistency is key, even if just a little daily",
+              "Learn by watching others' videos",
+              "Record yourself to view objectively",
+              "Have courage to try new techniques"
+            ]
+          },
+          {
+            "title": "Mindset",
+            "icon": "🧠",
+            "tips": [
+              "There's learning even in losses (growth opportunity)",
+              "Don't compare with others, go at your own pace",
+              "Having fun is most important",
+              "Support each other with community members"
+            ]
+          }
+        ]
+      },
+      "troubleshooting": {
+        "title": "🔧 FAQ & Troubleshooting",
+        "description": "Check here when you're in trouble!",
+        "faqs": [
+          {
+            "question": "Video upload fails",
+            "answer": "Check file size (75MB or less) and format (MP4, WebM, MOV). Also verify your internet connection."
+          },
+          {
+            "question": "Matching takes a long time",
+            "answer": "We're looking for opponents with matching skill levels, which may take some time. Popular hours tend to match faster."
+          },
+          {
+            "question": "I missed the voting period",
+            "answer": "The voting period is only 5 minutes, so we recommend turning on notifications."
+          },
+          {
+            "question": "My video won't play",
+            "answer": "Try refreshing your browser or using a different browser. If it still doesn't work, contact support."
+          }
+        ],
+        "support": {
+          "title": "If it still doesn't resolve...",
+          "description": "Our support team will sincerely help you!",
+          "contact": "Contact Us"
+        }
+      }
+    },
+    "cta": {
+      "title": "Ready to dive into the beatboxing world!",
+      "description": "You're all set. It's time to make your sound resonate across the world.",
+      "startButton": "Start Your First Battle",
+      "exploreButton": "Explore Other Battles"
+    }
+  },
+  "comingSoon": {
+    "title": "Coming Soon",
+    "subtitle": "We're crafting an amazing How-to Guide for you! Learn everything about BeatNexus in an easy-to-follow format.",
+    "features": {
+      "stepByStep": "Step by Step",
+      "stepByStepDesc": "Detailed guides perfect for beginners",
+      "proTips": "Pro Tips",
+      "proTipsDesc": "Advanced techniques and strategies",
+      "videoGuides": "Video Guides",
+      "videoGuidesDesc": "Watch and learn with video tutorials"
+    },
+    "launch": {
+      "title": "🚀 Coming Soon",
+      "description": "We're working hard to bring you the best guide experience. Stay tuned!"
+    },
+    "meanwhile": "In the meantime, why not explore some battles?",
+    "exploreBattles": "Explore Battles"
+  },
+  "tournament": {
+    "title": "Tournament",
+    "subtitle": "The Ultimate Seasonal Showdown",
+    "comingSoon": "🔥 Coming Soon 🔥",
+    "features": {
+      "eliteOnly": {
+        "title": "Elite Only",
+        "description": "Exclusive tournament for top-ranked players of the season. Face off against the highest level beatboxers."
+      },
+      "seasonal": {
+        "title": "Seasonal Format",
+        "description": "Large-scale tournaments held every 3 months. New champions emerge with each season."
+      },
+      "bigPrizes": {
+        "title": "Amazing Prizes",
+        "description": "Winners receive exclusive trophies and special titles. Great rewards await top finishers."
+      }
+    },
+    "structure": {
+      "title": "Tournament Structure",
+      "step1": {
+        "title": "Qualifying Round",
+        "description": "Top 32 players from season rankings participate. 1v1 battle format determines winners."
+      },
+      "step2": {
+        "title": "Main Tournament",
+        "description": "16 qualified players battle in the main event. Double elimination format."
+      },
+      "step3": {
+        "title": "Grand Final",
+        "description": "The ultimate showdown between the final 2 players. The battle to crown the true BeatNexus champion."
+      }
+    },
+    "launch": {
+      "title": "🏆 Season 1 Tournament in Preparation",
+      "description": "We're currently preparing for our inaugural tournament. Climb the season rankings to earn your spot in the tournament!",
+      "checkRankings": "Check Rankings",
+      "practiceNow": "Practice Now"
+    }
+  },
+  "faq": {
+    "title": "Frequently Asked Questions",
+    "subtitle": "Find answers to common questions about BeatNexus.",
+    "categories": {
+      "gettingStarted": "Getting Started",
+      "battles": "Battles",
+      "technical": "Technical",
+      "community": "Community"
+    },
+    "items": {
+      "howToStart": {
+        "question": "How do I get started with BeatNexus?",
+        "answer": "Simply create an account and set up your profile to get started. Begin by watching other battles and voting to get familiar with the platform. When you're ready, upload a video to participate in battles."
+      },
+      "isFree": {
+        "question": "Is BeatNexus free to use?",
+        "answer": "Yes, BeatNexus is completely free to use for all core features. You can post battles, watch others, and vote without any cost."
+      },
+      "beginnerFriendly": {
+        "question": "Can beginners participate?",
+        "answer": "Absolutely! BeatNexus welcomes beatboxers of all skill levels, from beginners to professionals. Our rating system ensures you're matched with opponents at your skill level."
+      },
+      "battleTypes": {
+        "question": "What types of battles are available?",
+        "answer": "There are 3 battle formats: Main Battle (60-120 seconds), Mini Battle (30-59 seconds), and Theme Challenge (specific themes or skills). We recommend beginners start with Mini Battles."
+      },
+      "votingPeriod": {
+        "question": "How long is the voting period?",
+        "answer": "The voting period is 5 minutes. You must cast your vote within 5 minutes of the battle going live. Results are announced once voting closes."
+      },
+      "matching": {
+        "question": "How are opponents matched?",
+        "answer": "We use a rating system to automatically find opponents close to your skill level. Our waiting pool system ensures fairer matches by considering rating differences."
+      },
+      "showFace": {
+        "question": "Do I need to show my face?",
+        "answer": "Showing your face is optional. However, showing your mouth area is recommended as it may help with better evaluation. Record in whatever way makes you comfortable."
+      },
+      "videoFormats": {
+        "question": "What video formats are supported?",
+        "answer": "We support MP4, WebM, and MOV formats. File size must be under 75MB. For the best experience, we recommend recording with clear audio quality."
+      },
+      "uploadFailed": {
+        "question": "My video upload is failing",
+        "answer": "Check that your file size is under 75MB and format is MP4, WebM, or MOV. Also verify your internet connection and try refreshing your browser."
+      },
+      "mobile": {
+        "question": "Can I use BeatNexus on mobile?",
+        "answer": "Yes, BeatNexus works on mobile browsers. We're also working on dedicated mobile apps coming soon."
+      },
+      "ranking": {
+        "question": "How does the ranking system work?",
+        "answer": "We use an Elo rating system. Winning increases your rating while losing decreases it. Rankings reset each season, and top players can participate in tournaments."
+      },
+      "prohibited": {
+        "question": "What is not allowed?",
+        "answer": "Background music, backing tracks, and copyrighted content are prohibited. Inappropriate content or behavior that makes others uncomfortable is also not allowed."
+      }
+    },
+    "stillNeedHelp": {
+      "title": "Still need help?",
+      "description": "If you have questions not covered here or need assistance, feel free to reach out to us.",
+      "contactSupport": "Contact Support",
+      "readGuide": "Read Guide"
+    }
+  },
+  "notifications": {
+    "title": "Notifications",
+    "empty": "No new notifications",
+    "markAllRead": "Delete all",
+    "viewAll": "View all",
+    "timeAgo": {
+      "justNow": "Just now",
+      "minutes": "{{count}}m ago",
+      "hours": "{{count}}h ago",
+      "days": "{{count}}d ago"
+    },
+    "battleMatched": {
+      "title": "Battle Match Found!",
+      "message": "An opponent has been found. Your battle has started!"
+    },
+    "battleCompleted": {
+      "title": "Battle Results Announced!",
+      "winMessage": "Congratulations! You won the battle!",
+      "loseMessage": "Good effort! Better luck next time!",
+      "drawMessage": "It's a draw! Great battle!"
+    }
+  },
+  "latestBattles": {
+    "title": "Latest Battles",
+    "description": "Vote on your favorite performances",
+    "createBattle": "Create Battle",
+    "loading": "Loading battles...",
+    "error": {
+      "title": "Error Loading Battles",
+      "tryAgain": "Try Again"
+    },
+    "noBattles": {
+      "title": "No Battles Yet",
+      "description": "Be the first to create a battle and start the competition!",
+      "createFirst": "Create Your First Battle"
+    },
+    "viewMore": "View More Battles",
+    "ranking": {
+      "title": "Top Rankings",
+      "viewAll": "View All",
+      "noRankings": {
+        "title": "No Rankings Yet",
+        "description": "Rankings will appear as users participate in battles"
+      },
+      "seasonEnds": "Season ends in {{days}} days"
+    }
+  },
+  "archive": {
+    "title": "Archive Feature",
+    "description": "Preserve important battles permanently",
+    "limit": "Up to 3 per month",
+    "status": {
+      "title": "Archive Usage",
+      "usage": "This month's usage",
+      "remaining": "Remaining",
+      "limit": "Limit"
+    },
+    "button": {
+      "archive": "Archive",
+      "archived": "Archived",
+      "processing": "Processing..."
+    },
+    "info": {
+      "title": "About Archive Feature",
+      "important": "Important",
+      "deletionWarning": "Videos are automatically deleted 3 days after battle completion.",
+      "features": {
+        "title": "Features:",
+        "preserve": "• Permanently preserve important battle videos",
+        "limit": "• Up to 3 archives per month",
+        "history": "• Battle history and rating changes are always retained"
+      }
+    },
+    "messages": {
+      "success": {
+        "archived": "Battle archived successfully",
+        "unarchived": "Archive removed successfully"
+      },
+      "error": {
+        "limitReached": "Monthly archive limit reached (3/3)",
+        "notFound": "Battle not found",
+        "alreadyArchived": "Already archived",
+        "failed": "Archive operation failed"
+      }
+    }
+  },
+  "battleReplay": {
+    "title": "Battle Replay",
+    "backButton": "Back",
+    "notFound": {
+      "title": "Battle Not Found",
+      "description": "The battle replay you are looking for does not exist or has been deleted.",
+      "backButton": "Back",
+      "myBattlesButton": "Go to My Battles"
+    },
+    "result": {
+      "battleResult": "Battle Result"
+    },
+    "playerInfo": {
+      "playerA": "Player A",
+      "playerB": "Player B",
+      "totalVotes": "Total Votes"
+    },
+    "videoNotAvailable": {
+      "title": "Video Not Saved",
+      "participantMessage": "This video was not archived and cannot be displayed.",
+      "nonParticipantMessage": "You need to be a participant of this battle to view the videos."
+    }
+  },
+  "pagination": {
+    "previous": "Previous",
+    "next": "Next",
+    "page": "Page",
+    "of": "of",
+    "goToPage": "Go to page:",
+    "showing": "Showing {{start}}-{{end}} of {{total}} results",
+    "noResults": "No results found"
+  }
+}
