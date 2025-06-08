@@ -193,17 +193,11 @@ const LatestBattles: React.FC = () => {
                         </div>
                         <div className="flex gap-2 mt-1">
                           {getTierBadge(entry.rank_name, entry.rank_color)}
-                        </div>
-                        <div className="flex items-center gap-2 mt-1">
-                          <div className="flex items-center gap-1">
-                            <Star className="h-3 w-3 text-gray-400" />
-                            <span className="text-xs text-gray-400">{entry.rating}</span>
-                          </div>
                           <Badge
                             variant="secondary"
                             className="bg-cyan-500/20 text-cyan-300 text-xs"
                           >
-                            {entry.season_points} BP
+                            {entry.season_points}
                           </Badge>
                         </div>
                       </div>

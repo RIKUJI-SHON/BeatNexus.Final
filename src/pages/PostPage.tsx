@@ -90,7 +90,7 @@ const compressVideoAuto = (
     
     // より簡単で確実な方法：動画ファイルを直接MediaRecorderで再エンコード
     const video = document.createElement('video');
-    video.muted = false; // 音声を保持
+    video.muted = true; // 圧縮中の音声再生を防ぐ（録画には影響しない）
     video.controls = false;
     video.playsInline = true;
     
@@ -128,6 +128,8 @@ const compressVideoAuto = (
         onProgress?.(60, t ? t('postPage.processing.preparingStream') : 'Preparing stream...');
         
         const chunks: BlobPart[] = [];
+        // 注意: videoエレメントがmutedでも、captureStream()は元の音声トラックを取得します
+        // そのため、圧縮中にスピーカーから音が出ることなく、音声付きの動画を生成できます
         const mediaRecorder = new MediaRecorder(stream, {
           mimeType: mimeType,
           videoBitsPerSecond: Math.floor(1500000 * compressionRatio), // 1.5Mbps * 圧縮率

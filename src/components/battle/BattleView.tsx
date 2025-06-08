@@ -158,6 +158,20 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle }) => {
 
   const getDefaultAvatarUrl = (seed: string) => `https://api.dicebear.com/7.x/avataaars/svg?seed=${seed}`;
 
+  // バトル形式に応じたラベルを取得する関数
+  const getBattleFormatLabel = (format: string) => {
+    switch (format) {
+      case 'MAIN_BATTLE':
+        return t('battleCard.battleFormats.MAIN_BATTLE');
+      case 'MINI_BATTLE':
+        return t('battleCard.battleFormats.MINI_BATTLE');
+      case 'THEME_CHALLENGE':
+        return t('battleCard.battleFormats.THEME_CHALLENGE');
+      default:
+        return t('battleView.subtitle'); // フォールバック
+    }
+  };
+
   // Mock comments data
   const mockComments = [
     {
@@ -189,7 +203,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle }) => {
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-3xl font-bold text-white">{t('battleView.title')}</h1>
-          <div className="text-indigo-400 text-sm mt-1">{t('battleView.subtitle')}</div>
+          <div className="text-indigo-400 text-sm mt-1">{getBattleFormatLabel(battle.battle_format)}</div>
           <div className="text-gray-400 text-xs mt-2">
             {t('battleView.votingEndsIn')}: <span className="font-semibold text-gray-200">{getTimeRemaining(battle.end_voting_at)}</span>
           </div>

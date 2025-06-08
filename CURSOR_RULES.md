@@ -68,7 +68,7 @@ active_battles (
   player1_user_id uuid, player2_user_id uuid,
   battle_format battle_format, status battle_status DEFAULT 'ACTIVE',
   votes_a integer DEFAULT 0, votes_b integer DEFAULT 0,
-  end_voting_at timestamptz DEFAULT (now() + INTERVAL '5 minutes'),
+  end_voting_at timestamptz DEFAULT (now() + INTERVAL '5 days'),
   created_at timestamptz, updated_at timestamptz
 )
 
@@ -132,17 +132,21 @@ battle_status: 'ACTIVE', 'COMPLETED', 'PROCESSING_RESULTS'
    - **即座マッチング**: Edge Function経由で呼び出し
    - **レーティング制限**: 1段階目±50、2段階目±100レート差
    - **優先順位**: レート差最小 → 投稿時刻順
-   - **投票期限**: 5分間
+   - **投票期限**: 5日間
    
 2. **`progressive_matchmaking()`** ✅ **正常動作中**
-   - **段階的マッチング**: pg_cronで5分間隔実行
-   - **初期待機**: 2分間（即座マッチングの猶予期間）
-   - **段階的レート制限**:
-     - 2-20分: ±100レート差
-     - 20-40分: ±200レート差
-     - 40-60分: ±400レート差
-     - 60-80分: ±600レート差
-     - 80分以降: 無制限
+   - **段階的マッチング**: pg_cronで30分間隔実行（毎時0分・30分）
+   - **初期待機**: 10分間（即座マッチングの猶予期間）
+   - **段階的レート制限**（より緩やか）:
+     - 10-60分: ±80レート差
+     - 60-120分: ±120レート差
+     - 120-180分: ±160レート差
+     - 180-240分: ±200レート差
+     - 240-360分: ±300レート差
+     - 360-480分: ±400レート差
+     - 480-720分: ±500レート差
+     - 720分以降: 無制限
+   - **投票期限**: 5日間
    
 3. **`complete_battle(p_battle_id)`**
    - 投票集計 → 勝者判定 → アーカイブ → レーティング更新
@@ -185,24 +189,32 @@ battle_status: 'ACTIVE', 'COMPLETED', 'PROCESSING_RESULTS'
 - **処理**: プロフィール削除 → 認証ユーザー削除
 - **権限**: 認証済みユーザーのみ
 
-### マッチメイキング戦略（二段階システム）
-```javascript
-// 1. 即座マッチング（Edge Function）
-ユーザー投稿 → submission-webhook → find_match_and_create_battle()
-- レート制限: ±50 → ±100
-- 結果: 即座バトル作成 or 待機状態
+### 🔧 **実際のマッチメイキングアーキテクチャ**
 
-// 2. 段階的マッチング（pg_cron）  
-2分後～ → progressive_matchmaking() (5分間隔)
-- レート制限: 時間経過で段階的緩和
-- 結果: 遅延バトル作成 or 継続待機
+```
+【即座マッチング】Edge Function経由
+投稿 → submission-webhook → find_match_and_create_battle()
+├─ ±50レート差で検索
+├─ 見つからない場合 ±100レート差で検索  
+└─ それでもダメなら WAITING_OPPONENT状態
+
+【段階的マッチング】pg_cron経由（10分後から開始）
+10分待機 → progressive_matchmaking() (30分間隔)
+├─ 10-60分: ±80レート差
+├─ 60-120分: ±120レート差
+├─ 120-180分: ±160レート差
+├─ 180-240分: ±200レート差
+├─ 240-360分: ±300レート差
+├─ 360-480分: ±400レート差
+├─ 480-720分: ±500レート差
+└─ 720分以降: 無制限
 ```
 
 ## ⏰ pg_cron定期処理（実装済み）
 ```sql
--- 5分間隔で実行される定期ジョブ
-1. process_expired_battles    -- バトル終了処理
-2. progressive_matchmaking    -- マッチング処理
+-- 定期ジョブ
+1. process_expired_battles    -- バトル終了処理（5分間隔）
+2. progressive_matchmaking    -- マッチング処理（30分間隔）
 ```
 
 ## 🔧 MCP Supabase Tools 活用
@@ -295,6 +307,14 @@ mcp_supabase_get_logs(project_id, service)
 - **テストデータ**: `insert_test_data_remote.sql`使用
 - **レーティングテスト**: `test_rating_system.sql`で動作確認
 - **マニュアルテスト**: 各画面での実際の操作確認
+
+### 📊 **システムの賢さ**
+
+- **二段階マッチング**: 即座（Edge Function）+ 段階的（30分間隔pg_cron）
+- **レート考慮**: 時間経過で段階的に条件緩和（より慎重なアプローチ）
+- **効率性**: 30分間隔でサーバー負荷を軽減
+- **適応性**: 12時間かけてゆっくりと適切な相手を発見
+- **投票期間**: 5日間でじっくり投票可能
 
 ---
 

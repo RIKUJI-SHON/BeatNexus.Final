@@ -208,9 +208,6 @@ const RankingPage: React.FC = () => {
                               <div className="font-semibold text-white group-hover:text-cyan-400 transition-colors">
                                 {entry.username}
                               </div>
-                              <div className="flex gap-2 mt-1">
-                                {getTierBadge(entry.rank_name, entry.rank_color)}
-                              </div>
                             </div>
                           </Link>
                         </td>
