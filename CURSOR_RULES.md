@@ -12,7 +12,7 @@
 - **バックエンド**: Supabase (PostgreSQL + Edge Functions + Storage + Auth)
 - **定期処理**: pg_cron（5分間隔でバトル終了処理）
 - **国際化**: react-i18next
-- **デプロイ**: Supabase（プロジェクトID: `qgqcjtjxaoplhxurbpis`）
+- **デプロイ**: Supabase（プロジェクトID: `tkzyejyyegzjapmtyjpz`）
 
 ## 📁 ディレクトリ構成
 ```
@@ -219,7 +219,7 @@ battle_status: 'ACTIVE', 'COMPLETED', 'PROCESSING_RESULTS'
 
 ## 🔧 MCP Supabase Tools 活用
 ### プロジェクト情報
-- **プロジェクトID**: `qgqcjtjxaoplhxurbpis`
+- **プロジェクトID**: `tkzyejyyegzjapmtyjpz`
 - **確認**: `mcp_supabase_get_project(id)`でステータス確認
 
 ### 有効な拡張機能
