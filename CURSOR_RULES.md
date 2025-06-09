@@ -51,6 +51,7 @@ supabase/
 profiles (
   id uuid, username text, email text, avatar_url text, bio text,
   rating integer DEFAULT 1200, language varchar DEFAULT 'English',
+  vote_count integer DEFAULT 0,  -- 投票した回数
   created_at timestamptz, updated_at timestamptz
 )
 
@@ -167,12 +168,26 @@ battle_status: 'ACTIVE', 'COMPLETED', 'PROCESSING_RESULTS'
 ### 投票・ユーザー管理
 8. **`vote_battle(p_battle_id, p_vote)`**
    - 投票機能（'A' または 'B'）
+   - **新機能**: 投票時にユーザーのvote_countを自動増加
    
-9. **`get_user_vote(p_battle_id)`**
-   - ユーザーの投票状況確認
+9. **`cancel_vote(p_battle_id)`**
+   - 投票キャンセル機能
+   - **新機能**: キャンセル時にユーザーのvote_countを自動減少
    
-10. **`update_user_profile_details(p_user_id, p_username, p_bio)`**
-    - プロフィール更新
+10. **`get_user_vote(p_battle_id)`**
+    - ユーザーの投票状況確認
+
+### 🏆 **ランキングシステム（2種類）**
+11. **`get_top_rankings(p_limit)`** - プレイヤーランキング（レーティング順）
+12. **`get_user_rank(p_user_id)`** - 個別ユーザーのプレイヤーランク
+13. **`get_top_voter_rankings(p_limit)`** - 投票者ランキング（投票数順）
+14. **`get_user_voter_rank(p_user_id)`** - 個別ユーザーの投票者ランク
+
+### 📊 **ランキングビュー**
+- **`rankings_view`**: レーティングベースのプレイヤーランキング
+  - 勝率、勝利数、敗北数を含む総合ランキング
+- **`voter_rankings_view`**: 投票数ベースの投票者ランキング  
+  - 投票回数でユーザーをランク付け、コミュニティ貢献度を評価
 
 ## ⚙️ Edge Functions（実装済み）
 ### `/submission-webhook` ✅ **マッチング処理の中核**

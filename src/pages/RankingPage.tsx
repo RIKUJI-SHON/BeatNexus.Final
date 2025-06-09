@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Trophy, Medal, Crown, Search, Users, ArrowUp, ArrowDown, Star } from 'lucide-react';
+import { Trophy, Medal, Crown, Search, Users, ArrowUp, ArrowDown, Star, Vote } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Card } from '../components/ui/Card';
 import { Badge } from '../components/ui/Badge';
@@ -7,18 +7,42 @@ import { useRankingStore } from '../store/rankingStore';
 import { useTranslation } from 'react-i18next';
 import { getRankColorClasses, getWinRateColorClass } from '../utils/rankUtils';
 
+type TabType = 'player' | 'voter';
+
 const RankingPage: React.FC = () => {
   const { t } = useTranslation();
-  const { rankings, loading, error, fetchRankings } = useRankingStore();
+  const { 
+    rankings, 
+    voterRankings, 
+    loading, 
+    voterLoading, 
+    error, 
+    voterError, 
+    fetchRankings, 
+    fetchVoterRankings 
+  } = useRankingStore();
+  
+  const [activeTab, setActiveTab] = useState<TabType>('player');
   const [searchQuery, setSearchQuery] = useState('');
-  const [sortField, setSortField] = useState<'rating' | 'season_points' | 'win_rate'>('rating');
+  const [sortField, setSortField] = useState<'rating' | 'season_points' | 'win_rate' | 'vote_count'>('rating');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
 
   useEffect(() => {
     fetchRankings();
-  }, [fetchRankings]);
+    fetchVoterRankings();
+  }, [fetchRankings, fetchVoterRankings]);
 
-  const handleSort = (field: 'rating' | 'season_points' | 'win_rate') => {
+  // アクティブタブが切り替わったときにソートフィールドをリセット
+  useEffect(() => {
+    if (activeTab === 'player') {
+      setSortField('rating');
+    } else {
+      setSortField('vote_count');
+    }
+    setSortDirection('desc');
+  }, [activeTab]);
+
+  const handleSort = (field: 'rating' | 'season_points' | 'win_rate' | 'vote_count') => {
     if (sortField === field) {
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
     } else {
@@ -27,13 +51,28 @@ const RankingPage: React.FC = () => {
     }
   };
 
-  const filteredAndSortedRankings = rankings
+  // データとローディング状態を取得
+  const currentData = activeTab === 'player' ? rankings : voterRankings;
+  const currentLoading = activeTab === 'player' ? loading : voterLoading;
+  const currentError = activeTab === 'player' ? error : voterError;
+
+  // フィルタリングとソート
+  const filteredAndSortedData = currentData
     .filter(entry => 
       entry.username.toLowerCase().includes(searchQuery.toLowerCase())
     )
     .sort((a, b) => {
       const multiplier = sortDirection === 'asc' ? 1 : -1;
-      return (a[sortField] - b[sortField]) * multiplier;
+      
+      if (activeTab === 'player') {
+        const aEntry = a as any;
+        const bEntry = b as any;
+        return (aEntry[sortField] - bEntry[sortField]) * multiplier;
+      } else {
+        const aEntry = a as any;
+        const bEntry = b as any;
+        return (aEntry[sortField] - bEntry[sortField]) * multiplier;
+      }
     });
 
   const getPositionBadge = (position: number) => {
@@ -75,6 +114,15 @@ const RankingPage: React.FC = () => {
     return 'text-gray-500';
   };
 
+  const getVoteCountColor = (voteCount: number) => {
+    if (voteCount >= 100) return 'text-purple-400';
+    if (voteCount >= 50) return 'text-blue-400';
+    if (voteCount >= 25) return 'text-green-400';
+    if (voteCount >= 10) return 'text-yellow-400';
+    if (voteCount >= 5) return 'text-gray-400';
+    return 'text-gray-500';
+  };
+
   const getTierBadge = (rankName: string, rankColor: string) => {
     const { bgColor, textColor } = getRankColorClasses(rankColor);
 
@@ -85,7 +133,7 @@ const RankingPage: React.FC = () => {
     );
   };
 
-  if (error) {
+  if (currentError) {
     return (
       <div className="min-h-screen bg-gray-950 py-10">
         <div className="container mx-auto px-4">
@@ -94,9 +142,9 @@ const RankingPage: React.FC = () => {
               <Trophy className="h-10 w-10 text-red-500" />
             </div>
             <h3 className="text-xl font-semibold text-white mb-4">{t('rankingPage.error.title')}</h3>
-            <p className="text-gray-400 mb-6">{error}</p>
+            <p className="text-gray-400 mb-6">{currentError}</p>
             <button
-              onClick={() => fetchRankings()}
+              onClick={() => activeTab === 'player' ? fetchRankings() : fetchVoterRankings()}
               className="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
             >
               {t('rankingPage.error.tryAgain')}
@@ -111,17 +159,131 @@ const RankingPage: React.FC = () => {
     <div className="min-h-screen bg-gray-950 py-10">
       <div className="container mx-auto px-4">
         {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-white mb-4 flex items-center justify-center gap-3">
-            <Trophy className="h-8 w-8 text-yellow-500" />
-            {t('rankingPage.title')}
-          </h1>
-          <p className="text-gray-400 max-w-2xl mx-auto">
-            {t('rankingPage.description')}
-          </p>
+        <div className="text-center mb-16">
+          <div className="relative">
+            {/* 背景のグラデーション効果 */}
+            <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 via-purple-500/20 to-pink-500/20 blur-3xl transform -translate-y-4"></div>
+            
+            <div className="relative">
+              <h1 className="text-5xl lg:text-6xl font-bold mb-6">
+                <span className="bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                  {t('rankingPage.title')}
+                </span>
+              </h1>
+              
+              <div className="flex items-center justify-center gap-4 mb-6">
+                <div className="w-16 h-px bg-gradient-to-r from-transparent via-cyan-500 to-transparent"></div>
+                <div className="p-3 bg-gradient-to-r from-yellow-500/20 to-orange-500/20 rounded-2xl border border-yellow-500/30 backdrop-blur-sm">
+                  <Trophy className="h-8 w-8 text-yellow-400" />
+                </div>
+                <div className="w-16 h-px bg-gradient-to-r from-transparent via-purple-500 to-transparent"></div>
+              </div>
+              
+              <p className="text-gray-300 max-w-3xl mx-auto text-lg leading-relaxed">
+                {t('rankingPage.description')}
+              </p>
+            </div>
+          </div>
         </div>
 
-        {/* Search and Stats */}
+        {/* Tabs */}
+        <div className="mb-8">
+          <div className="flex justify-center">
+            <div className="relative bg-gray-900/50 backdrop-blur-sm p-2 rounded-2xl border border-gray-700/50 shadow-2xl">
+              {/* アクティブタブの背景アニメーション */}
+              <div 
+                className={`absolute top-2 bottom-2 left-2 rounded-xl transition-all duration-300 ease-out ${
+                  activeTab === 'player' 
+                    ? 'bg-gradient-to-r from-cyan-500 to-blue-500 shadow-lg shadow-cyan-500/25' 
+                    : 'bg-gradient-to-r from-purple-500 to-pink-500 shadow-lg shadow-purple-500/25'
+                }`}
+                style={{ 
+                  width: 'calc(50% - 8px)',
+                  transform: activeTab === 'player' ? 'translateX(0)' : 'translateX(calc(100% + 8px))'
+                }}
+              />
+              
+              <div className="relative flex">
+                <button
+                  onClick={() => setActiveTab('player')}
+                  className={`px-8 py-4 rounded-xl font-semibold transition-all duration-300 flex items-center gap-3 relative z-10 min-w-[180px] justify-center ${
+                    activeTab === 'player'
+                      ? 'text-white'
+                      : 'text-gray-400 hover:text-white'
+                  }`}
+                >
+                  <div className={`p-2 rounded-lg transition-all duration-300 ${
+                    activeTab === 'player' 
+                      ? 'bg-white/20 backdrop-blur-sm' 
+                      : 'bg-gray-800/50'
+                  }`}>
+                    <Star className="h-5 w-5" />
+                  </div>
+                  <span className="text-sm font-bold tracking-wide">
+                    {t('rankingPage.tabs.playerRankings')}
+                  </span>
+                </button>
+                
+                <button
+                  onClick={() => setActiveTab('voter')}
+                  className={`px-8 py-4 rounded-xl font-semibold transition-all duration-300 flex items-center gap-3 relative z-10 min-w-[180px] justify-center ${
+                    activeTab === 'voter'
+                      ? 'text-white'
+                      : 'text-gray-400 hover:text-white'
+                  }`}
+                >
+                  <div className={`p-2 rounded-lg transition-all duration-300 ${
+                    activeTab === 'voter' 
+                      ? 'bg-white/20 backdrop-blur-sm' 
+                      : 'bg-gray-800/50'
+                  }`}>
+                    <Vote className="h-5 w-5" />
+                  </div>
+                  <span className="text-sm font-bold tracking-wide">
+                    {t('rankingPage.tabs.voterRankings')}
+                  </span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Tab Description */}
+        <div className="text-center mb-10">
+          <div className="relative overflow-hidden">
+            <div 
+              className={`transition-all duration-500 ease-in-out ${
+                activeTab === 'player' ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform -translate-y-4'
+              }`}
+              style={{ display: activeTab === 'player' ? 'block' : 'none' }}
+            >
+              <div className="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 rounded-2xl border border-cyan-500/20 backdrop-blur-sm">
+                <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse"></div>
+                <p className="text-cyan-100 font-medium text-sm">
+                  {t('rankingPage.playerDescription')}
+                </p>
+                <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse" style={{ animationDelay: '0.5s' }}></div>
+              </div>
+            </div>
+            
+            <div 
+              className={`transition-all duration-500 ease-in-out ${
+                activeTab === 'voter' ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform -translate-y-4'
+              }`}
+              style={{ display: activeTab === 'voter' ? 'block' : 'none' }}
+            >
+              <div className="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-2xl border border-purple-500/20 backdrop-blur-sm">
+                <div className="w-2 h-2 bg-purple-400 rounded-full animate-pulse"></div>
+                <p className="text-purple-100 font-medium text-sm">
+                  {t('rankingPage.voterDescription')}
+                </p>
+                <div className="w-2 h-2 bg-pink-400 rounded-full animate-pulse" style={{ animationDelay: '0.5s' }}></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Search */}
         <div className="mb-8">
           <div className="relative">
             <input
@@ -137,56 +299,74 @@ const RankingPage: React.FC = () => {
 
         {/* Rankings Table */}
         <Card className="bg-gray-900 border border-gray-800 overflow-hidden">
-          {loading ? (
+          {currentLoading ? (
             <div className="p-8 text-center">
               <div className="animate-spin w-12 h-12 border-4 border-cyan-500 border-t-transparent rounded-full mx-auto mb-4"></div>
               <p className="text-gray-400">{t('rankingPage.loading')}</p>
             </div>
-          ) : filteredAndSortedRankings.length > 0 ? (
+          ) : filteredAndSortedData.length > 0 ? (
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-gray-800">
                     <th className="px-6 py-4 text-left text-sm font-semibold text-gray-400">{t('rankingPage.table.rank')}</th>
                     <th className="px-6 py-4 text-left text-sm font-semibold text-gray-400">{t('rankingPage.table.user')}</th>
-                    <th 
-                      className="px-6 py-4 text-center text-sm font-semibold text-gray-400 cursor-pointer"
-                      onClick={() => handleSort('rating')}
-                    >
-                      <div className="flex items-center justify-center gap-2">
-                        <Star className="h-4 w-4" />
-                        {t('rankingPage.table.rating')}
-                        {sortField === 'rating' && (
-                          sortDirection === 'desc' ? <ArrowDown className="h-4 w-4" /> : <ArrowUp className="h-4 w-4" />
-                        )}
-                      </div>
-                    </th>
-                    <th 
-                      className="px-6 py-4 text-center text-sm font-semibold text-gray-400 cursor-pointer"
-                      onClick={() => handleSort('season_points')}
-                    >
-                      <div className="flex items-center justify-center gap-2">
-                        {t('rankingPage.table.seasonPoints')}
-                        {sortField === 'season_points' && (
-                          sortDirection === 'desc' ? <ArrowDown className="h-4 w-4" /> : <ArrowUp className="h-4 w-4" />
-                        )}
-                      </div>
-                    </th>
-                    <th 
-                      className="px-6 py-4 text-center text-sm font-semibold text-gray-400 cursor-pointer"
-                      onClick={() => handleSort('win_rate')}
-                    >
-                      <div className="flex items-center justify-center gap-2">
-                        {t('rankingPage.table.winRate')}
-                        {sortField === 'win_rate' && (
-                          sortDirection === 'desc' ? <ArrowDown className="h-4 w-4" /> : <ArrowUp className="h-4 w-4" />
-                        )}
-                      </div>
-                    </th>
+                    
+                    {activeTab === 'player' ? (
+                      <>
+                        <th 
+                          className="px-6 py-4 text-center text-sm font-semibold text-gray-400 cursor-pointer"
+                          onClick={() => handleSort('rating')}
+                        >
+                          <div className="flex items-center justify-center gap-2">
+                            <Star className="h-4 w-4" />
+                            {t('rankingPage.table.rating')}
+                            {sortField === 'rating' && (
+                              sortDirection === 'desc' ? <ArrowDown className="h-4 w-4" /> : <ArrowUp className="h-4 w-4" />
+                            )}
+                          </div>
+                        </th>
+                        <th 
+                          className="px-6 py-4 text-center text-sm font-semibold text-gray-400 cursor-pointer"
+                          onClick={() => handleSort('season_points')}
+                        >
+                          <div className="flex items-center justify-center gap-2">
+                            {t('rankingPage.table.seasonPoints')}
+                            {sortField === 'season_points' && (
+                              sortDirection === 'desc' ? <ArrowDown className="h-4 w-4" /> : <ArrowUp className="h-4 w-4" />
+                            )}
+                          </div>
+                        </th>
+                        <th 
+                          className="px-6 py-4 text-center text-sm font-semibold text-gray-400 cursor-pointer"
+                          onClick={() => handleSort('win_rate')}
+                        >
+                          <div className="flex items-center justify-center gap-2">
+                            {t('rankingPage.table.winRate')}
+                            {sortField === 'win_rate' && (
+                              sortDirection === 'desc' ? <ArrowDown className="h-4 w-4" /> : <ArrowUp className="h-4 w-4" />
+                            )}
+                          </div>
+                        </th>
+                      </>
+                    ) : (
+                      <th 
+                        className="px-6 py-4 text-center text-sm font-semibold text-gray-400 cursor-pointer"
+                        onClick={() => handleSort('vote_count')}
+                      >
+                        <div className="flex items-center justify-center gap-2">
+                          <Vote className="h-4 w-4" />
+                          {t('rankingPage.table.voteCount')}
+                          {sortField === 'vote_count' && (
+                            sortDirection === 'desc' ? <ArrowDown className="h-4 w-4" /> : <ArrowUp className="h-4 w-4" />
+                          )}
+                        </div>
+                      </th>
+                    )}
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredAndSortedRankings.map((entry) => {
+                  {filteredAndSortedData.map((entry) => {
                     return (
                       <tr 
                         key={entry.user_id}
@@ -211,37 +391,54 @@ const RankingPage: React.FC = () => {
                             </div>
                           </Link>
                         </td>
-                        <td className="px-6 py-4">
-                          <div className="text-center">
-                            <div className={`text-2xl font-bold ${getRatingColor(entry.rating)}`}>
-                              {entry.rating}
+
+                        {activeTab === 'player' ? (
+                          <>
+                            <td className="px-6 py-4">
+                              <div className="text-center">
+                                <div className={`text-2xl font-bold ${getRatingColor((entry as any).rating)}`}>
+                                  {(entry as any).rating}
+                                </div>
+                                <div className="text-xs text-gray-400 mt-1 flex items-center justify-center gap-1">
+                                  <Star className="h-3 w-3" />
+                                  {t('rankingPage.eloRating')}
+                                </div>
+                              </div>
+                            </td>
+                            <td className="px-6 py-4">
+                              <div className="text-center">
+                                <div className="text-xl font-bold text-white">
+                                  {(entry as any).season_points}
+                                </div>
+                                <div className="text-xs text-gray-400 mt-1">
+                                  {t('rankingPage.table.seasonPoints')}
+                                </div>
+                              </div>
+                            </td>
+                            <td className="px-6 py-4">
+                              <div className="text-center">
+                                <div className={`text-xl font-bold ${getWinRateColorClass((entry as any).win_rate)}`}>
+                                  {(entry as any).win_rate}%
+                                </div>
+                                <div className="text-xs text-gray-400 mt-1">
+                                  {t('rankingPage.winLossRecord', { wins: (entry as any).battles_won, losses: (entry as any).battles_lost })}
+                                </div>
+                              </div>
+                            </td>
+                          </>
+                        ) : (
+                          <td className="px-6 py-4">
+                            <div className="text-center">
+                              <div className={`text-2xl font-bold ${getVoteCountColor((entry as any).vote_count)}`}>
+                                {(entry as any).vote_count}
+                              </div>
+                              <div className="text-xs text-gray-400 mt-1 flex items-center justify-center gap-1">
+                                <Vote className="h-3 w-3" />
+                                {t('rankingPage.table.voteCount')}
+                              </div>
                             </div>
-                            <div className="text-xs text-gray-400 mt-1 flex items-center justify-center gap-1">
-                              <Star className="h-3 w-3" />
-                              {t('rankingPage.eloRating')}
-                            </div>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="text-center">
-                            <div className="text-xl font-bold text-white">
-                              {entry.season_points}
-                            </div>
-                            <div className="text-xs text-gray-400 mt-1">
-                              {t('rankingPage.table.seasonPoints')}
-                            </div>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="text-center">
-                            <div className={`text-xl font-bold ${getWinRateColorClass(entry.win_rate)}`}>
-                              {entry.win_rate}%
-                            </div>
-                            <div className="text-xs text-gray-400 mt-1">
-                              {t('rankingPage.winLossRecord', { wins: entry.battles_won, losses: entry.battles_lost })}
-                            </div>
-                          </div>
-                        </td>
+                          </td>
+                        )}
                       </tr>
                     );
                   })}

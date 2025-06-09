@@ -85,6 +85,14 @@ export interface RankingEntry {
   position: number;
 }
 
+export interface VoterRankingEntry {
+  user_id: string;
+  username: string;
+  avatar_url: string | null;
+  vote_count: number;
+  position: number;
+}
+
 export interface RankInfo {
   rank: string;
   displayName: string;

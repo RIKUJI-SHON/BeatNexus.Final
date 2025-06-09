@@ -413,8 +413,14 @@
     }
   },
   "rankingPage": {
-    "title": "Global Rankings",
-    "description": "Beatboxer rating rankings calculated using the Elo rating system based on battle results.",
+    "title": "Community Rankings",
+    "description": "Player rankings and voter rankings showing community activity",
+    "tabs": {
+      "playerRankings": "Player Rankings", 
+      "voterRankings": "Voter Rankings"
+    },
+    "playerDescription": "Beatboxer rating rankings calculated using the Elo rating system based on battle results.",
+    "voterDescription": "Active community member rankings based on voting participation",
     "searchPlaceholder": "Search by username...",
     "loading": "Loading rankings...",
     "eloRating": "Elo Rating",
@@ -423,7 +429,8 @@
       "user": "User",
       "rating": "Rating",
       "seasonPoints": "Season Points",
-      "winRate": "Win Rate"
+      "winRate": "Win Rate",
+      "voteCount": "Vote Count"
     },
     "tiers": {
       "grandmaster": "Grandmaster",
