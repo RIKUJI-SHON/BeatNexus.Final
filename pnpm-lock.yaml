@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@stagewise/toolbar-react':
+        specifier: ^0.1.2
+        version: 0.1.2(@types/react@18.3.23)(jiti@1.21.7)(postcss@8.5.4)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.8.3)(use-sync-external-store@1.5.0(react@18.3.1))(vite@5.4.19(@types/node@22.15.29))(yaml@2.8.0)
       '@supabase/supabase-js':
         specifier: ^2.39.7
         version: 2.49.8
@@ -754,6 +757,12 @@ packages:
     resolution: {integrity: sha512-Wq2zpapRYLfi4aKxf2Xff0tN+7slj2d4R87WEzqw7ZLsVvO5zwYCIuEGSZYiK41+GlwUo1HiR+GdkLEJnCKTCw==}
     cpu: [x64]
     os: [win32]
+
+  '@stagewise/toolbar-react@0.1.2':
+    resolution: {integrity: sha512-Vxt7f3TwFuHOgfxTFT4aBcojynat15qMUA+hArwb3EJxwjZR8VuN3Phi0K5RnniutphiBn5iNypzwGs5mFWmVw==}
+    peerDependencies:
+      '@types/react': '>=18.0.0'
+      react: '>=18.0.0'
 
   '@stagewise/toolbar@0.2.1':
     resolution: {integrity: sha512-ITA68sqtXRklV6TDDyhT+3GDQqdtZFcZY9WBdPv6XUoATBHcOjpblt0yvQoOuMXAohbBGky4qgbDqxYgLsYbGQ==}
@@ -2734,6 +2743,26 @@ snapshots:
 
   '@rollup/rollup-win32-x64-msvc@4.41.1':
     optional: true
+
+  '@stagewise/toolbar-react@0.1.2(@types/react@18.3.23)(jiti@1.21.7)(postcss@8.5.4)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.8.3)(use-sync-external-store@1.5.0(react@18.3.1))(vite@5.4.19(@types/node@22.15.29))(yaml@2.8.0)':
+    dependencies:
+      '@stagewise/toolbar': 0.2.1(@types/react@18.3.23)(jiti@1.21.7)(postcss@8.5.4)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.8.3)(use-sync-external-store@1.5.0(react@18.3.1))(vite@5.4.19(@types/node@22.15.29))(yaml@2.8.0)
+      '@types/react': 18.3.23
+      react: 18.3.1
+    transitivePeerDependencies:
+      - '@microsoft/api-extractor'
+      - '@swc/core'
+      - encoding
+      - immer
+      - jiti
+      - postcss
+      - react-dom
+      - supports-color
+      - tsx
+      - typescript
+      - use-sync-external-store
+      - vite
+      - yaml
 
   '@stagewise/toolbar@0.2.1(@types/react@18.3.23)(jiti@1.21.7)(postcss@8.5.4)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.8.3)(use-sync-external-store@1.5.0(react@18.3.1))(vite@5.4.19(@types/node@22.15.29))(yaml@2.8.0)':
     dependencies:
