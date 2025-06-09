@@ -158,14 +158,14 @@ const LatestBattles: React.FC = () => {
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-2">
                   <Trophy className="h-5 w-5 text-yellow-500" />
-                  <h2 className="text-lg font-bold text-white">{t('latestBattles.ranking.title')}</h2>
+                  <h2 className="text-base font-bold text-white whitespace-nowrap">{t('latestBattles.ranking.title')}</h2>
                 </div>
                 <Link 
                   to="/ranking"
                   className="text-cyan-400 hover:text-cyan-300 flex items-center gap-1 text-sm"
                 >
                   {t('latestBattles.ranking.viewAll')}
-                  <ArrowRight className="h-4 w-4" />
+                  <ArrowRight className="h-3 w-3" />
                 </Link>
               </div>
 

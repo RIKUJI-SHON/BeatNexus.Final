@@ -267,19 +267,43 @@ const BattlesPage: React.FC = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 lg:items-start">
           <div className="lg:col-span-3">
-            <div id="active-battles" className="flex justify-between items-center mb-8">
-              <div>
-                <h2 className="text-3xl font-bold text-white">{t('battlesPage.activeBattles.title')}</h2>
-                <p className="text-gray-400 mt-2">{t('battlesPage.activeBattles.subtitle')}</p>
-              </div>
+            <div id="active-battles" className="relative mb-12">
+              {/* 背景グラデーション効果 */}
+              <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 via-purple-500/5 to-pink-500/5 rounded-3xl blur-xl"></div>
               
-              <button 
-                onClick={handleCreateBattle}
-                className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-lg text-white font-semibold hover:opacity-90 transition-opacity"
-              >
-                <Plus className="h-5 w-5" />
-                {t('battlesPage.activeBattles.createBattleButton')}
-              </button>
+              <div className="relative bg-gray-900/50 backdrop-blur-sm rounded-2xl border border-gray-700/50 p-8">
+                <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-4 mb-4">
+                      <div className="p-3 bg-gradient-to-r from-cyan-500/20 to-purple-500/20 rounded-2xl border border-cyan-500/30">
+                        <Play className="h-8 w-8 text-cyan-400" />
+                      </div>
+                      <div>
+                        <h2 className="text-4xl font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
+                          {t('battlesPage.activeBattles.title')}
+                        </h2>
+                        <div className="w-20 h-1 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full mt-2"></div>
+                      </div>
+                    </div>
+                    <p className="text-gray-300 text-lg leading-relaxed">{t('battlesPage.activeBattles.subtitle')}</p>
+                  </div>
+                  
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <button 
+                      onClick={handleCreateBattle}
+                      className="group relative overflow-hidden px-8 py-4 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-2xl text-white font-bold text-lg transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-cyan-500/25"
+                    >
+                      <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                      <div className="relative flex items-center gap-3">
+                        <div className="p-2 bg-white/20 rounded-lg group-hover:bg-white/30 transition-colors">
+                          <Plus className="h-5 w-5" />
+                        </div>
+                        {t('battlesPage.activeBattles.createBattleButton')}
+                      </div>
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <BattleFilters
@@ -398,20 +422,32 @@ const BattlesPage: React.FC = () => {
           </div>
 
           <aside className="lg:col-span-1 space-y-6 lg:sticky lg:top-8 lg:h-fit lg:max-h-[calc(100vh-6rem)]">
-            <Card className="bg-gray-900 border border-gray-800 p-6">
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-2">
-                  <Trophy className="h-5 w-5 text-yellow-500" />
-                  <h2 className="text-lg font-bold text-white">{t('battlesPage.rankings.title')}</h2>
-                </div>
-                <Link 
-                  to="/ranking"
-                  className="text-cyan-400 hover:text-cyan-300 flex items-center gap-1 text-sm"
-                >
-                  {t('battlesPage.rankings.viewFullButton')}
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-              </div>
+            <div className="relative">
+              {/* 背景グラデーション効果 */}
+              <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/10 via-orange-500/5 to-red-500/10 rounded-3xl blur-xl"></div>
+              
+              <Card className="relative bg-gray-900/80 backdrop-blur-sm border border-yellow-500/20 shadow-2xl shadow-yellow-500/10">
+                <div className="p-6">
+                  <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-gradient-to-r from-yellow-500/20 to-orange-500/20 rounded-xl border border-yellow-500/30">
+                        <Trophy className="h-6 w-6 text-yellow-400" />
+                      </div>
+                      <div>
+                        <h2 className="text-lg font-bold bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent whitespace-nowrap">
+                          {t('battlesPage.rankings.title')}
+                        </h2>
+                        <div className="w-12 h-0.5 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full"></div>
+                      </div>
+                    </div>
+                    <Link 
+                      to="/ranking"
+                      className="group flex items-center gap-2 px-3 py-2 bg-cyan-500/10 border border-cyan-500/30 rounded-lg text-cyan-400 hover:text-cyan-300 hover:bg-cyan-500/20 transition-all duration-200"
+                    >
+                      <span className="text-sm font-medium">{t('battlesPage.rankings.viewFullButton')}</span>
+                      <ArrowRight className="h-3 w-3 group-hover:translate-x-1 transition-transform" />
+                    </Link>
+                  </div>
               {rankingsLoading ? (
                 <div className="text-center text-gray-400 py-6">
                   <div className="animate-spin w-6 h-6 border-4 border-cyan-500 border-t-transparent rounded-full mx-auto mb-2"></div>
@@ -502,29 +538,44 @@ const BattlesPage: React.FC = () => {
                   <p className="text-gray-400 text-sm">{t('battlesPage.status.noRankingsAvailable')}</p>
                 </div>
               )}
-            </Card>
+                </div>
+              </Card>
+            </div>
 
             {/* How-to Guide Card */}
-            <Card className="bg-gray-900 border border-gray-800 p-5 hover:border-gray-700 transition-all duration-300">
-              <div className="text-center">
-                <div className="w-10 h-10 mx-auto mb-3 rounded-full bg-gradient-to-r from-cyan-500 to-purple-500 flex items-center justify-center">
-                  <BookOpen className="h-5 w-5 text-white" />
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 via-blue-500/5 to-purple-500/10 rounded-3xl blur-xl"></div>
+              
+              <Card className="relative bg-gray-900/80 backdrop-blur-sm border border-green-500/20 hover:border-green-400/40 transition-all duration-300 group">
+                <div className="p-6 text-center">
+                  <div className="relative mb-4">
+                    <div className="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-green-500/20 via-blue-500/20 to-purple-500/20 border border-green-500/30 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                      <BookOpen className="h-8 w-8 text-green-400" />
+                    </div>
+                    <div className="absolute -inset-2 bg-gradient-to-r from-green-500/20 to-blue-500/20 rounded-2xl blur opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  </div>
+                  
+                  <h3 className="text-lg font-bold bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent mb-3">
+                    {t('battlesPage.howTo.title')}
+                  </h3>
+                  <div className="w-16 h-0.5 bg-gradient-to-r from-green-500 to-blue-500 rounded-full mx-auto mb-4"></div>
+                  
+                  <p className="text-gray-300 text-sm leading-relaxed mb-5">
+                    {t('battlesPage.howTo.description')}
+                  </p>
+                  
+                  <Link 
+                    to="/how-to-guide"
+                    className="group/button inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-green-500 to-blue-500 rounded-xl text-white font-semibold hover:scale-105 hover:shadow-xl hover:shadow-green-500/25 transition-all duration-300"
+                  >
+                    <div className="p-1 bg-white/20 rounded-lg group-hover/button:bg-white/30 transition-colors">
+                      <BookOpen className="h-4 w-4" />
+                    </div>
+                    <span className="text-sm">{t('battlesPage.howTo.button')}</span>
+                  </Link>
                 </div>
-                <h3 className="text-md font-semibold text-white mb-2">
-                  {t('battlesPage.howTo.title')}
-                </h3>
-                <p className="text-gray-300 text-xs mb-3">
-                  {t('battlesPage.howTo.description')}
-                </p>
-                <Link 
-                  to="/how-to-guide"
-                  className="inline-flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-lg text-white text-xs font-medium hover:opacity-90 transition-opacity"
-                >
-                  <BookOpen className="h-3 w-3" />
-                  {t('battlesPage.howTo.button')}
-                </Link>
-              </div>
-            </Card>
+              </Card>
+            </div>
           </aside>
         </div>
       </div>
