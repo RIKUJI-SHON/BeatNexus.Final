@@ -117,14 +117,14 @@ const HomePage: React.FC = () => {
                   </div>
                   
                   <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-cyan-400 transition-colors">
-                    {t('home.shadows.card1.title')}
-                  </h3>
+                {t('home.shadows.card1.title')}
+              </h3>
                   <div className="w-16 h-0.5 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full mb-4"></div>
                   <p className="text-gray-300 leading-relaxed">
-                    {t('home.shadows.card1.description')}
-                  </p>
+                {t('home.shadows.card1.description')}
+              </p>
                 </div>
-              </Card>
+            </Card>
             </div>
 
             <div className="group relative">
@@ -136,14 +136,14 @@ const HomePage: React.FC = () => {
                   </div>
                   
                   <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-purple-400 transition-colors">
-                    {t('home.shadows.card2.title')}
-                  </h3>
+                {t('home.shadows.card2.title')}
+              </h3>
                   <div className="w-16 h-0.5 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full mb-4"></div>
                   <p className="text-gray-300 leading-relaxed">
-                    {t('home.shadows.card2.description')}
-                  </p>
+                {t('home.shadows.card2.description')}
+              </p>
                 </div>
-              </Card>
+            </Card>
             </div>
 
             <div className="group relative">
@@ -155,14 +155,14 @@ const HomePage: React.FC = () => {
                   </div>
                   
                   <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-yellow-400 transition-colors">
-                    {t('home.shadows.card3.title')}
-                  </h3>
+                {t('home.shadows.card3.title')}
+              </h3>
                   <div className="w-16 h-0.5 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full mb-4"></div>
                   <p className="text-gray-300 leading-relaxed">
-                    {t('home.shadows.card3.description')}
-                  </p>
+                {t('home.shadows.card3.description')}
+              </p>
                 </div>
-              </Card>
+            </Card>
             </div>
           </div>
         </div>
@@ -187,7 +187,7 @@ const HomePage: React.FC = () => {
             
             <h2 className="text-5xl md:text-6xl font-bold text-white mb-6">
               {t('home.elevate.title.main')} <span className="bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">{t('home.elevate.title.highlighted')}</span>
-            </h2>
+          </h2>
             <div className="w-40 h-1 bg-gradient-to-r from-cyan-500 via-purple-500 to-pink-500 rounded-full mx-auto"></div>
           </div>
 
@@ -205,10 +205,10 @@ const HomePage: React.FC = () => {
                   </h3>
                   <div className="w-12 h-0.5 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full mx-auto mb-4"></div>
                   <p className="text-gray-300 text-sm leading-relaxed">
-                    {t('home.elevate.card1.description')}
-                  </p>
+                {t('home.elevate.card1.description')}
+              </p>
                 </div>
-              </Card>
+            </Card>
             </div>
 
             <div className="group relative">
@@ -224,10 +224,10 @@ const HomePage: React.FC = () => {
                   </h3>
                   <div className="w-12 h-0.5 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full mx-auto mb-4"></div>
                   <p className="text-gray-300 text-sm leading-relaxed">
-                    {t('home.elevate.card2.description')}
-                  </p>
+                {t('home.elevate.card2.description')}
+              </p>
                 </div>
-              </Card>
+            </Card>
             </div>
 
             <div className="group relative">
@@ -243,10 +243,10 @@ const HomePage: React.FC = () => {
                   </h3>
                   <div className="w-12 h-0.5 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full mx-auto mb-4"></div>
                   <p className="text-gray-300 text-sm leading-relaxed">
-                    {t('home.elevate.card3.description')}
-                  </p>
+                {t('home.elevate.card3.description')}
+              </p>
                 </div>
-              </Card>
+            </Card>
             </div>
 
             <div className="group relative">
@@ -262,10 +262,10 @@ const HomePage: React.FC = () => {
                   </h3>
                   <div className="w-12 h-0.5 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full mx-auto mb-4"></div>
                   <p className="text-gray-300 text-sm leading-relaxed">
-                    {t('home.elevate.card4.description')}
-                  </p>
+                {t('home.elevate.card4.description')}
+              </p>
                 </div>
-              </Card>
+            </Card>
             </div>
           </div>
         </div>

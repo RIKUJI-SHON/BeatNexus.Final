@@ -167,9 +167,9 @@ const RankingPage: React.FC = () => {
             <div className="relative">
               <h1 className="text-5xl lg:text-6xl font-bold mb-6">
                 <span className="bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-                  {t('rankingPage.title')}
+            {t('rankingPage.title')}
                 </span>
-              </h1>
+          </h1>
               
               <div className="flex items-center justify-center gap-4 mb-6">
                 <div className="w-16 h-px bg-gradient-to-r from-transparent via-cyan-500 to-transparent"></div>
@@ -180,8 +180,8 @@ const RankingPage: React.FC = () => {
               </div>
               
               <p className="text-gray-300 max-w-3xl mx-auto text-lg leading-relaxed">
-                {t('rankingPage.description')}
-              </p>
+            {t('rankingPage.description')}
+          </p>
             </div>
           </div>
         </div>
@@ -314,40 +314,40 @@ const RankingPage: React.FC = () => {
                     
                     {activeTab === 'player' ? (
                       <>
-                        <th 
-                          className="px-6 py-4 text-center text-sm font-semibold text-gray-400 cursor-pointer"
-                          onClick={() => handleSort('rating')}
-                        >
-                          <div className="flex items-center justify-center gap-2">
-                            <Star className="h-4 w-4" />
-                            {t('rankingPage.table.rating')}
-                            {sortField === 'rating' && (
-                              sortDirection === 'desc' ? <ArrowDown className="h-4 w-4" /> : <ArrowUp className="h-4 w-4" />
-                            )}
-                          </div>
-                        </th>
-                        <th 
-                          className="px-6 py-4 text-center text-sm font-semibold text-gray-400 cursor-pointer"
-                          onClick={() => handleSort('season_points')}
-                        >
-                          <div className="flex items-center justify-center gap-2">
-                            {t('rankingPage.table.seasonPoints')}
-                            {sortField === 'season_points' && (
-                              sortDirection === 'desc' ? <ArrowDown className="h-4 w-4" /> : <ArrowUp className="h-4 w-4" />
-                            )}
-                          </div>
-                        </th>
-                        <th 
-                          className="px-6 py-4 text-center text-sm font-semibold text-gray-400 cursor-pointer"
-                          onClick={() => handleSort('win_rate')}
-                        >
-                          <div className="flex items-center justify-center gap-2">
-                            {t('rankingPage.table.winRate')}
-                            {sortField === 'win_rate' && (
-                              sortDirection === 'desc' ? <ArrowDown className="h-4 w-4" /> : <ArrowUp className="h-4 w-4" />
-                            )}
-                          </div>
-                        </th>
+                    <th 
+                      className="px-6 py-4 text-center text-sm font-semibold text-gray-400 cursor-pointer"
+                      onClick={() => handleSort('rating')}
+                    >
+                      <div className="flex items-center justify-center gap-2">
+                        <Star className="h-4 w-4" />
+                        {t('rankingPage.table.rating')}
+                        {sortField === 'rating' && (
+                          sortDirection === 'desc' ? <ArrowDown className="h-4 w-4" /> : <ArrowUp className="h-4 w-4" />
+                        )}
+                      </div>
+                    </th>
+                    <th 
+                      className="px-6 py-4 text-center text-sm font-semibold text-gray-400 cursor-pointer"
+                      onClick={() => handleSort('season_points')}
+                    >
+                      <div className="flex items-center justify-center gap-2">
+                        {t('rankingPage.table.seasonPoints')}
+                        {sortField === 'season_points' && (
+                          sortDirection === 'desc' ? <ArrowDown className="h-4 w-4" /> : <ArrowUp className="h-4 w-4" />
+                        )}
+                      </div>
+                    </th>
+                    <th 
+                      className="px-6 py-4 text-center text-sm font-semibold text-gray-400 cursor-pointer"
+                      onClick={() => handleSort('win_rate')}
+                    >
+                      <div className="flex items-center justify-center gap-2">
+                        {t('rankingPage.table.winRate')}
+                        {sortField === 'win_rate' && (
+                          sortDirection === 'desc' ? <ArrowDown className="h-4 w-4" /> : <ArrowUp className="h-4 w-4" />
+                        )}
+                      </div>
+                    </th>
                       </>
                     ) : (
                       <th 
@@ -394,37 +394,37 @@ const RankingPage: React.FC = () => {
 
                         {activeTab === 'player' ? (
                           <>
-                            <td className="px-6 py-4">
-                              <div className="text-center">
+                        <td className="px-6 py-4">
+                          <div className="text-center">
                                 <div className={`text-2xl font-bold ${getRatingColor((entry as any).rating)}`}>
                                   {(entry as any).rating}
-                                </div>
-                                <div className="text-xs text-gray-400 mt-1 flex items-center justify-center gap-1">
-                                  <Star className="h-3 w-3" />
-                                  {t('rankingPage.eloRating')}
-                                </div>
-                              </div>
-                            </td>
-                            <td className="px-6 py-4">
-                              <div className="text-center">
-                                <div className="text-xl font-bold text-white">
+                            </div>
+                            <div className="text-xs text-gray-400 mt-1 flex items-center justify-center gap-1">
+                              <Star className="h-3 w-3" />
+                              {t('rankingPage.eloRating')}
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="text-center">
+                            <div className="text-xl font-bold text-white">
                                   {(entry as any).season_points}
-                                </div>
-                                <div className="text-xs text-gray-400 mt-1">
-                                  {t('rankingPage.table.seasonPoints')}
-                                </div>
-                              </div>
-                            </td>
-                            <td className="px-6 py-4">
-                              <div className="text-center">
+                            </div>
+                            <div className="text-xs text-gray-400 mt-1">
+                              {t('rankingPage.table.seasonPoints')}
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="text-center">
                                 <div className={`text-xl font-bold ${getWinRateColorClass((entry as any).win_rate)}`}>
                                   {(entry as any).win_rate}%
-                                </div>
-                                <div className="text-xs text-gray-400 mt-1">
+                            </div>
+                            <div className="text-xs text-gray-400 mt-1">
                                   {t('rankingPage.winLossRecord', { wins: (entry as any).battles_won, losses: (entry as any).battles_lost })}
-                                </div>
-                              </div>
-                            </td>
+                            </div>
+                          </div>
+                        </td>
                           </>
                         ) : (
                           <td className="px-6 py-4">

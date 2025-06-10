@@ -278,7 +278,7 @@ const BattlesPage: React.FC = () => {
                       <div className="p-3 bg-gradient-to-r from-cyan-500/20 to-purple-500/20 rounded-2xl border border-cyan-500/30">
                         <Play className="h-8 w-8 text-cyan-400" />
                       </div>
-                      <div>
+              <div>
                         <h2 className="text-4xl font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
                           {t('battlesPage.activeBattles.title')}
                         </h2>
@@ -286,21 +286,21 @@ const BattlesPage: React.FC = () => {
                       </div>
                     </div>
                     <p className="text-gray-300 text-lg leading-relaxed">{t('battlesPage.activeBattles.subtitle')}</p>
-                  </div>
-                  
+              </div>
+              
                   <div className="flex flex-col sm:flex-row gap-3">
-                    <button 
-                      onClick={handleCreateBattle}
+              <button 
+                onClick={handleCreateBattle}
                       className="group relative overflow-hidden px-8 py-4 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-2xl text-white font-bold text-lg transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-cyan-500/25"
-                    >
+              >
                       <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                       <div className="relative flex items-center gap-3">
                         <div className="p-2 bg-white/20 rounded-lg group-hover:bg-white/30 transition-colors">
-                          <Plus className="h-5 w-5" />
+                <Plus className="h-5 w-5" />
                         </div>
-                        {t('battlesPage.activeBattles.createBattleButton')}
+                {t('battlesPage.activeBattles.createBattleButton')}
                       </div>
-                    </button>
+              </button>
                   </div>
                 </div>
               </div>
@@ -428,7 +428,7 @@ const BattlesPage: React.FC = () => {
               
               <Card className="relative bg-gray-900/80 backdrop-blur-sm border border-yellow-500/20 shadow-2xl shadow-yellow-500/10">
                 <div className="p-6">
-                  <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center gap-3">
                       <div className="p-2 bg-gradient-to-r from-yellow-500/20 to-orange-500/20 rounded-xl border border-yellow-500/30">
                         <Trophy className="h-6 w-6 text-yellow-400" />
@@ -439,15 +439,15 @@ const BattlesPage: React.FC = () => {
                         </h2>
                         <div className="w-12 h-0.5 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full"></div>
                       </div>
-                    </div>
-                    <Link 
-                      to="/ranking"
+                </div>
+                <Link 
+                  to="/ranking"
                       className="group flex items-center gap-2 px-3 py-2 bg-cyan-500/10 border border-cyan-500/30 rounded-lg text-cyan-400 hover:text-cyan-300 hover:bg-cyan-500/20 transition-all duration-200"
-                    >
+                >
                       <span className="text-sm font-medium">{t('battlesPage.rankings.viewFullButton')}</span>
                       <ArrowRight className="h-3 w-3 group-hover:translate-x-1 transition-transform" />
-                    </Link>
-                  </div>
+                </Link>
+              </div>
               {rankingsLoading ? (
                 <div className="text-center text-gray-400 py-6">
                   <div className="animate-spin w-6 h-6 border-4 border-cyan-500 border-t-transparent rounded-full mx-auto mb-2"></div>
@@ -539,7 +539,7 @@ const BattlesPage: React.FC = () => {
                 </div>
               )}
                 </div>
-              </Card>
+            </Card>
             </div>
 
             {/* How-to Guide Card */}
@@ -553,28 +553,28 @@ const BattlesPage: React.FC = () => {
                       <BookOpen className="h-8 w-8 text-green-400" />
                     </div>
                     <div className="absolute -inset-2 bg-gradient-to-r from-green-500/20 to-blue-500/20 rounded-2xl blur opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  </div>
+                </div>
                   
                   <h3 className="text-lg font-bold bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent mb-3">
-                    {t('battlesPage.howTo.title')}
-                  </h3>
+                  {t('battlesPage.howTo.title')}
+                </h3>
                   <div className="w-16 h-0.5 bg-gradient-to-r from-green-500 to-blue-500 rounded-full mx-auto mb-4"></div>
                   
                   <p className="text-gray-300 text-sm leading-relaxed mb-5">
-                    {t('battlesPage.howTo.description')}
-                  </p>
+                  {t('battlesPage.howTo.description')}
+                </p>
                   
-                  <Link 
-                    to="/how-to-guide"
+                <Link 
+                  to="/how-to-guide"
                     className="group/button inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-green-500 to-blue-500 rounded-xl text-white font-semibold hover:scale-105 hover:shadow-xl hover:shadow-green-500/25 transition-all duration-300"
                   >
                     <div className="p-1 bg-white/20 rounded-lg group-hover/button:bg-white/30 transition-colors">
                       <BookOpen className="h-4 w-4" />
                     </div>
                     <span className="text-sm">{t('battlesPage.howTo.button')}</span>
-                  </Link>
-                </div>
-              </Card>
+                </Link>
+              </div>
+            </Card>
             </div>
           </aside>
         </div>
