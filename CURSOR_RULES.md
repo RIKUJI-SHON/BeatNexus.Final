@@ -163,9 +163,11 @@ battle_status: 'ACTIVE', 'COMPLETED', 'PROCESSING_RESULTS'
    - バトル結果に基づくレーティング更新
 
 ### 投票・ユーザー管理 & 投票者ランキング
-8. **`vote_battle(p_battle_id, p_vote)`**
-   - 投票機能（'A' または 'B'）
+8. **`vote_battle(p_battle_id uuid, p_vote text)`** ✅ **統一・完全版**
+   - **完全なバリデーション**: 認証、自己投票防止、期限チェック、重複投票防止
    - **投票者ランキング**: 投票時に`profiles.vote_count`を自動増加
+   - **エラーハンドリング**: 詳細な日本語エラーメッセージ
+   - **戻り値**: JSON形式（success/error、message含む）
    
 9. **`get_user_vote(p_battle_id)`**
    - ユーザーの投票状況確認

@@ -364,8 +364,10 @@ export const useBattleStore = create<BattleState>((set, get) => ({
           message: error.message,
           details: error.details,
           hint: error.hint,
-          code: error.code
+          code: error.code,
+          fullError: error
         });
+        console.error('🔍 Full error object:', JSON.stringify(error, null, 2));
         toast.error(i18n.t('toasts.error'), `${i18n.t('battleStore.toasts.databaseError')}: ${error.message}`);
         throw error;
       }
