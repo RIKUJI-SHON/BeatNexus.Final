@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite --port 3000",
-    "dev:develop": "cross-env VITE_SUPABASE_URL=https://tkzyejyyegzjapmtyjpz.supabase.co VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRrenllanl5ZWd6amFwbXR5anB6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk0NTkxMTksImV4cCI6MjA2NTAzNTExOX0.xVaVKSDDcEEhmVT8RXmCWC17GweACgyoMdOWOzsoDnU vite --port 3000",
+    "dev:develop": "cross-env VITE_SUPABASE_URL=https://fjdwtxtgpqysdfqcqpwu.supabase.co VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZqZHd0eHRncHF5c2RmcWNxcHd1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk1NDU5MzMsImV4cCI6MjA2NTEyMTkzM30.kJkklTQnT6PTND7pM2pAOdyiGYCUohFNShJpUdhUS5s vite --port 3000",
+    "dev:test": "cross-env VITE_SUPABASE_URL=https://qgqcjtjxaoplhxurbpis.supabase.co VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFncWNqdGp4YW9wbGh4dXJicGlzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgxOTA2MjcsImV4cCI6MjA2Mzc2NjYyN30.ga96XIqzpaMpqCQZ-O47TbZlV42wfkOFe6PzjlyKZoo vite --port 3000",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"

@@ -4,6 +4,7 @@
 **BeatNexus**は、ビートボクシング愛好者向けの競技プラットフォームです。
 - **投稿型バトル**: 動画投稿 → 自動マッチング → コミュニティ投票 → 勝者決定
 - **レーティングシステム**: 戦績ベースの個人レーティングとシーズンランキング
+- **投票者ランキング**: コミュニティ貢献度を評価する投票数ベースのランキング
 - **コミュニティ**: リアルタイム通知、コメント、フォーラム機能
 - **多言語対応**: 日本語・英語完全対応
 
@@ -12,7 +13,7 @@
 - **バックエンド**: Supabase (PostgreSQL + Edge Functions + Storage + Auth)
 - **定期処理**: pg_cron（5分間隔でバトル終了処理）
 - **国際化**: react-i18next
-- **デプロイ**: Supabase（プロジェクトID: `tkzyejyyegzjapmtyjpz`）
+- **デプロイ**: Supabase（開発用プロジェクトID: `fjdwtxtgpqysdfqcqpwu`、テスト用: `qgqcjtjxaoplhxurbpis`）
 
 ## 📁 ディレクトリ構成
 ```
@@ -51,7 +52,7 @@ supabase/
 profiles (
   id uuid, username text, email text, avatar_url text, bio text,
   rating integer DEFAULT 1200, language varchar DEFAULT 'English',
-  vote_count integer DEFAULT 0,  -- 投票した回数
+  vote_count integer DEFAULT 0,  -- 🆕 投票者ランキング用
   created_at timestamptz, updated_at timestamptz
 )
 
@@ -69,7 +70,7 @@ active_battles (
   player1_user_id uuid, player2_user_id uuid,
   battle_format battle_format, status battle_status DEFAULT 'ACTIVE',
   votes_a integer DEFAULT 0, votes_b integer DEFAULT 0,
-  end_voting_at timestamptz DEFAULT (now() + INTERVAL '5 days'),
+  end_voting_at timestamptz DEFAULT (now() + INTERVAL '5 days'),  -- 🔧 5日間
   created_at timestamptz, updated_at timestamptz
 )
 
@@ -136,18 +137,14 @@ battle_status: 'ACTIVE', 'COMPLETED', 'PROCESSING_RESULTS'
    - **投票期限**: 5日間
    
 2. **`progressive_matchmaking()`** ✅ **正常動作中**
-   - **段階的マッチング**: pg_cronで30分間隔実行（毎時0分・30分）
-   - **初期待機**: 10分間（即座マッチングの猶予期間）
-   - **段階的レート制限**（より緩やか）:
-     - 10-60分: ±80レート差
-     - 60-120分: ±120レート差
-     - 120-180分: ±160レート差
-     - 180-240分: ±200レート差
-     - 240-360分: ±300レート差
-     - 360-480分: ±400レート差
-     - 480-720分: ±500レート差
-     - 720分以降: 無制限
-   - **投票期限**: 5日間
+   - **段階的マッチング**: pg_cronで5分間隔実行
+   - **初期待機**: 2分間（即座マッチングの猶予期間）
+   - **段階的レート制限**:
+     - 2-20分: ±100レート差
+     - 20-40分: ±200レート差
+     - 40-60分: ±400レート差
+     - 60-80分: ±600レート差
+     - 80分以降: 無制限
    
 3. **`complete_battle(p_battle_id)`**
    - 投票集計 → 勝者判定 → アーカイブ → レーティング更新
@@ -165,29 +162,36 @@ battle_status: 'ACTIVE', 'COMPLETED', 'PROCESSING_RESULTS'
 7. **`update_battle_ratings(p_battle_id, p_winner_id)`**
    - バトル結果に基づくレーティング更新
 
-### 投票・ユーザー管理
+### 投票・ユーザー管理 & 投票者ランキング
 8. **`vote_battle(p_battle_id, p_vote)`**
    - 投票機能（'A' または 'B'）
-   - **新機能**: 投票時にユーザーのvote_countを自動増加
+   - **投票者ランキング**: 投票時に`profiles.vote_count`を自動増加
    
-9. **`cancel_vote(p_battle_id)`**
-   - 投票キャンセル機能
-   - **新機能**: キャンセル時にユーザーのvote_countを自動減少
+9. **`get_user_vote(p_battle_id)`**
+   - ユーザーの投票状況確認
    
-10. **`get_user_vote(p_battle_id)`**
-    - ユーザーの投票状況確認
+10. **`update_user_profile_details(p_user_id, p_username, p_bio)`**
+    - プロフィール更新
 
-### 🏆 **ランキングシステム（2種類）**
-11. **`get_top_rankings(p_limit)`** - プレイヤーランキング（レーティング順）
-12. **`get_user_rank(p_user_id)`** - 個別ユーザーのプレイヤーランク
-13. **`get_top_voter_rankings(p_limit)`** - 投票者ランキング（投票数順）
-14. **`get_user_voter_rank(p_user_id)`** - 個別ユーザーの投票者ランク
+### 🏆 ランキングシステム（2種類実装済み）
+11. **`rankings_view`** - プレイヤーランキング（レーティング順）
+    - 勝率、勝利数、敗北数を含む総合バトルランキング
+    - レーティング、シーズンポイント、勝率でソート可能
+    
+12. **`voter_rankings_view`** - 🆕 投票者ランキング（投票数順）
+    - コミュニティ貢献度を評価する`vote_count`ベースのランキング
+    - 投票数でソート、コミュニティ活動を奨励
 
-### 📊 **ランキングビュー**
-- **`rankings_view`**: レーティングベースのプレイヤーランキング
-  - 勝率、勝利数、敗北数を含む総合ランキング
-- **`voter_rankings_view`**: 投票数ベースの投票者ランキング  
-  - 投票回数でユーザーをランク付け、コミュニティ貢献度を評価
+### 📊 ランキングビューの詳細
+```sql
+-- プレイヤーランキングビュー
+rankings_view: user_id, username, avatar_url, rating, season_points, 
+               rank_name, rank_color, battles_won, battles_lost, win_rate, position
+
+-- 投票者ランキングビュー  
+voter_rankings_view: user_id, username, avatar_url, vote_count, rating,
+                     rank_name, rank_color, created_at, updated_at, position
+```
 
 ## ⚙️ Edge Functions（実装済み）
 ### `/submission-webhook` ✅ **マッチング処理の中核**
@@ -204,37 +208,31 @@ battle_status: 'ACTIVE', 'COMPLETED', 'PROCESSING_RESULTS'
 - **処理**: プロフィール削除 → 認証ユーザー削除
 - **権限**: 認証済みユーザーのみ
 
-### 🔧 **実際のマッチメイキングアーキテクチャ**
+### マッチメイキング戦略（二段階システム）
+```javascript
+// 1. 即座マッチング（Edge Function）
+ユーザー投稿 → submission-webhook → find_match_and_create_battle()
+- レート制限: ±50 → ±100
+- 結果: 即座バトル作成 or 待機状態
 
-```
-【即座マッチング】Edge Function経由
-投稿 → submission-webhook → find_match_and_create_battle()
-├─ ±50レート差で検索
-├─ 見つからない場合 ±100レート差で検索  
-└─ それでもダメなら WAITING_OPPONENT状態
-
-【段階的マッチング】pg_cron経由（10分後から開始）
-10分待機 → progressive_matchmaking() (30分間隔)
-├─ 10-60分: ±80レート差
-├─ 60-120分: ±120レート差
-├─ 120-180分: ±160レート差
-├─ 180-240分: ±200レート差
-├─ 240-360分: ±300レート差
-├─ 360-480分: ±400レート差
-├─ 480-720分: ±500レート差
-└─ 720分以降: 無制限
+// 2. 段階的マッチング（pg_cron）  
+2分後～ → progressive_matchmaking() (5分間隔)
+- レート制限: 時間経過で段階的緩和
+- 結果: 遅延バトル作成 or 継続待機
 ```
 
 ## ⏰ pg_cron定期処理（実装済み）
 ```sql
--- 定期ジョブ
-1. process_expired_battles    -- バトル終了処理（5分間隔）
-2. progressive_matchmaking    -- マッチング処理（30分間隔）
+-- 5分間隔で実行される定期ジョブ
+1. process_expired_battles    -- バトル終了処理
+2. progressive_matchmaking    -- マッチング処理
 ```
 
 ## 🔧 MCP Supabase Tools 活用
 ### プロジェクト情報
-- **プロジェクトID**: `tkzyejyyegzjapmtyjpz`
+- **開発用プロジェクトID**: `fjdwtxtgpqysdfqcqpwu` (Developブランチ)
+- **テスト用プロジェクトID**: `qgqcjtjxaoplhxurbpis` (heartbeat-testブランチ)
+- **環境変数**: `.env`ファイルで開発用プロジェクトを指定
 - **確認**: `mcp_supabase_get_project(id)`でステータス確認
 
 ### 有効な拡張機能
@@ -267,6 +265,23 @@ mcp_supabase_get_logs(project_id, service)
 - **状態管理**: `src/store/`のZustandストアに集約
 - **型安全性**: DB変更時は`src/types/`も必ず更新
 
+### 🏪 実装済みストア
+- **battleStore.ts**: バトル管理（進行中・アーカイブ・待機中）
+- **rankingStore.ts**: プレイヤー・投票者ランキング両方対応
+- **authStore.ts**: 認証状態管理
+- **notificationStore.ts**: 通知システム
+- **toastStore.ts**: UI通知
+- **submissionStore.ts**: 投稿管理
+
+### 📄 実装済みページ
+- **RankingPage.tsx**: プレイヤー・投票者ランキング（タブ切り替え）
+- **BattlesPage.tsx**: アクティブバトル一覧・投票
+- **MyBattlesPage.tsx**: 個人バトル履歴
+- **CommunityPage.tsx**: フォーラム・投稿
+- **ProfilePage.tsx**: プロフィール管理
+- **PostPage.tsx**: 動画投稿・マッチング
+- **その他**: 設定、通知、ガイド等
+
 ### コンポーネント設計
 - **命名**: PascalCase（例: `BattleCard.tsx`）
 - **ストア**: camelCase（例: `battleStore.ts`）
@@ -279,15 +294,21 @@ mcp_supabase_get_logs(project_id, service)
 
 ## 📝 命名規則
 | 要素 | 形式 | 例 |
-|------|------|----| 
-| テーブル・カラム | snake_case | `active_battles`, `user_id` |
-| SQL関数 | snake_case | `find_match_and_create_battle` |
-| TypeScript型 | PascalCase | `Battle`, `UserProfile` |
-| 関数・変数 | camelCase | `fetchBattles`, `userProfile` |
+|---|---|----| 
+| テーブル・カラム | snake_case | `active_battles`, `user_id`, `vote_count` |
+| SQL関数・ビュー | snake_case | `find_match_and_create_battle`, `voter_rankings_view` |
+| TypeScript型 | PascalCase | `Battle`, `VoterRankingEntry` |
+| 関数・変数 | camelCase | `fetchBattles`, `voterRankings` |
 | Reactコンポーネント | PascalCase.tsx | `BattleCard.tsx` |
 | その他ファイル | camelCase.ts | `battleStore.ts` |
 
 ## 🚀 開発フロー
+### 開発サーバー起動（重要）
+- **開発環境**: `npm run dev:develop` （開発用DBに接続 - 推奨）
+- **テスト環境**: `npm run dev:test` （テスト用DBに接続）
+- **通常**: `npm run dev` （.envファイルの設定を使用）
+- **ポート**: 3000番で起動
+
 ### 新機能追加時
 1. **DB変更**: MCP toolsでマイグレーション適用
 2. **型定義**: `src/types/`更新
@@ -299,6 +320,11 @@ mcp_supabase_get_logs(project_id, service)
 - **ログ確認**: `mcp_supabase_get_logs(project_id, service)`
 - **リアルタイム確認**: Supabaseダッシュボード
 - **pg_cron確認**: `cron.job`テーブル
+
+### ⚠️ AI開発アシスタント向け注意事項
+- **サーバー起動**: 常に `npm run dev:develop` を使用（`npm run dev` ではない）
+- **開発フロー**: 開発用DB (`fjdwtxtgpqysdfqcqpwu`) で作業
+- **テスト**: 必要時のみテスト用DB (`qgqcjtjxaoplhxurbpis`) を使用
 
 ## 🎨 UI/UX ガイドライン
 - **テーマ**: ダークテーマ中心（gray-900, gray-950ベース）
@@ -323,13 +349,29 @@ mcp_supabase_get_logs(project_id, service)
 - **レーティングテスト**: `test_rating_system.sql`で動作確認
 - **マニュアルテスト**: 各画面での実際の操作確認
 
-### 📊 **システムの賢さ**
+## 🆕 投票者ランキングシステムの詳細
 
-- **二段階マッチング**: 即座（Edge Function）+ 段階的（30分間隔pg_cron）
-- **レート考慮**: 時間経過で段階的に条件緩和（より慎重なアプローチ）
-- **効率性**: 30分間隔でサーバー負荷を軽減
-- **適応性**: 12時間かけてゆっくりと適切な相手を発見
-- **投票期間**: 5日間でじっくり投票可能
+### 📊 システム概要
+- **目的**: コミュニティ参加を促進し、積極的な投票者を評価
+- **仕組み**: 各投票でユーザーの`vote_count`が増加
+- **表示**: 専用の投票者ランキングタブで確認可能
+
+### 🔧 技術実装
+```sql
+-- 投票時の自動カウント増加
+UPDATE profiles SET vote_count = vote_count + 1 WHERE id = user_id;
+
+-- 投票者ランキングビュー
+CREATE VIEW voter_rankings_view AS 
+SELECT user_id, username, avatar_url, vote_count, position
+FROM profiles WHERE vote_count > 0 
+ORDER BY vote_count DESC;
+```
+
+### 🎨 UI実装
+- **RankingPage.tsx**: プレイヤー・投票者タブ切り替え
+- **rankingStore.ts**: 両ランキングの状態管理
+- **色分け**: 投票数に応じたカラーコーディング
 
 ---
 
