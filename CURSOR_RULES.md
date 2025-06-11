@@ -322,11 +322,13 @@ mcp_supabase_get_logs(project_id, service)
 - **ログ確認**: `mcp_supabase_get_logs(project_id, service)`
 - **リアルタイム確認**: Supabaseダッシュボード
 - **pg_cron確認**: `cron.job`テーブル
+- **関数重複確認**: Supabaseダッシュボード → Database → Functions
 
 ### ⚠️ AI開発アシスタント向け注意事項
 - **サーバー起動**: 常に `npm run dev:develop` を使用（`npm run dev` ではない）
 - **開発フロー**: 開発用DB (`fjdwtxtgpqysdfqcqpwu`) で作業
 - **テスト**: 必要時のみテスト用DB (`qgqcjtjxaoplhxurbpis`) を使用
+- **🆕 関数作成時**: 既存の同名関数をチェック、必要に応じて統合
 
 ## 🎨 UI/UX ガイドライン
 - **テーマ**: ダークテーマ中心（gray-900, gray-950ベース）
@@ -340,6 +342,9 @@ mcp_supabase_get_logs(project_id, service)
 2. **翻訳漏れ**: 新規文言の英語・日本語両方対応忘れ
 3. **RLS違反**: ポリシー未設定によるアクセス拒否
 4. **pg_cron停止**: 定期処理が動作しない
+5. **🆕 重複関数問題**: 同名関数で引数型が異なる場合の競合
+   - PostgreSQLは引数型で関数を区別するため、想定外の関数が呼ばれる
+   - 解決: 古い関数を削除し、統一された関数を作成
 
 ### セキュリティ
 - **RLS**: 全テーブル有効（パブリック読み取り、認証済み書き込み）
@@ -374,6 +379,31 @@ ORDER BY vote_count DESC;
 - **RankingPage.tsx**: プレイヤー・投票者タブ切り替え
 - **rankingStore.ts**: 両ランキングの状態管理
 - **色分け**: 投票数に応じたカラーコーディング
+
+## 🛠️ データベース関数の重複問題と解決
+
+### 📋 発見された問題
+PostgreSQLでは同名関数でも引数型が異なれば別の関数として扱われます。これにより：
+- `vote_battle(p_battle_id uuid, p_vote character)` - 短い版、投票者ランキング機能あり
+- `vote_battle(p_battle_id uuid, p_vote text)` - 長い版、詳細バリデーションあり
+
+フロントエンドが文字列(`'A'`, `'B'`)を送信するため、TEXT版が呼ばれ、投票者ランキングが機能しない問題が発生。
+
+### ✅ 解決方法
+1. **古い関数削除**: `DROP FUNCTION vote_battle(p_battle_id uuid, p_vote character);`
+2. **統一関数作成**: 詳細バリデーション + 投票者ランキング機能を含む完全版
+3. **機能統合**: 
+   - 認証チェック
+   - 自己投票防止
+   - 投票期限チェック
+   - 重複投票防止
+   - 投票者ランキング更新
+
+### 🎯 学習ポイント
+- PostgreSQL関数は**引数型**で区別される
+- 同名関数の競合は予期しない動作を引き起こす
+- 関数作成前に既存関数の確認が必須
+- 統一された関数設計が重要
 
 ---
 
