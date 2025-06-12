@@ -175,12 +175,45 @@ battle_status: 'ACTIVE', 'COMPLETED', 'PROCESSING_RESULTS'
 10. **`update_user_profile_details(p_user_id, p_username, p_bio)`**
     - プロフィール更新
 
+11. **`withdraw_submission(p_submission_id)`**
+    - ユーザーが待機中の投稿を取り下げる
+
+12. **`cancel_vote(p_battle_id)`**
+    - ユーザーが行った投票を取り消す
+
+### 取得系・補助関数
+13. **`get_user_profile(p_user_id)`**
+    - 特定ユーザーのプロフィール情報を取得
+
+14. **`get_waiting_submissions()`**
+    - マッチング待機中のすべての投稿を取得
+
+15. **`get_rank_color_from_rating(rating)`**
+    - レーティング値に応じたランクカラー（例: 'gold', 'silver'）を返す
+
+16. **`get_top_rankings()` / `get_top_voter_rankings()`**
+    - それぞれプレイヤーと投票者のトップランキングデータを取得
+
+17. **`get_user_rank(p_user_id)` / `get_user_voter_rank(p_user_id)`**
+    - 特定ユーザーのプレイヤーランクと投票者ランクを取得
+
+### 💎 トリガー連動関数（自動実行）
+- **備考**: これらの関数はテーブルのデータが変更された際に自動的に実行されます。
+18. **`handle_new_user()`**
+    - `auth.users`に新しいユーザーが追加された際、`profiles`テーブルに初期プロフィールを作成
+
+19. **`update_updated_at_column()`**
+    - 対応する行が更新されるたびに`updated_at`タイムスタンプを自動更新
+
+20. **`update_post_comments_count()`**
+    - `comments`テーブルにコメントが追加/削除された際、関連する`posts`テーブルの`comments_count`を更新
+
 ### 🏆 ランキングシステム（2種類実装済み）
-11. **`rankings_view`** - プレイヤーランキング（レーティング順）
+21. **`rankings_view`** - プレイヤーランキング（レーティング順）
     - 勝率、勝利数、敗北数を含む総合バトルランキング
     - レーティング、シーズンポイント、勝率でソート可能
     
-12. **`voter_rankings_view`** - 🆕 投票者ランキング（投票数順）
+22. **`voter_rankings_view`** - 🆕 投票者ランキング（投票数順）
     - コミュニティ貢献度を評価する`vote_count`ベースのランキング
     - 投票数でソート、コミュニティ活動を奨励
 
