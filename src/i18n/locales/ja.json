@@ -666,6 +666,12 @@
       "viewMyBattles": "マイバトルを見る",
       "submitAnother": "別の動画を投稿"
     },
+    "cooldown": {
+      "title": "24時間投稿制限",
+      "message": "24時間以内に投稿できるのは1本までです。",
+      "nextSubmissionIn": "次回投稿可能まで:",
+      "timeRemaining": "投稿まで {{time}}"
+    },
     "success": {
       "title": "動画の投稿が完了しました！",
       "description": "動画がアップロードされ、まもなく他のビートボクサーとマッチングされます。バトルが開始されたら通知いたします。"
@@ -958,6 +964,10 @@
       "title": "動画は保存されていません",
       "participantMessage": "この動画はアーカイブされておらず、表示できません。",
       "nonParticipantMessage": "このバトルの動画を視聴するには、バトルの参加者である必要があります。"
+    },
+    "videoDeleted": {
+      "title": "動画が削除されました",
+      "description": "このアカウントの動画は削除されているため、再生できません。バトル履歴とレーティング変動は記録されています。"
     }
   },
   "pagination": {

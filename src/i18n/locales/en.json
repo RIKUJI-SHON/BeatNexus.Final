@@ -580,6 +580,12 @@
       "viewMyBattles": "View My Battles",
       "submitAnother": "Submit Another"
     },
+    "cooldown": {
+      "title": "24-Hour Submission Limit",
+      "message": "You can only submit one video per 24 hours.",
+      "nextSubmissionIn": "Next submission available in:",
+      "timeRemaining": "{{time}} until next submission"
+    },
     "success": {
       "title": "Video Submitted Successfully!",
       "description": "Your video has been uploaded and will be matched with another beatboxer soon. We'll notify you when your battle goes live."
@@ -1174,6 +1180,10 @@
       "title": "Video Not Saved",
       "participantMessage": "This video was not archived and cannot be displayed.",
       "nonParticipantMessage": "You need to be a participant of this battle to view the videos."
+    },
+    "videoDeleted": {
+      "title": "Video Deleted",
+      "description": "This account's video has been deleted and cannot be played. Battle history and rating changes are still recorded."
     }
   },
   "pagination": {

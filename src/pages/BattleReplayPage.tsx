@@ -177,6 +177,11 @@ const BattleReplayPage: React.FC = () => {
     newRating?: number | null;
     videoStatus: { available: boolean; message?: string; description?: string; videoUrl?: string };
   }> = ({ username, avatarUrl, userId, isCurrentUser, isWinner = false, votes, isPlayerA, ratingChange, newRating, videoStatus }) => {
+    const [videoError, setVideoError] = useState(false);
+
+    const handleVideoError = () => {
+      setVideoError(true);
+    };
     return (
       <Card className={cn(
         "bg-gray-900 border p-6 relative",
@@ -236,12 +241,13 @@ const BattleReplayPage: React.FC = () => {
 
         {/* 動画エリア */}
         <div className="aspect-video bg-black rounded-lg overflow-hidden relative">
-          {videoStatus.available && videoStatus.videoUrl ? (
+          {videoStatus.available && videoStatus.videoUrl && !videoError ? (
             <video
               src={videoStatus.videoUrl}
               className="w-full h-full object-contain"
               controls
               preload="metadata"
+              onError={handleVideoError}
             >
               <source src={videoStatus.videoUrl} type="video/webm" />
               <source src={videoStatus.videoUrl} type="video/mp4" />
@@ -251,9 +257,11 @@ const BattleReplayPage: React.FC = () => {
             <div className="w-full h-full flex flex-col items-center justify-center text-gray-400">
               <ArchiveX className="h-16 w-16 mb-4" />
               <div className="text-center px-4">
-                <p className="text-lg font-medium mb-2">{videoStatus.message}</p>
+                <p className="text-lg font-medium mb-2">
+                  {videoError ? t('battleReplay.videoDeleted.title') : videoStatus.message}
+                </p>
                 <p className="text-sm">
-                  {videoStatus.description}
+                  {videoError ? t('battleReplay.videoDeleted.description') : videoStatus.description}
                 </p>
               </div>
             </div>

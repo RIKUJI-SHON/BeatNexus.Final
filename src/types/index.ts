@@ -1,23 +1,31 @@
 export interface User {
   id: string;
   username: string;
+  email: string;
   avatar_url: string | null;
+  bio: string | null;
   rating: number;
+  language: string;
+  vote_count: number;
+  is_deleted?: boolean;
+  deleted_at?: string | null;
   created_at: string;
   updated_at: string;
 }
 
 export interface Battle {
   id: string;
-  title: string;
-  created_at: string;
-  end_voting_at: string;
-  contestant_a_id: string;
-  contestant_b_id: string;
+  player1_submission_id: string;
+  player2_submission_id: string;
+  player1_user_id: string;
+  player2_user_id: string;
+  battle_format: BattleFormat;
+  status: BattleStatus;
   votes_a: number;
   votes_b: number;
-  status: string;
-  battle_format: string;
+  end_voting_at: string;
+  created_at: string;
+  updated_at: string;
   contestant_a?: {
     username: string;
     avatar_url: string | null;
@@ -44,13 +52,12 @@ export interface ArchivedBattle {
   created_at: string;
   updated_at: string;
   battle_format: BattleFormat;
-  player1_rating_change?: number;
-  player2_rating_change?: number;
-  player1_final_rating?: number;
-  player2_final_rating?: number;
-  player1_video_url?: string | null;
-  player2_video_url?: string | null;
-  // 関連データ
+  player1_rating_change: number | null;
+  player2_rating_change: number | null;
+  player1_final_rating: number | null;
+  player2_final_rating: number | null;
+  player1_video_url: string | null;
+  player2_video_url: string | null;
   contestant_a?: User;
   contestant_b?: User;
   player1_submission?: Submission;
@@ -61,10 +68,11 @@ export interface Post {
   id: string;
   user_id: string;
   content: string;
-  created_at: string;
   likes: number;
-  comments: number;
   liked_by: string[];
+  comments_count: number;
+  created_at: string;
+  updated_at: string;
   profiles: {
     username: string;
     avatar_url: string | null;
@@ -90,6 +98,11 @@ export interface VoterRankingEntry {
   username: string;
   avatar_url: string | null;
   vote_count: number;
+  rating: number;
+  rank_name: string;
+  rank_color: string;
+  created_at: string;
+  updated_at: string;
   position: number;
 }
 
@@ -110,7 +123,6 @@ export interface RankProgress {
   totalPointsInCurrentRank: number;
 }
 
-// 待機プール用の新しい型定義
 export interface WaitingSubmission {
   id: string;
   user_id: string;
@@ -121,7 +133,6 @@ export interface WaitingSubmission {
   max_allowed_rating_diff: number;
   attempts_count: number;
   updated_at: string;
-  // JOINで取得する追加情報
   user_rating?: number;
   username?: string;
   avatar_url?: string | null;
@@ -129,6 +140,7 @@ export interface WaitingSubmission {
 
 export type BattleFormat = 'MAIN_BATTLE' | 'MINI_BATTLE' | 'THEME_CHALLENGE';
 export type SubmissionStatus = 'WAITING_OPPONENT' | 'MATCHED_IN_BATTLE' | 'BATTLE_ENDED' | 'WITHDRAWN';
+export type BattleStatus = 'ACTIVE' | 'COMPLETED' | 'PROCESSING_RESULTS';
 
 export interface Submission {
   id: string;
@@ -140,4 +152,71 @@ export interface Submission {
   created_at: string;
   updated_at: string;
   battle_format: BattleFormat | null;
+}
+
+export interface Comment {
+  id: string;
+  post_id: string;
+  user_id: string;
+  content: string;
+  created_at: string;
+  updated_at: string;
+  profiles?: {
+    username: string;
+    avatar_url: string | null;
+  };
+}
+
+export interface Notification {
+  id: string;
+  user_id: string;
+  title: string;
+  message: string;
+  type: 'info' | 'success' | 'warning' | 'battle_matched' | 'battle_win' | 'battle_lose' | 'battle_draw';
+  is_read: boolean;
+  related_battle_id: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface BattleVote {
+  id: string;
+  battle_id: string;
+  user_id: string | null;
+  vote: 'A' | 'B';
+  created_at: string;
+}
+
+export interface DatabaseFunctionResponse {
+  success: boolean;
+  error?: string;
+  error_detail?: string;
+  [key: string]: any;
+}
+
+export interface UserRankInfo {
+  user_id: string;
+  username: string;
+  avatar_url: string | null;
+  rating: number;
+  season_points: number;
+  rank_name: string;
+  rank_color: string;
+  battles_won: number;
+  battles_lost: number;
+  win_rate: number;
+  user_position: number;
+}
+
+export interface VoterRankInfo {
+  user_id: string;
+  username: string;
+  avatar_url: string | null;
+  vote_count: number;
+  rating: number;
+  rank_name: string;
+  rank_color: string;
+  created_at: string;
+  updated_at: string;
+  user_position: number;
 }

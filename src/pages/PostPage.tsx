@@ -1,11 +1,12 @@
 import React, { useState, useRef } from 'react';
-import { Upload, X, Play, CheckCircle, Video, AlertCircle, Crown, Music, Mic, ArrowLeft, Shield, Settings } from 'lucide-react';
+import { Upload, X, Play, CheckCircle, Video, AlertCircle, Crown, Music, Mic, ArrowLeft, Shield, Settings, Clock } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
 import { supabase } from '../lib/supabase';
 import { useTranslation } from 'react-i18next';
+import { useSubmissionCooldown } from '../hooks/useSubmissionCooldown';
 
 // Maximum file size in bytes (75MB - より現実的な制限)
 const MAX_FILE_SIZE = 75 * 1024 * 1024;
@@ -261,6 +262,7 @@ const PostPage: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuthStore();
   const { t } = useTranslation();
+  const { canSubmit, remainingTime, cooldownInfo, isLoading: cooldownLoading, refreshCooldown } = useSubmissionCooldown();
 
   // Redirect if not authenticated
   if (!user) {
@@ -498,6 +500,12 @@ const PostPage: React.FC = () => {
     
     if (!videoFile || !acceptedGuidelines || !acceptedFacePolicy || !acceptedContent) return;
     
+    // 24時間制限チェック
+    if (!canSubmit) {
+      setError(cooldownInfo?.message || '24時間以内に投稿できるのは1本までです。');
+      return;
+    }
+    
     // Double-check file size before upload
     if (videoFile.size > MAX_FILE_SIZE) {
       setError(t('postPage.errors.uploadTooLarge', { size: (videoFile.size / 1024 / 1024).toFixed(1) }));
@@ -619,6 +627,9 @@ const PostPage: React.FC = () => {
       // Log the result for debugging
       console.log('Matchmaking result:', webhookResult);
 
+      // 投稿成功後にクールダウン情報を更新
+      refreshCooldown();
+      
       setStep('success');
     } catch (err) {
       setError(err instanceof Error ? err.message : '投稿に失敗しました');
@@ -870,6 +881,27 @@ const PostPage: React.FC = () => {
                     {videoFile?.name} ({Math.round((videoFile?.size || 0) / 1024 / 1024 * 10) / 10} MB)
                   </div>
                 </div>
+
+                {/* 24時間制限の表示 */}
+                {!canSubmit && (
+                  <div className="bg-yellow-500/10 border border-yellow-500/50 rounded-lg p-4">
+                    <div className="flex items-start gap-2">
+                      <Clock className="h-5 w-5 text-yellow-400 mt-0.5 flex-shrink-0" />
+                      <div className="flex-1">
+                        <h4 className="font-medium text-white mb-1">24時間投稿制限</h4>
+                        <p className="text-sm text-yellow-200 mb-2">
+                          {cooldownInfo?.message || '24時間以内に投稿できるのは1本までです。'}
+                        </p>
+                        {remainingTime && (
+                          <div className="flex items-center gap-2 text-sm">
+                            <span className="text-gray-400">次回投稿可能まで:</span>
+                            <span className="font-medium text-yellow-400">{remainingTime}</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 {error && (
                   <div className="bg-red-500/10 border border-red-500/50 rounded-lg p-4">
@@ -1144,10 +1176,13 @@ const PostPage: React.FC = () => {
                     variant="primary"
                     className="flex-1 bg-gradient-to-r from-cyan-500 to-purple-500"
                     isLoading={isUploading}
-                    disabled={!acceptedGuidelines || !acceptedFacePolicy || !acceptedContent || isUploading}
+                    disabled={!acceptedGuidelines || !acceptedFacePolicy || !acceptedContent || isUploading || !canSubmit}
                     leftIcon={<Mic className="h-5 w-5" />}
                   >
-                    {t('postPage.buttons.submitToBattlePool')}
+                    {!canSubmit && remainingTime 
+                      ? `投稿まで ${remainingTime}` 
+                      : t('postPage.buttons.submitToBattlePool')
+                    }
                   </Button>
                 </div>
               </form>

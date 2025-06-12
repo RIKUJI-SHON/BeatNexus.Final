@@ -32,21 +32,15 @@ const SettingsPage: React.FC = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
   const [isDeletingAccount, setIsDeletingAccount] = useState<boolean>(false);
 
-  // 言語コードとデータベース値の変換用ヘルパー関数
+  // ✅ 言語設定が統一されたため、変換ロジックを簡素化
   const dbToLanguageCode = (dbLanguage: string): string => {
-    // データベースには既に言語コード（"ja", "en"）が保存されている場合
+    // データベースには言語コード（"ja", "en"）のみが保存されている
     if (dbLanguage === 'ja' || dbLanguage === 'en') {
       return dbLanguage;
     }
-    // 旧形式の言語名から変換
-    switch (dbLanguage) {
-      case 'Japanese':
-        return 'ja';
-      case 'English':
-        return 'en';
-      default:
-        return 'en'; // デフォルトは英語
-    }
+    // 不正な値の場合はデフォルトを返す（マイグレーション後は発生しない想定）
+    console.warn('Unexpected language value in database:', dbLanguage);
+    return 'en'; // デフォルトは英語
   };
 
   const languageCodeToDb = (languageCode: string): string => {

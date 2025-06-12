@@ -26,12 +26,17 @@ export const useLanguageInitialization = () => {
             .eq('id', user.id)
             .single();
 
-          if (data?.language && (data.language === 'ja' || data.language === 'en')) {
-            // データベースに言語設定がある場合はそれを使用
-            if (i18n.language !== data.language) {
-              i18n.changeLanguage(data.language);
+          if (data?.language) {
+            // ✅ マイグレーション後は言語コード（'ja' | 'en'）のみ保存されている
+            if (data.language === 'ja' || data.language === 'en') {
+              if (i18n.language !== data.language) {
+                i18n.changeLanguage(data.language);
+              }
+              return;
+            } else {
+              // 不正な値の場合は警告（マイグレーション後は発生しない想定）
+              console.warn('Unexpected language value in database:', data.language);
             }
-            return;
           }
         } catch (error) {
           console.warn('Failed to load user language preference:', error);
