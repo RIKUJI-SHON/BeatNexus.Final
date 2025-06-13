@@ -267,6 +267,12 @@
         "bp": "BP"
       }
     },
+    "communityStats": {
+      "title": "Community Stats",
+      "submissions": "Total Submissions",
+      "members": "Community Members",
+      "votes": "Votes Cast"
+    },
     "createBattle": {
       "title": "Create a New Battle",
       "description": "Ready to throw down? Post your video and challenge the community.",

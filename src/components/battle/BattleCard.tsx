@@ -143,7 +143,7 @@ export const BattleCard: React.FC<BattleCardProps> = ({ battle }) => {
   const getLeaderIndicator = () => {
     if (isDraw) return null;
     return (
-      <div className="absolute top-4 right-4 z-10">
+      <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-10">
         <div className={`flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold backdrop-blur-sm ${
           isALeading ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' :
           'bg-pink-500/20 text-pink-400 border border-pink-500/30'

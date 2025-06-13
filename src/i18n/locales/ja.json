@@ -267,6 +267,12 @@
         "bp": "BP"
       }
     },
+    "communityStats": {
+      "title": "コミュニティ統計",
+      "submissions": "総投稿数",
+      "members": "コミュニティメンバー",
+      "votes": "投票数"
+    },
     "createBattle": {
       "title": "新しいバトルを作成",
       "description": "挑戦する準備はできましたか？動画を投稿してコミュニティに挑戦しましょう。",
