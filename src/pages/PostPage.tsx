@@ -549,18 +549,30 @@ const PostPage: React.FC = () => {
         .from('videos')
         .getPublicUrl(filePath);
 
-      // Create submission record
-      const { data: submission, error: submissionError } = await supabase
-        .from('submissions')
-        .insert({
-          user_id: user.id,
-          video_url: publicUrl,
-          battle_format: battleFormat
-        })
-        .select()
-        .single();
+      // Create submission record with cooldown check
+      const { data: submissionResult, error: submissionError } = await supabase
+        .rpc('create_submission_with_cooldown_check', {
+          p_user_id: user.id,
+          p_video_url: publicUrl,
+          p_battle_format: battleFormat
+        });
 
-      if (submissionError) throw submissionError;
+      if (submissionError) {
+        console.error('❌ Submission creation error:', submissionError);
+        throw new Error(`投稿作成に失敗しました: ${submissionError.message}`);
+      }
+
+      // Check if submission creation was successful
+      if (!submissionResult.success) {
+        if (submissionResult.error === 'cooldown_active') {
+          // Update cooldown info and show error
+          refreshCooldown();
+          throw new Error(submissionResult.message || '24時間以内に投稿できるのは1本までです');
+        }
+        throw new Error(submissionResult.message || '投稿作成に失敗しました');
+      }
+
+      const submissionId = submissionResult.submission_id;
 
       // Call the webhook to trigger matchmaking
       console.log('Calling matchmaking webhook...');
@@ -574,7 +586,7 @@ const PostPage: React.FC = () => {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          submission_id: submission.id
+          submission_id: submissionId
         })
       });
 
