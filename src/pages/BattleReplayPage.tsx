@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Crown, Users, Calendar, ShieldCheck, ShieldX, Swords, TrendingUp, TrendingDown, Minus, Play, AlertTriangle, ArchiveX } from 'lucide-react';
+import { ArrowLeft, Crown, Users, Calendar, ShieldCheck, ShieldX, Swords, TrendingUp, TrendingDown, Minus, Play, AlertTriangle, ArchiveX, Trophy, Star, Flame, Zap, Medal } from 'lucide-react';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { ArchivedBattle } from '../types';
@@ -11,6 +11,15 @@ import { cn } from '../lib/utils';
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '../store/authStore';
 import { Badge } from '../components/ui/Badge';
+
+// カラーパレット（BattleCardと同じ）
+const colorPairs = [
+  { a: '#3B82F6', b: '#F472B6', bg: 'from-blue-600/20 to-pink-600/20' },
+  { a: '#10B981', b: '#8B5CF6', bg: 'from-emerald-600/20 to-purple-600/20' },
+  { a: '#F59E0B', b: '#3B82F6', bg: 'from-amber-600/20 to-blue-600/20' },
+  { a: '#6366F1', b: '#F97316', bg: 'from-indigo-600/20 to-orange-600/20' },
+  { a: '#EC4899', b: '#10B981', bg: 'from-pink-600/20 to-emerald-600/20' },
+];
 
 const BattleReplayPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -74,10 +83,22 @@ const BattleReplayPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin w-12 h-12 border-4 border-cyan-500 border-t-transparent rounded-full mx-auto mb-4"></div>
-          <h1 className="text-xl font-bold text-white mb-2">{t('battleView.loading')}</h1>
+      <div className="min-h-screen bg-gray-950 flex items-center justify-center relative overflow-hidden">
+        {/* Background Animation */}
+        <div className="absolute inset-0">
+          <div className="absolute top-20 left-10 w-72 h-72 bg-cyan-500/10 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-20 right-10 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+        </div>
+        
+        <div className="text-center relative z-10">
+          <div className="relative mb-8">
+            <div className="animate-spin w-16 h-16 border-4 border-cyan-500 border-t-transparent rounded-full mx-auto"></div>
+            <div className="absolute inset-0 animate-ping w-16 h-16 border-4 border-cyan-400/30 rounded-full mx-auto"></div>
+          </div>
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent mb-2">
+            {t('battleView.loading')}
+          </h1>
+          <div className="w-32 h-1 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full mx-auto animate-pulse"></div>
         </div>
       </div>
     );
@@ -85,18 +106,41 @@ const BattleReplayPage: React.FC = () => {
 
   if (error || !battle) {
     return (
-      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
-        <div className="text-center max-w-md mx-auto p-6">
-          <AlertTriangle className="h-16 w-16 text-red-400 mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-white mb-4">{t('battleReplay.notFound.title')}</h1>
-          <p className="text-gray-400 mb-6">
+      <div className="min-h-screen bg-gray-950 flex items-center justify-center relative overflow-hidden">
+        {/* Background Pattern */}
+        <div className="absolute inset-0">
+          <div className="absolute top-20 left-10 w-72 h-72 bg-red-500/5 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-20 right-10 w-96 h-96 bg-orange-500/5 rounded-full blur-3xl"></div>
+        </div>
+        
+        <div className="text-center max-w-md mx-auto p-6 relative z-10">
+          <div className="relative mb-6">
+            <AlertTriangle className="h-20 w-20 text-red-400 mx-auto" />
+            <div className="absolute inset-0 h-20 w-20 mx-auto animate-ping">
+              <AlertTriangle className="h-20 w-20 text-red-400/30" />
+            </div>
+          </div>
+          
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-red-400 to-orange-500 bg-clip-text text-transparent mb-4">
+            {t('battleReplay.notFound.title')}
+          </h1>
+          <p className="text-gray-400 mb-8 leading-relaxed">
             {error || t('battleReplay.notFound.description')}
           </p>
-          <div className="space-x-4">
-            <Button variant="outline" onClick={handleBack}>
+          
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button 
+              variant="outline" 
+              onClick={handleBack}
+              className="border-gray-600 hover:border-gray-500 hover:bg-gray-800/50"
+            >
               {t('battleReplay.backButton')}
             </Button>
-            <Button variant="primary" onClick={() => navigate('/my-battles')}>
+            <Button 
+              variant="primary" 
+              onClick={() => navigate('/my-battles')}
+              className="bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-500 hover:to-purple-500"
+            >
               {t('battleReplay.notFound.myBattlesButton')}
             </Button>
           </div>
@@ -109,11 +153,21 @@ const BattleReplayPage: React.FC = () => {
   const isDraw = battle.winner_id === null;
   const isParticipant = user && (battle.player1_user_id === user.id || battle.player2_user_id === user.id);
   const currentLocale = i18n.language === 'ja' ? ja : enUS;
+  
+  // カラーテーマ選択
+  const colorPairIndex = parseInt(battle.id.replace(/\D/g, '')) % colorPairs.length;
+  const { a: colorA, b: colorB, bg: gradientBg } = colorPairs[colorPairIndex];
+  
+  const totalVotes = battle.final_votes_a + battle.final_votes_b;
+  const percentageA = totalVotes > 0 ? (battle.final_votes_a / totalVotes) * 100 : 50;
+  const percentageB = 100 - percentageA;
+  const isAWinner = battle.winner_id === battle.player1_user_id;
+  const isBWinner = battle.winner_id === battle.player2_user_id;
 
   const getResultBadge = () => {
     if (!isParticipant) {
       return {
-        icon: <Users className="h-4 w-4" />,
+        icon: <Trophy className="h-4 w-4" />,
         text: t('battleReplay.result.battleResult'),
         className: 'bg-gray-500/20 text-gray-400 border border-gray-500/30',
       };
@@ -130,7 +184,7 @@ const BattleReplayPage: React.FC = () => {
       return {
         icon: <ShieldCheck className="h-4 w-4" />,
         text: t('archivedBattleCard.result.win'),
-        className: 'bg-green-500/20 text-green-400 border border-green-500/30',
+        className: 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30',
       };
     }
     return {
@@ -140,13 +194,43 @@ const BattleReplayPage: React.FC = () => {
     };
   };
 
-  const resultBadge = getResultBadge();
-
-  // 動画が利用可能かどうかを判定（簡略化：常に利用可能）
-  const isVideoAvailable = (videoUrl: string | null | undefined): boolean => {
-    return Boolean(videoUrl);
+  const getBattleFormatInfo = (format: string) => {
+    switch (format) {
+      case 'MAIN_BATTLE':
+        return {
+          label: t('battleCard.battleFormats.MAIN_BATTLE'),
+          icon: <Crown className="h-5 w-5" />,
+          color: 'from-yellow-500 to-amber-600',
+          textColor: 'text-yellow-400'
+        };
+      case 'MINI_BATTLE':
+        return {
+          label: t('battleCard.battleFormats.MINI_BATTLE'),
+          icon: <Zap className="h-5 w-5" />,
+          color: 'from-cyan-500 to-blue-600',
+          textColor: 'text-cyan-400'
+        };
+      case 'THEME_CHALLENGE':
+        return {
+          label: t('battleCard.battleFormats.THEME_CHALLENGE'),
+          icon: <Trophy className="h-5 w-5" />,
+          color: 'from-purple-500 to-pink-600',
+          textColor: 'text-purple-400'
+        };
+      default:
+        return {
+          label: 'Battle',
+          icon: <Swords className="h-5 w-5" />,
+          color: 'from-gray-500 to-gray-600',
+          textColor: 'text-gray-400'
+        };
+    }
   };
 
+  const resultBadge = getResultBadge();
+  const battleFormatInfo = getBattleFormatInfo(battle.battle_format || 'MAIN_BATTLE');
+
+  // 動画が利用可能かどうかを判定
   const getVideoStatus = (videoUrl: string | null | undefined) => {
     if (!videoUrl) {
       return {
@@ -165,115 +249,18 @@ const BattleReplayPage: React.FC = () => {
   const player1VideoStatus = getVideoStatus(battle.player1_video_url);
   const player2VideoStatus = getVideoStatus(battle.player2_video_url);
 
-  const PlayerCard: React.FC<{
-    username?: string;
-    avatarUrl?: string;
-    userId: string;
-    isCurrentUser: boolean;
-    isWinner?: boolean;
-    votes: number;
-    isPlayerA: boolean;
-    ratingChange?: number | null;
-    newRating?: number | null;
-    videoStatus: { available: boolean; message?: string; description?: string; videoUrl?: string };
-  }> = ({ username, avatarUrl, userId, isCurrentUser, isWinner = false, votes, isPlayerA, ratingChange, newRating, videoStatus }) => {
-    const [videoError, setVideoError] = useState(false);
 
-    const handleVideoError = () => {
-      setVideoError(true);
-    };
-    return (
-      <Card className={cn(
-        "bg-gray-900 border p-6 relative",
-        isWinner ? "border-green-500/50 bg-green-900/10" : "border-gray-800"
-      )}>
-        {/* 勝者の王冠 */}
-        {isWinner && (
-          <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-            <div className="bg-yellow-500 rounded-full p-2">
-              <Crown className="h-6 w-6 text-yellow-900" />
-            </div>
-          </div>
-        )}
-
-        {/* プレイヤー情報 */}
-        <div className="flex items-center gap-4 mb-4">
-          <img
-            src={avatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${userId}`}
-            alt={username}
-            className="w-12 h-12 rounded-lg border border-gray-700"
-          />
-          <div className="flex-1">
-            <div className="flex items-center gap-2">
-              <h3 className="text-lg font-semibold text-white">
-                {username || 'Unknown User'}
-              </h3>
-              {isCurrentUser && (
-                <Badge variant="secondary" className="bg-cyan-500/20 text-cyan-300 text-xs">
-                  {t('archivedBattleCard.me')}
-                </Badge>
-              )}
-            </div>
-            <div className="flex items-center gap-3 mt-1">
-              <div className="flex items-center gap-1">
-                <Users className="h-4 w-4 text-gray-400" />
-                <span className="text-sm text-gray-400">{votes} {t('battleReplay.playerInfo.totalVotes')}</span>
-              </div>
-              {ratingChange !== null && ratingChange !== undefined && (
-                <div className={cn(
-                  "flex items-center gap-1 text-sm",
-                  ratingChange > 0 ? "text-green-400" : ratingChange < 0 ? "text-red-400" : "text-gray-400"
-                )}>
-                  {ratingChange > 0 ? (
-                    <TrendingUp className="h-4 w-4" />
-                  ) : ratingChange < 0 ? (
-                    <TrendingDown className="h-4 w-4" />
-                  ) : (
-                    <Minus className="h-4 w-4" />
-                  )}
-                  <span>{ratingChange > 0 ? '+' : ''}{ratingChange}</span>
-                  {newRating && <span className="text-gray-500">({newRating})</span>}
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* 動画エリア */}
-        <div className="aspect-video bg-black rounded-lg overflow-hidden relative">
-          {videoStatus.available && videoStatus.videoUrl && !videoError ? (
-            <video
-              src={videoStatus.videoUrl}
-              className="w-full h-full object-contain"
-              controls
-              preload="metadata"
-              onError={handleVideoError}
-            >
-              <source src={videoStatus.videoUrl} type="video/webm" />
-              <source src={videoStatus.videoUrl} type="video/mp4" />
-              Your browser does not support the video tag.
-            </video>
-          ) : (
-            <div className="w-full h-full flex flex-col items-center justify-center text-gray-400">
-              <ArchiveX className="h-16 w-16 mb-4" />
-              <div className="text-center px-4">
-                <p className="text-lg font-medium mb-2">
-                  {videoError ? t('battleReplay.videoDeleted.title') : videoStatus.message}
-                </p>
-                <p className="text-sm">
-                  {videoError ? t('battleReplay.videoDeleted.description') : videoStatus.description}
-                </p>
-              </div>
-            </div>
-          )}
-        </div>
-      </Card>
-    );
-  };
 
   return (
-    <div className="min-h-screen bg-gray-950 py-8">
-      <div className="container mx-auto px-4 max-w-7xl">
+    <div className="min-h-screen bg-gray-950 relative overflow-hidden">
+      {/* Background Animation */}
+      <div className="absolute inset-0">
+        <div className="absolute top-20 left-10 w-72 h-72 bg-cyan-500/10 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-yellow-500/5 rounded-full blur-3xl"></div>
+      </div>
+      
+      <div className="container mx-auto px-4 max-w-7xl py-8 relative z-10">
         {/* Header */}
         <div className="flex items-center gap-4 mb-8">
           <Button
@@ -281,21 +268,30 @@ const BattleReplayPage: React.FC = () => {
             size="sm"
             onClick={handleBack}
             leftIcon={<ArrowLeft className="h-4 w-4" />}
-            className="text-gray-400 hover:text-white"
+            className="text-gray-400 hover:text-white hover:bg-gray-800/50 transition-all duration-300"
           >
             {t('battleReplay.backButton')}
           </Button>
+          
           <div className="flex-1">
-            <h1 className="text-3xl font-bold text-white">{t('battleReplay.title')}</h1>
-            <div className="flex items-center gap-4 mt-2">
-              <span className="text-cyan-400 font-medium">
-                {battle.battle_format.replace(/_/g, ' ')}
-              </span>
-              <div className={cn("px-3 py-1 rounded-full text-sm font-medium flex items-center gap-1.5", resultBadge.className)}>
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 bg-clip-text text-transparent mb-3">
+              {t('battleReplay.title')}
+            </h1>
+            <div className="flex flex-wrap items-center gap-4">
+              <div className={cn(
+                "flex items-center gap-2 px-4 py-2 rounded-xl backdrop-blur-sm bg-gradient-to-r border font-medium text-sm shadow-lg",
+                `${battleFormatInfo.color} border-gray-600/50 ${battleFormatInfo.textColor}`
+              )}>
+                {battleFormatInfo.icon}
+                {battleFormatInfo.label}
+              </div>
+              
+              <div className={cn("px-4 py-2 rounded-xl text-sm font-medium flex items-center gap-2 backdrop-blur-sm", resultBadge.className)}>
                 {resultBadge.icon}
                 {resultBadge.text}
               </div>
-              <span className="text-gray-400 text-sm flex items-center gap-1">
+              
+              <span className="text-gray-400 text-sm flex items-center gap-2 px-3 py-2 bg-gray-800/50 rounded-lg backdrop-blur-sm">
                 <Calendar className="h-4 w-4" />
                 {format(new Date(battle.archived_at), 'yyyy/MM/dd HH:mm', { locale: currentLocale })}
               </span>
@@ -303,57 +299,282 @@ const BattleReplayPage: React.FC = () => {
           </div>
         </div>
 
-        {/* バトル結果統計 */}
-        <Card className="bg-gray-900 border border-gray-800 p-6 mb-8">
-          <div className="text-center">
-            <div className="text-6xl font-extrabold text-gray-400 mb-4">VS</div>
-            <div className="flex justify-center items-center gap-8">
-              <div className="text-center">
-                <div className="text-3xl font-bold text-cyan-400">{battle.final_votes_a}</div>
-                <div className="text-sm text-gray-400">{t('battleReplay.playerInfo.playerA')}</div>
-              </div>
-              <div className="text-center">
-                <div className="text-lg text-gray-400 flex items-center gap-1">
-                  <Users className="h-5 w-5" />
-                  {battle.final_votes_a + battle.final_votes_b} {t('battleReplay.playerInfo.totalVotes')}
+        {/* Battle Result Overview */}
+        <Card className={`bg-gradient-to-br ${gradientBg} from-gray-900/90 to-gray-950/90 border border-gray-700/50 backdrop-blur-sm mb-8 relative overflow-hidden`}>
+          {/* Background Pattern */}
+          <div className="absolute inset-0 opacity-5">
+            <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white/10 to-transparent transform rotate-45"></div>
+          </div>
+          
+          <div className="relative p-8">
+            {/* VS Header with usernames */}
+            <div className="text-center mb-8">
+              <div className="flex items-center justify-center gap-6 mb-4">
+                <div className="text-right flex-1">
+                  <h2 className="text-2xl md:text-3xl font-bold text-white mb-1 truncate">
+                    {battle.contestant_a?.username || 'Player A'}
+                  </h2>
+                  <div 
+                    className="text-sm font-medium tracking-wide uppercase opacity-80"
+                    style={{ color: colorA }}
+                  >
+                    {t('battleReplay.playerInfo.playerA')}
+                  </div>
+                </div>
+                
+                <div className="text-6xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500 drop-shadow-2xl animate-pulse px-4">
+                  VS
+                </div>
+                
+                <div className="text-left flex-1">
+                  <h2 className="text-2xl md:text-3xl font-bold text-white mb-1 truncate">
+                    {battle.contestant_b?.username || 'Player B'}
+                  </h2>
+                  <div 
+                    className="text-sm font-medium tracking-wide uppercase opacity-80"
+                    style={{ color: colorB }}
+                  >
+                    {t('battleReplay.playerInfo.playerB')}
+                  </div>
                 </div>
               </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-purple-400">{battle.final_votes_b}</div>
-                <div className="text-sm text-gray-400">{t('battleReplay.playerInfo.playerB')}</div>
+            </div>
+
+            {/* Video Confrontation Area */}
+            <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto_1fr] gap-6 mb-8">
+                              {/* Player A Video Preview */}
+              <div className="relative">
+                <div className="aspect-video bg-black rounded-xl overflow-hidden relative shadow-2xl border-2" style={{ borderColor: colorA }}>
+                  {player1VideoStatus.available && player1VideoStatus.videoUrl ? (
+                    <video
+                      src={player1VideoStatus.videoUrl}
+                      className="w-full h-full object-contain"
+                      controls
+                      preload="metadata"
+                      onError={(e) => {
+                        console.error('Player A video error:', e);
+                        e.currentTarget.style.display = 'none';
+                        const errorDiv = e.currentTarget.nextElementSibling as HTMLElement;
+                        if (errorDiv) errorDiv.style.display = 'flex';
+                      }}
+                    >
+                      <source src={player1VideoStatus.videoUrl} type="video/webm" />
+                      <source src={player1VideoStatus.videoUrl} type="video/mp4" />
+                      {t('battleReplay.videoNotSupported')}
+                    </video>
+                  ) : null}
+                  
+                  {!player1VideoStatus.available || !player1VideoStatus.videoUrl ? (
+                    <div className="w-full h-full flex flex-col items-center justify-center text-gray-400 bg-gradient-to-br from-gray-800 to-gray-900">
+                      <ArchiveX className="h-16 w-16 mb-3 opacity-50" />
+                      <p className="text-sm text-center px-4">
+                        {t('battleReplay.videoNotAvailable.title')}
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="w-full h-full flex flex-col items-center justify-center text-gray-400 bg-gradient-to-br from-gray-800 to-gray-900" style={{ display: 'none' }}>
+                      <AlertTriangle className="h-16 w-16 mb-3 opacity-50" />
+                      <p className="text-sm text-center px-4">
+                        {t('battleReplay.videoError')}
+                      </p>
+                    </div>
+                  )}
+                  
+                  {/* Player A Overlay - Top Left */}
+                  <div className="absolute top-4 left-4 bg-black/80 backdrop-blur-sm rounded-lg p-3 border border-gray-600/30">
+                    <div className="flex items-center gap-3">
+                      <div 
+                        className="w-10 h-10 rounded-full p-1 flex-shrink-0"
+                        style={{ background: `linear-gradient(135deg, ${colorA}, ${colorA}80)` }}
+                      >
+                        <img
+                          src={battle.contestant_a?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${battle.player1_user_id}`}
+                          alt={battle.contestant_a?.username}
+                          className="w-full h-full rounded-full border border-gray-900 object-cover"
+                        />
+                      </div>
+                      <div className="min-w-0">
+                        <div className="text-white font-bold text-sm truncate max-w-[120px]">
+                          {battle.contestant_a?.username || 'Player A'}
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div 
+                            className="text-xl font-bold"
+                            style={{ color: colorA }}
+                          >
+                            {battle.final_votes_a}
+                          </div>
+                          <span className="text-xs text-gray-300">{t('battleCard.votes')}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Winner Badge */}
+                  {isAWinner && (
+                    <div className="absolute top-4 right-4">
+                      <div className="bg-gradient-to-r from-yellow-500 to-amber-600 rounded-full p-2 shadow-lg animate-pulse">
+                        <Crown className="h-5 w-5 text-white" />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* VS Separator */}
+              <div className="flex items-center justify-center lg:px-6">
+                <div className="flex flex-col items-center gap-4">
+                  <div className="text-3xl md:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-yellow-500 to-red-500 animate-pulse">
+                    ⚔️
+                  </div>
+                  <div className="text-center bg-gray-800/50 px-4 py-2 rounded-xl backdrop-blur-sm border border-gray-600/30">
+                    <div className="flex items-center gap-2 text-gray-400 mb-1">
+                      <Users className="h-4 w-4" />
+                      <span className="text-sm font-medium">Total Votes</span>
+                    </div>
+                    <div className="text-2xl font-bold text-white">
+                      {totalVotes}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Player B Video Preview */}
+              <div className="relative">
+                <div className="aspect-video bg-black rounded-xl overflow-hidden relative shadow-2xl border-2" style={{ borderColor: colorB }}>
+                  {player2VideoStatus.available && player2VideoStatus.videoUrl ? (
+                    <video
+                      src={player2VideoStatus.videoUrl}
+                      className="w-full h-full object-contain"
+                      controls
+                      preload="metadata"
+                      onError={(e) => {
+                        console.error('Player B video error:', e);
+                        e.currentTarget.style.display = 'none';
+                        const errorDiv = e.currentTarget.nextElementSibling as HTMLElement;
+                        if (errorDiv) errorDiv.style.display = 'flex';
+                      }}
+                    >
+                      <source src={player2VideoStatus.videoUrl} type="video/webm" />
+                      <source src={player2VideoStatus.videoUrl} type="video/mp4" />
+                      {t('battleReplay.videoNotSupported')}
+                    </video>
+                  ) : null}
+                  
+                  {!player2VideoStatus.available || !player2VideoStatus.videoUrl ? (
+                    <div className="w-full h-full flex flex-col items-center justify-center text-gray-400 bg-gradient-to-br from-gray-800 to-gray-900">
+                      <ArchiveX className="h-16 w-16 mb-3 opacity-50" />
+                      <p className="text-sm text-center px-4">
+                        {t('battleReplay.videoNotAvailable.title')}
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="w-full h-full flex flex-col items-center justify-center text-gray-400 bg-gradient-to-br from-gray-800 to-gray-900" style={{ display: 'none' }}>
+                      <AlertTriangle className="h-16 w-16 mb-3 opacity-50" />
+                      <p className="text-sm text-center px-4">
+                        {t('battleReplay.videoError')}
+                      </p>
+                    </div>
+                  )}
+                  
+                  {/* Player B Overlay - Top Left */}
+                  <div className="absolute top-4 left-4 bg-black/80 backdrop-blur-sm rounded-lg p-3 border border-gray-600/30">
+                    <div className="flex items-center gap-3">
+                      <div 
+                        className="w-10 h-10 rounded-full p-1 flex-shrink-0"
+                        style={{ background: `linear-gradient(135deg, ${colorB}, ${colorB}80)` }}
+                      >
+                        <img
+                          src={battle.contestant_b?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${battle.player2_user_id}`}
+                          alt={battle.contestant_b?.username}
+                          className="w-full h-full rounded-full border border-gray-900 object-cover"
+                        />
+                      </div>
+                      <div className="min-w-0">
+                        <div className="text-white font-bold text-sm truncate max-w-[120px]">
+                          {battle.contestant_b?.username || 'Player B'}
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div 
+                            className="text-xl font-bold"
+                            style={{ color: colorB }}
+                          >
+                            {battle.final_votes_b}
+                          </div>
+                          <span className="text-xs text-gray-300">{t('battleCard.votes')}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Winner Badge */}
+                  {isBWinner && (
+                    <div className="absolute top-4 right-4">
+                      <div className="bg-gradient-to-r from-yellow-500 to-amber-600 rounded-full p-2 shadow-lg animate-pulse">
+                        <Crown className="h-5 w-5 text-white" />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+            
+            {/* Vote Distribution Bar */}
+            <div className="max-w-2xl mx-auto">
+              <div className="flex justify-between text-sm text-gray-400 mb-3">
+                <div className="flex items-center gap-2">
+                  <div 
+                    className="w-3 h-3 rounded-full"
+                    style={{ backgroundColor: colorA }}
+                  ></div>
+                  <span className="font-medium">{battle.contestant_a?.username || 'Player A'}</span>
+                  <span className="font-bold">{percentageA.toFixed(1)}%</span>
+                </div>
+                <span className="font-medium text-gray-300">Vote Distribution</span>
+                <div className="flex items-center gap-2">
+                  <span className="font-bold">{percentageB.toFixed(1)}%</span>
+                  <span className="font-medium">{battle.contestant_b?.username || 'Player B'}</span>
+                  <div 
+                    className="w-3 h-3 rounded-full"
+                    style={{ backgroundColor: colorB }}
+                  ></div>
+                </div>
+              </div>
+              <div className="h-4 bg-gray-800 rounded-full overflow-hidden shadow-inner border border-gray-700">
+                <div className="h-full flex">
+                  <div 
+                    className="transition-all duration-1000 ease-out relative"
+                    style={{ 
+                      width: `${percentageA}%`, 
+                      background: `linear-gradient(90deg, ${colorA}, ${colorA}80)` 
+                    }}
+                  >
+                    {percentageA > 15 && (
+                      <div className="absolute right-2 top-1/2 transform -translate-y-1/2 text-white text-xs font-bold">
+                        {battle.final_votes_a}
+                      </div>
+                    )}
+                  </div>
+                  <div 
+                    className="transition-all duration-1000 ease-out relative"
+                    style={{ 
+                      width: `${percentageB}%`, 
+                      background: `linear-gradient(90deg, ${colorB}80, ${colorB})` 
+                    }}
+                  >
+                    {percentageB > 15 && (
+                      <div className="absolute left-2 top-1/2 transform -translate-y-1/2 text-white text-xs font-bold">
+                        {battle.final_votes_b}
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </Card>
 
-        {/* プレイヤーカード */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <PlayerCard
-            username={battle.contestant_a?.username}
-            avatarUrl={battle.contestant_a?.avatar_url || undefined}
-            userId={battle.player1_user_id}
-            isCurrentUser={battle.player1_user_id === user?.id}
-            isWinner={Boolean(battle.winner_id === battle.player1_user_id)}
-            votes={battle.final_votes_a}
-            isPlayerA={true}
-            ratingChange={battle.player1_rating_change}
-            newRating={battle.player1_final_rating}
-            videoStatus={player1VideoStatus}
-          />
 
-          <PlayerCard
-            username={battle.contestant_b?.username}
-            avatarUrl={battle.contestant_b?.avatar_url || undefined}
-            userId={battle.player2_user_id}
-            isCurrentUser={battle.player2_user_id === user?.id}
-            isWinner={Boolean(battle.winner_id === battle.player2_user_id)}
-            votes={battle.final_votes_b}
-            isPlayerA={false}
-            ratingChange={battle.player2_rating_change}
-            newRating={battle.player2_final_rating}
-            videoStatus={player2VideoStatus}
-          />
-        </div>
       </div>
     </div>
   );

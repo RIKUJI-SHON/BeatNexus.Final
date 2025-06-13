@@ -619,7 +619,8 @@
     "votes": "votes",
     "leading": "Leading",
     "addComment": "Add your comment...",
-    "postComment": "Post Comment"
+    "postComment": "Post Comment",
+    "videoLoading": "Loading video..."
   },
   "toasts": {
     "error": "Error",
@@ -1191,7 +1192,9 @@
     "videoDeleted": {
       "title": "Video Deleted",
       "description": "This account's video has been deleted and cannot be played. Battle history and rating changes are still recorded."
-    }
+    },
+    "videoNotSupported": "Your browser does not support video playback.",
+    "videoError": "Failed to load video"
   },
   "pagination": {
     "previous": "Previous",

@@ -440,7 +440,8 @@
     "votes": "票",
     "leading": "リード中",
     "addComment": "コメントを追加...",
-    "postComment": "コメントを投稿"
+    "postComment": "コメントを投稿",
+    "videoLoading": "動画を読み込み中..."
   },
   "toasts": {
     "error": "エラー",
@@ -975,7 +976,9 @@
     "videoDeleted": {
       "title": "動画が削除されました",
       "description": "このアカウントの動画は削除されているため、再生できません。バトル履歴とレーティング変動は記録されています。"
-    }
+    },
+    "videoNotSupported": "お使いのブラウザは動画の再生に対応していません。",
+    "videoError": "動画の読み込みに失敗しました"
   },
   "pagination": {
     "previous": "前へ",
