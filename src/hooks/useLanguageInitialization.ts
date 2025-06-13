@@ -27,14 +27,15 @@ export const useLanguageInitialization = () => {
             .single();
 
           if (data?.language) {
-            // ✅ マイグレーション後は言語コード（'ja' | 'en'）のみ保存されている
+            // データベースの言語コード（'ja' | 'en'）をそのまま使用
             if (data.language === 'ja' || data.language === 'en') {
               if (i18n.language !== data.language) {
                 i18n.changeLanguage(data.language);
+                console.log(`Language loaded from database: ${data.language}`);
               }
               return;
             } else {
-              // 不正な値の場合は警告（マイグレーション後は発生しない想定）
+              // 不正な値の場合は警告
               console.warn('Unexpected language value in database:', data.language);
             }
           }

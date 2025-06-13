@@ -629,7 +629,7 @@ const PostPage: React.FC = () => {
 
       // 投稿成功後にクールダウン情報を更新
       refreshCooldown();
-      
+
       setStep('success');
     } catch (err) {
       setError(err instanceof Error ? err.message : '投稿に失敗しました');

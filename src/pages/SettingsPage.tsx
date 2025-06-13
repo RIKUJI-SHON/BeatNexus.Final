@@ -32,20 +32,14 @@ const SettingsPage: React.FC = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
   const [isDeletingAccount, setIsDeletingAccount] = useState<boolean>(false);
 
-  // ✅ 言語設定が統一されたため、変換ロジックを簡素化
-  const dbToLanguageCode = (dbLanguage: string): string => {
-    // データベースには言語コード（"ja", "en"）のみが保存されている
-    if (dbLanguage === 'ja' || dbLanguage === 'en') {
-      return dbLanguage;
+  // 言語コードの検証関数（統一された'en', 'ja'のみ）
+  const validateLanguageCode = (language: string): string => {
+    if (language === 'ja' || language === 'en') {
+      return language;
     }
-    // 不正な値の場合はデフォルトを返す（マイグレーション後は発生しない想定）
-    console.warn('Unexpected language value in database:', dbLanguage);
+    // 不正な値の場合はデフォルトを返す
+    console.warn('Unexpected language value:', language);
     return 'en'; // デフォルトは英語
-  };
-
-  const languageCodeToDb = (languageCode: string): string => {
-    // 現在はデータベースにも言語コードをそのまま保存
-    return languageCode;
   };
 
   useEffect(() => {
@@ -96,9 +90,9 @@ const SettingsPage: React.FC = () => {
 
           let currentLang = i18n.language || 'en';
           if (data && data.language) {
-            // データベースの言語値をコードに変換
-            currentLang = dbToLanguageCode(data.language);
-            console.log('Settings: Using language from DB:', data.language, '-> converted to:', currentLang);
+            // データベースの言語値を検証
+            currentLang = validateLanguageCode(data.language);
+            console.log('Settings: Using language from DB:', data.language, '-> validated to:', currentLang);
           } else {
             console.log('Settings: No language in DB, using i18n language:', currentLang);
           }

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BeatNexus Email Verification</title>
+    <style>
+        body {
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8fafc;
+        }
+        .container {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 16px;
+            padding: 0;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: rgba(255,255,255,0.1);
+            padding: 30px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+        .logo {
+            font-size: 32px;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .tagline {
+            color: rgba(255,255,255,0.9);
+            font-size: 16px;
+            margin: 0;
+        }
+        .content {
+            background: white;
+            padding: 40px 30px;
+        }
+        .welcome {
+            font-size: 24px;
+            color: #2d3748;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .message {
+            font-size: 16px;
+            color: #4a5568;
+            margin-bottom: 30px;
+            line-height: 1.8;
+        }
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            padding: 16px 32px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 16px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            transition: transform 0.2s;
+            margin: 20px 0;
+            display: block;
+            max-width: 300px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+        .alternative {
+            background: #f7fafc;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .alternative-text {
+            font-size: 14px;
+            color: #718096;
+            margin: 0;
+        }
+        .footer {
+            background: #2d3748;
+            color: #a0aec0;
+            padding: 20px 30px;
+            text-align: center;
+            font-size: 14px;
+        }
+        .footer-note {
+            margin: 10px 0 0 0;
+            font-size: 12px;
+            color: #718096;
+        }
+        .beatbox-emoji {
+            font-size: 24px;
+            margin: 0 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">🎵 BeatNexus</div>
+            <p class="tagline">Beatboxing Competition Platform</p>
+        </div>
+        
+        <div class="content">
+            <h1 class="welcome">Welcome to BeatNexus!</h1>
+            
+            <p class="message">
+                Welcome to the world of beatboxing! <span class="beatbox-emoji">🎤</span><br>
+                To complete your account creation, please click the button below to verify your email address.
+            </p>
+            
+            <a href="{{ .ConfirmationURL }}" class="cta-button">
+                ✅ Verify Email Address
+            </a>
+            
+            <div class="alternative">
+                <p class="alternative-text">
+                    <strong>If the button doesn't work:</strong><br>
+                    Copy and paste the following URL into your browser's address bar:<br>
+                    <code>{{ .ConfirmationURL }}</code>
+                </p>
+            </div>
+            
+            <p class="message">
+                After verification, you can immediately join beatboxing battles! <span class="beatbox-emoji">🔥</span>
+            </p>
+        </div>
+        
+        <div class="footer">
+            <p>BeatNexus Team</p>
+            <p class="footer-note">
+                This is an automated email. Please do not reply to this message.<br>
+                If you have any questions, please contact us through the app's support feature.
+            </p>
+        </div>
+    </div>
+</body>
+</html> 
