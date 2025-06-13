@@ -90,7 +90,12 @@
     "voteSuccess": "投票しました！",
     "voteError": "投票に失敗しました: {{message}}",
     "alreadyVoted": "この対戦には既に投票済みです。",
-    "loginToVote": "投票するにはログインしてください。"
+    "loginToVote": "投票するにはログインしてください。",
+    "participantMessage": "このバトルの参加者として、投票することはできません。投票の様子をお楽しみください！",
+    "votes": "票"
+  },
+  "battleView": {
+    "liveVoting": "ライブ投票"
   },
   "battleCard": {
     "votingEndsIn": "残り{{days}}日 {{hours}}時間",
@@ -105,6 +110,8 @@
     "totalVotes": "総投票数",
     "comments": "コメント",
     "voteButton": "このバトルに投票する",
+    "voteNow": "今すぐ投票",
+    "watch": "視聴",
     "battleFormats": {
       "MAIN_BATTLE": "メインバトル",
       "MINI_BATTLE": "ミニバトル",

@@ -90,7 +90,12 @@
     "voteSuccess": "Vote cast successfully!",
     "voteError": "Failed to cast vote: {{message}}",
     "alreadyVoted": "You have already voted in this battle.",
-    "loginToVote": "Please login to vote."
+    "loginToVote": "Please login to vote.",
+    "participantMessage": "As a participant in this battle, you cannot vote. Watch the voting unfold!",
+    "votes": "votes"
+  },
+  "battleView": {
+    "liveVoting": "Live Voting"
   },
   "battleCard": {
     "votingEndsIn": "{{days}}d {{hours}}h left",
@@ -105,6 +110,8 @@
     "totalVotes": "Total Votes",
     "comments": "Comments",
     "voteButton": "Vote on this battle",
+    "voteNow": "Vote Now",
+    "watch": "Watch",
     "battleFormats": {
       "MAIN_BATTLE": "Main Battle",
       "MINI_BATTLE": "Mini Battle",
