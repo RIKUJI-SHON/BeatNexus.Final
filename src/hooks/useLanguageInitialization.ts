@@ -1,12 +1,11 @@
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '../store/authStore';
-import { supabase } from '../lib/supabase';
 
 /**
  * ユーザーの言語設定を初期化するカスタムフック
  * - ログインしていないユーザー：ブラウザの言語設定を検出して適用
- * - ログインユーザー：データベースの設定を優先、なければブラウザ設定
+ * - ログインユーザー：ブラウザ設定を優先（認証エラーを防ぐため）
  */
 export const useLanguageInitialization = () => {
   const { i18n } = useTranslation();
@@ -17,34 +16,6 @@ export const useLanguageInitialization = () => {
       // 認証状態のロードが完了するまで待機
       if (loading) return;
 
-      if (user) {
-        // ログインユーザーの場合：データベースから言語設定を取得
-        try {
-          const { data, error } = await supabase
-            .from('profiles')
-            .select('language')
-            .eq('id', user.id)
-            .single();
-
-          if (data?.language) {
-            // データベースの言語コード（'ja' | 'en'）をそのまま使用
-            if (data.language === 'ja' || data.language === 'en') {
-              if (i18n.language !== data.language) {
-                i18n.changeLanguage(data.language);
-                console.log(`Language loaded from database: ${data.language}`);
-              }
-              return;
-            } else {
-              // 不正な値の場合は警告
-              console.warn('Unexpected language value in database:', data.language);
-            }
-          }
-        } catch (error) {
-          console.warn('Failed to load user language preference:', error);
-        }
-      }
-
-      // ログインしていないユーザー、またはデータベースに言語設定がない場合
       // ブラウザの言語設定を検出
       const detectBrowserLanguage = () => {
         const browserLanguages = navigator.languages || [navigator.language];
@@ -65,13 +36,15 @@ export const useLanguageInitialization = () => {
       
       // 現在の言語と異なる場合のみ変更
       if (i18n.language !== detectedLanguage) {
+        console.log(`useLanguageInitialization: Setting language to ${detectedLanguage}`);
         i18n.changeLanguage(detectedLanguage);
-        console.log(`Language initialized from browser setting: ${detectedLanguage}`);
+      } else {
+        console.log(`useLanguageInitialization: Language already set to ${detectedLanguage}`);
       }
     };
 
     initializeLanguage();
-  }, [user, loading, i18n]);
+  }, [loading, i18n]); // userを依存配列から削除してシンプルに
 
   return {
     currentLanguage: i18n.language,

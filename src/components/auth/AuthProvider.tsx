@@ -1,6 +1,7 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useAuthStore } from '../../store/authStore';
 import { supabase } from '../../lib/supabase';
+import { useTranslation } from 'react-i18next';
 
 interface AuthProviderProps {
   children: React.ReactNode;
@@ -8,6 +9,9 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const { setUser } = useAuthStore();
+  const { i18n } = useTranslation();
+  const processedUsers = useRef(new Set<string>());
+  const authErrorCount = useRef(0);
 
   // ブラウザ言語を検出する関数
   const detectBrowserLanguage = (): string => {
@@ -25,62 +29,139 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     return 'en'; // デフォルト
   };
 
-  // 新規ユーザーの言語設定を行う関数（プロフィール + メタデータ）
-  const setNewUserLanguage = async (userId: string) => {
+  // 認証エラー時の自動リカバリ
+  const handleAuthError = async (error: unknown) => {
+    console.error('Auth error detected:', error);
+    authErrorCount.current += 1;
+
+    // 3回以上エラーが発生した場合は自動ログアウト
+    if (authErrorCount.current >= 3) {
+      console.log('Too many auth errors, signing out...');
+      try {
+        await supabase.auth.signOut();
+        setUser(null);
+        authErrorCount.current = 0;
+        // ページをリロードして状態をリセット
+        window.location.reload();
+      } catch (signOutError) {
+        console.error('Error during sign out:', signOutError);
+      }
+      return;
+    }
+
+    // トークンリフレッシュを試行
     try {
+      console.log('Attempting to refresh session...');
+      const { data, error: refreshError } = await supabase.auth.refreshSession();
+      
+      if (refreshError) {
+        console.error('Session refresh failed:', refreshError);
+        // リフレッシュに失敗した場合はログアウト
+        await supabase.auth.signOut();
+        setUser(null);
+      } else {
+        console.log('Session refreshed successfully');
+        authErrorCount.current = 0; // エラーカウントをリセット
+      }
+    } catch (refreshError) {
+      console.error('Unexpected error during session refresh:', refreshError);
+      await supabase.auth.signOut();
+      setUser(null);
+    }
+  };
+
+  // 安全な言語設定更新（重複処理を防ぐ）
+  const safeUpdateLanguage = async (userId: string, eventType: string) => {
+    const userKey = `${userId}-${eventType}`;
+    
+    // 既に処理済みの場合はスキップ
+    if (processedUsers.current.has(userKey)) {
+      console.log(`Language update already processed for ${userKey}`);
+      return;
+    }
+
+    try {
+      processedUsers.current.add(userKey);
       const browserLanguage = detectBrowserLanguage();
-      console.log(`Setting language for new user ${userId}: ${browserLanguage}`);
+      
+      console.log(`Safe language update for user ${userId} (${eventType}): ${browserLanguage}`);
 
-      // 1. プロフィールテーブルの言語設定
-      const response = await fetch('/functions/v1/set-user-language', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`,
-        },
-        body: JSON.stringify({
-          user_id: userId,
-          browser_language: navigator.language
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+      // i18nの言語を即座に更新
+      if (i18n.language !== browserLanguage) {
+        i18n.changeLanguage(browserLanguage);
+        console.log(`i18n language changed to: ${browserLanguage}`);
       }
 
-      const result = await response.json();
-      console.log('Profile language set successfully:', result);
+      // プロフィール言語設定を確認・更新（エラーでも継続）
+      try {
+        const { data: profile, error: fetchError } = await supabase
+          .from('profiles')
+          .select('language')
+          .eq('id', userId)
+          .single();
 
-      // 2. auth.usersのraw_user_meta_dataにも言語情報を保存（認証メール用）
-      const { error: metaError } = await supabase.auth.updateUser({
-        data: {
-          language: browserLanguage,
-          language_full: browserLanguage === 'ja' ? 'Japanese' : 'English',
-          browser_language: navigator.language
+        if (fetchError) {
+          console.warn('Failed to fetch profile language:', fetchError);
+          return;
         }
-      });
 
-      if (metaError) {
-        console.error('Failed to update user metadata:', metaError);
-      } else {
-        console.log('User metadata updated with language info');
+        if (profile?.language !== browserLanguage) {
+          console.log(`Updating profile language from ${profile?.language} to ${browserLanguage}`);
+          
+          const { error } = await supabase
+            .from('profiles')
+            .update({ language: browserLanguage })
+            .eq('id', userId);
+
+          if (error) {
+            console.warn('Failed to update profile language:', error);
+          } else {
+            console.log('Profile language updated successfully');
+          }
+        }
+      } catch (profileError) {
+        console.warn('Error updating profile language:', profileError);
+        // プロフィール更新エラーは認証エラーとして扱わない
       }
 
     } catch (error) {
-      console.error('Failed to set user language:', error);
-      // エラーが発生してもユーザー体験を阻害しないよう、ログのみ出力
+      console.error('Error in safe language update:', error);
+      // 認証関連のエラーの場合はリカバリを試行
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      if (errorMessage.includes('JWT') || errorMessage.includes('token') || errorMessage.includes('auth')) {
+        await handleAuthError(error);
+      }
     }
   };
 
   useEffect(() => {
+    let mounted = true;
+
     // 初期セッションを取得
     const getInitialSession = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
-        setUser(session?.user ?? null);
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (error) {
+          console.error('Error getting initial session:', error);
+          await handleAuthError(error);
+          return;
+        }
+
+        if (mounted) {
+          setUser(session?.user ?? null);
+          authErrorCount.current = 0; // 成功時はエラーカウントをリセット
+          
+          // 既にログインしている場合は言語設定を確認（安全に）
+          if (session?.user) {
+            await safeUpdateLanguage(session.user.id, 'initial');
+          }
+        }
       } catch (error) {
-        console.error('Error getting initial session:', error);
-        setUser(null);
+        console.error('Unexpected error in getInitialSession:', error);
+        if (mounted) {
+          await handleAuthError(error);
+        }
       }
     };
 
@@ -90,20 +171,29 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         console.log('Auth state changed:', event, session?.user?.email);
+        
+        if (!mounted) return;
+        
         setUser(session?.user ?? null);
 
-        // 新規ユーザー登録時にブラウザ言語を設定
-        if (event === 'SIGNED_UP' && session?.user) {
-          console.log('New user signed up, setting browser language...');
-          await setNewUserLanguage(session.user.id);
+        // 認証成功時はエラーカウントをリセット
+        if (session?.user) {
+          authErrorCount.current = 0;
+        }
+
+        // 言語設定は新規登録時のみ実行
+        if (session?.user && String(event) === 'SIGNED_UP') {
+          console.log('New user signed up, setting language...');
+          await safeUpdateLanguage(session.user.id, 'signup');
         }
       }
     );
 
     return () => {
+      mounted = false;
       subscription.unsubscribe();
     };
-  }, [setUser]);
+  }, [setUser, i18n]);
 
   return <>{children}</>;
 }; 
