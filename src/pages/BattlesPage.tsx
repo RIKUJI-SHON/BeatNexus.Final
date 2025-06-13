@@ -201,69 +201,114 @@ const BattlesPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-950 py-10">
       <div className="container mx-auto px-4">
-        <div className="relative mb-12 rounded-2xl overflow-hidden">
-          <div className="absolute inset-0 bg-[url('https://images.pexels.com/photos/2034851/pexels-photo-2034851.jpeg?auto=compress&cs=tinysrgb&w=1920')] bg-cover bg-center">
-            <div className="absolute inset-0 bg-gradient-to-r from-gray-900/95 to-gray-900/90" />
+        {/* Welcome Area - Enhanced Design */}
+        <section className="relative mb-12 overflow-hidden">
+          {/* Background Image */}
+          <div className="absolute inset-0">
+            {/* 背景画像 - ホーム画面と同じ画像を使用 */}
+            <div className="absolute inset-0 bg-[url('/images/hero-background.png')] bg-cover bg-center bg-no-repeat">
+              {/* フォールバック: オンライン画像（開発用） */}
+              <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?q=80&w=1920&auto=format&fit=crop')] bg-cover bg-center bg-no-repeat [background-image:var(--fallback-bg)]"></div>
+              
+              {/* グラデーションオーバーレイで可読性を確保 */}
+              <div className="absolute inset-0 bg-gradient-to-br from-gray-900/90 via-gray-900/85 to-gray-950/90"></div>
+              <div className="absolute inset-0 bg-gradient-to-t from-gray-950/60 via-transparent to-gray-900/40"></div>
+            </div>
           </div>
 
-          <div className="relative px-8 py-12 md:py-16 text-center">
-            <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-4 animate-fade-in">
-              {t('battlesPage.welcome.title')} <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-500 to-purple-500">BeatNexus</span>
-            </h1>
-            <p className="text-xl text-gray-300 max-w-2xl mx-auto mb-8 animate-fade-in-delay-1">
-              {t('battlesPage.welcome.subtitle')}
-            </p>
+          {/* Enhanced Background Effects */}
+          <div className="absolute inset-0">
+            <div className="absolute top-10 left-10 w-80 h-80 bg-cyan-500/10 rounded-full blur-3xl"></div>
+            <div className="absolute bottom-10 right-10 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl"></div>
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-yellow-500/5 rounded-full blur-3xl"></div>
+          </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-3xl mx-auto mb-10 animate-fade-in-delay-2">
-              <div className="bg-gray-800/50 backdrop-blur rounded-lg p-4 border border-gray-700">
-                <Mic className="h-6 w-6 text-cyan-400 mx-auto mb-2" />
-                <div className="text-2xl font-bold text-white">{totalSubmissionsCount.toLocaleString()}+</div>
-                <div className="text-sm text-gray-400">{t('battlesPage.welcome.stats.totalSubmissions')}</div>
-              </div>
-              <div className="bg-gray-800/50 backdrop-blur rounded-lg p-4 border border-gray-700">
-                <Users className="h-6 w-6 text-purple-400 mx-auto mb-2" />
-                <div className="text-2xl font-bold text-white">{communityMembersCount.toLocaleString()}+</div>
-                <div className="text-sm text-gray-400">{t('battlesPage.welcome.stats.communityMembers')}</div>
-              </div>
-              <div className="bg-gray-800/50 backdrop-blur rounded-lg p-4 border border-gray-700">
-                <Play className="h-6 w-6 text-yellow-400 mx-auto mb-2" />
-                <div className="text-2xl font-bold text-white">{totalVotesCount.toLocaleString()}+</div>
-                <div className="text-sm text-gray-400">{t('battlesPage.welcome.stats.votesCast')}</div>
+          <div className="relative px-8 py-16 md:py-20 text-center z-10">
+            {/* Welcome Title - BEATNEXUS Wordmark */}
+            <div className="mb-6 animate-fade-in relative">
+              <div className="relative group">
+                {/* Glow Effect Background */}
+                <div className="absolute inset-0 opacity-20 group-hover:opacity-40 transition-opacity duration-500">
+                  <img 
+                    src="/images/BEATNEXUS-WORDMARK.png" 
+                    alt=""
+                    className="mx-auto max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg h-auto blur-md scale-110 filter brightness-150"
+                  />
+                </div>
+                
+                {/* Main Wordmark */}
+                <img 
+                  src="/images/BEATNEXUS-WORDMARK.png" 
+                  alt="BEATNEXUS"
+                  className="relative mx-auto max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg h-auto drop-shadow-2xl group-hover:scale-105 transition-all duration-500 filter group-hover:brightness-110"
+                />
               </div>
             </div>
+            
 
-            <div className="flex flex-col sm:flex-row justify-center gap-4 animate-fade-in-delay-2">
-              <Button
-                variant="primary"
-                size="lg"
-                leftIcon={<Play className="h-5 w-5" />}
-                className="bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full px-10"
-                onClick={() => {
-                  // 同じページなので何もしない（もしくはスクロール）
-                  document.getElementById('active-battles')?.scrollIntoView({ behavior: 'smooth' });
-                }}
-              >
-                {t('battlesPage.welcome.buttons.watchBattles')}
-              </Button>
-              <Button
-                variant="outline"
-                size="lg"
-                leftIcon={<Mic className="h-5 w-5" />}
-                className="border-2 border-cyan-500/50 text-cyan-400 hover:bg-cyan-500/10 rounded-full px-10"
-                onClick={handleCreateBattle}
-              >
-                {t('battlesPage.welcome.buttons.postBeat')}
-              </Button>
+
+            {/* Enhanced Stats Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto mb-12 animate-fade-in-delay-2">
+              {/* Total Submissions */}
+              <Card className="group relative bg-gradient-to-br from-gray-900 via-gray-850 to-gray-950 border border-gray-700/50 shadow-xl hover:shadow-2xl hover:shadow-cyan-500/10 transition-all duration-500 rounded-xl overflow-hidden backdrop-blur-sm p-6">
+                <div className="absolute inset-0 opacity-5">
+                  <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white/10 to-transparent transform rotate-45 translate-x-full group-hover:translate-x-[-100%] transition-transform duration-1000"></div>
+                </div>
+                <div className="relative text-center">
+                  <div className="w-16 h-16 bg-gradient-to-br from-cyan-500/20 to-blue-500/20 rounded-xl border border-cyan-500/40 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                    <Mic className="h-8 w-8 text-cyan-400" />
+                  </div>
+                  <div className="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400 mb-2">
+                    {totalSubmissionsCount.toLocaleString()}+
+                  </div>
+                  <div className="text-sm text-gray-400 font-medium">{t('battlesPage.welcome.stats.totalSubmissions')}</div>
+                </div>
+              </Card>
+
+              {/* Community Members */}
+              <Card className="group relative bg-gradient-to-br from-gray-900 via-gray-850 to-gray-950 border border-gray-700/50 shadow-xl hover:shadow-2xl hover:shadow-purple-500/10 transition-all duration-500 rounded-xl overflow-hidden backdrop-blur-sm p-6">
+                <div className="absolute inset-0 opacity-5">
+                  <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white/10 to-transparent transform rotate-45 translate-x-full group-hover:translate-x-[-100%] transition-transform duration-1000"></div>
+                </div>
+                <div className="relative text-center">
+                  <div className="w-16 h-16 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-xl border border-purple-500/40 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                    <Users className="h-8 w-8 text-purple-400" />
+                  </div>
+                  <div className="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 mb-2">
+                    {communityMembersCount.toLocaleString()}+
+                  </div>
+                  <div className="text-sm text-gray-400 font-medium">{t('battlesPage.welcome.stats.communityMembers')}</div>
+                </div>
+              </Card>
+
+              {/* Votes Cast */}
+              <Card className="group relative bg-gradient-to-br from-gray-900 via-gray-850 to-gray-950 border border-gray-700/50 shadow-xl hover:shadow-2xl hover:shadow-yellow-500/10 transition-all duration-500 rounded-xl overflow-hidden backdrop-blur-sm p-6">
+                <div className="absolute inset-0 opacity-5">
+                  <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white/10 to-transparent transform rotate-45 translate-x-full group-hover:translate-x-[-100%] transition-transform duration-1000"></div>
+                </div>
+                <div className="relative text-center">
+                  <div className="w-16 h-16 bg-gradient-to-br from-yellow-500/20 to-orange-500/20 rounded-xl border border-yellow-500/40 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                    <Play className="h-8 w-8 text-yellow-400" />
+                  </div>
+                  <div className="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-400 mb-2">
+                    {totalVotesCount.toLocaleString()}+
+                  </div>
+                  <div className="text-sm text-gray-400 font-medium">{t('battlesPage.welcome.stats.votesCast')}</div>
+                </div>
+              </Card>
             </div>
 
-            <div className="mt-6 text-sm text-gray-400 animate-fade-in-delay-2">
+
+
+            {/* Guide Link */}
+            <div className="text-sm text-gray-400 animate-fade-in-delay-3">
               {t('battlesPage.welcome.guide.newHere')}{' '}
-              <Link to="/how-to-guide" className="text-cyan-400 hover:text-cyan-300 font-semibold hover:underline">
+              <Link to="/how-to-guide" className="text-cyan-400 hover:text-cyan-300 font-semibold hover:underline transition-colors">
                 {t('battlesPage.welcome.guide.checkGuide')}
               </Link>
             </div>
           </div>
-        </div>
+        </section>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 lg:items-start">
           <div className="lg:col-span-3">
