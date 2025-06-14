@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Plus, Trophy, Crown, ArrowRight, Play, Mic, Users, Archive, BookOpen, Medal, Star, Video } from 'lucide-react';
+import beatnexusWordmark from '../assets/images/BEATNEXUS-WORDMARK.png';
+import heroBackground from '../assets/images/hero-background.png';
 import { BattleCard } from '../components/battle/BattleCard';
 import { ArchivedBattleCard } from '../components/battle/ArchivedBattleCard';
 import { BattleFilters } from '../components/battle/BattleFilters';
@@ -206,7 +208,7 @@ const BattlesPage: React.FC = () => {
           {/* Background Image */}
           <div className="absolute inset-0">
             {/* 背景画像 - ホーム画面と同じ画像を使用 */}
-            <div className="absolute inset-0 bg-[url('/images/hero-background.png')] bg-cover bg-center bg-no-repeat">
+            <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: `url(${heroBackground})` }}>
               {/* フォールバック: オンライン画像（開発用） */}
               <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?q=80&w=1920&auto=format&fit=crop')] bg-cover bg-center bg-no-repeat [background-image:var(--fallback-bg)]"></div>
               
@@ -230,7 +232,7 @@ const BattlesPage: React.FC = () => {
                 {/* Glow Effect Background */}
                 <div className="absolute inset-0 opacity-20 group-hover:opacity-40 transition-opacity duration-500">
                   <img 
-                    src="/images/BEATNEXUS-WORDMARK.png" 
+                    src={beatnexusWordmark} 
                     alt=""
                     className="mx-auto max-w-xs sm:max-w-sm md:max-w-md h-auto blur-md scale-110 filter brightness-150"
                   />
@@ -238,7 +240,7 @@ const BattlesPage: React.FC = () => {
                 
                 {/* Main Wordmark */}
                 <img 
-                  src="/images/BEATNEXUS-WORDMARK.png" 
+                  src={beatnexusWordmark} 
                   alt="BEATNEXUS"
                   className="relative mx-auto max-w-xs sm:max-w-sm md:max-w-md h-auto drop-shadow-2xl group-hover:scale-105 transition-all duration-500 filter group-hover:brightness-110"
                 />
