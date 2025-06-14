@@ -1,6 +1,12 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Mic, Users, Trophy, LineChart as ChartLine, ArrowRight, Play, Star, Shield, Video, Zap, Crown, Target, Upload, Vote } from 'lucide-react';
+import beatnexusWordmark from '../assets/images/BEATNEXUS-WORDMARK.png';
+import heroBackground from '../assets/images/hero-background.png';
+import step1Upload from '../assets/images/steps/step1-upload.png';
+import step2Matching from '../assets/images/steps/step2-matching.png';
+import step3Voting from '../assets/images/steps/step3-voting.png';
+import step4Results from '../assets/images/steps/step4-results.png';
 import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
 import LatestBattles from '../components/home/LatestBattles';
@@ -46,8 +52,8 @@ const HomePage: React.FC = () => {
       <section className="relative py-16 md:py-24 flex items-center justify-center overflow-hidden">
         {/* Background Image */}
         <div className="absolute inset-0">
-          {/* 背景画像 - public/images/フォルダに配置した画像を使用 */}
-          <div className="absolute inset-0 bg-[url('/images/hero-background.png')] bg-cover bg-center bg-no-repeat">
+          {/* 背景画像 - src/assets/images/フォルダに配置した画像を使用 */}
+          <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: `url(${heroBackground})` }}>
             {/* フォールバック: オンライン画像（開発用） */}
             <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?q=80&w=1920&auto=format&fit=crop')] bg-cover bg-center bg-no-repeat [background-image:var(--fallback-bg)]"></div>
             
@@ -71,7 +77,7 @@ const HomePage: React.FC = () => {
               {/* Glow Effect Background */}
               <div className="absolute inset-0 opacity-30 group-hover:opacity-50 transition-opacity duration-500">
                 <img 
-                  src="/images/BEATNEXUS-WORDMARK.png" 
+                  src={beatnexusWordmark} 
                   alt=""
                   className="mx-auto max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg h-auto blur-md scale-110 filter brightness-150"
                 />
@@ -79,7 +85,7 @@ const HomePage: React.FC = () => {
               
               {/* Main Wordmark */}
               <img 
-                src="/images/BEATNEXUS-WORDMARK.png" 
+                src={beatnexusWordmark} 
                 alt="BEATNEXUS"
                 className="relative mx-auto max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg h-auto drop-shadow-2xl group-hover:scale-105 transition-all duration-500 filter group-hover:brightness-110"
               />
@@ -179,7 +185,7 @@ const HomePage: React.FC = () => {
             <Card className="group relative bg-gradient-to-br from-gray-900 via-gray-850 to-gray-950 border border-gray-700/50 shadow-xl hover:shadow-2xl hover:shadow-cyan-500/10 transition-all duration-500 rounded-xl overflow-hidden backdrop-blur-sm p-8 text-center">
               {/* Background Image */}
               <div className="absolute inset-0">
-                <div className="absolute inset-0 bg-[url('/images/steps/step1-upload.png')] bg-cover bg-center bg-no-repeat opacity-20 group-hover:opacity-30 transition-opacity duration-500">
+                <div className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-20 group-hover:opacity-30 transition-opacity duration-500" style={{ backgroundImage: `url(${step1Upload})` }}>
                   <div className="absolute inset-0 bg-gradient-to-br from-cyan-900/60 via-gray-900/80 to-gray-950/90"></div>
                 </div>
               </div>
@@ -208,7 +214,7 @@ const HomePage: React.FC = () => {
             <Card className="group relative bg-gradient-to-br from-gray-900 via-gray-850 to-gray-950 border border-gray-700/50 shadow-xl hover:shadow-2xl hover:shadow-purple-500/10 transition-all duration-500 rounded-xl overflow-hidden backdrop-blur-sm p-8 text-center">
               {/* Background Image */}
               <div className="absolute inset-0">
-                <div className="absolute inset-0 bg-[url('/images/steps/step2-matching.png')] bg-cover bg-center bg-no-repeat opacity-20 group-hover:opacity-30 transition-opacity duration-500">
+                <div className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-20 group-hover:opacity-30 transition-opacity duration-500" style={{ backgroundImage: `url(${step2Matching})` }}>
                   <div className="absolute inset-0 bg-gradient-to-br from-purple-900/60 via-gray-900/80 to-gray-950/90"></div>
                 </div>
               </div>
@@ -237,7 +243,7 @@ const HomePage: React.FC = () => {
             <Card className="group relative bg-gradient-to-br from-gray-900 via-gray-850 to-gray-950 border border-gray-700/50 shadow-xl hover:shadow-2xl hover:shadow-yellow-500/10 transition-all duration-500 rounded-xl overflow-hidden backdrop-blur-sm p-8 text-center">
               {/* Background Image */}
               <div className="absolute inset-0">
-                <div className="absolute inset-0 bg-[url('/images/steps/step3-voting.png')] bg-cover bg-center bg-no-repeat opacity-20 group-hover:opacity-30 transition-opacity duration-500">
+                <div className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-20 group-hover:opacity-30 transition-opacity duration-500" style={{ backgroundImage: `url(${step3Voting})` }}>
                   <div className="absolute inset-0 bg-gradient-to-br from-yellow-900/60 via-gray-900/80 to-gray-950/90"></div>
                 </div>
               </div>
@@ -266,7 +272,7 @@ const HomePage: React.FC = () => {
             <Card className="group relative bg-gradient-to-br from-gray-900 via-gray-850 to-gray-950 border border-gray-700/50 shadow-xl hover:shadow-2xl hover:shadow-green-500/10 transition-all duration-500 rounded-xl overflow-hidden backdrop-blur-sm p-8 text-center">
               {/* Background Image */}
               <div className="absolute inset-0">
-                <div className="absolute inset-0 bg-[url('/images/steps/step4-results.png')] bg-cover bg-center bg-no-repeat opacity-20 group-hover:opacity-30 transition-opacity duration-500">
+                <div className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-20 group-hover:opacity-30 transition-opacity duration-500" style={{ backgroundImage: `url(${step4Results})` }}>
                   <div className="absolute inset-0 bg-gradient-to-br from-green-900/60 via-gray-900/80 to-gray-950/90"></div>
                 </div>
               </div>
