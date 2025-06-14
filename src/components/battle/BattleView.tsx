@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Share2, ThumbsUp, ArrowLeft, Clock, MessageCircle, Crown, Play, UserX, X, Flame, Zap, Trophy, Sword, Users, Timer, Volume2, Star, Shield, AlertTriangle } from 'lucide-react';
+import { Share2, ThumbsUp, ArrowLeft, Clock, MessageCircle, Crown, Play, UserX, X, Flame, Zap, Trophy, Sword, Users, Timer, Volume2, Star, Shield, AlertTriangle, Send } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '../ui/Button';
 import { Card } from '../ui/Card';
+import { VoteCommentModal } from '../ui/VoteCommentModal';
 import { useBattleStore } from '../../store/battleStore';
 import { useAuthStore } from '../../store/authStore';
 import { Battle } from '../../types';
@@ -18,11 +19,21 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle }) => {
   const [votesA, setVotesA] = useState(battle.votes_a);
   const [votesB, setVotesB] = useState(battle.votes_b);
   const [comment, setComment] = useState('');
-  const [isVoting, setIsVoting] = useState(false);
-  const [isCancelling, setIsCancelling] = useState(false);
   const [isLoadingVoteStatus, setIsLoadingVoteStatus] = useState(true);
+  const [showCommentInput, setShowCommentInput] = useState(false);
+  const [isSubmittingComment, setIsSubmittingComment] = useState(false);
+  const [isVoting, setIsVoting] = useState(false);
+  const [showVoteModal, setShowVoteModal] = useState<'A' | 'B' | null>(null);
   
-  const { voteBattle, cancelVote, getUserVote } = useBattleStore();
+  const { 
+    voteBattle, 
+    voteBattleWithComment, 
+    cancelVote, 
+    getUserVote, 
+    fetchBattleComments, 
+    battleComments, 
+    commentsLoading 
+  } = useBattleStore();
   const { user } = useAuthStore();
 
   // 🔍 厳密な型チェックと参加者判定 - battleStoreの変換後データに合わせて修正
@@ -71,7 +82,81 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle }) => {
     };
     
     loadVoteStatus();
-  }, [battle.id, getUserVote]);
+    // Load comments when component mounts
+    fetchBattleComments(battle.id);
+  }, [battle.id, getUserVote, fetchBattleComments]);
+
+  // Get comments for this battle
+  const comments = battleComments[battle.id] || [];
+  const isLoadingComments = commentsLoading[battle.id] || false;
+
+  // Handle vote with optional comment
+  const handleVote = async (player: 'A' | 'B', comment?: string) => {
+    if (!user || isUserParticipant || hasVoted) return;
+    
+    setIsVoting(true);
+    try {
+      await voteBattleWithComment(battle.id, player, comment);
+      
+      // Update local state
+      setHasVoted(player);
+      if (player === 'A') {
+        setVotesA(prev => prev + 1);
+      } else {
+        setVotesB(prev => prev + 1);
+      }
+      
+      // Refresh comments to show the new vote/comment
+      await fetchBattleComments(battle.id);
+      
+      // Close modal
+      setShowVoteModal(null);
+    } catch (error) {
+      console.error('❌ Vote failed:', error);
+    } finally {
+      setIsVoting(false);
+    }
+  };
+
+  // Handle cancel vote
+  const handleCancelVote = async () => {
+    if (!hasVoted) return;
+    
+    setIsVoting(true);
+    try {
+      await cancelVote(battle.id);
+      
+      // Update local state
+      if (hasVoted === 'A') {
+        setVotesA(prev => Math.max(0, prev - 1));
+      } else {
+        setVotesB(prev => Math.max(0, prev - 1));
+      }
+      setHasVoted(null);
+      
+      // Refresh comments
+      await fetchBattleComments(battle.id);
+    } catch (error) {
+      console.error('❌ Cancel vote failed:', error);
+    } finally {
+      setIsVoting(false);
+    }
+  };
+
+  // Format timestamp for comments
+  const formatTimestamp = (timestamp: string) => {
+    const now = new Date();
+    const commentTime = new Date(timestamp);
+    const diffTime = now.getTime() - commentTime.getTime();
+    const diffMinutes = Math.floor(diffTime / (1000 * 60));
+    const diffHours = Math.floor(diffTime / (1000 * 60 * 60));
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+    if (diffMinutes < 1) return 'just now';
+    if (diffMinutes < 60) return `${diffMinutes}m ago`;
+    if (diffHours < 24) return `${diffHours}h ago`;
+    return `${diffDays}d ago`;
+  };
 
   // 🔍 参加者状況の監視
   useEffect(() => {
@@ -115,82 +200,6 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle }) => {
   const isBLeading = votesB > votesA;
   const isDraw = votesA === votesB;
   
-  // Handle voting - now connects to battleStore
-  const handleVote = async (contestant: 'A' | 'B') => {
-    if (hasVoted || isVoting || isCancelling || isUserParticipant) return;
-    
-    console.log('🗳️ Vote button clicked:', { contestant, battleId: battle.id });
-    
-    setIsVoting(true);
-    try {
-      await voteBattle(battle.id, contestant);
-      
-      // Only update local state if vote was successful
-      // The battleStore will handle the actual state management
-    setHasVoted(contestant);
-    if (contestant === 'A') {
-        setVotesA((prev: number) => prev + 1);
-    } else {
-        setVotesB((prev: number) => prev + 1);
-    }
-    } catch (error) {
-      console.error('❌ Vote failed in component:', error);
-      // Don't update local state if vote failed
-    } finally {
-      setIsVoting(false);
-    }
-  };
-
-  // Handle vote cancellation
-  const handleCancelVote = async () => {
-    if (!hasVoted || isCancelling || isVoting || isUserParticipant) return;
-    
-    console.log('🗑️ Cancel vote button clicked:', { currentVote: hasVoted, battleId: battle.id });
-    
-    const previousVote = hasVoted; // Store before starting cancellation
-    setIsCancelling(true);
-    
-    try {
-      await cancelVote(battle.id);
-      
-      // Only update local state if cancellation was successful
-      // Check if the cancelVote function actually succeeded by checking the response
-      console.log('✅ Vote cancellation completed, updating local state');
-      setHasVoted(null);
-      
-      if (previousVote === 'A') {
-        setVotesA((prev: number) => Math.max(0, prev - 1));
-      } else if (previousVote === 'B') {
-        setVotesB((prev: number) => Math.max(0, prev - 1));
-      }
-      
-      // 🔄 Force reload vote status from database to ensure consistency
-      console.log('🔄 Reloading vote status to ensure consistency...');
-      try {
-        const voteStatus = await getUserVote(battle.id);
-        console.log('📊 Post-cancellation vote status:', voteStatus);
-        
-        if (voteStatus.hasVoted !== false) {
-          console.log('⚠️ Vote still exists in database, correcting local state');
-          setHasVoted(voteStatus.vote);
-          // Also correct vote counts by refetching from store
-          setTimeout(() => {
-            window.location.reload();
-          }, 1000);
-        }
-      } catch (reloadError) {
-        console.error('❌ Failed to reload vote status:', reloadError);
-      }
-      
-    } catch (error) {
-      console.error('❌ Vote cancellation failed in component, NOT updating local state:', error);
-      // Keep the previous vote state - don't change anything
-      // The user should see their vote is still there
-    } finally {
-      setIsCancelling(false);
-    }
-  };
-
   const getDefaultAvatarUrl = (seed: string) => `https://api.dicebear.com/7.x/avataaars/svg?seed=${seed}`;
 
   // Color pairs for consistent theming (same as BattleReplayPage)
@@ -241,33 +250,6 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle }) => {
 
   const battleFormatInfo = getBattleFormatInfo(battle.battle_format);
 
-
-
-  // Mock comments data
-  const mockComments = [
-    {
-      id: '1',
-      username: 'BeatMaster',
-      avatar: 'https://images.pexels.com/photos/1681010/pexels-photo-1681010.jpeg?auto=compress&cs=tinysrgb&w=100',
-      content: 'Amazing patterns! The bass is so clean 🔥',
-      timestamp: '2 hours ago'
-    },
-    {
-      id: '2',
-      username: 'RhythmQueen',
-      avatar: 'https://images.pexels.com/photos/773371/pexels-photo-773371.jpeg?auto=compress&cs=tinysrgb&w=100',
-      content: 'That throat bass transition was insane!',
-      timestamp: '1 hour ago'
-    },
-    {
-      id: '3',
-      username: 'BassDropper',
-      avatar: 'https://images.pexels.com/photos/614810/pexels-photo-614810.jpeg?auto=compress&cs=tinysrgb&w=100',
-      content: 'Both killed it but that second drop was something else',
-      timestamp: '30 minutes ago'
-    }
-  ];
-  
   return (
     <div className={`min-h-screen bg-gradient-to-br ${battleFormatInfo.bgColor} from-gray-950 to-gray-900 relative overflow-hidden`}>
       
@@ -872,27 +854,19 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle }) => {
                           </div>
                           <button 
                             onClick={handleCancelVote} 
-                            disabled={isCancelling || isVoting}
+                            disabled={isVoting}
                             className="absolute -top-1 -right-1 w-7 h-7 bg-red-500 hover:bg-red-600 rounded-full flex items-center justify-center text-white shadow-lg transition-all duration-200 hover:scale-110 disabled:opacity-50"
                           >
-                            {isCancelling ? (
-                              <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                            ) : (
-                              <X className="h-3.5 w-3.5" />
-                            )}
+                            <X className="h-3.5 w-3.5" />
                           </button>
                         </div>
                       ) : (
                         <button 
-                          onClick={() => handleVote('A')} 
-                          disabled={isVoting || isCancelling || !!hasVoted}
+                          onClick={() => setShowVoteModal('A')} 
+                          disabled={isVoting || !!hasVoted || isUserParticipant}
                           className="w-20 h-20 rounded-full bg-gradient-to-br from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 border-3 border-cyan-400 flex items-center justify-center shadow-xl shadow-cyan-500/50 transform hover:scale-110 hover:shadow-cyan-500/70 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed group active:scale-95"
                         >
-                          {isVoting ? (
-                            <div className="w-6 h-6 border-3 border-white border-t-transparent rounded-full animate-spin"></div>
-                          ) : (
-                            <ThumbsUp className="h-8 w-8 text-white group-hover:scale-110 transition-transform duration-200" />
-                          )}
+                          <ThumbsUp className="h-8 w-8 text-white group-hover:scale-110 transition-transform duration-200" />
                         </button>
                       )}
                       
@@ -928,27 +902,19 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle }) => {
                           </div>
                           <button 
                             onClick={handleCancelVote} 
-                            disabled={isCancelling || isVoting}
+                            disabled={isVoting}
                             className="absolute -top-1 -right-1 w-7 h-7 bg-red-500 hover:bg-red-600 rounded-full flex items-center justify-center text-white shadow-lg transition-all duration-200 hover:scale-110 disabled:opacity-50"
                           >
-                            {isCancelling ? (
-                              <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                            ) : (
-                              <X className="h-3.5 w-3.5" />
-                            )}
+                            <X className="h-3.5 w-3.5" />
                           </button>
                         </div>
                       ) : (
                         <button 
-                          onClick={() => handleVote('B')} 
-                          disabled={isVoting || isCancelling || !!hasVoted}
+                          onClick={() => setShowVoteModal('B')} 
+                          disabled={isVoting || !!hasVoted || isUserParticipant}
                           className="w-20 h-20 rounded-full bg-gradient-to-br from-pink-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 border-3 border-pink-400 flex items-center justify-center shadow-xl shadow-pink-500/50 transform hover:scale-110 hover:shadow-pink-500/70 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed group active:scale-95"
                         >
-                          {isVoting ? (
-                            <div className="w-6 h-6 border-3 border-white border-t-transparent rounded-full animate-spin"></div>
-                          ) : (
-                            <ThumbsUp className="h-8 w-8 text-white group-hover:scale-110 transition-transform duration-200" />
-                          )}
+                          <ThumbsUp className="h-8 w-8 text-white group-hover:scale-110 transition-transform duration-200" />
                         </button>
                       )}
                       
@@ -1022,71 +988,81 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle }) => {
         </div>
         )}  {/* Close conditional for voting console */}
 
-
-
-        {/* Comments Section - Enhanced */}
-        <Card className="mt-8 bg-gradient-to-br from-gray-900/90 to-gray-800/90 border border-gray-700/50 rounded-2xl backdrop-blur-sm shadow-xl">
-          <div className="p-8">
-            <div className="flex items-center gap-3 mb-6">
-              <MessageCircle className="h-6 w-6 text-cyan-400" />
-              <h2 className="text-2xl font-bold text-white">Community Reactions</h2>
-              <div className="bg-cyan-400/20 px-3 py-1 rounded-full">
-                <span className="text-cyan-400 font-bold">{mockComments.length}</span>
-              </div>
+        {/* Community Reactions */}
+        <div className="bg-gradient-to-br from-gray-900/80 to-gray-800/80 backdrop-blur-sm rounded-2xl border border-gray-700/50 p-8">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center">
+              <MessageCircle className="h-5 w-5 text-gray-300" />
             </div>
-            
-            <div className="space-y-6 mb-8">
-              {mockComments.map((comment, index) => (
+            <h3 className="text-xl font-bold text-white">
+              {t('battleView.comments')}
+            </h3>
+            <div className="text-sm text-gray-400">
+              ({comments.length})
+            </div>
+          </div>
+
+          {/* Comments List */}
+          {isLoadingComments ? (
+            <div className="flex items-center justify-center py-8">
+              <div className="w-6 h-6 border-2 border-cyan-500 border-t-transparent rounded-full animate-spin"></div>
+              <span className="ml-2 text-gray-400">{t('battleView.loading')}</span>
+            </div>
+          ) : comments.length > 0 ? (
+            <div className="space-y-4">
+              {comments.map((comment) => (
                 <div key={comment.id} className="flex items-start gap-4 p-4 bg-gray-800/50 rounded-xl border border-gray-700/30">
                   <div className="relative">
                     <img
-                      src={comment.avatar}
+                      src={comment.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${comment.user_id}`}
                       alt={comment.username}
-                      className="w-12 h-12 rounded-full border-2 border-gray-600"
+                      className="w-10 h-10 rounded-full border-2 border-gray-600"
                     />
-                    <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full flex items-center justify-center">
-                      <Star className="h-3 w-3 text-white" />
+                    <div className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center ${
+                      comment.vote === 'A' ? 'bg-gradient-to-r from-cyan-500 to-cyan-400' : 'bg-gradient-to-r from-pink-500 to-pink-400'
+                    }`}>
+                      <span className="text-white font-bold text-xs">{comment.vote}</span>
                     </div>
                   </div>
+                  
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="font-bold text-white">
-                        {comment.username}
+                      <span className="font-semibold text-white">{comment.username}</span>
+                      <span className={`text-xs px-2 py-1 rounded-full ${
+                        comment.vote === 'A' ? 'bg-cyan-500/20 text-cyan-300' : 'bg-pink-500/20 text-pink-300'
+                      }`}>
+                        Player {comment.vote}に投票
                       </span>
-                      <span className="text-xs text-gray-400">
-                        {comment.timestamp}
+                      <span className="text-xs text-gray-500">
+                        {new Date(comment.created_at).toLocaleDateString('ja-JP')}
                       </span>
                     </div>
-                    <p className="text-gray-300 leading-relaxed">
-                      {comment.content}
-                    </p>
+                    {comment.comment ? (
+                      <p className="text-gray-300 text-sm">{comment.comment}</p>
+                    ) : (
+                      <p className="text-gray-500 text-sm italic">投票のみ</p>
+                    )}
                   </div>
                 </div>
               ))}
             </div>
-
-            {/* Comment Input */}
-            <div className="border-t border-gray-700/50 pt-6">
-              <textarea
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-                placeholder={t('battleView.addComment')}
-                className="w-full p-4 rounded-xl bg-gray-800/50 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 border border-gray-700/30 resize-none"
-                rows={3}
-              />
-              <div className="mt-4 flex justify-end">
-                <Button
-                  variant="primary"
-                  className="bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-500 hover:to-purple-500 shadow-lg"
-                  leftIcon={<MessageCircle className="h-4 w-4" />}
-                >
-                  {t('battleView.postComment')}
-                </Button>
-              </div>
+          ) : (
+            <div className="text-center py-8">
+              <MessageCircle className="h-12 w-12 text-gray-500 mx-auto mb-3" />
+              <p className="text-gray-400">{t('battleView.noComments')}</p>
             </div>
-          </div>
-        </Card>
+          )}
+        </div>
       </div>
+
+      {/* Vote Comment Modal */}
+      <VoteCommentModal
+        isOpen={!!showVoteModal}
+        onClose={() => setShowVoteModal(null)}
+        onVote={(comment) => handleVote(showVoteModal!, comment)}
+        player={showVoteModal || 'A'}
+        isLoading={isVoting}
+      />
     </div>
   );
 };

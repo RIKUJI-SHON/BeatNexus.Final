@@ -184,6 +184,17 @@ export interface BattleVote {
   battle_id: string;
   user_id: string | null;
   vote: 'A' | 'B';
+  comment?: string | null;
+  created_at: string;
+}
+
+export interface BattleComment {
+  id: string;
+  user_id: string;
+  username: string;
+  avatar_url: string | null;
+  vote: 'A' | 'B';
+  comment: string;
   created_at: string;
 }
 

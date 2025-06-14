@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { Battle, ArchivedBattle, WaitingSubmission, BattleFormat } from '../types';
+import { Battle, ArchivedBattle, WaitingSubmission, BattleFormat, BattleComment } from '../types';
 import { supabase } from '../lib/supabase';
 import { toast } from './toastStore';
 import { useNotificationStore } from './notificationStore';
@@ -10,6 +10,7 @@ interface BattleState {
   activeBattles: Battle[];
   archivedBattles: ArchivedBattle[];
   waitingSubmissions: WaitingSubmission[];
+  battleComments: Record<string, BattleComment[]>;
   archivedBattlesCount: number;
   communityMembersCount: number;
   totalVotesCount: number;
@@ -17,6 +18,7 @@ interface BattleState {
   loading: boolean;
   archiveLoading: boolean;
   waitingLoading: boolean;
+  commentsLoading: Record<string, boolean>;
   error: string | null;
   fetchBattles: () => Promise<void>;
   fetchActiveBattles: () => Promise<void>;
@@ -30,8 +32,10 @@ interface BattleState {
   fetchTotalSubmissionsCount: () => Promise<void>;
   subscribeToRealTimeUpdates: () => () => void;
   voteBattle: (battleId: string, vote: 'A' | 'B') => Promise<void>;
+  voteBattleWithComment: (battleId: string, vote: 'A' | 'B', comment?: string) => Promise<void>;
   cancelVote: (battleId: string) => Promise<void>;
   getUserVote: (battleId: string) => Promise<{ hasVoted: boolean; vote: 'A' | 'B' | null }>;
+  fetchBattleComments: (battleId: string) => Promise<void>;
   fetchUserSubmissions: () => Promise<void>;
 }
 
@@ -40,6 +44,7 @@ export const useBattleStore = create<BattleState>((set, get) => ({
   activeBattles: [],
   archivedBattles: [],
   waitingSubmissions: [],
+  battleComments: {},
   archivedBattlesCount: 0,
   communityMembersCount: 0,
   totalVotesCount: 0,
@@ -47,6 +52,7 @@ export const useBattleStore = create<BattleState>((set, get) => ({
   loading: false,
   archiveLoading: false,
   waitingLoading: false,
+  commentsLoading: {},
   error: null,
 
   fetchBattles: async () => {
@@ -1213,5 +1219,158 @@ export const useBattleStore = create<BattleState>((set, get) => ({
 
   fetchUserSubmissions: async () => {
     // Implementation of fetchUserSubmissions function
+  },
+
+  voteBattleWithComment: async (battleId: string, vote: 'A' | 'B', comment?: string) => {
+    console.log('🗳️💬 Starting vote with comment process:', { battleId, vote, comment, timestamp: new Date().toISOString() });
+    
+    try {
+      // Get current user for logging
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      console.log('👤 Current user:', user?.id, user?.email);
+      
+      if (authError) {
+        console.error('❌ Auth error:', authError);
+        toast.error(i18n.t('toasts.error'), i18n.t('battleStore.toasts.checkLoginStatus'));
+        return;
+      }
+
+      console.log('📡 Calling vote_battle_with_comment RPC with params:', {
+        p_battle_id: battleId,
+        p_vote: vote,
+        p_comment: comment,
+        user_id: user?.id
+      });
+
+      const { data, error } = await supabase.rpc('vote_battle_with_comment', {
+        p_battle_id: battleId,
+        p_vote: vote,
+        p_comment: comment
+      });
+
+      console.log('📥 RPC Response:', { 
+        data, 
+        error, 
+        dataType: typeof data,
+        timestamp: new Date().toISOString() 
+      });
+
+      if (error) {
+        console.error('❌ RPC Error details:', {
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+          code: error.code,
+          fullError: error
+        });
+        toast.error(i18n.t('toasts.error'), `${i18n.t('battleStore.toasts.databaseError')}: ${error.message}`);
+        throw error;
+      }
+
+      // Enhanced response handling
+      if (data && typeof data === 'object' && data.hasOwnProperty('success')) {
+        console.log('📊 JSON Function response:', {
+          success: data.success,
+          error: data.error,
+          message: data.message,
+          responseType: typeof data
+        });
+
+        if (data.success === false) {
+          console.log('⚠️ Vote blocked by function:', data.error, data.message);
+          
+          // Handle specific error types with appropriate messages
+          switch (data.error) {
+            case 'User not authenticated':
+              toast.error(i18n.t('toasts.error'), i18n.t('battleStore.toasts.loginRequired'));
+              break;
+            case 'Battle not found or not active':
+              toast.error(i18n.t('toasts.error'), i18n.t('battleStore.toasts.battleNotFound'));
+              break;
+            case 'Voting period has ended':
+              toast.warning(i18n.t('toasts.warning'), i18n.t('battleStore.toasts.votingEnded'));
+              break;
+            case 'Cannot vote on your own battle':
+              toast.warning(i18n.t('toasts.warning'), i18n.t('battleStore.toasts.cannotVoteOwn'));
+              break;
+            default:
+              toast.error(i18n.t('toasts.error'), data.message || i18n.t('battleStore.toasts.voteError'));
+          }
+          return;
+        } else if (data.success === true) {
+          // Success case with proper JSON response
+          console.log('✅ Vote with comment successful:', data);
+          const successMessage = comment 
+            ? i18n.t('battleStore.toasts.voteWithCommentSuccess', { player: vote })
+            : i18n.t('battleStore.toasts.voteSuccess', { player: vote });
+          toast.success(i18n.t('toasts.success'), successMessage);
+          
+          // Refresh comments for this battle
+          await get().fetchBattleComments(battleId);
+        }
+      }
+
+      console.log('🔄 Refreshing battles data...');
+      // Refresh battles after voting attempt
+      await get().fetchBattles();
+      console.log('✅ Battles data refreshed');
+      
+    } catch (error) {
+      console.error('💥 Vote battle with comment catch error:', {
+        error,
+        message: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined
+      });
+      toast.error(i18n.t('toasts.error'), error instanceof Error ? error.message : i18n.t('battleStore.toasts.voteError'));
+      throw error;
+    }
+  },
+
+  fetchBattleComments: async (battleId: string) => {
+    console.log('💬 Fetching battle comments for:', battleId);
+    
+    set(state => ({
+      commentsLoading: { ...state.commentsLoading, [battleId]: true }
+    }));
+
+    try {
+      const { data, error } = await supabase.rpc('get_battle_comments', {
+        p_battle_id: battleId
+      });
+
+      if (error) {
+        console.error('❌ Error fetching battle comments:', error);
+        throw error;
+      }
+
+      console.log('📥 Battle comments data:', data);
+
+      const comments: BattleComment[] = (data || []).map((comment: any) => ({
+        id: comment.id,
+        user_id: comment.user_id,
+        username: comment.username,
+        avatar_url: comment.avatar_url,
+        vote: comment.vote,
+        comment: comment.comment,
+        created_at: comment.created_at
+      }));
+
+      set(state => ({
+        battleComments: {
+          ...state.battleComments,
+          [battleId]: comments
+        }
+      }));
+
+      console.log('✅ Battle comments updated for battle:', battleId);
+
+    } catch (error) {
+      console.error('💥 Error in fetchBattleComments:', error);
+      toast.error(i18n.t('toasts.error'), 'Failed to load comments');
+    } finally {
+      set(state => ({
+        commentsLoading: { ...state.commentsLoading, [battleId]: false }
+      }));
+    }
   }
 }));

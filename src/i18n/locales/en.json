@@ -95,7 +95,32 @@
     "votes": "votes"
   },
   "battleView": {
-    "liveVoting": "Live Voting"
+    "title": "BeatNexus",
+    "subtitle": "Battle Arena",
+    "votingEndsIn": "Voting ends in",
+    "votingEnded": "Voting Ended",
+    "timeUnits": {
+      "days": "days",
+      "hours": "hours",
+      "minutes": "minutes"
+    },
+    "loading": "Loading...",
+    "participatingInBattle": "Participating in Battle",
+    "votedFor": "VOTED FOR",
+    "cancellingVote": "Cancelling Vote...",
+    "cancelVote": "Cancel Vote",
+    "voteFor": "Vote for",
+    "totalVotes": "Total Votes",
+    "comments": "Comments",
+    "votes": "votes",
+    "leading": "Leading",
+    "addComment": "Add your comment...",
+    "postComment": "Post Comment",
+    "voteWithComment": "Vote & Comment",
+    "loadComments": "Load Comments",
+    "noComments": "No comments yet. Be the first to share your thoughts!",
+    "commentPlaceholder": "Share your thoughts about this battle...",
+    "videoLoading": "Video loading..."
   },
   "battleCard": {
     "votingEndsIn": "{{days}}d {{hours}}h left",
@@ -604,30 +629,6 @@
       "description": "Your video has been uploaded and will be matched with another beatboxer soon. We'll notify you when your battle goes live."
     }
   },
-  "battleView": {
-    "title": "BeatNexus",
-    "subtitle": "Battle Arena",
-    "votingEndsIn": "Voting ends in",
-    "votingEnded": "Voting Ended",
-    "timeUnits": {
-      "days": "days",
-      "hours": "hours",
-      "minutes": "minutes"
-    },
-    "loading": "Loading...",
-    "participatingInBattle": "Participating in Battle",
-    "votedFor": "VOTED FOR",
-    "cancellingVote": "Cancelling Vote...",
-    "cancelVote": "Cancel Vote",
-    "voteFor": "Vote for",
-    "totalVotes": "Total Votes",
-    "comments": "Comments",
-    "votes": "votes",
-    "leading": "Leading",
-    "addComment": "Add your comment...",
-    "postComment": "Post Comment",
-    "videoLoading": "Loading video..."
-  },
   "toasts": {
     "error": "Error",
     "success": "Success",
@@ -666,6 +667,7 @@
       "battleNotFound": "Battle not found",
       "voteError": "Failed to vote",
       "voteSuccess": "Voted for Player {{player}}",
+      "voteWithCommentSuccess": "Voted for Player {{player}} with comment",
       "voteCompleted": "Vote Completed",
       "votingProcess": "Vote Processing",
       "unexpectedResponse": "Vote processing completed but response format was unexpected",
