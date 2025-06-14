@@ -43,7 +43,7 @@ const HomePage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-950">
       {/* Hero Section - 改良版 */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      <section className="relative py-16 md:py-24 flex items-center justify-center overflow-hidden">
         {/* Background Image */}
         <div className="absolute inset-0">
           {/* 背景画像 - public/images/フォルダに配置した画像を使用 */}
@@ -59,21 +59,21 @@ const HomePage: React.FC = () => {
 
         {/* Enhanced Background Effects */}
         <div className="absolute inset-0">
-          <div className="absolute top-20 left-20 w-96 h-96 bg-cyan-500/15 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-20 right-20 w-96 h-96 bg-purple-500/15 rounded-full blur-3xl"></div>
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-yellow-500/10 rounded-full blur-3xl"></div>
+          <div className="absolute top-20 left-20 w-72 h-72 bg-cyan-500/15 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-20 right-20 w-72 h-72 bg-purple-500/15 rounded-full blur-3xl"></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-yellow-500/10 rounded-full blur-3xl"></div>
         </div>
 
         <div className="container mx-auto px-4 relative z-10 text-center">
           {/* Main Title - BEATNEXUS Wordmark */}
-          <div className="mb-8 animate-fade-in relative">
+          <div className="mb-6 animate-fade-in relative">
             <div className="relative group">
               {/* Glow Effect Background */}
               <div className="absolute inset-0 opacity-30 group-hover:opacity-50 transition-opacity duration-500">
                 <img 
                   src="/images/BEATNEXUS-WORDMARK.png" 
                   alt=""
-                  className="mx-auto max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl h-auto blur-md scale-110 filter brightness-150"
+                  className="mx-auto max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg h-auto blur-md scale-110 filter brightness-150"
                 />
               </div>
               
@@ -81,24 +81,24 @@ const HomePage: React.FC = () => {
               <img 
                 src="/images/BEATNEXUS-WORDMARK.png" 
                 alt="BEATNEXUS"
-                className="relative mx-auto max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl h-auto drop-shadow-2xl group-hover:scale-105 transition-all duration-500 filter group-hover:brightness-110"
+                className="relative mx-auto max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg h-auto drop-shadow-2xl group-hover:scale-105 transition-all duration-500 filter group-hover:brightness-110"
               />
             </div>
           </div>
           
           {/* Value Proposition */}
-          <div className="mb-12 animate-fade-in-delay-1">
-            <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+          <div className="mb-8 animate-fade-in-delay-1">
+            <h2 className="text-xl md:text-2xl font-bold text-white mb-3">
               ビートボックスバトルで競い合い、<span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400">ランキングを駆け上がろう</span>！
             </h2>
           </div>
 
           {/* CTA Buttons - Premium Design */}
-          <div className="flex flex-col sm:flex-row justify-center gap-8 animate-fade-in-delay-2 mb-12">
+          <div className="flex flex-col sm:flex-row justify-center gap-6 animate-fade-in-delay-2">
             {/* 今すぐ参加 - Premium Gradient Button */}
             <button 
               onClick={handleStartBattle}
-              className="group relative overflow-hidden px-12 py-5 bg-gradient-to-r from-cyan-500 via-purple-500 to-pink-500 rounded-2xl text-white font-bold text-lg transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-cyan-500/25 min-w-[240px]"
+              className="group relative overflow-hidden px-10 py-4 bg-gradient-to-r from-cyan-500 via-purple-500 to-pink-500 rounded-2xl text-white font-bold text-base transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-cyan-500/25 min-w-[200px]"
             >
               {/* Reverse Gradient on Hover */}
               <div className="absolute inset-0 bg-gradient-to-r from-pink-500 via-purple-500 to-cyan-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
@@ -108,8 +108,8 @@ const HomePage: React.FC = () => {
               
               {/* Button Content */}
               <div className="relative flex items-center justify-center gap-3">
-                <div className="p-2.5 bg-white/20 rounded-xl group-hover:bg-white/30 transition-all group-hover:rotate-12 duration-300">
-                  <Upload className="h-6 w-6 group-hover:scale-110 transition-transform" />
+                <div className="p-2 bg-white/20 rounded-xl group-hover:bg-white/30 transition-all group-hover:rotate-12 duration-300">
+                  <Upload className="h-5 w-5 group-hover:scale-110 transition-transform" />
                 </div>
                 <span className="tracking-wide">今すぐ参加</span>
                 {/* Subtle glow behind text */}
@@ -120,7 +120,7 @@ const HomePage: React.FC = () => {
             {/* バトルを観戦 - Gradient Border Button */}
             <button 
               onClick={handleWatchBattles}
-              className="group relative overflow-hidden px-12 py-5 bg-gray-900 border-2 border-transparent rounded-2xl text-white font-bold text-lg transition-all duration-300 hover:scale-105 min-w-[240px]"
+              className="group relative overflow-hidden px-10 py-4 bg-gray-900 border-2 border-transparent rounded-2xl text-white font-bold text-base transition-all duration-300 hover:scale-105 min-w-[200px]"
               style={{
                 background: 'linear-gradient(135deg, #1f2937, #111827), linear-gradient(135deg, #06b6d4, #8b5cf6, #ec4899)',
                 backgroundOrigin: 'border-box',
@@ -135,8 +135,8 @@ const HomePage: React.FC = () => {
               
               {/* Button Content */}
               <div className="relative flex items-center justify-center gap-3">
-                <div className="p-2.5 bg-gradient-to-r from-cyan-500/20 to-purple-500/20 rounded-xl border border-cyan-500/30 group-hover:border-purple-500/50 transition-all group-hover:rotate-12 duration-300">
-                  <Play className="h-6 w-6 text-cyan-400 group-hover:text-purple-400 group-hover:scale-110 transition-all" />
+                <div className="p-2 bg-gradient-to-r from-cyan-500/20 to-purple-500/20 rounded-xl border border-cyan-500/30 group-hover:border-purple-500/50 transition-all group-hover:rotate-12 duration-300">
+                  <Play className="h-5 w-5 text-cyan-400 group-hover:text-purple-400 group-hover:scale-110 transition-all" />
                 </div>
                 <span className="tracking-wide bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent group-hover:from-purple-400 group-hover:via-pink-400 group-hover:to-cyan-400 transition-all duration-300">
                   バトルを観戦
@@ -146,10 +146,6 @@ const HomePage: React.FC = () => {
               </div>
             </button>
           </div>
-          
-
-
-
         </div>
       </section>
 

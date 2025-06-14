@@ -202,7 +202,7 @@ const BattlesPage: React.FC = () => {
     <div className="min-h-screen bg-gray-950 py-10">
       <div className="container mx-auto px-4">
         {/* Welcome Area - Enhanced Design */}
-        <section className="relative mb-12 overflow-hidden">
+        <section className="relative mb-8 overflow-hidden rounded-2xl border border-gray-700/50">
           {/* Background Image */}
           <div className="absolute inset-0">
             {/* 背景画像 - ホーム画面と同じ画像を使用 */}
@@ -218,21 +218,21 @@ const BattlesPage: React.FC = () => {
 
           {/* Enhanced Background Effects */}
           <div className="absolute inset-0">
-            <div className="absolute top-10 left-10 w-80 h-80 bg-cyan-500/10 rounded-full blur-3xl"></div>
-            <div className="absolute bottom-10 right-10 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl"></div>
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-yellow-500/5 rounded-full blur-3xl"></div>
+            <div className="absolute top-10 left-10 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl"></div>
+            <div className="absolute bottom-10 right-10 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl"></div>
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-yellow-500/5 rounded-full blur-3xl"></div>
           </div>
 
-          <div className="relative px-8 py-16 md:py-20 text-center z-10">
+          <div className="relative px-6 py-10 text-center z-10">
             {/* Welcome Title - BEATNEXUS Wordmark */}
-            <div className="mb-6 animate-fade-in relative">
+            <div className="mb-4 animate-fade-in relative">
               <div className="relative group">
                 {/* Glow Effect Background */}
                 <div className="absolute inset-0 opacity-20 group-hover:opacity-40 transition-opacity duration-500">
                   <img 
                     src="/images/BEATNEXUS-WORDMARK.png" 
                     alt=""
-                    className="mx-auto max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg h-auto blur-md scale-110 filter brightness-150"
+                    className="mx-auto max-w-xs sm:max-w-sm md:max-w-md h-auto blur-md scale-110 filter brightness-150"
                   />
                 </div>
                 
@@ -240,68 +240,64 @@ const BattlesPage: React.FC = () => {
                 <img 
                   src="/images/BEATNEXUS-WORDMARK.png" 
                   alt="BEATNEXUS"
-                  className="relative mx-auto max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg h-auto drop-shadow-2xl group-hover:scale-105 transition-all duration-500 filter group-hover:brightness-110"
+                  className="relative mx-auto max-w-xs sm:max-w-sm md:max-w-md h-auto drop-shadow-2xl group-hover:scale-105 transition-all duration-500 filter group-hover:brightness-110"
                 />
               </div>
             </div>
             
-
-
             {/* Enhanced Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto mb-12 animate-fade-in-delay-2">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-3xl mx-auto mb-6 animate-fade-in-delay-2">
               {/* Total Submissions */}
-              <Card className="group relative bg-gradient-to-br from-gray-900 via-gray-850 to-gray-950 border border-gray-700/50 shadow-xl hover:shadow-2xl hover:shadow-cyan-500/10 transition-all duration-500 rounded-xl overflow-hidden backdrop-blur-sm p-6">
+              <Card className="group relative bg-gradient-to-br from-gray-900 via-gray-850 to-gray-950 border border-gray-700/50 shadow-xl hover:shadow-2xl hover:shadow-cyan-500/10 transition-all duration-500 rounded-xl overflow-hidden backdrop-blur-sm p-4">
                 <div className="absolute inset-0 opacity-5">
                   <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white/10 to-transparent transform rotate-45 translate-x-full group-hover:translate-x-[-100%] transition-transform duration-1000"></div>
                 </div>
                 <div className="relative text-center">
-                  <div className="w-16 h-16 bg-gradient-to-br from-cyan-500/20 to-blue-500/20 rounded-xl border border-cyan-500/40 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
-                    <Mic className="h-8 w-8 text-cyan-400" />
+                  <div className="w-12 h-12 bg-gradient-to-br from-cyan-500/20 to-blue-500/20 rounded-xl border border-cyan-500/40 flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform duration-300">
+                    <Mic className="h-6 w-6 text-cyan-400" />
                   </div>
-                  <div className="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400 mb-2">
+                  <div className="text-2xl md:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400 mb-1">
                     {totalSubmissionsCount.toLocaleString()}+
                   </div>
-                  <div className="text-sm text-gray-400 font-medium">{t('battlesPage.welcome.stats.totalSubmissions')}</div>
+                  <div className="text-xs text-gray-400 font-medium">{t('battlesPage.welcome.stats.totalSubmissions')}</div>
                 </div>
               </Card>
 
               {/* Community Members */}
-              <Card className="group relative bg-gradient-to-br from-gray-900 via-gray-850 to-gray-950 border border-gray-700/50 shadow-xl hover:shadow-2xl hover:shadow-purple-500/10 transition-all duration-500 rounded-xl overflow-hidden backdrop-blur-sm p-6">
+              <Card className="group relative bg-gradient-to-br from-gray-900 via-gray-850 to-gray-950 border border-gray-700/50 shadow-xl hover:shadow-2xl hover:shadow-purple-500/10 transition-all duration-500 rounded-xl overflow-hidden backdrop-blur-sm p-4">
                 <div className="absolute inset-0 opacity-5">
                   <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white/10 to-transparent transform rotate-45 translate-x-full group-hover:translate-x-[-100%] transition-transform duration-1000"></div>
                 </div>
                 <div className="relative text-center">
-                  <div className="w-16 h-16 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-xl border border-purple-500/40 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
-                    <Users className="h-8 w-8 text-purple-400" />
+                  <div className="w-12 h-12 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-xl border border-purple-500/40 flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform duration-300">
+                    <Users className="h-6 w-6 text-purple-400" />
                   </div>
-                  <div className="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 mb-2">
+                  <div className="text-2xl md:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 mb-1">
                     {communityMembersCount.toLocaleString()}+
                   </div>
-                  <div className="text-sm text-gray-400 font-medium">{t('battlesPage.welcome.stats.communityMembers')}</div>
+                  <div className="text-xs text-gray-400 font-medium">{t('battlesPage.welcome.stats.communityMembers')}</div>
                 </div>
               </Card>
 
               {/* Votes Cast */}
-              <Card className="group relative bg-gradient-to-br from-gray-900 via-gray-850 to-gray-950 border border-gray-700/50 shadow-xl hover:shadow-2xl hover:shadow-yellow-500/10 transition-all duration-500 rounded-xl overflow-hidden backdrop-blur-sm p-6">
+              <Card className="group relative bg-gradient-to-br from-gray-900 via-gray-850 to-gray-950 border border-gray-700/50 shadow-xl hover:shadow-2xl hover:shadow-yellow-500/10 transition-all duration-500 rounded-xl overflow-hidden backdrop-blur-sm p-4">
                 <div className="absolute inset-0 opacity-5">
                   <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white/10 to-transparent transform rotate-45 translate-x-full group-hover:translate-x-[-100%] transition-transform duration-1000"></div>
                 </div>
                 <div className="relative text-center">
-                  <div className="w-16 h-16 bg-gradient-to-br from-yellow-500/20 to-orange-500/20 rounded-xl border border-yellow-500/40 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
-                    <Play className="h-8 w-8 text-yellow-400" />
+                  <div className="w-12 h-12 bg-gradient-to-br from-yellow-500/20 to-orange-500/20 rounded-xl border border-yellow-500/40 flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform duration-300">
+                    <Play className="h-6 w-6 text-yellow-400" />
                   </div>
-                  <div className="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-400 mb-2">
+                  <div className="text-2xl md:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-400 mb-1">
                     {totalVotesCount.toLocaleString()}+
                   </div>
-                  <div className="text-sm text-gray-400 font-medium">{t('battlesPage.welcome.stats.votesCast')}</div>
+                  <div className="text-xs text-gray-400 font-medium">{t('battlesPage.welcome.stats.votesCast')}</div>
                 </div>
               </Card>
             </div>
 
-
-
             {/* Guide Link */}
-            <div className="text-sm text-gray-400 animate-fade-in-delay-3">
+            <div className="text-xs text-gray-400 animate-fade-in-delay-3">
               {t('battlesPage.welcome.guide.newHere')}{' '}
               <Link to="/how-to-guide" className="text-cyan-400 hover:text-cyan-300 font-semibold hover:underline transition-colors">
                 {t('battlesPage.welcome.guide.checkGuide')}
