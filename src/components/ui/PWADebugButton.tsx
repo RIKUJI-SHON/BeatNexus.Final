@@ -35,6 +35,23 @@ export const PWADebugButton: React.FC = () => {
     // Check if beforeinstallprompt was fired
     console.log('10. Check localStorage for prompt dismissal:', localStorage.getItem('pwa-install-dismissed'));
     
+    // Check icon files accessibility
+    console.log('11. Testing icon file access...');
+    const iconUrls = [
+      '/bn_icon_192.png',
+      '/bn_icon_512.png',
+      '/images/VS.png'
+    ];
+    
+    iconUrls.forEach(async (url) => {
+      try {
+        const response = await fetch(url);
+        console.log(`    ${url}: ${response.status} ${response.statusText}`);
+      } catch (error) {
+        console.log(`    ${url}: FETCH ERROR`, error);
+      }
+    });
+    
     alert('PWAデバッグ情報をコンソールに出力しました。開発者ツールのConsoleタブを確認してください。');
   };
 

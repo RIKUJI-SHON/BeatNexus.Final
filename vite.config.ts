@@ -9,12 +9,13 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: [
-        'bn_icon_192.png', 
+        'bn_icon_192.png',
+        'bn_icon_512.png',
         'icon-battles.svg',
         'icon-post.svg',
         'icon-ranking.svg',
         'icon-my-battles.svg',
-        'images/VS.png'
+        'images/**/*'
       ],
       manifest: {
         name: 'BeatNexus - Beatbox Battle Community',
@@ -53,15 +54,13 @@ export default defineConfig({
         ]
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,svg}', '**/VS.png'],
+        globPatterns: ['**/*.{js,css,html,svg,png}'],
         // 大きなファイルのサイズ制限を5MBに増加
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
-        // 大きな画像ファイルを除外（VS.pngは含める）
+        // 巨大なファイルのみ除外
         globIgnores: [
           '**/BEATNEXUS-WORDMARK*.png',
-          '**/hero-background*.png',
-          '**/bn_icon_512.png',
-          '!**/VS.png' // VS.pngは明示的に含める
+          '**/hero-background*.png'
         ],
         runtimeCaching: [
           {
@@ -113,7 +112,8 @@ export default defineConfig({
           }
         ],
         navigateFallback: '/index.html',
-        navigateFallbackDenylist: [/^\/_/, /\/[^/?]+\.[^/]+$/]
+        navigateFallbackDenylist: [/^\/_/, /\/[^/?]+\.[^/]+$/, /^\/api\//],
+        cleanupOutdatedCaches: true
       },
       devOptions: {
         enabled: false // 開発時は無効
