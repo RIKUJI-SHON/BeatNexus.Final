@@ -19,6 +19,10 @@ import { AuthProvider } from './components/auth/AuthProvider';
 // Language Initialization
 import { useLanguageInitialization } from './hooks/useLanguageInitialization';
 
+// Google Analytics
+import { initializeGA } from './utils/analytics';
+import { useAnalytics, usePerformanceTracking } from './hooks/useAnalytics';
+
 // Pages
 import HomePage from './pages/HomePage';
 import BattlesPage from './pages/BattlesPage';
@@ -44,6 +48,44 @@ import { useNotificationStore } from './store/notificationStore';
 import { I18nextProvider } from 'react-i18next';
 import i18n from './i18n';
 
+// Router内で使用するコンポーネント（useLocationが使える）
+function RouterContent() {
+  // Google Analytics初期化とページトラッキング（Router内で実行）
+  useAnalytics();
+  usePerformanceTracking();
+
+  return (
+    <>
+      <SpaceBackground />
+      <div className="flex flex-col min-h-screen relative">
+        <Header />
+        <main id="main-content" className="flex-grow" role="main">
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/battles" element={<BattlesPage />} />
+            <Route path="/my-battles" element={<MyBattlesPage />} />
+            <Route path="/battle/:id" element={<BattleViewPage />} />
+            <Route path="/battle-replay/:id" element={<BattleReplayPage />} />
+            <Route path="/post" element={<PostPage />} />
+            <Route path="/profile/:userId" element={<ProfilePage />} />
+            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/ranking" element={<RankingPage />} />
+            <Route path="/rating-test" element={<RatingTestPage />} />
+            <Route path="/community" element={<CommunityPage />} />
+            <Route path="/subscription" element={<SubscriptionPage />} />
+            <Route path="/settings" element={<SettingsPage />} />
+            <Route path="/how-to-guide" element={<HowToGuidePage />} />
+            <Route path="/tournament" element={<TournamentPage />} />
+            <Route path="/faq" element={<FAQPage />} />
+            <Route path="/notifications/test" element={<NotificationTestPage />} />
+          </Routes>
+        </main>
+        <Footer />
+      </div>
+    </>
+  );
+}
+
 function AppContent() {
   const { toasts, removeToast } = useToastStore();
   const subscribeToRealTimeUpdates = useBattleStore(state => state.subscribeToRealTimeUpdates);
@@ -53,6 +95,9 @@ function AppContent() {
   useLanguageInitialization();
 
   useEffect(() => {
+    // Google Analytics初期化
+    initializeGA();
+    
     // バトルのリアルタイム更新を購読
     const unsubscribeBattles = subscribeToRealTimeUpdates();
     
@@ -70,40 +115,15 @@ function AppContent() {
   }, [subscribeToRealTimeUpdates, subscribeToNotifications, fetchNotifications]);
 
   return (
-        <Router>
-          <SpaceBackground />
-          <div className="flex flex-col min-h-screen relative">
-            <Header />
-            <main id="main-content" className="flex-grow" role="main">
-              <Routes>
-                <Route path="/" element={<HomePage />} />
-                <Route path="/battles" element={<BattlesPage />} />
-                <Route path="/my-battles" element={<MyBattlesPage />} />
-                <Route path="/battle/:id" element={<BattleViewPage />} />
-                <Route path="/battle-replay/:id" element={<BattleReplayPage />} />
-                <Route path="/post" element={<PostPage />} />
-                <Route path="/profile/:userId" element={<ProfilePage />} />
-                <Route path="/profile" element={<ProfilePage />} />
-                <Route path="/ranking" element={<RankingPage />} />
-                <Route path="/rating-test" element={<RatingTestPage />} />
-                <Route path="/community" element={<CommunityPage />} />
-                <Route path="/subscription" element={<SubscriptionPage />} />
-                <Route path="/settings" element={<SettingsPage />} />
-                <Route path="/how-to-guide" element={<HowToGuidePage />} />
-                <Route path="/tournament" element={<TournamentPage />} />
-                <Route path="/faq" element={<FAQPage />} />
-                <Route path="/notifications/test" element={<NotificationTestPage />} />
-              </Routes>
-            </main>
-            <Footer />
-          </div>
-          
-          {/* Toast Notifications */}
-          <ToastContainer toasts={toasts} onRemove={removeToast} />
-          
-          {/* PWA Components */}
-          <OfflineIndicator />
-        </Router>
+    <Router>
+      <RouterContent />
+      
+      {/* Toast Notifications */}
+      <ToastContainer toasts={toasts} onRemove={removeToast} />
+      
+      {/* PWA Components */}
+      <OfflineIndicator />
+    </Router>
   );
 }
 

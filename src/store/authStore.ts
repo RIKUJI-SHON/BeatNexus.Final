@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { User } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
+import { trackBeatNexusEvents, setUserProperties } from '../utils/analytics';
 
 interface AuthState {
   user: User | null;
@@ -20,6 +21,9 @@ export const useAuthStore = create<AuthState>((set) => ({
       password,
     });
     if (error) throw error;
+    
+    // Track login event
+    trackBeatNexusEvents.userLogin();
   },
   signUp: async (email: string, password: string, username: string) => {
     const { data, error } = await supabase.auth.signUp({
@@ -32,9 +36,16 @@ export const useAuthStore = create<AuthState>((set) => ({
       },
     });
     if (error) throw error;
+    
+    // Track registration event
+    trackBeatNexusEvents.userRegister();
+    
     return { user: data.user, error: null };
   },
   signOut: async () => {
+    // Track logout event before clearing state
+    trackBeatNexusEvents.userLogout();
+    
     // Clear local state first
     set({ user: null });
     try {
@@ -46,7 +57,15 @@ export const useAuthStore = create<AuthState>((set) => ({
       console.warn('Error clearing remote session:', error);
     }
   },
-  setUser: (user) => set({ user, loading: false }),
+  setUser: (user) => {
+    set({ user, loading: false });
+    
+    // Set user properties for analytics (if user exists)
+    if (user) {
+      // Use user ID for analytics (ensure privacy)
+      setUserProperties(user.id);
+    }
+  },
 }));
 
 // Note: Auth state initialization is handled by AuthProvider component

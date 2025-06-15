@@ -34,6 +34,7 @@ import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
 import { ja, enUS } from 'date-fns/locale';
 import { calculateRankProgress } from '../lib/rankUtils';
+import { trackBeatNexusEvents } from '../utils/analytics';
 
 interface Post {
   id: string;
@@ -80,6 +81,9 @@ const ProfilePage: React.FC = () => {
 
   useEffect(() => {
     if (displayedUserId) {
+      // Track profile view event
+      trackBeatNexusEvents.profileView(displayedUserId);
+      
       fetchUserPosts();
       fetchUserProfile();
       fetchUserBattles();
@@ -182,6 +186,10 @@ const ProfilePage: React.FC = () => {
       
       setUserProfile(data.profile);
       setIsEditing(false);
+      
+      // Track profile edit event
+      trackBeatNexusEvents.profileEdit();
+      
       toast.success(t('profilePage.toasts.successTitle'), t('profilePage.toasts.profileUpdateSuccess'));
     } catch (error: any) {
       console.error('Error updating profile:', error);

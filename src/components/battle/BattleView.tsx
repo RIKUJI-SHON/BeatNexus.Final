@@ -9,6 +9,7 @@ import { useAuthStore } from '../../store/authStore';
 import { Battle } from '../../types';
 import { useTranslation } from 'react-i18next';
 import { VSIcon } from '../ui/VSIcon';
+import { trackBeatNexusEvents } from '../../utils/analytics';
 
 interface BattleViewProps {
   battle: Battle;
@@ -66,6 +67,9 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle }) => {
       }
     };
     
+    // Track battle view event
+    trackBeatNexusEvents.battleView(battle.id);
+    
     loadVoteStatus();
     // Load comments when component mounts
     fetchBattleComments(battle.id);
@@ -82,6 +86,9 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle }) => {
     setIsVoting(true);
     try {
       await voteBattleWithComment(battle.id, player, comment);
+      
+      // Track vote event
+      trackBeatNexusEvents.battleVote(battle.id, player);
       
       // Update local state
       setHasVoted(player);

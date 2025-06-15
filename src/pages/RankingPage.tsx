@@ -6,6 +6,7 @@ import { Badge } from '../components/ui/Badge';
 import { useRankingStore } from '../store/rankingStore';
 import { useTranslation } from 'react-i18next';
 import { getRankColorClasses } from '../utils/rankUtils';
+import { trackBeatNexusEvents } from '../utils/analytics';
 
 type TabType = 'player' | 'voter';
 
@@ -25,9 +26,18 @@ const RankingPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>('player');
   const [searchQuery, setSearchQuery] = useState('');
 
+  const handleTabChange = (tab: TabType) => {
+    setActiveTab(tab);
+    // Track ranking view event
+    trackBeatNexusEvents.rankingView(tab === 'player' ? 'rating' : 'voter');
+  };
+
   useEffect(() => {
     fetchRankings();
     fetchVoterRankings();
+    
+    // Track initial ranking view
+    trackBeatNexusEvents.rankingView('rating');
   }, [fetchRankings, fetchVoterRankings]);
 
   // データとローディング状態を取得
@@ -178,7 +188,7 @@ const RankingPage: React.FC = () => {
               
               <div className="relative flex">
                 <button
-                  onClick={() => setActiveTab('player')}
+                  onClick={() => handleTabChange('player')}
                   className={`px-4 py-3 sm:px-8 sm:py-4 rounded-lg sm:rounded-xl font-semibold transition-all duration-300 flex items-center gap-2 sm:gap-3 relative z-10 flex-1 justify-center ${
                     activeTab === 'player'
                       ? 'text-white'
@@ -198,7 +208,7 @@ const RankingPage: React.FC = () => {
                 </button>
                 
                 <button
-                  onClick={() => setActiveTab('voter')}
+                  onClick={() => handleTabChange('voter')}
                   className={`px-4 py-3 sm:px-8 sm:py-4 rounded-lg sm:rounded-xl font-semibold transition-all duration-300 flex items-center gap-2 sm:gap-3 relative z-10 flex-1 justify-center ${
                     activeTab === 'voter'
                       ? 'text-white'

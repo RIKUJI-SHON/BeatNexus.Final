@@ -7,6 +7,7 @@ import { useAuthStore } from '../store/authStore';
 import { supabase } from '../lib/supabase';
 import { useTranslation } from 'react-i18next';
 import { useSubmissionCooldown } from '../hooks/useSubmissionCooldown';
+import { trackBeatNexusEvents } from '../utils/analytics';
 
 // Maximum file size in bytes (75MB - より現実的な制限)
 const MAX_FILE_SIZE = 75 * 1024 * 1024;
@@ -641,6 +642,9 @@ const PostPage: React.FC = () => {
 
       // 投稿成功後にクールダウン情報を更新
       refreshCooldown();
+
+      // Track video submission event
+      trackBeatNexusEvents.videoSubmit(battleFormat);
 
       setStep('success');
     } catch (err) {

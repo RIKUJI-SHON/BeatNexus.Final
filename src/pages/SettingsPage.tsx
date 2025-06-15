@@ -8,6 +8,7 @@ import { Input } from '../components/ui/Input';
 import { Button } from '../components/ui/Button';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { trackBeatNexusEvents } from '../utils/analytics';
 
 const SettingsPage: React.FC = () => {
   const { user, signOut } = useAuthStore();
@@ -166,6 +167,9 @@ const SettingsPage: React.FC = () => {
       // i18nの言語を変更
       i18n.changeLanguage(selectedLanguage);
       setOriginalLanguage(selectedLanguage);
+
+      // Track language change event
+      trackBeatNexusEvents.languageChange(selectedLanguage);
 
       const displayLanguage = selectedLanguage === 'ja' ? t('settingsPage.language.japanese') : t('settingsPage.language.english');
       toast.success(t('settingsPage.toasts.successTitle'), t('settingsPage.toasts.languageUpdateSuccess', { language: displayLanguage }));
