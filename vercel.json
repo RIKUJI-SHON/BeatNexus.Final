@@ -37,7 +37,7 @@
       ]
     },
     {
-      "source": "/*.png",
+      "source": "/vite.svg",
       "headers": [
         {
           "key": "Cache-Control",
@@ -46,7 +46,7 @@
       ]
     },
     {
-      "source": "/*.svg",
+      "source": "/bn_icon_192.png",
       "headers": [
         {
           "key": "Cache-Control",
@@ -55,7 +55,7 @@
       ]
     },
     {
-      "source": "/(.*)",
+      "source": "/bn_icon_512.png",
       "headers": [
         {
           "key": "Cache-Control",
