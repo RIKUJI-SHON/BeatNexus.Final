@@ -1,0 +1,27 @@
+{
+  "name": "BeatNexus - Beatbox Battle Community",
+  "short_name": "BeatNexus",
+  "description": "ビートボクシング愛好者向けの競技プラットフォーム",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#06b6d4",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "ja",
+  "categories": ["entertainment", "music", "social"],
+  "icons": [
+    {
+      "src": "/bn_icon_192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/bn_icon_512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+} 

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="192" height="192" viewBox="0 0 192 192" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="192" height="192" rx="24" fill="url(#gradient)"/>
+  <defs>
+    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ef4444;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#f97316;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#eab308;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <!-- バトルアイコン（剣のクロス） -->
+  <g transform="translate(96,96)">
+    <!-- 左の剣 -->
+    <g transform="rotate(-45)">
+      <rect x="-2" y="-30" width="4" height="50" fill="white"/>
+      <rect x="-8" y="-35" width="16" height="8" fill="white"/>
+    </g>
+    <!-- 右の剣 -->
+    <g transform="rotate(45)">
+      <rect x="-2" y="-30" width="4" height="50" fill="white"/>
+      <rect x="-8" y="-35" width="16" height="8" fill="white"/>
+    </g>
+  </g>
+  <text x="96" y="150" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="14" font-weight="bold">BATTLE</text>
+</svg> 

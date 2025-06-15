@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+
+# PWA files
+Allow: /manifest.webmanifest
+Allow: /sw.js
+Allow: /workbox-*.js
+
+# Static assets
+Allow: /icon-*.svg
+Allow: /screenshot-*.png
+
+Sitemap: https://beatnexus.vercel.app/sitemap.xml 

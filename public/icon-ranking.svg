@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="192" height="192" viewBox="0 0 192 192" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="192" height="192" rx="24" fill="url(#gradient)"/>
+  <defs>
+    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#fbbf24;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#f59e0b;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#d97706;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <!-- トロフィーアイコン -->
+  <g transform="translate(96,96)">
+    <!-- トロフィーカップ -->
+    <path d="M-15,-20 Q-15,-30 0,-30 Q15,-30 15,-20 L15,0 Q15,10 0,10 Q-15,10 -15,0 Z" fill="white"/>
+    <!-- ハンドル左 -->
+    <path d="M-15,-15 Q-25,-15 -25,-5 Q-25,5 -15,5" stroke="white" stroke-width="3" fill="none"/>
+    <!-- ハンドル右 -->
+    <path d="M15,-15 Q25,-15 25,-5 Q25,5 15,5" stroke="white" stroke-width="3" fill="none"/>
+    <!-- ベース -->
+    <rect x="-20" y="10" width="40" height="8" rx="4" fill="white"/>
+    <!-- 台座 -->
+    <rect x="-12" y="18" width="24" height="6" rx="3" fill="white"/>
+    <!-- 王冠 -->
+    <path d="M-8,-35 L-4,-25 L0,-35 L4,-25 L8,-35 L8,-30 L-8,-30 Z" fill="#fbbf24"/>
+  </g>
+  <text x="96" y="150" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="12" font-weight="bold">RANKING</text>
+</svg> 

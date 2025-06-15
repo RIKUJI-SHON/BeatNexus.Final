@@ -20,7 +20,6 @@ lerna-debug.log*
 /dist
 /dist-ssr
 /out
-/public
 /.next/
 .env.local
 .env.*.local
