@@ -99,33 +99,11 @@ const HomePage: React.FC = () => {
             </h2>
           </div>
 
-          {/* CTA Buttons - Premium Design */}
-          <div className="flex flex-col sm:flex-row justify-center gap-6 animate-fade-in-delay-2">
-            {/* 今すぐ参加 - Premium Gradient Button */}
+          {/* CTA Button - Single Button Design */}
+          <div className="flex justify-center animate-fade-in-delay-2">
+            {/* 今すぐ参加 - Gradient Border Button */}
             <button 
               onClick={handleStartBattle}
-              className="group relative overflow-hidden px-10 py-4 bg-gradient-to-r from-cyan-500 via-purple-500 to-pink-500 rounded-2xl text-white font-bold text-base transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-cyan-500/25 min-w-[200px]"
-            >
-              {/* Reverse Gradient on Hover */}
-              <div className="absolute inset-0 bg-gradient-to-r from-pink-500 via-purple-500 to-cyan-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              
-              {/* Shine Effect */}
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
-              
-              {/* Button Content */}
-              <div className="relative flex items-center justify-center gap-3">
-                <div className="p-2 bg-white/20 rounded-xl group-hover:bg-white/30 transition-all group-hover:rotate-12 duration-300">
-                  <Upload className="h-5 w-5 group-hover:scale-110 transition-transform" />
-                </div>
-                <span className="tracking-wide">今すぐ参加</span>
-                {/* Subtle glow behind text */}
-                <div className="absolute inset-0 bg-white/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-md"></div>
-              </div>
-            </button>
-
-            {/* バトルを観戦 - Gradient Border Button */}
-            <button 
-              onClick={handleWatchBattles}
               className="group relative overflow-hidden px-10 py-4 bg-gray-900 border-2 border-transparent rounded-2xl text-white font-bold text-base transition-all duration-300 hover:scale-105 min-w-[200px]"
               style={{
                 background: 'linear-gradient(135deg, #1f2937, #111827), linear-gradient(135deg, #06b6d4, #8b5cf6, #ec4899)',
@@ -145,7 +123,7 @@ const HomePage: React.FC = () => {
                   <Play className="h-5 w-5 text-cyan-400 group-hover:text-purple-400 group-hover:scale-110 transition-all" />
                 </div>
                 <span className="tracking-wide bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent group-hover:from-purple-400 group-hover:via-pink-400 group-hover:to-cyan-400 transition-all duration-300">
-                  バトルを観戦
+                  今すぐ参加
                 </span>
                 {/* Subtle glow behind text */}
                 <div className="absolute inset-0 bg-cyan-500/5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-md"></div>
