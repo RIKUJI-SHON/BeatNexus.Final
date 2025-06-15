@@ -2,9 +2,11 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Mic, Instagram, Twitter, Youtube, Facebook, Mail } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useOnboardingStore } from '../../store/onboardingStore';
 
 export const Footer: React.FC = () => {
   const { t } = useTranslation();
+  const { setOnboardingModalOpen } = useOnboardingStore();
   return (
     <footer className="bg-gray-900 text-white pt-12 pb-8">
       <div className="container mx-auto px-4">
@@ -66,9 +68,12 @@ export const Footer: React.FC = () => {
             <h3 className="font-semibold text-lg mb-4">{t('footer.resources')}</h3>
             <ul className="space-y-2">
               <li>
-                <Link to="/how-to-guide" className="text-gray-400 hover:text-white transition-colors">
+                <button 
+                  onClick={() => setOnboardingModalOpen(true)}
+                  className="text-gray-400 hover:text-white transition-colors"
+                >
                   {t('footer.tutorials')}
-                </Link>
+                </button>
               </li>
               <li>
                 <Link to="/forum" className="text-gray-400 hover:text-white transition-colors">

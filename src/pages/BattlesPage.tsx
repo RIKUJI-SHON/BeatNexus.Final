@@ -18,6 +18,7 @@ import { useAuthStore } from '../store/authStore';
 import { RankingEntry } from '../types';
 import { useTranslation } from 'react-i18next';
 import { getRankColorClasses } from '../utils/rankUtils';
+import { useOnboardingStore } from '../store/onboardingStore';
 
 const BattlesPage: React.FC = () => {
   const { t } = useTranslation();
@@ -27,6 +28,7 @@ const BattlesPage: React.FC = () => {
   const [showMyBattlesOnly, setShowMyBattlesOnly] = useState(false);
 
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const { setOnboardingModalOpen } = useOnboardingStore();
   
   // ページネーション関連の状態
   const [currentPage, setCurrentPage] = useState(1);
@@ -291,9 +293,12 @@ const BattlesPage: React.FC = () => {
             {/* Guide Link */}
             <div className="text-xs text-gray-400 animate-fade-in-delay-3">
               {t('battlesPage.welcome.guide.newHere')}{' '}
-              <Link to="/how-to-guide" className="text-cyan-400 hover:text-cyan-300 font-semibold hover:underline transition-colors">
+              <button 
+                onClick={() => setOnboardingModalOpen(true)}
+                className="text-cyan-400 hover:text-cyan-300 font-semibold hover:underline transition-colors"
+              >
                 {t('battlesPage.welcome.guide.checkGuide')}
-              </Link>
+              </button>
             </div>
           </div>
         </section>
@@ -651,8 +656,8 @@ const BattlesPage: React.FC = () => {
                 </div>
 
                 {/* CTA Button */}
-                <Link 
-                  to="/how-to-guide"
+                <button 
+                  onClick={() => setOnboardingModalOpen(true)}
                   className="group/button block w-full overflow-hidden px-6 py-3 bg-gradient-to-r from-green-500 to-blue-500 rounded-xl text-white font-bold text-center hover:scale-[1.02] hover:shadow-xl hover:shadow-green-500/25 transition-all duration-300"
                 >
                   <div className="relative flex items-center justify-center gap-2">
@@ -662,7 +667,7 @@ const BattlesPage: React.FC = () => {
                   
                   {/* Button glow effect */}
                   <div className="absolute inset-0 bg-gradient-to-r from-blue-500/0 via-green-500/20 to-blue-500/0 opacity-0 group-hover/button:opacity-100 transition-opacity duration-300"></div>
-                </Link>
+                </button>
               </div>
             </Card>
           </aside>

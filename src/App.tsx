@@ -23,6 +23,11 @@ import { useLanguageInitialization } from './hooks/useLanguageInitialization';
 import { initializeGA } from './utils/analytics';
 import { useAnalytics, usePerformanceTracking } from './hooks/useAnalytics';
 
+// Onboarding
+import OnboardingModal from './components/onboarding/OnboardingModal';
+import { useOnboardingStore } from './store/onboardingStore';
+import { useAuthStore } from './store/authStore';
+
 // Pages
 import HomePage from './pages/HomePage';
 import BattlesPage from './pages/BattlesPage';
@@ -36,7 +41,6 @@ import CommunityPage from './pages/CommunityPage';
 import MyBattlesPage from './pages/MyBattlesPage';
 import SubscriptionPage from './pages/SubscriptionPage';
 import SettingsPage from './pages/SettingsPage';
-import HowToGuidePage from './pages/HowToGuidePage';
 import TournamentPage from './pages/TournamentPage';
 import FAQPage from './pages/FAQPage';
 import NotificationTestPage from './pages/NotificationTestPage';
@@ -74,7 +78,6 @@ function RouterContent() {
             <Route path="/community" element={<CommunityPage />} />
             <Route path="/subscription" element={<SubscriptionPage />} />
             <Route path="/settings" element={<SettingsPage />} />
-            <Route path="/how-to-guide" element={<HowToGuidePage />} />
             <Route path="/tournament" element={<TournamentPage />} />
             <Route path="/faq" element={<FAQPage />} />
             <Route path="/notifications/test" element={<NotificationTestPage />} />
@@ -90,6 +93,8 @@ function AppContent() {
   const { toasts, removeToast } = useToastStore();
   const subscribeToRealTimeUpdates = useBattleStore(state => state.subscribeToRealTimeUpdates);
   const { fetchNotifications, subscribeToNotifications } = useNotificationStore();
+  const { user } = useAuthStore();
+  const { shouldShowOnboarding, setOnboardingModalOpen } = useOnboardingStore();
   
   // 言語設定の初期化
   useLanguageInitialization();
@@ -114,6 +119,18 @@ function AppContent() {
     };
   }, [subscribeToRealTimeUpdates, subscribeToNotifications, fetchNotifications]);
 
+  // 初回ログイン時のオンボーディング表示判定
+  useEffect(() => {
+    if (user && shouldShowOnboarding()) {
+      // ログインしているユーザーで、まだオンボーディングを見ていない場合
+      const timer = setTimeout(() => {
+        setOnboardingModalOpen(true);
+      }, 1000); // 1秒遅延して表示（画面の読み込み完了を待つ）
+
+      return () => clearTimeout(timer);
+    }
+  }, [user, shouldShowOnboarding, setOnboardingModalOpen]);
+
   return (
     <Router>
       <RouterContent />
@@ -123,6 +140,9 @@ function AppContent() {
       
       {/* PWA Components */}
       <OfflineIndicator />
+      
+      {/* Onboarding Modal */}
+      <OnboardingModal />
     </Router>
   );
 }

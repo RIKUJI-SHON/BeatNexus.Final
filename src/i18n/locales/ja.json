@@ -1023,5 +1023,36 @@
     "goToPage": "ページへ移動:",
     "showing": "{{start}}〜{{end}}件目 / 全{{total}}件",
     "noResults": "結果がありません"
+  },
+  "onboarding": {
+    "slide1": {
+      "title": "ようこそ！",
+      "subtitle": "",
+      "description": "ビートボックスバトル\nプラットフォーム",
+      "cta": "始める"
+    },
+    "slide2": {
+      "title": "バトル方法",
+      "step1": "動画投稿",
+      "step2": "自動マッチング", 
+      "step3": "投票で勝敗決定",
+      "period": "投票期間：5日間",
+      "cta": "次へ"
+    },
+    "slide3": {
+      "title": "投票参加",
+      "description": "他のバトルに投票して\nコミュニティに貢献",
+      "benefit": "投票者ランキングにも参加可能",
+      "cta": "次へ"
+    },
+    "slide4": {
+      "title": "さあ始めよう！",
+      "action1": "動画を投稿",
+      "action2": "バトルに投票",
+      "cta": "スタート"
+    },
+    "skipTour": "スキップ",
+    "previous": "戻る",
+    "close": "閉じる"
   }
 }

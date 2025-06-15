@@ -15,7 +15,7 @@
   },
   "subscription": {
     "title": "Choose Your Plan",
-    "subtitle": "Select the perfect plan to support your beatboxing journey",
+    "subtitle": "Select the perfect plan to support your beatbox journey",
     "billing": {
       "monthly": "Monthly",
       "yearly": "Yearly",
@@ -185,7 +185,7 @@
     "myBattles": "My Battles"
   },
   "footer": {
-    "description": "The next step for the beatboxing community. Bringing together beginners and pros to elevate the art.",
+    "description": "The next step for the beatbox community. Bringing together beginners and pros to elevate the art.",
     "quickLinks": "Quick Links",
     "tournaments": "Tournaments",
     "resources": "Resources",
@@ -222,7 +222,7 @@
     },
     "shadows": {
       "title": {
-        "main": "Tired of Beatboxing in the",
+        "main": "Tired of Beatbox in the",
         "highlighted": "Shadows"
       },
       "subtitle": "The beatbox scene is exploding, but many artists face the same hurdles.",
@@ -767,8 +767,8 @@
     "title": "How-to Guide",
     "subtitle": "Master BeatNexus like a pro!",
     "hero": {
-      "title": "Welcome to the World of Beatboxing!",
-      "description": "Whether you're a beginner or a pro, BeatNexus will make your beatboxing journey more exciting. Let's start this adventure together!"
+      "title": "Welcome to the World of Beatbox!",
+      "description": "Whether you're a beginner or a pro, this platform will make your beatbox journey more exciting. Let's start this adventure together!"
     },
     "sections": {
       "gettingStarted": {
@@ -986,7 +986,7 @@
       }
     },
     "cta": {
-      "title": "Ready to dive into the beatboxing world!",
+              "title": "Ready to dive into the beatbox world!",
       "description": "You're all set. It's time to make your sound resonate across the world.",
       "startButton": "Start Your First Battle",
       "exploreButton": "Explore Other Battles"
@@ -1239,5 +1239,36 @@
     "goToPage": "Go to page:",
     "showing": "Showing {{start}}-{{end}} of {{total}} results",
     "noResults": "No results found"
+  },
+  "onboarding": {
+    "slide1": {
+      "title": "Welcome!",
+      "subtitle": "",
+      "description": "Beatbox Battle\nPlatform",
+      "cta": "Start"
+    },
+    "slide2": {
+      "title": "How to Battle",
+      "step1": "Post Video",
+      "step2": "Auto Matching", 
+      "step3": "Vote to Decide",
+      "period": "Voting Period: 5 days",
+      "cta": "Next"
+    },
+    "slide3": {
+      "title": "Vote & Join",
+      "description": "Vote on other battles\nand contribute to community",
+      "benefit": "Join voter rankings too",
+      "cta": "Next"
+    },
+    "slide4": {
+      "title": "Let's Start!",
+      "action1": "Post a Video",
+      "action2": "Vote on Battles",
+      "cta": "Start"
+    },
+    "skipTour": "Skip",
+    "previous": "Back",
+    "close": "Close"
   }
 }

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ChevronDown, ChevronUp, HelpCircle, MessageCircle, Video, Trophy, Users, Settings } from 'lucide-react';
+import { useOnboardingStore } from '../store/onboardingStore';
 
 interface FAQItem {
   question: string;
@@ -11,6 +12,7 @@ interface FAQItem {
 const FAQPage: React.FC = () => {
   const { t } = useTranslation();
   const [expandedItems, setExpandedItems] = useState<number[]>([]);
+  const { setOnboardingModalOpen } = useOnboardingStore();
 
   const toggleItem = (index: number) => {
     setExpandedItems(prev => 
@@ -221,7 +223,7 @@ const FAQPage: React.FC = () => {
               
               <button 
                 className="bg-white/10 hover:bg-white/20 border border-white/30 text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 backdrop-blur-sm"
-                onClick={() => window.location.href = '/how-to-guide'}
+                onClick={() => setOnboardingModalOpen(true)}
               >
                 {t('faq.stillNeedHelp.readGuide')}
               </button>
