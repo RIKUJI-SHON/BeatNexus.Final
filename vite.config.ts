@@ -53,14 +53,15 @@ export default defineConfig({
         ]
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,svg}'],
+        globPatterns: ['**/*.{js,css,html,svg}', '**/VS.png'],
         // 大きなファイルのサイズ制限を5MBに増加
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
-        // 大きな画像ファイルを除外
+        // 大きな画像ファイルを除外（VS.pngは含める）
         globIgnores: [
           '**/BEATNEXUS-WORDMARK*.png',
           '**/hero-background*.png',
-          '**/bn_icon_512.png'
+          '**/bn_icon_512.png',
+          '!**/VS.png' // VS.pngは明示的に含める
         ],
         runtimeCaching: [
           {
@@ -87,7 +88,19 @@ export default defineConfig({
             }
           },
           {
-            // 大きな画像ファイルはNetworkFirstで処理
+            // VS.png専用キャッシュ戦略
+            urlPattern: /\/images\/VS\.png$/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'vs-image-cache',
+              expiration: {
+                maxEntries: 1,
+                maxAgeSeconds: 60 * 60 * 24 * 30 // 30日間
+              }
+            }
+          },
+          {
+            // その他の大きな画像ファイルはNetworkFirstで処理
             urlPattern: /\.(?:png|jpg|jpeg|gif|webp)$/,
             handler: 'NetworkFirst',
             options: {

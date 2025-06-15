@@ -14,6 +14,7 @@ import { useToastStore } from './store/toastStore';
 import { PWAInstallButton } from './components/ui/PWAInstallButton';
 import { OfflineIndicator } from './components/ui/OfflineIndicator';
 import { ShortcutGuide } from './components/ui/ShortcutGuide';
+import { PWADebugButton } from './components/ui/PWADebugButton';
 
 // Auth
 import { AuthProvider } from './components/auth/AuthProvider';
@@ -107,6 +108,7 @@ function AppContent() {
           <PWAInstallButton />
           <OfflineIndicator />
           <ShortcutGuide />
+          <PWADebugButton />
         </Router>
   );
 }

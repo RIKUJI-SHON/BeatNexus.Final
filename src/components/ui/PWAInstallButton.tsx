@@ -128,6 +128,14 @@ export const PWAInstallButton: React.FC = () => {
     localStorage.setItem('pwa-install-dismissed', Date.now().toString());
   };
 
+  // デバッグ用の表示条件チェック
+  console.log('PWA Install Button Status:', {
+    isInstalled,
+    showInstallBanner,
+    hasDeferredPrompt: !!deferredPrompt,
+    shouldShow: !isInstalled && showInstallBanner && !!deferredPrompt
+  });
+
   // すでにインストール済みまたは表示条件を満たさない場合は何も表示しない
   if (isInstalled || !showInstallBanner || !deferredPrompt) {
     return null;
