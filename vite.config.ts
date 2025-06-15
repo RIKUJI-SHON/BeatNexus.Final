@@ -17,42 +17,7 @@ export default defineConfig({
         'icon-my-battles.svg',
         'images/**/*'
       ],
-      manifest: {
-        name: 'BeatNexus - Beatbox Battle Community',
-        short_name: 'BeatNexus',
-        description: 'ビートボクシング愛好者向けの競技プラットフォーム',
-        theme_color: '#06b6d4',
-        background_color: '#0f172a',
-        display: 'standalone',
-        scope: '/',
-        start_url: '/',
-        icons: [
-          {
-            src: '/bn_icon_192.png',
-            sizes: '192x192',
-            type: 'image/png',
-            purpose: 'any'
-          },
-          {
-            src: '/bn_icon_192.png',
-            sizes: '192x192',
-            type: 'image/png',
-            purpose: 'maskable'
-          },
-          {
-            src: '/bn_icon_512.png',
-            sizes: '512x512',
-            type: 'image/png',
-            purpose: 'any'
-          },
-          {
-            src: '/bn_icon_512.png',
-            sizes: '512x512',
-            type: 'image/png',
-            purpose: 'maskable'
-          }
-        ]
-      },
+      manifest: false, // 静的ファイルを使用
       workbox: {
         globPatterns: ['**/*.{js,css,html,svg,png}'],
         // 大きなファイルのサイズ制限を5MBに増加
@@ -152,5 +117,6 @@ export default defineConfig({
     port: 3000,
     open: true,
     host: 'localhost'
-  }
+  },
+  publicDir: 'public'
 });
