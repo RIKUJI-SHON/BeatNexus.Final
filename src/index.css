@@ -299,5 +299,37 @@ video {
 }
 
 .logo-glow {
-  animation: logo-glow 3s ease-in-out infinite, logo-pulse 2s ease-in-out infinite;
+  animation: logo-glow 3s ease-in-out infinite alternate, logo-pulse 2s ease-in-out infinite;
+}
+
+/* スキップリンク専用アニメーション */
+@keyframes skip-link-entrance {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.9);
+  }
+  50% {
+    transform: translateY(-10px) scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes skip-link-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(6, 182, 212, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(6, 182, 212, 0.8), 0 0 40px rgba(168, 85, 247, 0.4);
+  }
+}
+
+.skip-link-style {
+  animation: skip-link-entrance 0.3s ease-out;
+}
+
+.skip-link-style:focus {
+  animation: skip-link-glow 2s ease-in-out infinite;
 }
