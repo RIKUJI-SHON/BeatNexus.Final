@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Trophy, Medal, Crown, Search, Users, ArrowUp, ArrowDown, Star, Vote } from 'lucide-react';
+import { Trophy, Medal, Crown, Search, Users, Star, Vote } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Card } from '../components/ui/Card';
 import { Badge } from '../components/ui/Badge';
 import { useRankingStore } from '../store/rankingStore';
 import { useTranslation } from 'react-i18next';
-import { getRankColorClasses, getWinRateColorClass } from '../utils/rankUtils';
+import { getRankColorClasses } from '../utils/rankUtils';
 
 type TabType = 'player' | 'voter';
 
@@ -24,81 +24,46 @@ const RankingPage: React.FC = () => {
   
   const [activeTab, setActiveTab] = useState<TabType>('player');
   const [searchQuery, setSearchQuery] = useState('');
-  const [sortField, setSortField] = useState<'rating' | 'season_points' | 'win_rate' | 'vote_count'>('rating');
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
 
   useEffect(() => {
     fetchRankings();
     fetchVoterRankings();
   }, [fetchRankings, fetchVoterRankings]);
 
-  // アクティブタブが切り替わったときにソートフィールドをリセット
-  useEffect(() => {
-    if (activeTab === 'player') {
-      setSortField('rating');
-    } else {
-      setSortField('vote_count');
-    }
-    setSortDirection('desc');
-  }, [activeTab]);
-
-  const handleSort = (field: 'rating' | 'season_points' | 'win_rate' | 'vote_count') => {
-    if (sortField === field) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortField(field);
-      setSortDirection('desc');
-    }
-  };
-
   // データとローディング状態を取得
   const currentData = activeTab === 'player' ? rankings : voterRankings;
   const currentLoading = activeTab === 'player' ? loading : voterLoading;
   const currentError = activeTab === 'player' ? error : voterError;
 
-  // フィルタリングとソート
-  const filteredAndSortedData = currentData
-    .filter(entry => 
-      entry.username.toLowerCase().includes(searchQuery.toLowerCase())
-    )
-    .sort((a, b) => {
-      const multiplier = sortDirection === 'asc' ? 1 : -1;
-      
-      if (activeTab === 'player') {
-        const aEntry = a as any;
-        const bEntry = b as any;
-        return (aEntry[sortField] - bEntry[sortField]) * multiplier;
-      } else {
-        const aEntry = a as any;
-        const bEntry = b as any;
-        return (aEntry[sortField] - bEntry[sortField]) * multiplier;
-      }
-    });
+  // フィルタリング
+  const filteredData = currentData.filter(entry => 
+    entry.username.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const getPositionBadge = (position: number) => {
     switch (position) {
       case 1:
         return (
-          <div className="flex items-center justify-center w-12 h-12 bg-yellow-500/20 rounded-full">
-            <Crown className="h-6 w-6 text-yellow-500" />
+          <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full shadow-lg">
+            <Crown className="h-8 w-8 text-white" />
           </div>
         );
       case 2:
         return (
-          <div className="flex items-center justify-center w-12 h-12 bg-gray-300/20 rounded-full">
-            <Medal className="h-6 w-6 text-gray-300" />
+          <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-gray-300 to-gray-500 rounded-full shadow-lg">
+            <Medal className="h-8 w-8 text-white" />
           </div>
         );
       case 3:
         return (
-          <div className="flex items-center justify-center w-12 h-12 bg-amber-600/20 rounded-full">
-            <Medal className="h-6 w-6 text-amber-600" />
+          <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-amber-500 to-amber-700 rounded-full shadow-lg">
+            <Medal className="h-8 w-8 text-white" />
           </div>
         );
       default:
         return (
-          <div className="flex items-center justify-center w-12 h-12 bg-gray-800 rounded-full">
-            <span className="text-xl font-bold text-gray-400">{position}</span>
+          <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-gray-700 to-gray-800 rounded-full shadow-lg border border-gray-600">
+            <span className="text-2xl font-bold text-white">{position}</span>
           </div>
         );
     }
@@ -127,7 +92,7 @@ const RankingPage: React.FC = () => {
     const { bgColor, textColor } = getRankColorClasses(rankColor);
 
     return (
-      <Badge variant="secondary" className={`${bgColor} ${textColor} text-xs px-2 py-1 font-medium`}>
+      <Badge variant="secondary" className={`${bgColor} ${textColor} text-xs px-3 py-1 font-medium`}>
         {rankName}
       </Badge>
     );
@@ -167,9 +132,9 @@ const RankingPage: React.FC = () => {
             <div className="relative">
               <h1 className="text-5xl lg:text-6xl font-bold mb-6">
                 <span className="bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-            {t('rankingPage.title')}
+                  {t('rankingPage.title')}
                 </span>
-          </h1>
+              </h1>
               
               <div className="flex items-center justify-center gap-4 mb-6">
                 <div className="w-16 h-px bg-gradient-to-r from-transparent via-cyan-500 to-transparent"></div>
@@ -180,8 +145,8 @@ const RankingPage: React.FC = () => {
               </div>
               
               <p className="text-gray-300 max-w-3xl mx-auto text-lg leading-relaxed">
-            {t('rankingPage.description')}
-          </p>
+                {t('rankingPage.description')}
+              </p>
             </div>
           </div>
         </div>
@@ -285,183 +250,108 @@ const RankingPage: React.FC = () => {
 
         {/* Search */}
         <div className="mb-8">
-          <div className="relative">
+          <div className="relative max-w-md mx-auto">
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={t('rankingPage.searchPlaceholder')}
-              className="w-full bg-gray-800 border border-gray-700 rounded-lg pl-10 pr-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-cyan-500/50"
+              className="w-full bg-gray-800/50 border border-gray-700 rounded-xl pl-12 pr-4 py-4 text-white placeholder-gray-400 focus:outline-none focus:border-cyan-500/50 focus:bg-gray-800 transition-all backdrop-blur-sm"
             />
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
           </div>
         </div>
 
-        {/* Rankings Table */}
-        <Card className="bg-gray-900 border border-gray-800 overflow-hidden">
-          {currentLoading ? (
-            <div className="p-8 text-center">
-              <div className="animate-spin w-12 h-12 border-4 border-cyan-500 border-t-transparent rounded-full mx-auto mb-4"></div>
-              <p className="text-gray-400">{t('rankingPage.loading')}</p>
-            </div>
-          ) : filteredAndSortedData.length > 0 ? (
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-gray-800">
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-400">{t('rankingPage.table.rank')}</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-400">{t('rankingPage.table.user')}</th>
-                    
-                    {activeTab === 'player' ? (
-                      <>
-                    <th 
-                      className="px-6 py-4 text-center text-sm font-semibold text-gray-400 cursor-pointer"
-                      onClick={() => handleSort('rating')}
-                    >
-                      <div className="flex items-center justify-center gap-2">
-                        <Star className="h-4 w-4" />
-                        {t('rankingPage.table.rating')}
-                        {sortField === 'rating' && (
-                          sortDirection === 'desc' ? <ArrowDown className="h-4 w-4" /> : <ArrowUp className="h-4 w-4" />
-                        )}
-                      </div>
-                    </th>
-                    <th 
-                      className="px-6 py-4 text-center text-sm font-semibold text-gray-400 cursor-pointer"
-                      onClick={() => handleSort('season_points')}
-                    >
-                      <div className="flex items-center justify-center gap-2">
-                        {t('rankingPage.table.seasonPoints')}
-                        {sortField === 'season_points' && (
-                          sortDirection === 'desc' ? <ArrowDown className="h-4 w-4" /> : <ArrowUp className="h-4 w-4" />
-                        )}
-                      </div>
-                    </th>
-                    <th 
-                      className="px-6 py-4 text-center text-sm font-semibold text-gray-400 cursor-pointer"
-                      onClick={() => handleSort('win_rate')}
-                    >
-                      <div className="flex items-center justify-center gap-2">
-                        {t('rankingPage.table.winRate')}
-                        {sortField === 'win_rate' && (
-                          sortDirection === 'desc' ? <ArrowDown className="h-4 w-4" /> : <ArrowUp className="h-4 w-4" />
-                        )}
-                      </div>
-                    </th>
-                      </>
-                    ) : (
-                      <th 
-                        className="px-6 py-4 text-center text-sm font-semibold text-gray-400 cursor-pointer"
-                        onClick={() => handleSort('vote_count')}
-                      >
-                        <div className="flex items-center justify-center gap-2">
-                          <Vote className="h-4 w-4" />
-                          {t('rankingPage.table.voteCount')}
-                          {sortField === 'vote_count' && (
-                            sortDirection === 'desc' ? <ArrowDown className="h-4 w-4" /> : <ArrowUp className="h-4 w-4" />
-                          )}
-                        </div>
-                      </th>
-                    )}
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredAndSortedData.map((entry) => {
-                    return (
-                      <tr 
-                        key={entry.user_id}
-                        className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors"
-                      >
-                        <td className="px-6 py-4">
-                          <div className="flex items-center gap-4">
-                            {getPositionBadge(entry.position)}
-                          </div>
-                        </td>
-                        <td className="px-6 py-4">
-                          <Link to={`/profile/${entry.user_id}`} className="flex items-center gap-3 group">
-                            <img
-                              src={entry.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${entry.user_id}`}
-                              alt={entry.username}
-                              className="w-12 h-12 rounded-lg object-cover border border-gray-700 group-hover:border-cyan-500/50 transition-colors"
-                            />
-                            <div>
-                              <div className="font-semibold text-white group-hover:text-cyan-400 transition-colors">
-                                {entry.username}
-                              </div>
-                            </div>
-                          </Link>
-                        </td>
+        {/* Rankings Cards */}
+        {currentLoading ? (
+          <div className="text-center py-16">
+            <div className="animate-spin w-16 h-16 border-4 border-cyan-500 border-t-transparent rounded-full mx-auto mb-6"></div>
+            <p className="text-gray-400 text-lg">{t('rankingPage.loading')}</p>
+          </div>
+        ) : filteredData.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredData.map((entry) => {
+              const isTopThree = entry.position <= 3;
+              return (
+                <Card 
+                  key={entry.user_id}
+                  className={`relative bg-gradient-to-br from-gray-900 to-gray-950 text-white hover:shadow-2xl transform hover:-translate-y-1 hover:scale-[1.02] transition-all duration-500 overflow-hidden border ${
+                    isTopThree 
+                      ? 'border-yellow-500/30 shadow-lg shadow-yellow-500/10' 
+                      : 'border-gray-700/50'
+                  } backdrop-blur-sm group`}
+                >
+                  {/* Animated Background Pattern */}
+                  <div className="absolute inset-0 opacity-5">
+                    <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white/10 to-transparent transform rotate-45 translate-x-full group-hover:translate-x-[-100%] transition-transform duration-1000"></div>
+                  </div>
 
-                        {activeTab === 'player' ? (
-                          <>
-                        <td className="px-6 py-4">
-                          <div className="text-center">
-                                <div className={`text-2xl font-bold ${getRatingColor((entry as any).rating)}`}>
-                                  {(entry as any).rating}
-                            </div>
-                            <div className="text-xs text-gray-400 mt-1 flex items-center justify-center gap-1">
-                              <Star className="h-3 w-3" />
-                              {t('rankingPage.eloRating')}
-                            </div>
+                  <div className="relative p-6">
+                    {/* Position Badge */}
+                    <div className="flex justify-center mb-6">
+                      {getPositionBadge(entry.position)}
+                    </div>
+
+                    {/* User Info */}
+                    <Link to={`/profile/${entry.user_id}`} className="block group/link">
+                      <div className="flex flex-col items-center text-center mb-6">
+                        <img
+                          src={entry.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${entry.user_id}`}
+                          alt={entry.username}
+                          className="w-20 h-20 rounded-full object-cover border-4 border-gray-700 group-hover/link:border-cyan-500/50 transition-colors mb-4 shadow-lg"
+                        />
+                        <h3 className="text-xl font-bold text-white group-hover/link:text-cyan-400 transition-colors mb-2 truncate max-w-full">
+                          {entry.username}
+                        </h3>
+                        {getTierBadge((entry as any).rank_name, (entry as any).rank_color)}
+                      </div>
+                    </Link>
+
+                    {/* Rating/Vote Count */}
+                    <div className="text-center">
+                      {activeTab === 'player' ? (
+                        <div>
+                          <div className={`text-4xl font-bold mb-2 ${getRatingColor((entry as any).rating)}`}>
+                            {(entry as any).rating}
                           </div>
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="text-center">
-                            <div className="text-xl font-bold text-white">
-                                  {(entry as any).season_points}
-                            </div>
-                            <div className="text-xs text-gray-400 mt-1">
-                              {t('rankingPage.table.seasonPoints')}
-                            </div>
+                          <div className="flex items-center justify-center gap-2 text-sm text-gray-400">
+                            <Star className="h-4 w-4" />
+                            <span>{t('profilePage.seasonRating')}</span>
                           </div>
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="text-center">
-                                <div className={`text-xl font-bold ${getWinRateColorClass((entry as any).win_rate)}`}>
-                                  {(entry as any).win_rate}%
-                            </div>
-                            <div className="text-xs text-gray-400 mt-1">
-                                  {t('rankingPage.winLossRecord', { wins: (entry as any).battles_won, losses: (entry as any).battles_lost })}
-                            </div>
+                        </div>
+                      ) : (
+                        <div>
+                          <div className={`text-4xl font-bold mb-2 ${getVoteCountColor((entry as any).vote_count)}`}>
+                            {(entry as any).vote_count}
                           </div>
-                        </td>
-                          </>
-                        ) : (
-                          <td className="px-6 py-4">
-                            <div className="text-center">
-                              <div className={`text-2xl font-bold ${getVoteCountColor((entry as any).vote_count)}`}>
-                                {(entry as any).vote_count}
-                              </div>
-                              <div className="text-xs text-gray-400 mt-1 flex items-center justify-center gap-1">
-                                <Vote className="h-3 w-3" />
-                                {t('rankingPage.table.voteCount')}
-                              </div>
-                            </div>
-                          </td>
-                        )}
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+                          <div className="flex items-center justify-center gap-2 text-sm text-gray-400">
+                            <Vote className="h-4 w-4" />
+                            <span>{t('rankingPage.table.voteCount')}</span>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </Card>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="text-center py-16">
+            <div className="w-24 h-24 mx-auto mb-8 rounded-full bg-gray-800 flex items-center justify-center">
+              <Users className="h-12 w-12 text-gray-600" />
             </div>
-          ) : (
-            <div className="p-8 text-center">
-              <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gray-800 flex items-center justify-center">
-                <Users className="h-10 w-10 text-gray-600" />
-              </div>
-              <h3 className="text-xl font-semibold text-white mb-4">
-                {searchQuery ? t('rankingPage.noUsersFound') : t('rankingPage.noRankingsYet')}
-              </h3>
-              <p className="text-gray-400">
-                {searchQuery 
-                  ? t('rankingPage.tryDifferentSearch')
-                  : t('rankingPage.rankingsWillAppear')
-                }
-              </p>
-            </div>
-          )}
-        </Card>
+            <h3 className="text-2xl font-semibold text-white mb-4">
+              {searchQuery ? t('rankingPage.noUsersFound') : t('rankingPage.noRankingsYet')}
+            </h3>
+            <p className="text-gray-400 text-lg">
+              {searchQuery 
+                ? t('rankingPage.tryDifferentSearch')
+                : t('rankingPage.rankingsWillAppear')
+              }
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
