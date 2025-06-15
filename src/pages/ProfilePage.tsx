@@ -239,7 +239,7 @@ const ProfilePage: React.FC = () => {
   };
 
   const userActiveBattles = activeBattles.filter(battle => 
-    displayedUserId && (battle.contestant_a_id === displayedUserId || battle.contestant_b_id === displayedUserId)
+    displayedUserId && (battle.player1_user_id === displayedUserId || battle.player2_user_id === displayedUserId)
   );
 
   const userArchivedBattles = archivedBattles.filter(battle => 
