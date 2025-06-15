@@ -75,11 +75,11 @@ const HomePage: React.FC = () => {
           <div className="mb-6 animate-fade-in relative">
             <div className="relative group">
               {/* Glow Effect Background */}
-              <div className="absolute inset-0 opacity-30 group-hover:opacity-50 transition-opacity duration-500">
+              <div className="absolute inset-0 opacity-15 group-hover:opacity-25 transition-opacity duration-500">
                 <img 
                   src={beatnexusWordmark} 
                   alt=""
-                  className="mx-auto max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg h-auto blur-md scale-110 filter brightness-150"
+                  className="mx-auto max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg h-auto blur-sm scale-110 filter brightness-150"
                 />
               </div>
               

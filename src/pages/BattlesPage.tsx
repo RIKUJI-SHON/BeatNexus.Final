@@ -220,11 +220,11 @@ const BattlesPage: React.FC = () => {
             <div className="mb-4 animate-fade-in relative">
               <div className="relative group">
                 {/* Glow Effect Background */}
-                <div className="absolute inset-0 opacity-20 group-hover:opacity-40 transition-opacity duration-500">
+                <div className="absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity duration-500">
                   <img 
                     src={beatnexusWordmark} 
                     alt=""
-                    className="mx-auto max-w-xs sm:max-w-sm md:max-w-md h-auto blur-md scale-110 filter brightness-150"
+                    className="mx-auto max-w-xs sm:max-w-sm md:max-w-md h-auto blur-sm scale-110 filter brightness-150"
                   />
                 </div>
                 
