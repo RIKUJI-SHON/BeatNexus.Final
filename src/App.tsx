@@ -10,6 +10,11 @@ import { SpaceBackground } from './components/layout/SpaceBackground';
 import ToastContainer from './components/ui/ToastContainer';
 import { useToastStore } from './store/toastStore';
 
+// PWA Components
+import { PWAInstallButton } from './components/ui/PWAInstallButton';
+import { OfflineIndicator } from './components/ui/OfflineIndicator';
+import { ShortcutGuide } from './components/ui/ShortcutGuide';
+
 // Auth
 import { AuthProvider } from './components/auth/AuthProvider';
 
@@ -71,7 +76,7 @@ function AppContent() {
           <SpaceBackground />
           <div className="flex flex-col min-h-screen relative">
             <Header />
-            <main className="flex-grow">
+            <main id="main-content" className="flex-grow" role="main">
               <Routes>
                 <Route path="/" element={<HomePage />} />
                 <Route path="/battles" element={<BattlesPage />} />
@@ -97,6 +102,11 @@ function AppContent() {
           
           {/* Toast Notifications */}
           <ToastContainer toasts={toasts} onRemove={removeToast} />
+          
+          {/* PWA Components */}
+          <PWAInstallButton />
+          <OfflineIndicator />
+          <ShortcutGuide />
         </Router>
   );
 }

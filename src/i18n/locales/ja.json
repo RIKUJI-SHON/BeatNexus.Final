@@ -157,6 +157,33 @@
   },
   "upload": {
   },
+  "pwa": {
+    "install": {
+      "title": "アプリをインストール",
+      "description": "BeatNexusをホーム画面に追加して、より快適にご利用いただけます。",
+      "button": "インストール",
+      "later": "後で"
+    }
+  },
+  "offline": {
+    "title": "オフライン",
+    "description": "インターネット接続を確認してください"
+  },
+  "online": {
+    "title": "オンライン",
+    "description": "接続が復旧しました"
+  },
+  "shortcuts": {
+    "guide": {
+      "title": "ショートカット機能",
+      "description": "アプリアイコンを長押しして、よく使う機能に素早くアクセスできます！",
+      "gotIt": "了解！"
+    },
+    "battles": "バトル一覧",
+    "post": "動画投稿",
+    "ranking": "ランキング",
+    "myBattles": "マイバトル"
+  },
   "footer": {
     "description": "ビートボックスコミュニティの次なるステップ。初心者からプロまでが集い、アートを高めます。",
     "quickLinks": "クイックリンク",

@@ -1,12 +1,58 @@
 <!doctype html>
-<html lang="en">
+<html lang="ja">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="icon" type="image/svg+xml" href="/icon-192x192.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>BeatNexus - Beatbox Battle Community</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#06b6d4" />
+    <meta name="description" content="ビートボクシング愛好者向けの競技プラットフォーム。動画投稿、自動マッチング、コミュニティ投票でバトルを楽しもう！" />
+    <meta name="keywords" content="beatbox, battle, community, music, competition, ビートボクシング, バトル, コミュニティ" />
+    <meta name="author" content="BeatNexus Team" />
+    
+    <!-- Accessibility -->
+    <meta name="color-scheme" content="dark light" />
+    <meta name="supported-color-schemes" content="dark light" />
+    
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/manifest.webmanifest" />
+    
+    <!-- Apple Touch Icon -->
+    <link rel="apple-touch-icon" href="/icon-192x192.svg" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="BeatNexus" />
+    
+    <!-- Microsoft Tiles -->
+    <meta name="msapplication-TileColor" content="#06b6d4" />
+    <meta name="msapplication-TileImage" content="/icon-192x192.svg" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://beatnexus.vercel.app/" />
+    <meta property="og:title" content="BeatNexus - Beatbox Battle Community" />
+    <meta property="og:description" content="ビートボクシング愛好者向けの競技プラットフォーム" />
+    <meta property="og:image" content="/icon-512x512.svg" />
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://beatnexus.vercel.app/" />
+    <meta property="twitter:title" content="BeatNexus - Beatbox Battle Community" />
+    <meta property="twitter:description" content="ビートボクシング愛好者向けの競技プラットフォーム" />
+    <meta property="twitter:image" content="/icon-512x512.svg" />
+    
+    <!-- Performance Hints -->
+    <link rel="preconnect" href="https://qgqcjtjxaoplhxurbpis.supabase.co" />
+    <link rel="dns-prefetch" href="https://qgqcjtjxaoplhxurbpis.supabase.co" />
   </head>
   <body>
+    <!-- Skip to main content for screen readers -->
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-blue-600 text-white px-4 py-2 rounded z-50">
+      メインコンテンツにスキップ
+    </a>
+    
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

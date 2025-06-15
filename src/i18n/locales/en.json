@@ -157,6 +157,33 @@
   },
   "upload": {
   },
+  "pwa": {
+    "install": {
+      "title": "Install App",
+      "description": "Add BeatNexus to your home screen for a better experience.",
+      "button": "Install",
+      "later": "Later"
+    }
+  },
+  "offline": {
+    "title": "Offline",
+    "description": "Please check your internet connection"
+  },
+  "online": {
+    "title": "Online",
+    "description": "Connection restored"
+  },
+  "shortcuts": {
+    "guide": {
+      "title": "App Shortcuts",
+      "description": "Long press the app icon to quickly access your favorite features!",
+      "gotIt": "Got it!"
+    },
+    "battles": "Battles",
+    "post": "Post Video",
+    "ranking": "Ranking",
+    "myBattles": "My Battles"
+  },
   "footer": {
     "description": "The next step for the beatboxing community. Bringing together beginners and pros to elevate the art.",
     "quickLinks": "Quick Links",
