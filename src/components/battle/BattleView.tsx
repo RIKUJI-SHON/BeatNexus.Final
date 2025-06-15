@@ -45,23 +45,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle }) => {
     (String(player1Id) === String(user.id) || String(player2Id) === String(user.id)) : 
     false;
   
-  // 🔍 デバッグ情報
-  console.log('🔍 ===== PARTICIPANT DEBUG =====');
-  console.log('👤 User ID:', user?.id);
-  console.log('🎮 Player 1 ID (original):', battle.player1_user_id);
-  console.log('🎮 Player 2 ID (original):', battle.player2_user_id);
-  console.log('🎮 Player 1 ID (contestant_a_id):', (battle as any).contestant_a_id);
-  console.log('🎮 Player 2 ID (contestant_b_id):', (battle as any).contestant_b_id);
-  console.log('🎮 Final Player 1 ID:', player1Id);
-  console.log('🎮 Final Player 2 ID:', player2Id);
-  console.log('🔍 User ID Type:', typeof user?.id);
-  console.log('🔍 Player 1 Type:', typeof player1Id);
-  console.log('🔍 Player 2 Type:', typeof player2Id);
-  console.log('✅ Player 1 Match:', String(player1Id) === String(user?.id));
-  console.log('✅ Player 2 Match:', String(player2Id) === String(user?.id));
-  console.log('🛡️ Is User Participant:', isUserParticipant);
-  console.log('🆔 Battle ID:', battle.id);
-  console.log('🔍 ===========================');
+
   
   // Load user's current vote status when component mounts
   useEffect(() => {
@@ -69,7 +53,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle }) => {
       setIsLoadingVoteStatus(true);
       try {
         const voteStatus = await getUserVote(battle.id);
-        console.log('🔍 Current vote status:', voteStatus);
+
         if (voteStatus.hasVoted) {
           setHasVoted(voteStatus.vote);
         } else {
@@ -159,15 +143,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle }) => {
     return `${diffDays}d ago`;
   };
 
-  // 🔍 参加者状況の監視
-  useEffect(() => {
-    console.log('🔄 ===== STATUS CHANGE =====');
-    console.log('🛡️ Is User Participant:', isUserParticipant);
-    console.log('🎨 Should Show Participant UI:', isUserParticipant);
-    console.log('👤 Current User ID:', user?.id);
-    console.log('🎮 Battle Players:', [player1Id, player2Id]);
-    console.log('🔄 ========================');
-  }, [isUserParticipant, user?.id, player1Id, player2Id]);
+
   
   // Calculate time remaining
   const getTimeRemaining = (endDate: string) => {

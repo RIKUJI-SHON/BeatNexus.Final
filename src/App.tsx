@@ -11,10 +11,7 @@ import ToastContainer from './components/ui/ToastContainer';
 import { useToastStore } from './store/toastStore';
 
 // PWA Components
-import { PWAInstallButton } from './components/ui/PWAInstallButton';
 import { OfflineIndicator } from './components/ui/OfflineIndicator';
-import { ShortcutGuide } from './components/ui/ShortcutGuide';
-import { PWADebugButton } from './components/ui/PWADebugButton';
 
 // Auth
 import { AuthProvider } from './components/auth/AuthProvider';
@@ -105,10 +102,7 @@ function AppContent() {
           <ToastContainer toasts={toasts} onRemove={removeToast} />
           
           {/* PWA Components */}
-          {/* <PWAInstallButton /> */}
           <OfflineIndicator />
-          {/* <ShortcutGuide /> */}
-          <PWADebugButton />
         </Router>
   );
 }

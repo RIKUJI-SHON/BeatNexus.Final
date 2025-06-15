@@ -636,8 +636,8 @@ const PostPage: React.FC = () => {
         console.log('Match found and battle created:', webhookResult.battle_id);
       }
 
-      // Log the result for debugging
-      console.log('Matchmaking result:', webhookResult);
+
+      
 
       // 投稿成功後にクールダウン情報を更新
       refreshCooldown();
