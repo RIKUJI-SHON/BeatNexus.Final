@@ -27,28 +27,60 @@ export const PWAInstallButton: React.FC = () => {
     // PWAがすでにインストールされているかチェック
     const checkIfInstalled = () => {
       if (window.matchMedia('(display-mode: standalone)').matches) {
+        console.log('PWA: Already installed (standalone mode)');
         setIsInstalled(true);
         return;
       }
       
       // iOS Safari の場合
       if ((window.navigator as any).standalone === true) {
+        console.log('PWA: Already installed (iOS standalone)');
         setIsInstalled(true);
         return;
       }
+      
+      console.log('PWA: Not installed yet');
     };
 
     checkIfInstalled();
 
+    // PWA要件のデバッグ情報
+    console.log('PWA Debug Info:', {
+      isSecureContext: window.isSecureContext,
+      protocol: window.location.protocol,
+      userAgent: navigator.userAgent,
+      serviceWorkerSupported: 'serviceWorker' in navigator,
+      manifestSupported: 'manifest' in window || 'webkitManifest' in window
+    });
+
+    // Service Worker の登録状況を確認
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(registrations => {
+        console.log('PWA: Service Worker registrations:', registrations.length);
+        registrations.forEach((registration, index) => {
+          console.log(`PWA: SW ${index + 1}:`, {
+            scope: registration.scope,
+            active: !!registration.active,
+            installing: !!registration.installing,
+            waiting: !!registration.waiting
+          });
+        });
+      });
+    }
+
     // beforeinstallprompt イベントをリッスン
     const handleBeforeInstallPrompt = (e: BeforeInstallPromptEvent) => {
+      console.log('PWA: beforeinstallprompt event fired', e.platforms);
       // デフォルトのインストールバナーを防ぐ
       e.preventDefault();
       setDeferredPrompt(e);
       
       // ユーザーがまだインストールしていない場合のみ表示
       if (!isInstalled) {
+        console.log('PWA: Showing install banner');
         setShowInstallBanner(true);
+      } else {
+        console.log('PWA: Already installed, not showing banner');
       }
     };
 

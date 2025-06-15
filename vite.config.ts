@@ -9,12 +9,13 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: [
-        'icon-192x192.svg', 
-        'icon-512x512.svg',
+        'bn_icon_192.png', 
+        'bn_icon_512.png',
         'icon-battles.svg',
         'icon-post.svg',
         'icon-ranking.svg',
-        'icon-my-battles.svg'
+        'icon-my-battles.svg',
+        'images/**/*'
       ],
       manifest: {
         name: 'BeatNexus - Beatbox Battle Community',
@@ -27,19 +28,33 @@ export default defineConfig({
         start_url: '/',
         icons: [
           {
-            src: '/icon-192x192.svg',
+            src: '/bn_icon_192.png',
             sizes: '192x192',
-            type: 'image/svg+xml'
+            type: 'image/png',
+            purpose: 'any'
           },
           {
-            src: '/icon-512x512.svg',
+            src: '/bn_icon_192.png',
+            sizes: '192x192',
+            type: 'image/png',
+            purpose: 'maskable'
+          },
+          {
+            src: '/bn_icon_512.png',
             sizes: '512x512',
-            type: 'image/svg+xml'
+            type: 'image/png',
+            purpose: 'any'
+          },
+          {
+            src: '/bn_icon_512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'maskable'
           }
         ]
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,svg}'],
+        globPatterns: ['**/*.{js,css,html,svg,png,jpg,jpeg,gif,webp}'],
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/.*\.supabase\.co\/.*/i,

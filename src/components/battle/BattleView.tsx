@@ -8,6 +8,7 @@ import { useBattleStore } from '../../store/battleStore';
 import { useAuthStore } from '../../store/authStore';
 import { Battle } from '../../types';
 import { useTranslation } from 'react-i18next';
+import { VSIcon } from '../ui/VSIcon';
 
 interface BattleViewProps {
   battle: Battle;
@@ -352,13 +353,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle }) => {
               {/* VS Separator */}
               <div className="flex items-center justify-center lg:px-6">
                 <div className="flex flex-col items-center gap-4">
-                  <div>
-                    <img 
-                      src="/images/VS.png" 
-                      alt="VS" 
-                      className="w-12 h-12 md:w-16 md:h-16 object-contain"
-                    />
-                  </div>
+                  <VSIcon className="w-12 h-12 md:w-16 md:h-16" />
                   <div className="text-center bg-gray-800/50 px-4 py-2 rounded-xl backdrop-blur-sm border border-gray-600/30">
                     <div className="flex items-center gap-2 text-gray-400 mb-1">
                       <Users className="h-4 w-4" />

@@ -8,6 +8,7 @@ import { AuthModal } from '../auth/AuthModal';
 import { useRequireAuth } from '../../hooks/useRequireAuth';
 import { useAuthStore } from '../../store/authStore';
 import { Clock, Users, Vote } from 'lucide-react';
+import { VSIcon } from '../ui/VSIcon';
 
 interface BattleCardProps {
   battle: Battle;
@@ -164,13 +165,7 @@ export const BattleCard: React.FC<BattleCardProps> = ({ battle }) => {
 
               {/* VS Section */}
               <div className="flex flex-col items-center gap-3">
-                <div>
-                  <img 
-                    src="/images/VS.png" 
-                    alt="VS" 
-                    className="w-16 h-16 md:w-20 md:h-20 object-contain"
-                  />
-                </div>
+                <VSIcon className="w-16 h-16 md:w-20 md:h-20" />
                 
                 <div className="text-center">
                   <div className="flex items-center gap-1 text-xs text-gray-400 mb-1">
