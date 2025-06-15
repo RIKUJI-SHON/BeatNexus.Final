@@ -215,8 +215,6 @@ const BattleReplayPage: React.FC = () => {
   const player1VideoStatus = getVideoStatus(battle.player1_video_url);
   const player2VideoStatus = getVideoStatus(battle.player2_video_url);
 
-
-
   return (
     <div className="min-h-screen bg-gray-950 relative overflow-hidden">
       {/* Background Animation */}
@@ -280,7 +278,7 @@ const BattleReplayPage: React.FC = () => {
                   </div>
                 </div>
                 
-                <div className="text-6xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500 drop-shadow-2xl animate-pulse px-4">
+                <div className="text-6xl md:text-8xl font-black text-white px-4">
                   VS
                 </div>
                 
@@ -338,32 +336,30 @@ const BattleReplayPage: React.FC = () => {
                     </div>
                   )}
                   
-                  {/* Player A Overlay - Top Left */}
-                  <div className="absolute top-4 left-4 bg-black/80 backdrop-blur-sm rounded-lg p-3 border border-gray-600/30">
-                    <div className="flex items-center gap-3">
-                      <div 
-                        className="w-10 h-10 rounded-full p-1 flex-shrink-0"
-                        style={{ background: `linear-gradient(135deg, ${colorA}, ${colorA}80)` }}
-                      >
-                        <img
-                          src={battle.contestant_a?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${battle.player1_user_id}`}
-                          alt={battle.contestant_a?.username}
-                          className="w-full h-full rounded-full border border-gray-900 object-cover"
-                        />
+                  {/* Player A Info - Top Left */}
+                  <div className="absolute top-4 left-4 flex items-center gap-3">
+                    <div 
+                      className="w-10 h-10 rounded-full p-1 flex-shrink-0"
+                      style={{ background: `linear-gradient(135deg, ${colorA}, ${colorA}80)` }}
+                    >
+                      <img
+                        src={battle.contestant_a?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${battle.player1_user_id}`}
+                        alt={battle.contestant_a?.username}
+                        className="w-full h-full rounded-full border border-gray-900 object-cover"
+                      />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="text-white font-bold text-sm truncate max-w-[120px] drop-shadow-lg">
+                        {battle.contestant_a?.username || 'Player A'}
                       </div>
-                      <div className="min-w-0">
-                        <div className="text-white font-bold text-sm truncate max-w-[120px]">
-                          {battle.contestant_a?.username || 'Player A'}
+                      <div className="flex items-center gap-2">
+                        <div 
+                          className="text-xl font-bold drop-shadow-lg"
+                          style={{ color: colorA }}
+                        >
+                          {battle.final_votes_a}
                         </div>
-                        <div className="flex items-center gap-2">
-                          <div 
-                            className="text-xl font-bold"
-                            style={{ color: colorA }}
-                          >
-                            {battle.final_votes_a}
-                          </div>
-                          <span className="text-xs text-gray-300">{t('battleCard.votes')}</span>
-                        </div>
+                        <span className="text-xs text-gray-300 drop-shadow-lg">{t('battleCard.votes')}</span>
                       </div>
                     </div>
                   </div>
@@ -382,9 +378,11 @@ const BattleReplayPage: React.FC = () => {
               {/* VS Separator */}
               <div className="flex items-center justify-center lg:px-6">
                 <div className="flex flex-col items-center gap-4">
-                  <div className="text-3xl md:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-yellow-500 to-red-500 animate-pulse">
-                    ⚔️
-                  </div>
+                  <img 
+                    src="/images/VS.png" 
+                    alt="VS" 
+                    className="w-12 h-12 md:w-16 md:h-16 object-contain"
+                  />
                   <div className="text-center bg-gray-800/50 px-4 py-2 rounded-xl backdrop-blur-sm border border-gray-600/30">
                     <div className="flex items-center gap-2 text-gray-400 mb-1">
                       <Users className="h-4 w-4" />
@@ -435,32 +433,30 @@ const BattleReplayPage: React.FC = () => {
                     </div>
                   )}
                   
-                  {/* Player B Overlay - Top Left */}
-                  <div className="absolute top-4 left-4 bg-black/80 backdrop-blur-sm rounded-lg p-3 border border-gray-600/30">
-                    <div className="flex items-center gap-3">
-                      <div 
-                        className="w-10 h-10 rounded-full p-1 flex-shrink-0"
-                        style={{ background: `linear-gradient(135deg, ${colorB}, ${colorB}80)` }}
-                      >
-                        <img
-                          src={battle.contestant_b?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${battle.player2_user_id}`}
-                          alt={battle.contestant_b?.username}
-                          className="w-full h-full rounded-full border border-gray-900 object-cover"
-                        />
+                  {/* Player B Info - Top Left */}
+                  <div className="absolute top-4 left-4 flex items-center gap-3">
+                    <div 
+                      className="w-10 h-10 rounded-full p-1 flex-shrink-0"
+                      style={{ background: `linear-gradient(135deg, ${colorB}, ${colorB}80)` }}
+                    >
+                      <img
+                        src={battle.contestant_b?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${battle.player2_user_id}`}
+                        alt={battle.contestant_b?.username}
+                        className="w-full h-full rounded-full border border-gray-900 object-cover"
+                      />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="text-white font-bold text-sm truncate max-w-[120px] drop-shadow-lg">
+                        {battle.contestant_b?.username || 'Player B'}
                       </div>
-                      <div className="min-w-0">
-                        <div className="text-white font-bold text-sm truncate max-w-[120px]">
-                          {battle.contestant_b?.username || 'Player B'}
+                      <div className="flex items-center gap-2">
+                        <div 
+                          className="text-xl font-bold drop-shadow-lg"
+                          style={{ color: colorB }}
+                        >
+                          {battle.final_votes_b}
                         </div>
-                        <div className="flex items-center gap-2">
-                          <div 
-                            className="text-xl font-bold"
-                            style={{ color: colorB }}
-                          >
-                            {battle.final_votes_b}
-                          </div>
-                          <span className="text-xs text-gray-300">{t('battleCard.votes')}</span>
-                        </div>
+                        <span className="text-xs text-gray-300 drop-shadow-lg">{t('battleCard.votes')}</span>
                       </div>
                     </div>
                   </div>

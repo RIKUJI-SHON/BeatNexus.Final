@@ -312,7 +312,7 @@ const BattlesPage: React.FC = () => {
                         <Play className="h-8 w-8 text-cyan-400" />
                       </div>
               <div>
-                        <h2 className="text-4xl font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
+                        <h2 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
                           {t('battlesPage.activeBattles.title')}
                         </h2>
                         <div className="w-20 h-1 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full mt-2"></div>

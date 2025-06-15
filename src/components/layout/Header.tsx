@@ -120,14 +120,65 @@ export const Header: React.FC = () => {
             >
               {t('common.community')}
             </Link>
-            <Button
-              variant="primary"
-              size="sm"
-              className="bg-gradient-to-r from-cyan-500 to-purple-500 hover:opacity-90"
+            <button
+              className="upgrade-button"
               onClick={handleUpgradeClick}
+              style={{
+                alignItems: 'center',
+                backgroundImage: 'linear-gradient(144deg, #af40ff, #5b42f3 50%, #00ddeb)',
+                border: '0',
+                borderRadius: '8px',
+                boxShadow: 'rgba(151, 65, 252, 0.2) 0 15px 30px -5px',
+                boxSizing: 'border-box',
+                color: '#ffffff',
+                display: 'flex',
+                fontSize: '14px',
+                justifyContent: 'center',
+                lineHeight: '1em',
+                maxWidth: '100%',
+                minWidth: '100px',
+                padding: '3px',
+                textDecoration: 'none',
+                userSelect: 'none',
+                WebkitUserSelect: 'none',
+                touchAction: 'manipulation',
+                whiteSpace: 'nowrap',
+                cursor: 'pointer',
+                transition: 'all 0.3s',
+              }}
+              onMouseDown={(e) => {
+                e.currentTarget.style.transform = 'scale(0.9)';
+              }}
+              onMouseUp={(e) => {
+                e.currentTarget.style.transform = 'scale(1)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'scale(1)';
+              }}
             >
-              {t('common.upgrade')}
-            </Button>
+              <span
+                style={{
+                  backgroundColor: 'rgb(5, 6, 45)',
+                  padding: '12px 20px',
+                  borderRadius: '6px',
+                  width: '100%',
+                  height: '100%',
+                  transition: '300ms',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontWeight: '600',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'none';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'rgb(5, 6, 45)';
+                }}
+              >
+                {t('common.upgrade')}
+              </span>
+            </button>
           </nav>
 
           {/* Right Side Actions */}
@@ -239,17 +290,75 @@ export const Header: React.FC = () => {
               >
                 {t('common.community')}
               </Link>
-              <Button
-                variant="primary"
-                size="sm"
-                className="w-full mt-2 bg-gradient-to-r from-cyan-500 to-purple-500 hover:opacity-90"
+              <button
+                className="upgrade-button-mobile"
                 onClick={() => {
                   handleUpgradeClick();
                   setIsMenuOpen(false);
                 }}
+                style={{
+                  alignItems: 'center',
+                  backgroundImage: 'linear-gradient(144deg, #af40ff, #5b42f3 50%, #00ddeb)',
+                  border: '0',
+                  borderRadius: '8px',
+                  boxShadow: 'rgba(151, 65, 252, 0.2) 0 15px 30px -5px',
+                  boxSizing: 'border-box',
+                  color: '#ffffff',
+                  display: 'flex',
+                  fontSize: '16px',
+                  justifyContent: 'center',
+                  lineHeight: '1em',
+                  maxWidth: '100%',
+                  width: '100%',
+                  marginTop: '8px',
+                  padding: '3px',
+                  textDecoration: 'none',
+                  userSelect: 'none',
+                  WebkitUserSelect: 'none',
+                  touchAction: 'manipulation',
+                  whiteSpace: 'nowrap',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s',
+                }}
+                onTouchStart={(e) => {
+                  e.currentTarget.style.transform = 'scale(0.9)';
+                }}
+                onTouchEnd={(e) => {
+                  e.currentTarget.style.transform = 'scale(1)';
+                }}
+                onMouseDown={(e) => {
+                  e.currentTarget.style.transform = 'scale(0.9)';
+                }}
+                onMouseUp={(e) => {
+                  e.currentTarget.style.transform = 'scale(1)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'scale(1)';
+                }}
               >
-                {t('common.upgrade')}
-              </Button>
+                <span
+                  style={{
+                    backgroundColor: 'rgb(5, 6, 45)',
+                    padding: '16px 24px',
+                    borderRadius: '6px',
+                    width: '100%',
+                    height: '100%',
+                    transition: '300ms',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontWeight: '600',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = 'none';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'rgb(5, 6, 45)';
+                  }}
+                >
+                  {t('common.upgrade')}
+                </span>
+              </button>
             </nav>
 
             {user ? (

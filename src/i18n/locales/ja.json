@@ -718,7 +718,7 @@
       "playerRankings": "プレイヤーランキング",
       "voterRankings": "投票者ランキング"
     },
-    "playerDescription": "バトル結果に基づくEloレーティングシステムによるビートボクサーランキング",
+    "playerDescription": "バトル戦績に基づくビートボクサーランキング",
     "voterDescription": "投票数に基づくアクティブなコミュニティメンバーランキング",
     "searchPlaceholder": "ユーザー名で検索...",
     "loading": "ランキング読み込み中...",

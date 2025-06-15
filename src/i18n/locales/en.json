@@ -457,7 +457,7 @@
       "playerRankings": "Player Rankings", 
       "voterRankings": "Voter Rankings"
     },
-    "playerDescription": "Beatboxer rating rankings calculated using the Elo rating system based on battle results.",
+    "playerDescription": "Beatboxer rankings based on battle performance",
     "voterDescription": "Active community member rankings based on voting participation",
     "searchPlaceholder": "Search by username...",
     "loading": "Loading rankings...",
