@@ -6,84 +6,14 @@ import { VitePWA } from 'vite-plugin-pwa';
 export default defineConfig({
   plugins: [
     react(),
-    VitePWA({
-      registerType: 'autoUpdate',
-      includeAssets: [
-        'bn_icon_192.png',
-        'bn_icon_512.png',
-        'icon-battles.svg',
-        'icon-post.svg',
-        'icon-ranking.svg',
-        'icon-my-battles.svg',
-        'images/**/*'
-      ],
-      manifest: false, // 静的ファイルを使用
-      workbox: {
-        globPatterns: ['**/*.{js,css,html,svg,png}'],
-        // 大きなファイルのサイズ制限を5MBに増加
-        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
-        // 巨大なファイルのみ除外
-        globIgnores: [
-          '**/BEATNEXUS-WORDMARK*.png',
-          '**/hero-background*.png'
-        ],
-        runtimeCaching: [
-          {
-            urlPattern: /^https:\/\/.*\.supabase\.co\/.*/i,
-            handler: 'NetworkFirst',
-            options: {
-              cacheName: 'supabase-api-cache',
-              expiration: {
-                maxEntries: 50,
-                maxAgeSeconds: 60 * 60 * 12 // 12時間
-              }
-            }
-          },
-          {
-            // 小さな画像ファイルのみキャッシュ（VS.png、アイコン等）
-            urlPattern: /\.(?:svg|ico)$/,
-            handler: 'CacheFirst',
-            options: {
-              cacheName: 'small-images-cache',
-              expiration: {
-                maxEntries: 50,
-                maxAgeSeconds: 60 * 60 * 24 * 30 // 30日間
-              }
-            }
-          },
-          {
-            // VS.png専用キャッシュ戦略
-            urlPattern: /\/images\/VS\.png$/,
-            handler: 'CacheFirst',
-            options: {
-              cacheName: 'vs-image-cache',
-              expiration: {
-                maxEntries: 1,
-                maxAgeSeconds: 60 * 60 * 24 * 30 // 30日間
-              }
-            }
-          },
-          {
-            // その他の大きな画像ファイルはNetworkFirstで処理
-            urlPattern: /\.(?:png|jpg|jpeg|gif|webp)$/,
-            handler: 'NetworkFirst',
-            options: {
-              cacheName: 'large-images-cache',
-              expiration: {
-                maxEntries: 20,
-                maxAgeSeconds: 60 * 60 * 24 * 7 // 7日間
-              }
-            }
-          }
-        ],
-        navigateFallback: '/index.html',
-        navigateFallbackDenylist: [/^\/_/, /\/[^/?]+\.[^/]+$/, /^\/api\//],
-        cleanupOutdatedCaches: true
-      },
-      devOptions: {
-        enabled: false // 開発時は無効
-      }
-    })
+    // VitePWAを無効化してブラウザネイティブPWAを使用
+    // VitePWA({
+    //   registerType: 'autoUpdate',
+    //   manifest: false,
+    //   devOptions: {
+    //     enabled: false
+    //   }
+    // })
   ],
   optimizeDeps: {
     exclude: ['lucide-react'],

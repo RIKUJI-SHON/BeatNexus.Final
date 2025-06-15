@@ -2,9 +2,9 @@ import React from 'react';
 import { Download } from 'lucide-react';
 
 export const PWADebugButton: React.FC = () => {
-  const handleForceShowInstall = () => {
+  const handleForceShowInstall = async () => {
     // PWAの状態をデバッグ
-    console.log('=== PWA Debug Info ===');
+    console.log('=== Native PWA Debug Info ===');
     console.log('1. Service Worker Support:', 'serviceWorker' in navigator);
     console.log('2. Secure Context:', window.isSecureContext);
     console.log('3. Display Mode:', window.matchMedia('(display-mode: standalone)').matches ? 'standalone' : 'browser');
@@ -15,44 +15,62 @@ export const PWADebugButton: React.FC = () => {
     
     // Service Worker registration status
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.getRegistrations().then(registrations => {
+      try {
+        const registrations = await navigator.serviceWorker.getRegistrations();
         console.log('8. SW Registrations:', registrations.length);
         registrations.forEach((reg, i) => {
           console.log(`   SW ${i + 1}:`, {
             scope: reg.scope,
             active: !!reg.active,
             installing: !!reg.installing,
-            waiting: !!reg.waiting
+            waiting: !!reg.waiting,
+            scriptURL: reg.active?.scriptURL
           });
         });
-      });
+      } catch (error) {
+        console.log('8. SW Error:', error);
+      }
     }
     
     // Manifest check
     const manifestLink = document.querySelector('link[rel="manifest"]') as HTMLLinkElement;
     console.log('9. Manifest Link:', manifestLink?.href);
     
-    // Check if beforeinstallprompt was fired
-    console.log('10. Check localStorage for prompt dismissal:', localStorage.getItem('pwa-install-dismissed'));
+    // Test manifest accessibility
+    try {
+      const manifestResponse = await fetch('/manifest.webmanifest');
+      console.log('10. Manifest fetch status:', manifestResponse.status, manifestResponse.statusText);
+      if (manifestResponse.ok) {
+        const manifestData = await manifestResponse.json();
+        console.log('11. Manifest content:', manifestData);
+      }
+    } catch (error) {
+      console.log('10. Manifest fetch error:', error);
+    }
     
     // Check icon files accessibility
-    console.log('11. Testing icon file access...');
-    const iconUrls = [
-      '/bn_icon_192.png',
-      '/bn_icon_512.png',
-      '/images/VS.png'
+    console.log('12. Testing essential files...');
+    const testUrls = [
+      '/vite.svg',
+      '/sw.js'
     ];
     
-    iconUrls.forEach(async (url) => {
+    for (const url of testUrls) {
       try {
         const response = await fetch(url);
         console.log(`    ${url}: ${response.status} ${response.statusText}`);
       } catch (error) {
         console.log(`    ${url}: FETCH ERROR`, error);
       }
+    }
+    
+    // Check for beforeinstallprompt event
+    console.log('13. Checking for install prompt...');
+    window.addEventListener('beforeinstallprompt', (e) => {
+      console.log('beforeinstallprompt event fired!', e);
     });
     
-    alert('PWAデバッグ情報をコンソールに出力しました。開発者ツールのConsoleタブを確認してください。');
+    alert('ネイティブPWAデバッグ情報をコンソールに出力しました。\n\nインストールプロンプトが表示されない場合:\n1. HTTPS環境であることを確認\n2. Service Workerが正常に登録されていることを確認\n3. manifestファイルが正常に読み込まれていることを確認\n4. ブラウザでサイトを数回訪問してください');
   };
 
   // 開発環境またはlocalhost, vercel.appでのみ表示

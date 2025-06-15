@@ -105,9 +105,9 @@ function AppContent() {
           <ToastContainer toasts={toasts} onRemove={removeToast} />
           
           {/* PWA Components */}
-          <PWAInstallButton />
+          {/* <PWAInstallButton /> */}
           <OfflineIndicator />
-          <ShortcutGuide />
+          {/* <ShortcutGuide /> */}
           <PWADebugButton />
         </Router>
   );
