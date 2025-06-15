@@ -15,7 +15,7 @@ import { AuthModal } from '../components/auth/AuthModal';
 import { useRankingStore } from '../store/rankingStore';
 import { useBattleStore } from '../store/battleStore';
 import { useAuthStore } from '../store/authStore';
-import { RankingEntry, BattleFormat } from '../types';
+import { RankingEntry } from '../types';
 import { useTranslation } from 'react-i18next';
 import { getRankColorClasses } from '../utils/rankUtils';
 
@@ -25,7 +25,7 @@ const BattlesPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<'recent' | 'trending' | 'ending' | 'completed'>('recent');
   const [showMyBattlesOnly, setShowMyBattlesOnly] = useState(false);
-  const [selectedBattleFormat, setSelectedBattleFormat] = useState<BattleFormat | 'ALL'>('ALL');
+
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   
   // ページネーション関連の状態
@@ -93,12 +93,7 @@ const BattlesPage: React.FC = () => {
         );
       }
 
-      // バトル形式フィルター
-      if (selectedBattleFormat !== 'ALL') {
-        battleList = battleList.filter(battle => 
-          battle.battle_format === selectedBattleFormat
-        );
-      }
+
 
       // 検索フィルター
       if (searchQuery) {
@@ -141,7 +136,7 @@ const BattlesPage: React.FC = () => {
       console.error('Error in filteredBattles:', error);
       return [];
     }
-  }, [battles, sortBy, searchQuery, showMyBattlesOnly, selectedBattleFormat, user]);
+  }, [battles, sortBy, searchQuery, showMyBattlesOnly, user]);
 
   const filteredArchivedBattles = useMemo(() => {
     try {
@@ -154,12 +149,7 @@ const BattlesPage: React.FC = () => {
         );
       }
 
-      // バトル形式フィルター（アーカイブバトル用）
-      if (selectedBattleFormat !== 'ALL') {
-        battleList = battleList.filter(battle => 
-          battle.battle_format === selectedBattleFormat
-        );
-      }
+
 
       // 検索フィルター（アーカイブバトル用）
       if (searchQuery) {
@@ -174,7 +164,7 @@ const BattlesPage: React.FC = () => {
       console.error('Error in filteredArchivedBattles:', error);
       return [];
     }
-  }, [archivedBattles, searchQuery, showMyBattlesOnly, selectedBattleFormat, user]);
+  }, [archivedBattles, searchQuery, showMyBattlesOnly, user]);
 
   // ページネーション用の計算
   const activeBattlesTotalItems = filteredBattles.length;
@@ -192,7 +182,7 @@ const BattlesPage: React.FC = () => {
   // フィルターが変更されたときにページを1に戻す
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchQuery, sortBy, showMyBattlesOnly, selectedBattleFormat]);
+  }, [searchQuery, sortBy, showMyBattlesOnly]);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -356,8 +346,6 @@ const BattlesPage: React.FC = () => {
               setSearchQuery={setSearchQuery}
               showMyBattlesOnly={showMyBattlesOnly}
               setShowMyBattlesOnly={setShowMyBattlesOnly}
-              selectedBattleFormat={selectedBattleFormat}
-              setSelectedBattleFormat={setSelectedBattleFormat}
               isLoggedIn={!!user}
             />
             

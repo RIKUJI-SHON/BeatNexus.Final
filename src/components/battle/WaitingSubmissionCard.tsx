@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Clock, Video, AlertCircle, X, Play, Zap, Crown, Trophy, Search, Timer, FileVideo } from 'lucide-react';
+import { Clock, Video, AlertCircle, X, Play, Search, Timer } from 'lucide-react';
 import { Card } from '../ui/Card';
 import { Button } from '../ui/Button';
 import { type Submission } from '../../store/submissionStore';
@@ -34,43 +34,10 @@ export const WaitingSubmissionCard: React.FC<WaitingSubmissionCardProps> = ({
     }
   };
 
-  const getBattleFormatInfo = (format: string) => {
-    switch (format) {
-      case 'MAIN_BATTLE':
-        return {
-          label: t('myBattlesPage.waitingSubmissionCard.battleFormats.MAIN_BATTLE'),
-          icon: <Crown className="h-4 w-4" />,
-          color: 'from-yellow-500 to-amber-600',
-          bgColor: 'from-yellow-600/20 to-amber-600/20'
-        };
-      case 'MINI_BATTLE':
-        return {
-          label: t('myBattlesPage.waitingSubmissionCard.battleFormats.MINI_BATTLE'),
-          icon: <Zap className="h-4 w-4" />,
-          color: 'from-cyan-500 to-blue-600',
-          bgColor: 'from-cyan-600/20 to-blue-600/20'
-        };
-      case 'THEME_CHALLENGE':
-        return {
-          label: t('myBattlesPage.waitingSubmissionCard.battleFormats.THEME_CHALLENGE'),
-          icon: <Trophy className="h-4 w-4" />,
-          color: 'from-purple-500 to-pink-600',
-          bgColor: 'from-purple-600/20 to-pink-600/20'
-        };
-      default:
-        return {
-          label: format,
-          icon: <FileVideo className="h-4 w-4" />,
-          color: 'from-gray-500 to-gray-600',
-          bgColor: 'from-gray-600/20 to-gray-600/20'
-        };
-    }
-  };
 
-  const battleFormatInfo = getBattleFormatInfo(submission.battle_format);
 
   return (
-    <Card className={`group relative bg-gradient-to-br ${battleFormatInfo.bgColor} from-gray-900 to-gray-950 border border-gray-700/50 shadow-lg hover:shadow-xl hover:shadow-cyan-500/20 transition-all duration-500 overflow-hidden`}>
+    <Card className="group relative bg-gradient-to-br from-gray-900 to-gray-950 border border-gray-700/50 shadow-lg hover:shadow-xl hover:shadow-cyan-500/20 transition-all duration-500 overflow-hidden">
       
       {/* Animated Background Pattern */}
       <div className="absolute inset-0 opacity-5">
@@ -82,14 +49,7 @@ export const WaitingSubmissionCard: React.FC<WaitingSubmissionCardProps> = ({
 
       <div className="relative p-6">
         {/* Header */}
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-gradient-to-r from-gray-800/80 to-gray-700/80 border border-gray-600/50 text-white font-bold text-sm shadow-lg backdrop-blur-sm">
-            <div className="text-gray-300">
-              {battleFormatInfo.icon}
-            </div>
-            <span className="text-gray-200">{battleFormatInfo.label}</span>
-          </div>
-          
+        <div className="flex items-center justify-end mb-4">
           <div className="flex items-center gap-2 text-xs text-gray-400">
             <Timer className="h-3 w-3" />
             {t('myBattlesPage.waitingSubmissionCard.postedAt', { 

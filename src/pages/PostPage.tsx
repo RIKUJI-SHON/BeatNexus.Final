@@ -249,7 +249,7 @@ const PostPage: React.FC = () => {
   const [processingProgress, setProcessingProgress] = useState(0);
   const [processingStage, setProcessingStage] = useState<string>('');
   const [step, setStep] = useState<'upload' | 'preview' | 'success'>('upload');
-  const [battleFormat, setBattleFormat] = useState('MAIN_BATTLE');
+  const battleFormat = 'MAIN_BATTLE'; // Fixed to MAIN_BATTLE
   const [acceptedGuidelines, setAcceptedGuidelines] = useState(false);
   const [acceptedFacePolicy, setAcceptedFacePolicy] = useState(false);
   const [acceptedContent, setAcceptedContent] = useState(false);
@@ -692,19 +692,7 @@ const PostPage: React.FC = () => {
         
         <Card className="max-w-2xl mx-auto bg-gray-900 border border-gray-800">
           <div className="p-8">
-            <div className="mb-8">
-              <label className="block text-sm font-medium text-gray-300 mb-1">
-                {t('postPage.selectFormat.label')}
-              </label>
-              <select
-                value={battleFormat}
-                onChange={(e) => setBattleFormat(e.target.value)}
-                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-cyan-500/50"
-              >
-                <option value="MAIN_BATTLE">{t('postPage.selectFormat.mainBattle')}</option>
-                <option value="MINI_BATTLE">{t('postPage.selectFormat.miniBattle')}</option>
-              </select>
-            </div>
+
 
             {step === 'upload' && (
               <>
@@ -718,16 +706,6 @@ const PostPage: React.FC = () => {
                         
                         {(error.includes('秒') || error.includes('seconds')) && (
                           <div className="flex flex-wrap gap-2">
-                            <button
-                              onClick={() => {
-                                setError(null);
-                                // バトル形式選択にフォーカス
-                                document.querySelector('select')?.focus();
-                              }}
-                              className="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-sm rounded transition-colors"
-                            >
-                              {t('postPage.errors.changeBattleFormat', 'バトル形式を変更')}
-                            </button>
                             <button
                               onClick={() => {
                                 setError(null);

@@ -2,7 +2,7 @@ import React from 'react';
 import { Search, SortAsc, SortDesc, TrendingUp, Clock, Archive, User, Filter, Flame, Zap, Trophy, Star } from 'lucide-react';
 import { Card } from '../ui/Card';
 import { Button } from '../ui/Button';
-import { BattleFormat } from '../../types';
+
 import { useTranslation } from 'react-i18next';
 
 interface BattleFiltersProps {
@@ -12,8 +12,7 @@ interface BattleFiltersProps {
   setSearchQuery: (query: string) => void;
   showMyBattlesOnly: boolean;
   setShowMyBattlesOnly: (show: boolean) => void;
-  selectedBattleFormat: BattleFormat | 'ALL';
-  setSelectedBattleFormat: (format: BattleFormat | 'ALL') => void;
+
   isLoggedIn: boolean;
 }
 
@@ -24,8 +23,7 @@ export const BattleFilters: React.FC<BattleFiltersProps> = ({
   setSearchQuery,
   showMyBattlesOnly,
   setShowMyBattlesOnly,
-  selectedBattleFormat,
-  setSelectedBattleFormat,
+
   isLoggedIn,
 }) => {
   const { t } = useTranslation();
@@ -114,31 +112,7 @@ export const BattleFilters: React.FC<BattleFiltersProps> = ({
         </div>
 
         {/* Filter Controls */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          
-          {/* Battle Format Filter */}
-          <div className="space-y-3">
-            <div className="flex items-center gap-2 text-sm font-medium text-gray-300">
-              <Filter className="h-4 w-4 text-purple-400" />
-              <span>Battle Format</span>
-            </div>
-            <div className="relative">
-              <select
-                value={selectedBattleFormat}
-                onChange={(e) => setSelectedBattleFormat(e.target.value as BattleFormat | 'ALL')}
-                className="w-full bg-gray-800 border border-gray-600/50 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-purple-500/70 focus:shadow-lg focus:shadow-purple-500/20 transition-all duration-300 font-medium appearance-none cursor-pointer [&>option]:bg-gray-800 [&>option]:text-white"
-              >
-                <option value="ALL">{t('battleFilters.allFormats')}</option>
-                <option value="MAIN_BATTLE">{t('battleCard.battleFormats.MAIN_BATTLE')}</option>
-                <option value="MINI_BATTLE">{t('battleCard.battleFormats.MINI_BATTLE')}</option>
-              </select>
-              
-              {/* Custom dropdown arrow */}
-              <div className="absolute right-4 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                <div className="w-2 h-2 border-r-2 border-b-2 border-gray-400 transform rotate-45"></div>
-              </div>
-            </div>
-          </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
           {/* My Battles Filter */}
           {isLoggedIn && (
@@ -201,7 +175,7 @@ export const BattleFilters: React.FC<BattleFiltersProps> = ({
         </div>
 
         {/* Active Filters Summary */}
-        {(searchQuery || showMyBattlesOnly || selectedBattleFormat !== 'ALL') && (
+        {(searchQuery || showMyBattlesOnly) && (
           <div className="pt-4 border-t border-gray-800/50">
             <div className="flex flex-wrap items-center gap-2">
               <span className="text-sm text-gray-400 font-medium">Active filters:</span>
@@ -217,13 +191,6 @@ export const BattleFilters: React.FC<BattleFiltersProps> = ({
                 <div className="flex items-center gap-1 px-3 py-1 bg-pink-500/20 text-pink-400 rounded-full text-xs font-medium border border-pink-500/30">
                   <User className="h-3 w-3" />
                   My Battles
-                </div>
-              )}
-              
-              {selectedBattleFormat !== 'ALL' && (
-                <div className="flex items-center gap-1 px-3 py-1 bg-purple-500/20 text-purple-400 rounded-full text-xs font-medium border border-purple-500/30">
-                  <Filter className="h-3 w-3" />
-                  {selectedBattleFormat === 'MAIN_BATTLE' ? 'Main Battle' : 'Mini Battle'}
                 </div>
               )}
             </div>

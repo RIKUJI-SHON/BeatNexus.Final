@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo } from 'react';
-import { Trophy, Crown, Users, Calendar, Play, ShieldCheck, ShieldX, Swords, TrendingUp, TrendingDown, Minus, Flame, Medal, Star } from 'lucide-react';
+import { Trophy, Crown, Users, Calendar, Play, ShieldCheck, ShieldX, Swords, TrendingUp, TrendingDown, Minus, Star } from 'lucide-react';
 import { Card } from '../ui/Card';
 import { Button } from '../ui/Button';
 import { ArchivedBattle } from '../../types';
@@ -182,37 +182,7 @@ export const ArchivedBattleCard: React.FC<ArchivedBattleCardProps> = ({
     };
   };
 
-  const getBattleFormatInfo = (format: string) => {
-    switch (format) {
-      case 'MAIN_BATTLE':
-        return {
-          label: t('battleCard.battleFormats.MAIN_BATTLE'),
-          icon: <Crown className="h-4 w-4" />,
-          color: 'from-yellow-500 to-amber-600'
-        };
-      case 'MINI_BATTLE':
-        return {
-          label: t('battleCard.battleFormats.MINI_BATTLE'),
-          icon: <Flame className="h-4 w-4" />,
-          color: 'from-cyan-500 to-blue-600'
-        };
-      case 'THEME_CHALLENGE':
-        return {
-          label: t('battleCard.battleFormats.THEME_CHALLENGE'),
-          icon: <Trophy className="h-4 w-4" />,
-          color: 'from-purple-500 to-pink-600'
-        };
-      default:
-        return {
-          label: 'Battle',
-          icon: <Medal className="h-4 w-4" />,
-          color: 'from-gray-500 to-gray-600'
-        };
-    }
-  };
-
   const resultBadge = getResultBadge();
-  const battleFormatInfo = getBattleFormatInfo(battle.battle_format);
   const currentLocale = i18n.language === 'ja' ? ja : enUS;
   const totalVotes = battle.final_votes_a + battle.final_votes_b;
 
@@ -224,25 +194,18 @@ export const ArchivedBattleCard: React.FC<ArchivedBattleCardProps> = ({
         <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white/10 to-transparent transform rotate-45 translate-x-full group-hover:translate-x-[-100%] transition-transform duration-1000"></div>
       </div>
 
-      {/* Header: Battle Format, Date & Result */}
+      {/* Header: Date & Result */}
       <div className="relative p-5 border-b border-gray-800/50">
         <div className="flex justify-between items-start gap-4">
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-gradient-to-r from-gray-800/80 to-gray-700/80 border border-gray-600/50 text-white font-bold text-sm shadow-lg backdrop-blur-sm">
-            <div className="text-gray-300">
-              {battleFormatInfo.icon}
-            </div>
-            <span className="text-gray-200">{battleFormatInfo.label}</span>
+          <div className="flex items-center gap-2 text-xs text-gray-400">
+            <Calendar className="h-3 w-3" />
+            {format(new Date(battle.archived_at), 'yyyy/MM/dd HH:mm', { locale: currentLocale })}
           </div>
           
           <div className={cn("px-3 py-1.5 rounded-full text-xs font-bold flex items-center gap-1.5 backdrop-blur-sm", resultBadge.className)}>
             {resultBadge.icon}
             {resultBadge.text}
           </div>
-        </div>
-        
-        <div className="mt-3 flex items-center gap-2 text-xs text-gray-400">
-          <Calendar className="h-3 w-3" />
-          {format(new Date(battle.archived_at), 'yyyy/MM/dd HH:mm', { locale: currentLocale })}
         </div>
       </div>
 

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Crown, Users, Calendar, ShieldCheck, ShieldX, Swords, TrendingUp, TrendingDown, Minus, Play, AlertTriangle, ArchiveX, Trophy, Star, Flame, Zap, Medal } from 'lucide-react';
+import { ArrowLeft, Crown, Users, Calendar, ShieldCheck, ShieldX, Swords, TrendingUp, TrendingDown, Minus, Play, AlertTriangle, ArchiveX, Trophy, Star } from 'lucide-react';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { ArchivedBattle } from '../types';
@@ -194,41 +194,7 @@ const BattleReplayPage: React.FC = () => {
     };
   };
 
-  const getBattleFormatInfo = (format: string) => {
-    switch (format) {
-      case 'MAIN_BATTLE':
-        return {
-          label: t('battleCard.battleFormats.MAIN_BATTLE'),
-          icon: <Crown className="h-5 w-5" />,
-          color: 'from-yellow-500 to-amber-600',
-          textColor: 'text-yellow-400'
-        };
-      case 'MINI_BATTLE':
-        return {
-          label: t('battleCard.battleFormats.MINI_BATTLE'),
-          icon: <Zap className="h-5 w-5" />,
-          color: 'from-cyan-500 to-blue-600',
-          textColor: 'text-cyan-400'
-        };
-      case 'THEME_CHALLENGE':
-        return {
-          label: t('battleCard.battleFormats.THEME_CHALLENGE'),
-          icon: <Trophy className="h-5 w-5" />,
-          color: 'from-purple-500 to-pink-600',
-          textColor: 'text-purple-400'
-        };
-      default:
-        return {
-          label: 'Battle',
-          icon: <Swords className="h-5 w-5" />,
-          color: 'from-gray-500 to-gray-600',
-          textColor: 'text-gray-400'
-        };
-    }
-  };
-
   const resultBadge = getResultBadge();
-  const battleFormatInfo = getBattleFormatInfo(battle.battle_format || 'MAIN_BATTLE');
 
   // 動画が利用可能かどうかを判定
   const getVideoStatus = (videoUrl: string | null | undefined) => {
@@ -278,14 +244,6 @@ const BattleReplayPage: React.FC = () => {
               {t('battleReplay.title')}
             </h1>
             <div className="flex flex-wrap items-center gap-4">
-              <div className={cn(
-                "flex items-center gap-2 px-4 py-2 rounded-xl backdrop-blur-sm bg-gradient-to-r border font-medium text-sm shadow-lg",
-                `${battleFormatInfo.color} border-gray-600/50 ${battleFormatInfo.textColor}`
-              )}>
-                {battleFormatInfo.icon}
-                {battleFormatInfo.label}
-              </div>
-              
               <div className={cn("px-4 py-2 rounded-xl text-sm font-medium flex items-center gap-2 backdrop-blur-sm", resultBadge.className)}>
                 {resultBadge.icon}
                 {resultBadge.text}

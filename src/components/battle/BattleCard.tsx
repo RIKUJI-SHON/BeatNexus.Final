@@ -104,41 +104,7 @@ export const BattleCard: React.FC<BattleCardProps> = ({ battle }) => {
 
   const getDefaultAvatarUrl = (seed: string) => `https://api.dicebear.com/7.x/avataaars/svg?seed=${seed}`;
 
-  // バトル形式に応じた情報を取得
-  const getBattleFormatInfo = (format: string) => {
-    switch (format) {
-      case 'MAIN_BATTLE':
-        return {
-          label: t('battleCard.battleFormats.MAIN_BATTLE'),
-          icon: <Crown className="h-4 w-4" />,
-          color: 'from-yellow-500 to-amber-600',
-          textColor: 'text-yellow-400'
-        };
-      case 'MINI_BATTLE':
-        return {
-          label: t('battleCard.battleFormats.MINI_BATTLE'),
-          icon: <Zap className="h-4 w-4" />,
-          color: 'from-cyan-500 to-blue-600',
-          textColor: 'text-cyan-400'
-        };
-      case 'THEME_CHALLENGE':
-        return {
-          label: t('battleCard.battleFormats.THEME_CHALLENGE'),
-          icon: <Trophy className="h-4 w-4" />,
-          color: 'from-purple-500 to-pink-600',
-          textColor: 'text-purple-400'
-        };
-      default:
-        return {
-          label: 'Battle',
-          icon: <Swords className="h-4 w-4" />,
-          color: 'from-gray-500 to-gray-600',
-          textColor: 'text-gray-400'
-        };
-    }
-  };
 
-  const battleFormatInfo = getBattleFormatInfo(battle.battle_format || 'MAIN_BATTLE');
 
   const getLeaderIndicator = () => {
     if (isDraw) return null;
@@ -169,15 +135,8 @@ export const BattleCard: React.FC<BattleCardProps> = ({ battle }) => {
           {getLeaderIndicator()}
 
           <div className="relative p-6">
-            {/* Header: Time & Format */}
-            <div className="flex justify-between items-start mb-6">
-              <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-gray-800/80 to-gray-700/80 border border-gray-600/50 text-white font-bold text-sm shadow-lg backdrop-blur-sm">
-                <div className="text-gray-300">
-                  {battleFormatInfo.icon}
-                </div>
-                <span className="text-gray-200">{battleFormatInfo.label}</span>
-              </div>
-              
+            {/* Header: Time */}
+            <div className="flex justify-end items-start mb-6">
               <div className={`flex items-center gap-2 px-3 py-1 rounded-full backdrop-blur-sm ${
                 isExpired ? 'bg-red-500/20 text-red-400 border border-red-500/30' : 
                 'bg-gray-800/60 text-gray-300 border border-gray-600/30'

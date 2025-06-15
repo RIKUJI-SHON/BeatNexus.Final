@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Share2, ThumbsUp, ArrowLeft, Clock, MessageCircle, Crown, Play, UserX, X, Flame, Zap, Trophy, Sword, Users, Timer, Volume2, Star, Shield, AlertTriangle, Send } from 'lucide-react';
+import { Share2, ThumbsUp, ArrowLeft, Clock, MessageCircle, Crown, Play, UserX, X, Users, Timer, Volume2, Star, Shield, AlertTriangle, Send } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '../ui/Button';
 import { Card } from '../ui/Card';
@@ -214,44 +214,10 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle }) => {
   const colorPairIndex = parseInt(battle.id.replace(/\D/g, '')) % colorPairs.length;
   const { a: playerColorA, b: playerColorB, bg: gradientBg } = colorPairs[colorPairIndex];
 
-  // バトル形式に応じた情報を取得
-  const getBattleFormatInfo = (format: string) => {
-    switch (format) {
-      case 'MAIN_BATTLE':
-        return {
-          label: t('battleCard.battleFormats.MAIN_BATTLE'),
-          icon: <Crown className="h-5 w-5" />,
-          color: 'from-yellow-500 to-amber-600',
-          bgColor: 'from-yellow-600/20 to-amber-600/20'
-        };
-      case 'MINI_BATTLE':
-        return {
-          label: t('battleCard.battleFormats.MINI_BATTLE'),
-          icon: <Zap className="h-5 w-5" />,
-          color: 'from-cyan-500 to-blue-600',
-          bgColor: 'from-cyan-600/20 to-blue-600/20'
-        };
-      case 'THEME_CHALLENGE':
-        return {
-          label: t('battleCard.battleFormats.THEME_CHALLENGE'),
-          icon: <Trophy className="h-5 w-5" />,
-          color: 'from-purple-500 to-pink-600',
-          bgColor: 'from-purple-600/20 to-pink-600/20'
-        };
-      default:
-        return {
-          label: t('battleView.subtitle'),
-          icon: <Sword className="h-5 w-5" />,
-          color: 'from-gray-500 to-gray-600',
-          bgColor: 'from-gray-600/20 to-gray-600/20'
-        };
-    }
-  };
 
-  const battleFormatInfo = getBattleFormatInfo(battle.battle_format);
 
   return (
-    <div className={`min-h-screen bg-gradient-to-br ${battleFormatInfo.bgColor} from-gray-950 to-gray-900 relative overflow-hidden`}>
+    <div className="min-h-screen bg-gradient-to-br from-gray-950 to-gray-900 relative overflow-hidden">
       
       {/* Epic Background Effects */}
       <div className="absolute inset-0 overflow-hidden">
@@ -269,14 +235,6 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle }) => {
         {/* Battle Title & Info Header */}
         <div className="text-center mb-8 relative">
           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent h-px top-1/2"></div>
-          
-          {/* Battle Format Badge - Subtle */}
-          <div className="inline-flex items-center gap-3 px-6 py-3 rounded-xl bg-gradient-to-r from-gray-800/80 to-gray-700/80 border border-gray-600/50 text-white font-bold text-lg shadow-lg mb-6 backdrop-blur-sm">
-            <div className="text-gray-300">
-              {battleFormatInfo.icon}
-            </div>
-            <span className="text-gray-200">{battleFormatInfo.label}</span>
-          </div>
           
           {/* Main Battle Title with Player Names */}
           <div className="mb-6">
