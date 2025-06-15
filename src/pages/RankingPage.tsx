@@ -40,30 +40,30 @@ const RankingPage: React.FC = () => {
     entry.username.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const getPositionBadge = (position: number) => {
+  const getPositionDisplay = (position: number) => {
     switch (position) {
       case 1:
         return (
-          <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full shadow-lg">
+          <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full shadow-lg shadow-yellow-500/30">
             <Crown className="h-8 w-8 text-white" />
           </div>
         );
       case 2:
         return (
-          <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-gray-300 to-gray-500 rounded-full shadow-lg">
+          <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-gray-300 to-gray-500 rounded-full shadow-lg shadow-gray-400/30">
             <Medal className="h-8 w-8 text-white" />
           </div>
         );
       case 3:
         return (
-          <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-amber-500 to-amber-700 rounded-full shadow-lg">
+          <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-amber-500 to-amber-700 rounded-full shadow-lg shadow-amber-500/30">
             <Medal className="h-8 w-8 text-white" />
           </div>
         );
       default:
         return (
           <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-gray-700 to-gray-800 rounded-full shadow-lg border border-gray-600">
-            <span className="text-2xl font-bold text-white">{position}</span>
+            <span className="text-xl font-bold text-white">#{position}</span>
           </div>
         );
     }
@@ -96,6 +96,14 @@ const RankingPage: React.FC = () => {
         {rankName}
       </Badge>
     );
+  };
+
+  const getEntryGradient = (position: number) => {
+    if (position === 1) return 'from-yellow-500/20 via-yellow-600/10 to-transparent';
+    if (position === 2) return 'from-gray-400/20 via-gray-500/10 to-transparent';
+    if (position === 3) return 'from-amber-500/20 via-amber-600/10 to-transparent';
+    if (position <= 10) return 'from-cyan-500/10 via-blue-500/5 to-transparent';
+    return 'from-gray-800/30 via-gray-900/20 to-transparent';
   };
 
   if (currentError) {
@@ -262,77 +270,90 @@ const RankingPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Rankings Cards */}
+        {/* Rankings List */}
         {currentLoading ? (
           <div className="text-center py-16">
             <div className="animate-spin w-16 h-16 border-4 border-cyan-500 border-t-transparent rounded-full mx-auto mb-6"></div>
             <p className="text-gray-400 text-lg">{t('rankingPage.loading')}</p>
           </div>
         ) : filteredData.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredData.map((entry) => {
+          <div className="max-w-4xl mx-auto space-y-4">
+            {filteredData.map((entry, index) => {
               const isTopThree = entry.position <= 3;
+              const isTopTen = entry.position <= 10;
               return (
-                <Card 
+                <div 
                   key={entry.user_id}
-                  className={`relative bg-gradient-to-br from-gray-900 to-gray-950 text-white hover:shadow-2xl transform hover:-translate-y-1 hover:scale-[1.02] transition-all duration-500 overflow-hidden border ${
+                  className={`relative group cursor-pointer transform hover:-translate-y-1 hover:scale-[1.02] transition-all duration-300 ${
+                    isTopThree ? 'hover:shadow-2xl hover:shadow-yellow-500/20' : 'hover:shadow-xl hover:shadow-cyan-500/10'
+                  }`}
+                >
+                  {/* Background Card */}
+                  <div className={`relative bg-gradient-to-r ${getEntryGradient(entry.position)} backdrop-blur-sm rounded-2xl border ${
                     isTopThree 
                       ? 'border-yellow-500/30 shadow-lg shadow-yellow-500/10' 
-                      : 'border-gray-700/50'
-                  } backdrop-blur-sm group`}
-                >
-                  {/* Animated Background Pattern */}
-                  <div className="absolute inset-0 opacity-5">
-                    <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white/10 to-transparent transform rotate-45 translate-x-full group-hover:translate-x-[-100%] transition-transform duration-1000"></div>
-                  </div>
-
-                  <div className="relative p-6">
-                    {/* Position Badge */}
-                    <div className="flex justify-center mb-6">
-                      {getPositionBadge(entry.position)}
+                      : isTopTen 
+                        ? 'border-cyan-500/20 shadow-md shadow-cyan-500/5'
+                        : 'border-gray-700/50'
+                  } overflow-hidden`}>
+                    
+                    {/* Animated Background Pattern */}
+                    <div className="absolute inset-0 opacity-5">
+                      <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white/10 to-transparent transform rotate-45 translate-x-full group-hover:translate-x-[-100%] transition-transform duration-1000"></div>
                     </div>
 
-                    {/* User Info */}
-                    <Link to={`/profile/${entry.user_id}`} className="block group/link">
-                      <div className="flex flex-col items-center text-center mb-6">
-                        <img
-                          src={entry.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${entry.user_id}`}
-                          alt={entry.username}
-                          className="w-20 h-20 rounded-full object-cover border-4 border-gray-700 group-hover/link:border-cyan-500/50 transition-colors mb-4 shadow-lg"
-                        />
-                        <h3 className="text-xl font-bold text-white group-hover/link:text-cyan-400 transition-colors mb-2 truncate max-w-full">
-                          {entry.username}
-                        </h3>
-                        {getTierBadge((entry as any).rank_name, (entry as any).rank_color)}
+                    <Link to={`/profile/${entry.user_id}`} className="block p-6">
+                      <div className="flex items-center gap-6">
+                        {/* Position */}
+                        <div className="flex-shrink-0">
+                          {getPositionDisplay(entry.position)}
+                        </div>
+
+                        {/* User Avatar & Info */}
+                        <div className="flex items-center gap-4 flex-1 min-w-0">
+                          <img
+                            src={entry.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${entry.user_id}`}
+                            alt={entry.username}
+                            className="w-16 h-16 rounded-full object-cover border-4 border-gray-700 group-hover:border-cyan-500/50 transition-colors shadow-lg"
+                          />
+                          <div className="flex-1 min-w-0">
+                            <h3 className="text-xl font-bold text-white group-hover:text-cyan-400 transition-colors truncate">
+                              {entry.username}
+                            </h3>
+                            <div className="mt-1">
+                              {getTierBadge((entry as any).rank_name, (entry as any).rank_color)}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Rating/Vote Count */}
+                        <div className="flex-shrink-0 text-right">
+                          {activeTab === 'player' ? (
+                            <div>
+                              <div className={`text-3xl font-bold mb-1 ${getRatingColor((entry as any).rating)}`}>
+                                {(entry as any).rating}
+                              </div>
+                              <div className="flex items-center gap-2 text-sm text-gray-400">
+                                <Star className="h-4 w-4" />
+                                <span>{t('profilePage.seasonRating')}</span>
+                              </div>
+                            </div>
+                          ) : (
+                            <div>
+                              <div className={`text-3xl font-bold mb-1 ${getVoteCountColor((entry as any).vote_count)}`}>
+                                {(entry as any).vote_count}
+                              </div>
+                              <div className="flex items-center gap-2 text-sm text-gray-400">
+                                <Vote className="h-4 w-4" />
+                                <span>{t('rankingPage.table.voteCount')}</span>
+                              </div>
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </Link>
-
-                    {/* Rating/Vote Count */}
-                    <div className="text-center">
-                      {activeTab === 'player' ? (
-                        <div>
-                          <div className={`text-4xl font-bold mb-2 ${getRatingColor((entry as any).rating)}`}>
-                            {(entry as any).rating}
-                          </div>
-                          <div className="flex items-center justify-center gap-2 text-sm text-gray-400">
-                            <Star className="h-4 w-4" />
-                            <span>{t('profilePage.seasonRating')}</span>
-                          </div>
-                        </div>
-                      ) : (
-                        <div>
-                          <div className={`text-4xl font-bold mb-2 ${getVoteCountColor((entry as any).vote_count)}`}>
-                            {(entry as any).vote_count}
-                          </div>
-                          <div className="flex items-center justify-center gap-2 text-sm text-gray-400">
-                            <Vote className="h-4 w-4" />
-                            <span>{t('rankingPage.table.voteCount')}</span>
-                          </div>
-                        </div>
-                      )}
-                    </div>
                   </div>
-                </Card>
+                </div>
               );
             })}
           </div>
