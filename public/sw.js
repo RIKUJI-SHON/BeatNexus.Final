@@ -1,5 +1,5 @@
 // PWA Service Worker for BeatNexus
-const CACHE_NAME = 'beatnexus-v3';
+const CACHE_NAME = 'beatnexus-v4';
 const STATIC_ASSETS = [
   '/',
   '/manifest.webmanifest',

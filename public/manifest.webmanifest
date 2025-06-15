@@ -1,6 +1,6 @@
 {
   "name": "BeatNexus - Beatbox Battle Community",
-  "short_name": "BeatNexus",
+  "short_name": "BeatNexus", 
   "description": "ビートボクシング愛好者向けの競技プラットフォーム",
   "start_url": "/?utm_source=pwa",
   "display": "standalone",
@@ -10,6 +10,7 @@
   "scope": "/",
   "lang": "ja",
   "categories": ["entertainment", "music", "social"],
+  "version": "1.0.1",
   "icons": [
     {
       "src": "/bn_icon_192.png",
