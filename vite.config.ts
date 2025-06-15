@@ -10,12 +10,11 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: [
         'bn_icon_192.png', 
-        'bn_icon_512.png',
         'icon-battles.svg',
         'icon-post.svg',
         'icon-ranking.svg',
         'icon-my-battles.svg',
-        'images/**/*'
+        'images/VS.png'
       ],
       manifest: {
         name: 'BeatNexus - Beatbox Battle Community',
@@ -54,7 +53,15 @@ export default defineConfig({
         ]
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,svg,png,jpg,jpeg,gif,webp}'],
+        globPatterns: ['**/*.{js,css,html,svg}'],
+        // 大きなファイルのサイズ制限を5MBに増加
+        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
+        // 大きな画像ファイルを除外
+        globIgnores: [
+          '**/BEATNEXUS-WORDMARK*.png',
+          '**/hero-background*.png',
+          '**/bn_icon_512.png'
+        ],
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/.*\.supabase\.co\/.*/i,
@@ -68,12 +75,25 @@ export default defineConfig({
             }
           },
           {
-            urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp)$/,
+            // 小さな画像ファイルのみキャッシュ（VS.png、アイコン等）
+            urlPattern: /\.(?:svg|ico)$/,
             handler: 'CacheFirst',
             options: {
-              cacheName: 'images-cache',
+              cacheName: 'small-images-cache',
               expiration: {
-                maxEntries: 100,
+                maxEntries: 50,
+                maxAgeSeconds: 60 * 60 * 24 * 30 // 30日間
+              }
+            }
+          },
+          {
+            // 大きな画像ファイルはNetworkFirstで処理
+            urlPattern: /\.(?:png|jpg|jpeg|gif|webp)$/,
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'large-images-cache',
+              expiration: {
+                maxEntries: 20,
                 maxAgeSeconds: 60 * 60 * 24 * 7 // 7日間
               }
             }
