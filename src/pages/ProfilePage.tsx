@@ -348,14 +348,14 @@ const ProfilePage: React.FC = () => {
       </div>
 
       {/* Stats Bar */}
-      <div className="bg-gray-800 py-6 shadow-md">
+      <div className="bg-gray-800 py-4 sm:py-6 shadow-md">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6 text-center">
             {stats.map((stat, index) => (
-              <div key={index} className="p-4 bg-gray-700/50 rounded-lg">
-                <stat.icon className="h-8 w-8 text-cyan-400 mx-auto mb-2" />
-                <div className="text-2xl font-bold text-white">{stat.value}</div>
-                <div className="text-sm text-gray-400">{stat.name}</div>
+              <div key={index} className="p-3 sm:p-4 bg-gray-700/50 rounded-lg">
+                <stat.icon className="h-6 w-6 sm:h-8 sm:w-8 text-cyan-400 mx-auto mb-1 sm:mb-2" />
+                <div className="text-lg sm:text-2xl font-bold text-white">{stat.value}</div>
+                <div className="text-xs sm:text-sm text-gray-400">{stat.name}</div>
               </div>
             ))}
           </div>
@@ -363,7 +363,7 @@ const ProfilePage: React.FC = () => {
       </div>
 
       {/* Rank Progress Section */}
-      <div className="bg-gray-900 py-6">
+      <div className="bg-gray-900 py-4 sm:py-6">
         <div className="container mx-auto px-4">
           <RankProgressBar 
             rankProgress={calculateRankProgress(userProfile.rating)} 

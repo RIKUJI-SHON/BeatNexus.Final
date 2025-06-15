@@ -7,7 +7,7 @@ import { Button } from '../ui/Button';
 import { AuthModal } from '../auth/AuthModal';
 import { useRequireAuth } from '../../hooks/useRequireAuth';
 import { useAuthStore } from '../../store/authStore';
-import { Clock, Users, Trophy, Flame, Vote, Eye, Zap, Crown, Swords } from 'lucide-react';
+import { Clock, Users, Vote } from 'lucide-react';
 
 interface BattleCardProps {
   battle: Battle;
@@ -106,20 +106,7 @@ export const BattleCard: React.FC<BattleCardProps> = ({ battle }) => {
 
 
 
-  const getLeaderIndicator = () => {
-    if (isDraw) return null;
-    return (
-      <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-10">
-        <div className={`flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold backdrop-blur-sm ${
-          isALeading ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' :
-          'bg-pink-500/20 text-pink-400 border border-pink-500/30'
-        }`}>
-          <Flame className="h-3 w-3" />
-          {isALeading ? battle.contestant_a?.username : battle.contestant_b?.username} Leading
-        </div>
-      </div>
-    );
-  };
+
 
   return (
     <>
@@ -131,8 +118,7 @@ export const BattleCard: React.FC<BattleCardProps> = ({ battle }) => {
             <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white/10 to-transparent transform rotate-45 translate-x-full group-hover:translate-x-[-100%] transition-transform duration-1000"></div>
           </div>
 
-          {/* Leader Indicator */}
-          {getLeaderIndicator()}
+
 
           <div className="relative p-6">
             {/* Header: Time */}
@@ -162,20 +148,13 @@ export const BattleCard: React.FC<BattleCardProps> = ({ battle }) => {
                       className="w-full h-full rounded-full object-cover border-2 border-gray-900"
                     />
                   </div>
-                  {isALeading && (
-                    <div className="absolute -top-2 -right-2 w-8 h-8 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-full flex items-center justify-center shadow-lg">
-                      <Crown className="h-4 w-4 text-white" />
-                    </div>
-                  )}
                 </div>
                 
                 <h3 className="text-lg font-bold text-white mb-2 truncate">
                   {battle.contestant_a?.username || t('battleCard.unknownUser')}
                 </h3>
                 
-                <div className={`text-2xl font-extrabold transition-all duration-300 ${
-                  isALeading ? 'text-emerald-400 scale-110 drop-shadow-lg' : 'text-gray-300'
-                }`}>
+                <div className="text-2xl font-extrabold text-gray-300">
                   {battle.votes_a || 0}
                 </div>
                 <div className="text-xs text-gray-400 font-medium">
@@ -185,13 +164,12 @@ export const BattleCard: React.FC<BattleCardProps> = ({ battle }) => {
 
               {/* VS Section */}
               <div className="flex flex-col items-center gap-3">
-                <div className="relative">
-                  <div className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500 drop-shadow-2xl animate-pulse">
-                    VS
-                  </div>
-                  <div className="absolute inset-0 text-4xl font-black text-cyan-400/20 blur-sm">
-                    VS
-                  </div>
+                <div>
+                  <img 
+                    src="/images/VS.png" 
+                    alt="VS" 
+                    className="w-16 h-16 md:w-20 md:h-20 object-contain"
+                  />
                 </div>
                 
                 <div className="text-center">
@@ -218,20 +196,13 @@ export const BattleCard: React.FC<BattleCardProps> = ({ battle }) => {
                       className="w-full h-full rounded-full object-cover border-2 border-gray-900"
                     />
                   </div>
-                  {isBLeading && (
-                    <div className="absolute -top-2 -right-2 w-8 h-8 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-full flex items-center justify-center shadow-lg">
-                      <Crown className="h-4 w-4 text-white" />
-                    </div>
-                  )}
                 </div>
                 
                 <h3 className="text-lg font-bold text-white mb-2 truncate">
                   {battle.contestant_b?.username || t('battleCard.unknownUser')}
                 </h3>
                 
-                <div className={`text-2xl font-extrabold transition-all duration-300 ${
-                  isBLeading ? 'text-emerald-400 scale-110 drop-shadow-lg' : 'text-gray-300'
-                }`}>
+                <div className="text-2xl font-extrabold text-gray-300">
                   {battle.votes_b || 0}
                 </div>
                 <div className="text-xs text-gray-400 font-medium">
@@ -242,11 +213,6 @@ export const BattleCard: React.FC<BattleCardProps> = ({ battle }) => {
 
             {/* Vote Progress Bar */}
             <div className="mb-6">
-              <div className="flex justify-between text-xs text-gray-400 mb-2">
-                <span>{percentageA.toFixed(1)}%</span>
-                <span>Vote Distribution</span>
-                <span>{percentageB.toFixed(1)}%</span>
-              </div>
               <div className="h-2 bg-gray-800 rounded-full overflow-hidden shadow-inner">
                 <div className="h-full flex">
                   <div 
@@ -267,27 +233,17 @@ export const BattleCard: React.FC<BattleCardProps> = ({ battle }) => {
               </div>
             </div>
 
-            {/* Action Buttons */}
-            <div className="flex gap-3">
+            {/* Action Button */}
+            <div className="flex justify-center">
               <Button
                 onClick={handleVoteClick}
                 variant="primary"
                 size="lg"
                 leftIcon={<Vote className="h-4 w-4" />}
-                className="flex-1 bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-500 hover:to-purple-500 transition-all duration-300 transform hover:scale-105 shadow-lg font-bold"
+                className="px-8 bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-500 hover:to-purple-500 transition-all duration-300 transform hover:scale-105 shadow-lg font-bold"
                 disabled={isExpired}
               >
                 {isExpired ? t('battleCard.votingEnded') : t('battleCard.voteNow')}
-              </Button>
-              
-              <Button
-                onClick={handleCardClick}
-                variant="secondary"
-                size="lg"
-                leftIcon={<Eye className="h-4 w-4" />}
-                className="bg-gray-800/60 hover:bg-gray-700/60 border border-gray-600/50 backdrop-blur-sm transition-all duration-300"
-              >
-                {t('battleCard.watch')}
               </Button>
             </div>
 

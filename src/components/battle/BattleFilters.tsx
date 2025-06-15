@@ -156,7 +156,7 @@ export const BattleFilters: React.FC<BattleFiltersProps> = ({
                   className={`group relative overflow-hidden px-2 py-2 rounded-lg font-bold text-xs transition-all duration-300 backdrop-blur-sm border flex-1 ${
                     sortBy === button.key
                       ? `bg-gradient-to-r ${button.colors} text-white border-transparent shadow-lg ${button.shadowColor}`
-                      : `bg-gray-800/60 text-gray-300 border-gray-600/50 hover:border-gray-500/50 hover:text-white hover:shadow-lg ${button.shadowColor}`
+                      : `bg-gray-800/60 text-gray-300 border-gray-600/50 hover:border-gray-500/50 hover:text-white`
                   }`}
                 >
                   <div className="relative flex items-center justify-center gap-1">
@@ -164,10 +164,7 @@ export const BattleFilters: React.FC<BattleFiltersProps> = ({
                     <span className="hidden xl:inline text-xs">{button.label}</span>
                   </div>
                   
-                  {/* Button glow effect */}
-                  {sortBy !== button.key && (
-                    <div className={`absolute inset-0 bg-gradient-to-r ${button.colors} opacity-0 group-hover:opacity-20 transition-opacity duration-300`}></div>
-                  )}
+
                 </button>
               ))}
             </div>

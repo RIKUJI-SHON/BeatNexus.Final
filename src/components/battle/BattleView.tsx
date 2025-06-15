@@ -352,8 +352,12 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle }) => {
               {/* VS Separator */}
               <div className="flex items-center justify-center lg:px-6">
                 <div className="flex flex-col items-center gap-4">
-                  <div className="text-3xl md:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-yellow-500 to-red-500 animate-pulse">
-                    ⚔️
+                  <div>
+                    <img 
+                      src="/images/VS.png" 
+                      alt="VS" 
+                      className="w-12 h-12 md:w-16 md:h-16 object-contain"
+                    />
                   </div>
                   <div className="text-center bg-gray-800/50 px-4 py-2 rounded-xl backdrop-blur-sm border border-gray-600/30">
                     <div className="flex items-center gap-2 text-gray-400 mb-1">
