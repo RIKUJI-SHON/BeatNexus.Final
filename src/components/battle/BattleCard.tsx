@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Battle } from '../../types';
 import { Card } from '../ui/Card';
 import { Button } from '../ui/Button';
+import { GlowButton } from '../ui/GlowButton';
 import { AuthModal } from '../auth/AuthModal';
 import { useRequireAuth } from '../../hooks/useRequireAuth';
 import { useAuthStore } from '../../store/authStore';
@@ -230,16 +231,16 @@ export const BattleCard: React.FC<BattleCardProps> = ({ battle }) => {
 
             {/* Action Button */}
             <div className="flex justify-center">
-              <Button
+              <GlowButton
                 onClick={handleVoteClick}
-                variant="primary"
-                size="lg"
-                leftIcon={<Vote className="h-4 w-4" />}
-                className="px-8 bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-500 hover:to-purple-500 transition-all duration-300 transform hover:scale-105 shadow-lg font-bold"
                 disabled={isExpired}
+                className="max-w-xs"
               >
-                {isExpired ? t('battleCard.votingEnded') : t('battleCard.voteNow')}
-              </Button>
+                <div className="flex items-center gap-2">
+                  <Vote className="h-4 w-4" />
+                  {isExpired ? t('battleCard.votingEnded') : t('battleCard.voteNow')}
+                </div>
+              </GlowButton>
             </div>
 
             {error && (

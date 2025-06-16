@@ -1,13 +1,11 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Camera, Eye } from 'lucide-react';
+import { Button3D } from '../../ui/Button3D';
 
-interface GetStartedSlideProps {
-  onComplete: () => void;
-  onPrevious: () => void;
-}
+interface GetStartedSlideProps {}
 
-const GetStartedSlide: React.FC<GetStartedSlideProps> = ({ onComplete, onPrevious }) => {
+const GetStartedSlide: React.FC<GetStartedSlideProps> = () => {
   const { t } = useTranslation();
 
   return (
@@ -47,21 +45,7 @@ const GetStartedSlide: React.FC<GetStartedSlideProps> = ({ onComplete, onPreviou
           </div>
         </div>
 
-        {/* ナビゲーションボタン */}
-        <div className="flex gap-3">
-          <button
-            onClick={onPrevious}
-            className="flex-1 px-6 py-3 bg-gray-700 text-white font-semibold rounded-xl hover:bg-gray-600 transition-colors"
-          >
-            {t('onboarding.previous')}
-          </button>
-          <button
-            onClick={onComplete}
-            className="flex-1 px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold rounded-xl hover:from-green-600 hover:to-emerald-700 transition-all duration-200 shadow-lg"
-          >
-            {t('onboarding.slide4.cta')}
-          </button>
-        </div>
+
       </div>
     </div>
   );

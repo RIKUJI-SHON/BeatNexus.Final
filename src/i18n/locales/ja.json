@@ -135,7 +135,7 @@
     "totalVotes": "総投票数",
     "comments": "コメント",
     "voteButton": "このバトルに投票する",
-    "voteNow": "今すぐ投票",
+    "voteNow": "Vote",
     "watch": "視聴",
     "battleFormats": {
       "MAIN_BATTLE": "メインバトル",
@@ -1035,7 +1035,7 @@
     "slide1": {
       "title": "ようこそ！",
       "subtitle": "",
-      "description": "ビートボックスバトル\nプラットフォーム",
+      "description": "動画投稿→自動マッチング→コミュニティ投票\nで勝者を決定する\n新しい競技体験",
       "cta": "始める"
     },
     "slide2": {

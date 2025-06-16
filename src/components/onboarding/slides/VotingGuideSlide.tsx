@@ -1,13 +1,11 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Vote, Crown } from 'lucide-react';
+import { Button3D } from '../../ui/Button3D';
 
-interface VotingGuideSlideProps {
-  onNext: () => void;
-  onPrevious: () => void;
-}
+interface VotingGuideSlideProps {}
 
-const VotingGuideSlide: React.FC<VotingGuideSlideProps> = ({ onNext, onPrevious }) => {
+const VotingGuideSlide: React.FC<VotingGuideSlideProps> = () => {
   const { t } = useTranslation();
 
   return (
@@ -52,21 +50,7 @@ const VotingGuideSlide: React.FC<VotingGuideSlideProps> = ({ onNext, onPrevious 
           </div>
         </div>
 
-        {/* ナビゲーションボタン */}
-        <div className="flex gap-3">
-          <button
-            onClick={onPrevious}
-            className="flex-1 px-6 py-3 bg-gray-700 text-white font-semibold rounded-xl hover:bg-gray-600 transition-colors"
-          >
-            {t('onboarding.previous')}
-          </button>
-          <button
-            onClick={onNext}
-            className="flex-1 px-6 py-3 bg-gradient-to-r from-cyan-500 to-purple-600 text-white font-semibold rounded-xl hover:from-cyan-600 hover:to-purple-700 transition-all duration-200 shadow-lg"
-          >
-            {t('onboarding.slide3.cta')}
-          </button>
-        </div>
+
       </div>
     </div>
   );

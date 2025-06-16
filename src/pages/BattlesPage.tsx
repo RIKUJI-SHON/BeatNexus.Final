@@ -305,45 +305,6 @@ const BattlesPage: React.FC = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 lg:items-start">
           <div className="lg:col-span-3">
-            <div id="active-battles" className="relative mb-12">
-              {/* 背景グラデーション効果 */}
-              <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 via-purple-500/5 to-pink-500/5 rounded-3xl blur-xl"></div>
-              
-              <div className="relative bg-gray-900/50 backdrop-blur-sm rounded-2xl border border-gray-700/50 p-8">
-                <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-4 mb-4">
-                      <div className="p-3 bg-gradient-to-r from-cyan-500/20 to-purple-500/20 rounded-2xl border border-cyan-500/30">
-                        <Play className="h-8 w-8 text-cyan-400" />
-                      </div>
-              <div>
-                        <h2 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
-                          {t('battlesPage.activeBattles.title')}
-                        </h2>
-                        <div className="w-20 h-1 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full mt-2"></div>
-                      </div>
-                    </div>
-                    <p className="text-gray-300 text-lg leading-relaxed">{t('battlesPage.activeBattles.subtitle')}</p>
-              </div>
-              
-                  <div className="flex flex-col sm:flex-row gap-3">
-              <button 
-                onClick={handleCreateBattle}
-                      className="group relative overflow-hidden px-8 py-4 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-2xl text-white font-bold text-lg transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-cyan-500/25"
-              >
-                      <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                      <div className="relative flex items-center gap-3">
-                        <div className="p-2 bg-white/20 rounded-lg group-hover:bg-white/30 transition-colors">
-                <Plus className="h-5 w-5" />
-                        </div>
-                {t('battlesPage.activeBattles.createBattleButton')}
-                      </div>
-              </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
             <BattleFilters
               sortBy={sortBy}
               setSortBy={setSortBy}

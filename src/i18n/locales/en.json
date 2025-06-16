@@ -135,7 +135,7 @@
     "totalVotes": "Total Votes",
     "comments": "Comments",
     "voteButton": "Vote on this battle",
-    "voteNow": "Vote Now",
+    "voteNow": "Vote",
     "watch": "Watch",
     "battleFormats": {
       "MAIN_BATTLE": "Main Battle",
@@ -1251,7 +1251,7 @@
     "slide1": {
       "title": "Welcome!",
       "subtitle": "",
-      "description": "Beatbox Battle\nPlatform",
+      "description": "Post Video → Auto Matching → Community Vote\nto determine the winner\nA new competitive experience",
       "cta": "Start"
     },
     "slide2": {

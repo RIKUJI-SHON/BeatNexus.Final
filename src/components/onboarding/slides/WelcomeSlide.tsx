@@ -1,11 +1,9 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-interface WelcomeSlideProps {
-  onNext: () => void;
-}
+interface WelcomeSlideProps {}
 
-const WelcomeSlide: React.FC<WelcomeSlideProps> = ({ onNext }) => {
+const WelcomeSlide: React.FC<WelcomeSlideProps> = () => {
   const { t } = useTranslation();
 
   return (
@@ -32,19 +30,9 @@ const WelcomeSlide: React.FC<WelcomeSlideProps> = ({ onNext }) => {
 
         {/* 説明 */}
         <div className="text-center mb-8">
-          <p className="text-gray-300 text-lg leading-relaxed whitespace-pre-line">
+          <p className="text-gray-300 text-sm leading-relaxed whitespace-pre-line">
             {t('onboarding.slide1.description')}
           </p>
-        </div>
-
-        {/* CTAボタン */}
-        <div className="text-center">
-          <button
-            onClick={onNext}
-            className="w-full px-8 py-4 bg-gradient-to-r from-cyan-500 to-purple-600 text-white font-bold text-lg rounded-xl hover:from-cyan-600 hover:to-purple-700 transition-all duration-200 transform hover:scale-105 shadow-lg"
-          >
-            {t('onboarding.slide1.cta')}
-          </button>
         </div>
       </div>
     </div>
