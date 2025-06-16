@@ -999,6 +999,12 @@
       "exploreButton": "Explore Other Battles"
     }
   },
+  "tournament": {
+    "comingSoonPage": {
+      "title": "Tournament",
+      "subtitle": "Coming soon"
+    }
+  },
   "comingSoon": {
     "title": "Coming Soon",
     "subtitle": "We're crafting an amazing How-to Guide for you! Learn everything about BeatNexus in an easy-to-follow format.",

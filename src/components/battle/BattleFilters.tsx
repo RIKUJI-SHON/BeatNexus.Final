@@ -87,8 +87,7 @@ export const BattleFilters: React.FC<BattleFiltersProps> = ({
   };
 
   const handleTournamentClick = () => {
-    // TODO: トーナメント機能を実装後にルートを設定
-    console.log('Tournament feature coming soon!');
+    navigate('/tournament');
   };
 
   const handleSortClick = (sortKey: 'recent' | 'trending' | 'ending' | 'completed') => {
