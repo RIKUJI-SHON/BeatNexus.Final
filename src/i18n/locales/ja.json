@@ -153,7 +153,13 @@
     "recent": "最新",
     "trending": "人気",
     "endingSoon": "終了間近",
-    "completed": "完了済み"
+    "completed": "完了済み",
+    "searchTitle": "ユーザー名検索",
+    "filtersTitle": "フィルター & ソート",
+    "myBattlesOnly": "マイバトルのみ",
+    "activeFilters": "アクティブフィルター:",
+    "loading": "読み込み中...",
+    "noRankings": "ランキングがありません"
   },
   "upload": {
   },
@@ -311,7 +317,8 @@
     },
     "rankings": {
       "title": "トップビートボクサー",
-      "viewFullButton": "",
+      "titleCompact": "トップランキング",
+      "viewFullButton": "全て見る",
       "noRankingsYet": "まだランキングがありません",
       "table": {
         "rank": "ランク",

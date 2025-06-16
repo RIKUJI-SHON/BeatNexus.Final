@@ -459,133 +459,88 @@ const BattlesPage: React.FC = () => {
 
           <aside className="lg:col-span-1 space-y-6 lg:sticky lg:top-8 lg:h-fit">
             
-            {/* Top Rankings Widget - Enhanced Design */}
-            <Card className="group relative bg-gradient-to-br from-gray-900 via-gray-850 to-gray-950 border border-gray-700/50 shadow-xl hover:shadow-2xl hover:shadow-yellow-500/10 transition-all duration-500 rounded-xl overflow-hidden backdrop-blur-sm">
-              
-              {/* Animated Background Pattern */}
-              <div className="absolute inset-0 opacity-5">
-                <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white/10 to-transparent transform rotate-45 translate-x-full group-hover:translate-x-[-100%] transition-transform duration-1000"></div>
-              </div>
-
-              <div className="relative p-6">
-                {/* Header */}
-                <div className="flex items-center justify-between mb-6">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-gradient-to-r from-yellow-500/20 to-orange-500/20 rounded-xl border border-yellow-500/30 backdrop-blur-sm">
-                      <Trophy className="h-6 w-6 text-yellow-400" />
-                    </div>
-                    <div>
-                      <h2 className="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-400">
-                        {t('battlesPage.rankings.title')}
-                      </h2>
-                      <div className="w-12 h-0.5 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full"></div>
-                    </div>
+            {/* Top Rankings Widget - Compact Design */}
+            <Card className="bg-gray-900/50 border border-gray-700/50 rounded-xl backdrop-blur-sm">
+              <div className="p-4">
+                {/* Header - Compact */}
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2">
+                    <Trophy className="h-4 w-4 text-yellow-400" />
+                    <h2 className="text-sm font-bold text-yellow-400">
+                      {t('battlesPage.rankings.titleCompact')}
+                    </h2>
                   </div>
                   <Link 
                     to="/ranking"
-                    className="group/link flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 border border-cyan-500/30 rounded-lg text-cyan-400 hover:text-cyan-300 hover:bg-gradient-to-r hover:from-cyan-500/20 hover:to-blue-500/20 transition-all duration-300 backdrop-blur-sm"
+                    className="flex items-center gap-1 px-2 py-1 bg-cyan-500/10 border border-cyan-500/30 rounded-md text-cyan-400 hover:text-cyan-300 hover:bg-cyan-500/20 transition-all duration-300 text-xs"
                   >
-                    <span className="text-sm font-medium">{t('battlesPage.rankings.viewFullButton')}</span>
-                    <ArrowRight className="h-3 w-3 group-hover/link:translate-x-1 transition-transform" />
+                    <span>{t('battlesPage.rankings.viewFullButton')}</span>
+                    <ArrowRight className="h-3 w-3" />
                   </Link>
                 </div>
 
-                {/* Rankings Content */}
+                {/* Rankings Content - Compact */}
                 {rankingsLoading ? (
-                  <div className="text-center text-gray-400 py-6">
-                    <div className="animate-spin w-8 h-8 border-4 border-cyan-500 border-t-transparent rounded-full mx-auto mb-3"></div>
-                    <p className="text-sm">{t('battlesPage.status.loadingRankings')}</p>
+                  <div className="text-center text-gray-400 py-4">
+                    <div className="animate-spin w-6 h-6 border-2 border-cyan-500 border-t-transparent rounded-full mx-auto mb-2"></div>
+                    <p className="text-xs">{t('battleFilters.loading')}</p>
                   </div>
                 ) : topRankings.length > 0 ? (
-                  <div className="space-y-3">
+                  <div className="space-y-2">
                     {topRankings.map((entry: RankingEntry, index) => {
-                      const getPositionBadge = (position: number) => {
+                      const getPositionIcon = (position: number) => {
                         switch (position) {
                           case 1:
-                            return (
-                              <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-r from-yellow-500/20 to-amber-500/20 rounded-xl border border-yellow-500/40">
-                                <Crown className="h-5 w-5 text-yellow-400" />
-                              </div>
-                            );
+                            return <Crown className="h-3 w-3 text-yellow-400" />;
                           case 2:
-                            return (
-                              <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-r from-gray-400/20 to-gray-300/20 rounded-xl border border-gray-400/40">
-                                <Medal className="h-5 w-5 text-gray-300" />
-                              </div>
-                            );
+                            return <Medal className="h-3 w-3 text-gray-300" />;
                           case 3:
-                            return (
-                              <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-r from-amber-600/20 to-orange-600/20 rounded-xl border border-amber-600/40">
-                                <Medal className="h-5 w-5 text-amber-500" />
-                              </div>
-                            );
+                            return <Medal className="h-3 w-3 text-amber-500" />;
                           default:
-                            return (
-                              <div className="flex items-center justify-center w-10 h-10 bg-gray-800/80 rounded-xl border border-gray-700/50">
-                                <span className="text-sm font-bold text-gray-400">{position}</span>
-                              </div>
-                            );
+                            return <span className="text-xs font-bold text-gray-400">{position}</span>;
                         }
                       };
 
-                      const getRatingWithRankColor = (rating: number, rankColor: string) => {
-                        console.log('Rating:', rating, 'Rank Color:', rankColor);
-                        
-                        // 直接的な色指定でランクカラーをマッピング
-                        let colorClass = '';
+                      const getRatingColor = (rankColor: string) => {
                         switch (rankColor) {
                           case 'rainbow':
-                            colorClass = 'text-purple-400';
-                            break;
                           case 'purple':
-                            colorClass = 'text-purple-400';
-                            break;
+                            return 'text-purple-400';
                           case 'blue':
-                            colorClass = 'text-blue-400';
-                            break;
+                            return 'text-blue-400';
                           case 'green':
-                            colorClass = 'text-green-400';
-                            break;
+                            return 'text-green-400';
                           case 'yellow':
-                            colorClass = 'text-yellow-400';
-                            break;
+                            return 'text-yellow-400';
                           case 'gray':
-                            colorClass = 'text-gray-400';
-                            break;
+                            return 'text-gray-400';
                           default:
-                            colorClass = 'text-white';
+                            return 'text-white';
                         }
-                        
-                        return (
-                          <span className={`text-sm font-bold ${colorClass}`}>
-                            {rating}
-                          </span>
-                        );
                       };
 
                       return (
                         <Link 
                           key={entry.user_id}
                           to={`/profile/${entry.user_id}`}
-                          className="group/player flex items-center gap-4 p-4 rounded-xl bg-gradient-to-r from-gray-800/60 to-gray-700/60 border border-gray-700/50 hover:border-cyan-500/50 hover:bg-gradient-to-r hover:from-gray-800/80 hover:to-gray-700/80 transition-all duration-300 backdrop-blur-sm"
+                          className="flex items-center gap-3 p-2 rounded-lg bg-gray-800/40 border border-gray-700/30 hover:border-cyan-500/50 hover:bg-gray-800/60 transition-all duration-300"
                         >
-                          {getPositionBadge(entry.position)}
-                          
-                          <div className="relative">
-                            <img
-                              src={entry.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${entry.user_id}`}
-                              alt={entry.username}
-                              className="w-12 h-12 rounded-xl object-cover border-2 border-gray-600/50 group-hover/player:border-cyan-500/70 transition-all duration-300"
-                            />
-                            <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-cyan-500/0 to-purple-500/0 group-hover/player:from-cyan-500/20 group-hover/player:to-purple-500/20 transition-all duration-300"></div>
+                          <div className="flex items-center justify-center w-6 h-6 bg-gray-800/80 rounded-lg">
+                            {getPositionIcon(entry.position)}
                           </div>
                           
+                          <img
+                            src={entry.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${entry.user_id}`}
+                            alt={entry.username}
+                            className="w-8 h-8 rounded-lg object-cover border border-gray-600/50"
+                          />
+                          
                           <div className="flex-1 min-w-0">
-                            <div className="font-bold text-white group-hover/player:text-transparent group-hover/player:bg-clip-text group-hover/player:bg-gradient-to-r group-hover/player:from-cyan-400 group-hover/player:to-purple-400 transition-all duration-300 truncate text-sm">
+                            <div className="font-medium text-white truncate text-xs">
                               {entry.username}
                             </div>
-                            <div className="mt-1.5">
-                              {getRatingWithRankColor(entry.season_points, entry.rank_color)}
+                            <div className={`text-xs font-bold ${getRatingColor(entry.rank_color)}`}>
+                              {entry.season_points}
                             </div>
                           </div>
                         </Link>
@@ -593,12 +548,9 @@ const BattlesPage: React.FC = () => {
                     })}
                   </div>
                 ) : (
-                  <div className="text-center py-8">
-                    <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-gradient-to-r from-gray-800/60 to-gray-700/60 border border-gray-700/50 flex items-center justify-center">
-                      <Users className="h-8 w-8 text-gray-600" />
-                    </div>
-                    <h3 className="text-lg font-semibold text-white mb-2">{t('latestBattles.ranking.noRankings.title')}</h3>
-                    <p className="text-gray-400 text-sm">{t('battlesPage.status.noRankingsAvailable')}</p>
+                  <div className="text-center py-4">
+                    <Users className="h-6 w-6 text-gray-600 mx-auto mb-2" />
+                    <p className="text-gray-400 text-xs">{t('battleFilters.noRankings')}</p>
                   </div>
                 )}
               </div>

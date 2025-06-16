@@ -153,7 +153,13 @@
     "recent": "Recent",
     "trending": "Trending",
     "endingSoon": "Ending Soon",
-    "completed": "Completed"
+    "completed": "Completed",
+    "searchTitle": "Username Search",
+    "filtersTitle": "Filters & Sort",
+    "myBattlesOnly": "My Battles Only",
+    "activeFilters": "Active Filters:",
+    "loading": "Loading...",
+    "noRankings": "No Rankings"
   },
   "upload": {
   },
@@ -311,7 +317,8 @@
     },
     "rankings": {
       "title": "Top Beatboxers",
-      "viewFullButton": "",
+      "titleCompact": "Top Rankings",
+      "viewFullButton": "View All",
       "noRankingsYet": "No Rankings Yet",
       "table": {
         "rank": "Rank",
