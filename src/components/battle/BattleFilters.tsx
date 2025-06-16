@@ -1,14 +1,14 @@
 import React from 'react';
-import { Search, SortAsc, SortDesc, TrendingUp, Clock, Archive, User, Filter, Flame, Zap, Trophy, Star, Play, UserCircle, Award } from 'lucide-react';
+import { Search, SortAsc, SortDesc, Clock, Archive, User, Filter, Flame, Zap, Trophy, Star, Play, UserCircle, Award } from 'lucide-react';
 import { Card } from '../ui/Card';
 import { Button } from '../ui/Button';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../hooks/useAuth';
+import { useAuthStore } from '../../store/authStore';
 import { useTranslation } from 'react-i18next';
 
 interface BattleFiltersProps {
-  sortBy: 'recent' | 'trending' | 'ending' | 'completed';
-  setSortBy: (sort: 'recent' | 'trending' | 'ending' | 'completed') => void;
+  sortBy: 'recent' | 'trending' | 'ending' | 'completed' | null;
+  setSortBy: (sort: 'recent' | 'trending' | 'ending' | 'completed' | null) => void;
   searchQuery: string;
   setSearchQuery: (query: string) => void;
   showMyBattlesOnly: boolean;
@@ -29,7 +29,7 @@ export const BattleFilters: React.FC<BattleFiltersProps> = ({
 }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user } = useAuthStore();
 
   // Color pairs for consistent theming (same as BattleCard)
   const colorPairs = [
@@ -42,7 +42,7 @@ export const BattleFilters: React.FC<BattleFiltersProps> = ({
   
   const defaultColorPair = colorPairs[0]; // Use consistent colors
 
-  // Sort button configurations with enhanced styling (人気ボタンを削除)
+  // Sort button configurations with enhanced styling
   const sortButtons = [
     {
       key: 'recent',
@@ -89,6 +89,11 @@ export const BattleFilters: React.FC<BattleFiltersProps> = ({
   const handleTournamentClick = () => {
     // TODO: トーナメント機能を実装後にルートを設定
     console.log('Tournament feature coming soon!');
+  };
+
+  const handleSortClick = (sortKey: 'recent' | 'trending' | 'ending' | 'completed') => {
+    // 同じボタンをクリックした場合はトグル（null）、違うボタンの場合は選択
+    setSortBy(sortBy === sortKey ? null : sortKey);
   };
 
   return (
@@ -192,43 +197,40 @@ export const BattleFilters: React.FC<BattleFiltersProps> = ({
                 <h3 className="text-sm font-semibold text-purple-400">{t('battleFilters.filtersTitle')}</h3>
               </div>
               
-              <div className="space-y-3">
-                {/* My Battles Filter */}
-                {isLoggedIn && (
-                  <div className="flex justify-start">
-                    <button
-                      onClick={() => setShowMyBattlesOnly(!showMyBattlesOnly)}
-                      className={`px-3 py-2 rounded-lg text-xs font-medium transition-all duration-300 border flex items-center gap-1 ${
-                        showMyBattlesOnly
-                          ? 'bg-gradient-to-r from-pink-500 to-purple-500 text-white border-pink-500/50'
-                          : 'bg-gray-800/60 text-gray-300 border-gray-600/50 hover:border-pink-500/50 hover:text-white'
-                      }`}
-                    >
-                      <User className="h-3 w-3" />
-                      <span className="whitespace-nowrap">{t('battleFilters.myBattlesOnly')}</span>
-                    </button>
-                  </div>
-                )}
+                          {/* マイバトル & ソートボタン - 一行に配置 */}
+            <div className="flex gap-2 flex-wrap items-center">
+              {/* My Battles Filter */}
+              {isLoggedIn && (
+                <button
+                  onClick={() => setShowMyBattlesOnly(!showMyBattlesOnly)}
+                  className={`px-3 py-2 rounded-lg text-xs font-medium transition-all duration-300 border flex items-center gap-1 flex-shrink-0 ${
+                    showMyBattlesOnly
+                      ? 'bg-gradient-to-r from-pink-500 to-purple-500 text-white border-pink-500/50'
+                      : 'bg-gray-800/60 text-gray-300 border-gray-600/50 hover:border-pink-500/50 hover:text-white'
+                  }`}
+                >
+                  <User className="h-3 w-3" />
+                  <span className="whitespace-nowrap">{t('battleFilters.myBattlesOnly')}</span>
+                </button>
+              )}
 
-                {/* Sort Options - 一列に配置 */}
-                <div className="flex gap-2 flex-wrap">
-                  {sortButtons.map((button) => (
-                    <button
-                      key={button.key}
-                      onClick={() => setSortBy(button.key as any)}
-                      className={`px-3 py-2 rounded-lg text-xs font-medium transition-all duration-300 border flex items-center gap-1 flex-shrink-0 ${
-                        sortBy === button.key
-                          ? `bg-gradient-to-r ${button.colors} text-white border-transparent`
-                          : `bg-gray-800/60 text-gray-300 border-gray-600/50 hover:border-gray-500/50 hover:text-white`
-                      }`}
-                      title={button.label}
-                    >
-                      {button.icon}
-                      <span className="whitespace-nowrap">{button.label}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
+              {/* Sort Options */}
+              {sortButtons.map((button) => (
+                <button
+                  key={button.key}
+                  onClick={() => handleSortClick(button.key as any)}
+                  className={`px-3 py-2 rounded-lg text-xs font-medium transition-all duration-300 border flex items-center gap-1 flex-shrink-0 ${
+                    sortBy === button.key
+                      ? `bg-gradient-to-r ${button.colors} text-white border-transparent`
+                      : `bg-gray-800/60 text-gray-300 border-gray-600/50 hover:border-gray-500/50 hover:text-white`
+                  }`}
+                  title={button.label}
+                >
+                  {button.icon}
+                  <span className="whitespace-nowrap">{button.label}</span>
+                </button>
+              ))}
+            </div>
             </div>
           </div>
 

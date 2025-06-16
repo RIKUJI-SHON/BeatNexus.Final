@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Plus, Trophy, Crown, ArrowRight, Play, Mic, Users, Archive, BookOpen, Medal, Star, Video } from 'lucide-react';
+import { Plus, Trophy, Crown, ArrowRight, Play, Mic, Users, Archive, Medal, Star } from 'lucide-react';
 import beatnexusWordmark from '../assets/images/BEATNEXUS-WORDMARK.png';
 import heroBackground from '../assets/images/hero-background.png';
 import { BattleCard } from '../components/battle/BattleCard';
@@ -24,7 +24,7 @@ const BattlesPage: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
-  const [sortBy, setSortBy] = useState<'recent' | 'trending' | 'ending' | 'completed'>('recent');
+  const [sortBy, setSortBy] = useState<'recent' | 'trending' | 'ending' | 'completed' | null>('trending');
   const [showMyBattlesOnly, setShowMyBattlesOnly] = useState(false);
 
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
@@ -38,8 +38,8 @@ const BattlesPage: React.FC = () => {
   const { rankings, loading: rankingsLoading, fetchRankings } = useRankingStore();
   const { user } = useAuthStore();
   
-  // Get top 3 rankings safely
-  const topRankings = rankings?.slice(0, 3) || [];
+  // Get top 10 rankings safely
+  const topRankings = rankings?.slice(0, 10) || [];
 
   useEffect(() => {
     let unsubscribe: (() => void) | undefined;
@@ -127,12 +127,16 @@ const BattlesPage: React.FC = () => {
           return battleList
             .filter(battle => battle.status === 'COMPLETED')
             .sort((a, b) => {
-              const aTime = a.end_voting_at ? new Date(a.end_voting_at).getTime() : 0;
+              const aTime = a.end_voting_at ? new Date(b.end_voting_at).getTime() : 0;
               const bTime = b.end_voting_at ? new Date(b.end_voting_at).getTime() : 0;
               return bTime - aTime;
             });
+        case null:
         default:
-          return battleList;
+          // フィルターが外れている場合はtrending順（人気順）
+          return battleList.sort((a, b) => 
+            ((b.votes_a || 0) + (b.votes_b || 0)) - ((a.votes_a || 0) + (a.votes_b || 0))
+          );
       }
     } catch (error) {
       console.error('Error in filteredBattles:', error);
@@ -420,169 +424,102 @@ const BattlesPage: React.FC = () => {
 
           <aside className="lg:col-span-1 space-y-6 lg:sticky lg:top-8 lg:h-fit">
             
-            {/* Top Rankings Widget - Compact Design */}
-            <Card className="bg-gray-900/50 border border-gray-700/50 rounded-xl backdrop-blur-sm">
-              <div className="p-4">
-                {/* Header - Compact */}
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-2">
-                    <Trophy className="h-4 w-4 text-yellow-400" />
-                    <h2 className="text-sm font-bold text-yellow-400">
-                      {t('battlesPage.rankings.titleCompact')}
-                    </h2>
-                  </div>
-                  <Link 
-                    to="/ranking"
-                    className="flex items-center gap-1 px-2 py-1 bg-cyan-500/10 border border-cyan-500/30 rounded-md text-cyan-400 hover:text-cyan-300 hover:bg-cyan-500/20 transition-all duration-300 text-xs"
-                  >
-                    <span>{t('battlesPage.rankings.viewFullButton')}</span>
-                    <ArrowRight className="h-3 w-3" />
-                  </Link>
+            {/* Top Rankings - Direct Display */}
+            <div>
+              {/* Header */}
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <Trophy className="h-5 w-5 text-yellow-400" />
+                  <h2 className="text-lg font-bold text-yellow-400">
+                    {t('battlesPage.rankings.titleCompact')}
+                  </h2>
                 </div>
-
-                {/* Rankings Content - Compact */}
-                {rankingsLoading ? (
-                  <div className="text-center text-gray-400 py-4">
-                    <div className="animate-spin w-6 h-6 border-2 border-cyan-500 border-t-transparent rounded-full mx-auto mb-2"></div>
-                    <p className="text-xs">{t('battleFilters.loading')}</p>
-                  </div>
-                ) : topRankings.length > 0 ? (
-                  <div className="space-y-2">
-                    {topRankings.map((entry: RankingEntry, index) => {
-                      const getPositionIcon = (position: number) => {
-                        switch (position) {
-                          case 1:
-                            return <Crown className="h-3 w-3 text-yellow-400" />;
-                          case 2:
-                            return <Medal className="h-3 w-3 text-gray-300" />;
-                          case 3:
-                            return <Medal className="h-3 w-3 text-amber-500" />;
-                          default:
-                            return <span className="text-xs font-bold text-gray-400">{position}</span>;
-                        }
-                      };
-
-                      const getRatingColor = (rankColor: string) => {
-                        switch (rankColor) {
-                          case 'rainbow':
-                          case 'purple':
-                            return 'text-purple-400';
-                          case 'blue':
-                            return 'text-blue-400';
-                          case 'green':
-                            return 'text-green-400';
-                          case 'yellow':
-                            return 'text-yellow-400';
-                          case 'gray':
-                            return 'text-gray-400';
-                          default:
-                            return 'text-white';
-                        }
-                      };
-
-                      return (
-                        <Link 
-                          key={entry.user_id}
-                          to={`/profile/${entry.user_id}`}
-                          className="flex items-center gap-3 p-2 rounded-lg bg-gray-800/40 border border-gray-700/30 hover:border-cyan-500/50 hover:bg-gray-800/60 transition-all duration-300"
-                        >
-                          <div className="flex items-center justify-center w-6 h-6 bg-gray-800/80 rounded-lg">
-                            {getPositionIcon(entry.position)}
-                          </div>
-                          
-                          <img
-                            src={entry.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${entry.user_id}`}
-                            alt={entry.username}
-                            className="w-8 h-8 rounded-lg object-cover border border-gray-600/50"
-                          />
-                          
-                          <div className="flex-1 min-w-0">
-                            <div className="font-medium text-white truncate text-xs">
-                              {entry.username}
-                            </div>
-                            <div className={`text-xs font-bold ${getRatingColor(entry.rank_color)}`}>
-                              {entry.season_points}
-                            </div>
-                          </div>
-                        </Link>
-                      );
-                    })}
-                  </div>
-                ) : (
-                  <div className="text-center py-4">
-                    <Users className="h-6 w-6 text-gray-600 mx-auto mb-2" />
-                    <p className="text-gray-400 text-xs">{t('battleFilters.noRankings')}</p>
-                  </div>
-                )}
-              </div>
-            </Card>
-
-            {/* How to Guide Widget - Enhanced Design */}
-            <Card className="group relative bg-gradient-to-br from-gray-900 via-gray-850 to-gray-950 border border-gray-700/50 shadow-xl hover:shadow-2xl hover:shadow-green-500/10 transition-all duration-500 rounded-xl overflow-hidden backdrop-blur-sm">
-              
-              {/* Animated Background Pattern */}
-              <div className="absolute inset-0 opacity-5">
-                <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white/10 to-transparent transform rotate-45 translate-x-full group-hover:translate-x-[-100%] transition-transform duration-1000"></div>
-              </div>
-
-              <div className="relative p-6">
-                {/* Header */}
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="p-2 bg-gradient-to-r from-green-500/20 to-blue-500/20 rounded-xl border border-green-500/30 backdrop-blur-sm">
-                    <BookOpen className="h-6 w-6 text-green-400" />
-                  </div>
-                  <div>
-                    <h2 className="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-blue-400">
-                      {t('battlesPage.howTo.title')}
-                    </h2>
-                    <div className="w-12 h-0.5 bg-gradient-to-r from-green-500 to-blue-500 rounded-full"></div>
-                  </div>
-                </div>
-
-                {/* Description */}
-                <p className="text-gray-400 text-sm mb-6 leading-relaxed">
-                  {t('battlesPage.howTo.description')}
-                </p>
-
-                {/* Features Grid */}
-                <div className="space-y-3 mb-6">
-                  <div className="flex items-center gap-3 p-3 rounded-lg bg-gradient-to-r from-cyan-500/10 to-blue-500/10 border border-cyan-500/20">
-                    <div className="p-1.5 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 rounded-lg">
-                      <Video className="h-4 w-4 text-cyan-400" />
-                    </div>
-                    <span className="text-sm text-gray-300 font-medium">Post Battle Videos</span>
-                  </div>
-                  
-                  <div className="flex items-center gap-3 p-3 rounded-lg bg-gradient-to-r from-purple-500/10 to-pink-500/10 border border-purple-500/20">
-                    <div className="p-1.5 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-lg">
-                      <Star className="h-4 w-4 text-purple-400" />
-                    </div>
-                    <span className="text-sm text-gray-300 font-medium">Vote & Get Ranked</span>
-                  </div>
-                  
-                  <div className="flex items-center gap-3 p-3 rounded-lg bg-gradient-to-r from-yellow-500/10 to-orange-500/10 border border-yellow-500/20">
-                    <div className="p-1.5 bg-gradient-to-r from-yellow-500/20 to-orange-500/20 rounded-lg">
-                      <Trophy className="h-4 w-4 text-yellow-400" />
-                    </div>
-                    <span className="text-sm text-gray-300 font-medium">Climb Leaderboards</span>
-                  </div>
-                </div>
-
-                {/* CTA Button */}
-                <button 
-                  onClick={() => setOnboardingModalOpen(true)}
-                  className="group/button block w-full overflow-hidden px-6 py-3 bg-gradient-to-r from-green-500 to-blue-500 rounded-xl text-white font-bold text-center hover:scale-[1.02] hover:shadow-xl hover:shadow-green-500/25 transition-all duration-300"
+                <Link 
+                  to="/ranking"
+                  className="flex items-center gap-1 px-3 py-1 bg-cyan-500/10 border border-cyan-500/30 rounded-md text-cyan-400 hover:text-cyan-300 hover:bg-cyan-500/20 transition-all duration-300 text-sm"
                 >
-                  <div className="relative flex items-center justify-center gap-2">
-                    <BookOpen className="h-4 w-4" />
-                    <span className="text-sm">{t('battlesPage.howTo.button')}</span>
-                  </div>
-                  
-                  {/* Button glow effect */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-blue-500/0 via-green-500/20 to-blue-500/0 opacity-0 group-hover/button:opacity-100 transition-opacity duration-300"></div>
-                </button>
+                  <span>{t('battlesPage.rankings.viewFullButton')}</span>
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
               </div>
-            </Card>
+
+              {/* Rankings Content */}
+              {rankingsLoading ? (
+                <div className="text-center text-gray-400 py-8">
+                  <div className="animate-spin w-8 h-8 border-2 border-cyan-500 border-t-transparent rounded-full mx-auto mb-3"></div>
+                  <p className="text-sm">{t('battleFilters.loading')}</p>
+                </div>
+              ) : topRankings.length > 0 ? (
+                <div className="space-y-3">
+                  {topRankings.map((entry: RankingEntry, index) => {
+                    const getPositionIcon = (position: number) => {
+                      switch (position) {
+                        case 1:
+                          return <Crown className="h-4 w-4 text-yellow-400" />;
+                        case 2:
+                          return <Medal className="h-4 w-4 text-gray-300" />;
+                        case 3:
+                          return <Medal className="h-4 w-4 text-amber-500" />;
+                        default:
+                          return <span className="text-sm font-bold text-gray-400">#{position}</span>;
+                      }
+                    };
+
+                    const getRatingColor = (rankColor: string) => {
+                      switch (rankColor) {
+                        case 'rainbow':
+                        case 'purple':
+                          return 'text-purple-400';
+                        case 'blue':
+                          return 'text-blue-400';
+                        case 'green':
+                          return 'text-green-400';
+                        case 'yellow':
+                          return 'text-yellow-400';
+                        case 'gray':
+                          return 'text-gray-400';
+                        default:
+                          return 'text-white';
+                      }
+                    };
+
+                    return (
+                      <Link 
+                        key={entry.user_id}
+                        to={`/profile/${entry.user_id}`}
+                        className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800/30 transition-all duration-300 group"
+                      >
+                        <div className="flex items-center justify-center w-8 h-8">
+                          {getPositionIcon(entry.position)}
+                        </div>
+                        
+                        <img
+                          src={entry.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${entry.user_id}`}
+                          alt={entry.username}
+                          className="w-10 h-10 rounded-lg object-cover border border-gray-600/50 group-hover:border-cyan-500/50 transition-colors"
+                        />
+                        
+                        <div className="flex-1 min-w-0">
+                          <div className="font-medium text-white truncate text-sm group-hover:text-cyan-400 transition-colors">
+                            {entry.username}
+                          </div>
+                          <div className={`text-sm font-bold ${getRatingColor(entry.rank_color)}`}>
+                            {entry.season_points} BP
+                          </div>
+                        </div>
+                      </Link>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <Users className="h-8 w-8 text-gray-600 mx-auto mb-3" />
+                  <p className="text-gray-400 text-sm">{t('battleFilters.noRankings')}</p>
+                </div>
+              )}
+            </div>
+
+
           </aside>
         </div>
       </div>
