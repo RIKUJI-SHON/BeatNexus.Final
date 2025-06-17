@@ -23,14 +23,8 @@ const RankingPage: React.FC = () => {
     fetchVoterRankings 
   } = useRankingStore();
   
-  const [activeTab, setActiveTab] = useState<TabType>('player');
-  const [searchQuery, setSearchQuery] = useState('');
-
-  const handleTabChange = (tab: TabType) => {
-    setActiveTab(tab);
-    // Track ranking view event
-    trackBeatNexusEvents.rankingView(tab === 'player' ? 'rating' : 'voter');
-  };
+  const [playerSearchQuery, setPlayerSearchQuery] = useState('');
+  const [voterSearchQuery, setVoterSearchQuery] = useState('');
 
   useEffect(() => {
     fetchRankings();
@@ -40,14 +34,13 @@ const RankingPage: React.FC = () => {
     trackBeatNexusEvents.rankingView('rating');
   }, [fetchRankings, fetchVoterRankings]);
 
-  // データとローディング状態を取得
-  const currentData = activeTab === 'player' ? rankings : voterRankings;
-  const currentLoading = activeTab === 'player' ? loading : voterLoading;
-  const currentError = activeTab === 'player' ? error : voterError;
-
   // フィルタリング
-  const filteredData = currentData.filter(entry => 
-    entry.username.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredPlayerData = rankings.filter(entry => 
+    entry.username.toLowerCase().includes(playerSearchQuery.toLowerCase())
+  );
+  
+  const filteredVoterData = voterRankings.filter(entry => 
+    entry.username.toLowerCase().includes(voterSearchQuery.toLowerCase())
   );
 
   const getPositionDisplay = (position: number) => {
@@ -116,7 +109,7 @@ const RankingPage: React.FC = () => {
     return 'from-gray-800/30 via-gray-900/20 to-transparent';
   };
 
-  if (currentError) {
+  if (error || voterError) {
     return (
       <div className="min-h-screen bg-gray-950 py-10">
         <div className="container mx-auto px-4">
@@ -125,9 +118,12 @@ const RankingPage: React.FC = () => {
               <Trophy className="h-10 w-10 text-red-500" />
             </div>
             <h3 className="text-xl font-semibold text-white mb-4">{t('rankingPage.error.title')}</h3>
-            <p className="text-gray-400 mb-6">{currentError}</p>
+            <p className="text-gray-400 mb-6">{error || voterError}</p>
             <button
-              onClick={() => activeTab === 'player' ? fetchRankings() : fetchVoterRankings()}
+              onClick={() => {
+                fetchRankings();
+                fetchVoterRankings();
+              }}
               className="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
             >
               {t('rankingPage.error.tryAgain')}
@@ -148,243 +144,205 @@ const RankingPage: React.FC = () => {
             <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 via-purple-500/20 to-pink-500/20 blur-3xl transform -translate-y-4"></div>
             
             <div className="relative">
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6">
-                <span className="bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-                  {t('rankingPage.title')}
-                </span>
-              </h1>
-              
-              <div className="flex items-center justify-center gap-3 sm:gap-4 mb-4 sm:mb-6">
-                <div className="w-12 sm:w-16 h-px bg-gradient-to-r from-transparent via-cyan-500 to-transparent"></div>
-                <div className="p-2 sm:p-3 bg-gradient-to-r from-yellow-500/20 to-orange-500/20 rounded-2xl border border-yellow-500/30 backdrop-blur-sm">
-                  <Trophy className="h-6 w-6 sm:h-8 sm:w-8 text-yellow-400" />
-                </div>
-                <div className="w-12 sm:w-16 h-px bg-gradient-to-r from-transparent via-purple-500 to-transparent"></div>
+              <div className="mb-4 sm:mb-6">
+                <img 
+                  src="/images/ranking-title-badge.png" 
+                  alt="Ranking"
+                  className="mx-auto max-w-xs sm:max-w-sm md:max-w-md h-auto"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* 2カラムレイアウト */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
+
+          {/* プレイヤーランキング（左カラム） */}
+          <div className="space-y-6">
+            {/* ヘッダー */}
+            <div className="text-center">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 rounded-xl border border-cyan-500/20 backdrop-blur-sm mb-4">
+                <Star className="h-5 w-5 text-cyan-400" />
+                <h2 className="text-lg font-bold text-cyan-100">{t('rankingPage.tabs.playerRankings')}</h2>
               </div>
               
-              <p className="text-gray-300 max-w-3xl mx-auto text-base sm:text-lg leading-relaxed px-4">
-                {t('rankingPage.description')}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Tabs */}
-        <div className="mb-6 sm:mb-8">
-          <div className="flex justify-center">
-            <div className="relative bg-gray-900/50 backdrop-blur-sm p-1 sm:p-2 rounded-xl sm:rounded-2xl border border-gray-700/50 shadow-2xl w-full max-w-md sm:max-w-none">
-              {/* アクティブタブの背景アニメーション */}
-              <div 
-                className={`absolute top-1 bottom-1 left-1 sm:top-2 sm:bottom-2 sm:left-2 rounded-lg sm:rounded-xl transition-all duration-300 ease-out ${
-                  activeTab === 'player' 
-                    ? 'bg-gradient-to-r from-cyan-500 to-blue-500 shadow-lg shadow-cyan-500/25' 
-                    : 'bg-gradient-to-r from-purple-500 to-pink-500 shadow-lg shadow-purple-500/25'
-                }`}
-                style={{ 
-                  width: 'calc(50% - 4px)',
-                  transform: activeTab === 'player' ? 'translateX(0)' : 'translateX(calc(100% + 4px))'
-                }}
-              />
-              
-              <div className="relative flex">
-                <button
-                  onClick={() => handleTabChange('player')}
-                  className={`px-4 py-3 sm:px-8 sm:py-4 rounded-lg sm:rounded-xl font-semibold transition-all duration-300 flex items-center gap-2 sm:gap-3 relative z-10 flex-1 justify-center ${
-                    activeTab === 'player'
-                      ? 'text-white'
-                      : 'text-gray-400 hover:text-white'
-                  }`}
-                >
-                  <div className={`p-1 sm:p-2 rounded-md sm:rounded-lg transition-all duration-300 ${
-                    activeTab === 'player' 
-                      ? 'bg-white/20 backdrop-blur-sm' 
-                      : 'bg-gray-800/50'
-                  }`}>
-                    <Star className="h-4 w-4 sm:h-5 sm:w-5" />
-                  </div>
-                  <span className="text-xs sm:text-sm font-bold tracking-wide">
-                    {t('rankingPage.tabs.playerRankings')}
-                  </span>
-                </button>
-                
-                <button
-                  onClick={() => handleTabChange('voter')}
-                  className={`px-4 py-3 sm:px-8 sm:py-4 rounded-lg sm:rounded-xl font-semibold transition-all duration-300 flex items-center gap-2 sm:gap-3 relative z-10 flex-1 justify-center ${
-                    activeTab === 'voter'
-                      ? 'text-white'
-                      : 'text-gray-400 hover:text-white'
-                  }`}
-                >
-                  <div className={`p-1 sm:p-2 rounded-md sm:rounded-lg transition-all duration-300 ${
-                    activeTab === 'voter' 
-                      ? 'bg-white/20 backdrop-blur-sm' 
-                      : 'bg-gray-800/50'
-                  }`}>
-                    <Vote className="h-4 w-4 sm:h-5 sm:w-5" />
-                  </div>
-                  <span className="text-xs sm:text-sm font-bold tracking-wide">
-                    {t('rankingPage.tabs.voterRankings')}
-                  </span>
-                </button>
+              {/* 検索欄 */}
+              <div className="relative max-w-sm mx-auto mb-6">
+                <input
+                  type="text"
+                  value={playerSearchQuery}
+                  onChange={(e) => setPlayerSearchQuery(e.target.value)}
+                  placeholder={t('rankingPage.searchPlaceholder')}
+                  className="w-full bg-gray-800/50 border border-gray-700 rounded-lg pl-10 pr-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-cyan-500/50 focus:bg-gray-800 transition-all backdrop-blur-sm text-sm"
+                />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               </div>
             </div>
-          </div>
-        </div>
 
-        {/* Tab Description */}
-        <div className="text-center mb-8 sm:mb-10">
-          <div className="relative overflow-hidden">
-            <div 
-              className={`transition-all duration-500 ease-in-out ${
-                activeTab === 'player' ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform -translate-y-4'
-              }`}
-              style={{ display: activeTab === 'player' ? 'block' : 'none' }}
-            >
-              <div className="inline-flex items-center gap-2 sm:gap-3 px-4 py-2 sm:px-6 sm:py-3 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 rounded-xl sm:rounded-2xl border border-cyan-500/20 backdrop-blur-sm">
-                <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse"></div>
-                <p className="text-cyan-100 font-medium text-xs sm:text-sm">
-                  {t('rankingPage.playerDescription')}
-                </p>
-                <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse" style={{ animationDelay: '0.5s' }}></div>
+            {/* プレイヤーランキングリスト */}
+            {loading ? (
+              <div className="text-center py-12">
+                <div className="animate-spin w-12 h-12 border-4 border-cyan-500 border-t-transparent rounded-full mx-auto mb-4"></div>
+                <p className="text-gray-400">{t('rankingPage.loading')}</p>
               </div>
-            </div>
-            
-            <div 
-              className={`transition-all duration-500 ease-in-out ${
-                activeTab === 'voter' ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform -translate-y-4'
-              }`}
-              style={{ display: activeTab === 'voter' ? 'block' : 'none' }}
-            >
-              <div className="inline-flex items-center gap-2 sm:gap-3 px-4 py-2 sm:px-6 sm:py-3 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-xl sm:rounded-2xl border border-purple-500/20 backdrop-blur-sm">
-                <div className="w-2 h-2 bg-purple-400 rounded-full animate-pulse"></div>
-                <p className="text-purple-100 font-medium text-xs sm:text-sm">
-                  {t('rankingPage.voterDescription')}
-                </p>
-                <div className="w-2 h-2 bg-pink-400 rounded-full animate-pulse" style={{ animationDelay: '0.5s' }}></div>
-              </div>
-            </div>
-          </div>
-        </div>
+            ) : filteredPlayerData.length > 0 ? (
+              <div className="space-y-3">
+                {filteredPlayerData.slice(0, 10).map((entry) => {
+                  const isTopThree = entry.position <= 3;
+                  return (
+                    <div 
+                      key={entry.user_id}
+                      className={`relative group cursor-pointer transform hover:-translate-y-1 transition-all duration-300 ${
+                        isTopThree ? 'hover:shadow-xl hover:shadow-cyan-500/20' : 'hover:shadow-lg hover:shadow-cyan-500/10'
+                      }`}
+                    >
+                      <div className={`relative bg-gradient-to-r ${getEntryGradient(entry.position)} backdrop-blur-sm rounded-xl border ${
+                        isTopThree 
+                          ? 'border-cyan-500/30 shadow-lg shadow-cyan-500/10' 
+                          : 'border-gray-700/50'
+                      } overflow-hidden`}>
+                        
+                        <Link to={`/profile/${entry.user_id}`} className="block p-4">
+                          <div className="flex items-center gap-4">
+                            <div className="flex-shrink-0">
+                              {getPositionDisplay(entry.position)}
+                            </div>
 
-        {/* Search */}
-        <div className="mb-6 sm:mb-8">
-          <div className="relative max-w-sm sm:max-w-md mx-auto">
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder={t('rankingPage.searchPlaceholder')}
-              className="w-full bg-gray-800/50 border border-gray-700 rounded-xl pl-10 sm:pl-12 pr-4 py-3 sm:py-4 text-white placeholder-gray-400 focus:outline-none focus:border-cyan-500/50 focus:bg-gray-800 transition-all backdrop-blur-sm text-sm sm:text-base"
-            />
-            <Search className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-gray-400" />
-          </div>
-        </div>
-
-        {/* Rankings List */}
-        {currentLoading ? (
-          <div className="text-center py-12 sm:py-16">
-            <div className="animate-spin w-12 h-12 sm:w-16 sm:h-16 border-4 border-cyan-500 border-t-transparent rounded-full mx-auto mb-4 sm:mb-6"></div>
-            <p className="text-gray-400 text-base sm:text-lg">{t('rankingPage.loading')}</p>
-          </div>
-        ) : filteredData.length > 0 ? (
-          <div className="max-w-4xl mx-auto space-y-3 sm:space-y-4">
-            {filteredData.map((entry, index) => {
-              const isTopThree = entry.position <= 3;
-              const isTopTen = entry.position <= 10;
-              return (
-                <div 
-                  key={entry.user_id}
-                  className={`relative group cursor-pointer transform hover:-translate-y-1 hover:scale-[1.02] transition-all duration-300 ${
-                    isTopThree ? 'hover:shadow-2xl hover:shadow-yellow-500/20' : 'hover:shadow-xl hover:shadow-cyan-500/10'
-                  }`}
-                >
-                  {/* Background Card */}
-                  <div className={`relative bg-gradient-to-r ${getEntryGradient(entry.position)} backdrop-blur-sm rounded-xl sm:rounded-2xl border ${
-                    isTopThree 
-                      ? 'border-yellow-500/30 shadow-lg shadow-yellow-500/10' 
-                      : isTopTen 
-                        ? 'border-cyan-500/20 shadow-md shadow-cyan-500/5'
-                        : 'border-gray-700/50'
-                  } overflow-hidden`}>
-                    
-                    {/* Animated Background Pattern */}
-                    <div className="absolute inset-0 opacity-5">
-                      <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white/10 to-transparent transform rotate-45 translate-x-full group-hover:translate-x-[-100%] transition-transform duration-1000"></div>
-                    </div>
-
-                    <Link to={`/profile/${entry.user_id}`} className="block p-4 sm:p-6">
-                      <div className="flex items-center gap-3 sm:gap-6">
-                        {/* Position */}
-                        <div className="flex-shrink-0">
-                          {getPositionDisplay(entry.position)}
-                        </div>
-
-                        {/* User Avatar & Info */}
-                        <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
-                          <img
-                            src={entry.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${entry.user_id}`}
-                            alt={entry.username}
-                            className="w-12 h-12 sm:w-16 sm:h-16 rounded-full object-cover border-2 sm:border-4 border-gray-700 group-hover:border-cyan-500/50 transition-colors shadow-lg"
-                          />
-                          <div className="flex-1 min-w-0">
-                            <h3 className="text-base sm:text-xl font-bold text-white group-hover:text-cyan-400 transition-colors truncate">
-                              {entry.username}
-                            </h3>
-                            <div className="mt-1">
-                              {getTierBadge((entry as any).rank_name, (entry as any).rank_color)}
+                            <div className="flex items-center gap-3 flex-1 min-w-0">
+                              <img
+                                src={entry.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${entry.user_id}`}
+                                alt={entry.username}
+                                className="w-12 h-12 rounded-full object-cover border-2 border-gray-700 group-hover:border-cyan-500/50 transition-colors"
+                              />
+                              <div className="flex-1 min-w-0">
+                                <h3 className="font-bold text-white text-sm mb-1 truncate group-hover:text-cyan-400 transition-colors">
+                                  {entry.username}
+                                </h3>
+                                
+                                <div className="flex items-center gap-3 text-xs">
+                                  <div className="flex items-center gap-1">
+                                    <span className="text-gray-400">{t('rankingPage.rating')}:</span>
+                                    <span className={`font-bold ${getRatingColor(entry.rating || 0)}`}>
+                                      {entry.rating || 0}
+                                    </span>
+                                  </div>
+                                  {getTierBadge(entry.rank_name || 'Unranked', entry.rank_color || 'gray')}
+                                </div>
+                              </div>
                             </div>
                           </div>
-                        </div>
-
-                        {/* Rating/Vote Count */}
-                        <div className="flex-shrink-0 text-right">
-                          {activeTab === 'player' ? (
-                            <div>
-                              <div className={`text-xl sm:text-3xl font-bold mb-1 ${getRatingColor((entry as any).rating)}`}>
-                                {(entry as any).rating}
-                              </div>
-                              <div className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm text-gray-400">
-                                <Star className="h-3 w-3 sm:h-4 sm:w-4" />
-                                <span className="hidden sm:inline">{t('profilePage.seasonRating')}</span>
-                                <span className="sm:hidden">レート</span>
-                              </div>
-                            </div>
-                          ) : (
-                            <div>
-                              <div className={`text-xl sm:text-3xl font-bold mb-1 ${getVoteCountColor((entry as any).vote_count)}`}>
-                                {(entry as any).vote_count}
-                              </div>
-                              <div className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm text-gray-400">
-                                <Vote className="h-3 w-3 sm:h-4 sm:w-4" />
-                                <span className="hidden sm:inline">{t('rankingPage.table.voteCount')}</span>
-                                <span className="sm:hidden">投票</span>
-                              </div>
-                            </div>
-                          )}
-                        </div>
+                        </Link>
                       </div>
-                    </Link>
-                  </div>
-                </div>
-              );
-            })}
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <Users className="h-12 w-12 text-gray-600 mx-auto mb-4" />
+                <p className="text-gray-400">
+                  {playerSearchQuery ? t('rankingPage.noSearchResults') : t('rankingPage.noData')}
+                </p>
+              </div>
+            )}
           </div>
-        ) : (
-          <div className="text-center py-12 sm:py-16">
-            <div className="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-6 sm:mb-8 rounded-full bg-gray-800 flex items-center justify-center">
-              <Users className="h-10 w-10 sm:h-12 sm:w-12 text-gray-600" />
+
+          {/* 投票者ランキング（右カラム） */}
+          <div className="space-y-6">
+            {/* ヘッダー */}
+            <div className="text-center">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-xl border border-purple-500/20 backdrop-blur-sm mb-4">
+                <Vote className="h-5 w-5 text-purple-400" />
+                <h2 className="text-lg font-bold text-purple-100">{t('rankingPage.tabs.voterRankings')}</h2>
+              </div>
+              
+              {/* 検索欄 */}
+              <div className="relative max-w-sm mx-auto mb-6">
+                <input
+                  type="text"
+                  value={voterSearchQuery}
+                  onChange={(e) => setVoterSearchQuery(e.target.value)}
+                  placeholder={t('rankingPage.searchPlaceholder')}
+                  className="w-full bg-gray-800/50 border border-gray-700 rounded-lg pl-10 pr-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-purple-500/50 focus:bg-gray-800 transition-all backdrop-blur-sm text-sm"
+                />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              </div>
             </div>
-            <h3 className="text-xl sm:text-2xl font-semibold text-white mb-4">
-              {searchQuery ? t('rankingPage.noUsersFound') : t('rankingPage.noRankingsYet')}
-            </h3>
-            <p className="text-gray-400 text-base sm:text-lg">
-              {searchQuery 
-                ? t('rankingPage.tryDifferentSearch')
-                : t('rankingPage.rankingsWillAppear')
-              }
-            </p>
+
+            {/* 投票者ランキングリスト */}
+            {voterLoading ? (
+              <div className="text-center py-12">
+                <div className="animate-spin w-12 h-12 border-4 border-purple-500 border-t-transparent rounded-full mx-auto mb-4"></div>
+                <p className="text-gray-400">{t('rankingPage.loading')}</p>
+              </div>
+            ) : filteredVoterData.length > 0 ? (
+              <div className="space-y-3">
+                {filteredVoterData.slice(0, 10).map((entry) => {
+                  const isTopThree = entry.position <= 3;
+                  return (
+                    <div 
+                      key={entry.user_id}
+                      className={`relative group cursor-pointer transform hover:-translate-y-1 transition-all duration-300 ${
+                        isTopThree ? 'hover:shadow-xl hover:shadow-purple-500/20' : 'hover:shadow-lg hover:shadow-purple-500/10'
+                      }`}
+                    >
+                      <div className={`relative bg-gradient-to-r ${getEntryGradient(entry.position)} backdrop-blur-sm rounded-xl border ${
+                        isTopThree 
+                          ? 'border-purple-500/30 shadow-lg shadow-purple-500/10' 
+                          : 'border-gray-700/50'
+                      } overflow-hidden`}>
+                        
+                        <Link to={`/profile/${entry.user_id}`} className="block p-4">
+                          <div className="flex items-center gap-4">
+                            <div className="flex-shrink-0">
+                              {getPositionDisplay(entry.position)}
+                            </div>
+
+                            <div className="flex items-center gap-3 flex-1 min-w-0">
+                              <img
+                                src={entry.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${entry.user_id}`}
+                                alt={entry.username}
+                                className="w-12 h-12 rounded-full object-cover border-2 border-gray-700 group-hover:border-purple-500/50 transition-colors"
+                              />
+                              <div className="flex-1 min-w-0">
+                                <h3 className="font-bold text-white text-sm mb-1 truncate group-hover:text-purple-400 transition-colors">
+                                  {entry.username}
+                                </h3>
+                                
+                                <div className="flex items-center gap-3 text-xs">
+                                  <div className="flex items-center gap-1">
+                                    <span className="text-gray-400">{t('rankingPage.votes')}:</span>
+                                    <span className={`font-bold ${getVoteCountColor(entry.vote_count || 0)}`}>
+                                      {entry.vote_count || 0}
+                                    </span>
+                                  </div>
+                                  <span className="text-purple-400 font-medium text-xs">
+                                    {((entry.vote_count || 0) > 100 ? 'Expert' : 
+                                      (entry.vote_count || 0) > 50 ? 'Advanced' : 
+                                      (entry.vote_count || 0) > 25 ? 'Regular' : 
+                                      (entry.vote_count || 0) > 10 ? 'Active' : 'Beginner')}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </Link>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <Users className="h-12 w-12 text-gray-600 mx-auto mb-4" />
+                <p className="text-gray-400">
+                  {voterSearchQuery ? t('rankingPage.noSearchResults') : t('rankingPage.noData')}
+                </p>
+              </div>
+            )}
           </div>
-        )}
+        </div>
       </div>
     </div>
   );
