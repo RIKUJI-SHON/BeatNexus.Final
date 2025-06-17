@@ -800,7 +800,7 @@ video {
 /* シンプルバトルカードスタイル（グラデーション枠なし） */
 .battle-card-simple {
   position: relative;
-  background-color: #181818;
+  background-color: rgb(3 7 18);
   border-radius: 30px;
   transition: all 0.3s ease;
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -811,6 +811,22 @@ video {
 
 .battle-card-simple:hover {
   transform: translateY(-2px);
+  background: linear-gradient(135deg, rgb(3 7 18) 0%, rgb(15 23 42) 50%, rgb(3 7 18) 100%);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 0 20px rgba(59, 130, 246, 0.15),
+    0 0 40px rgba(147, 51, 234, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+/* フィルターカード用：ホバーエフェクトを無効化 */
+.battle-card-simple.cursor-default:hover {
+  transform: none;
+  background: rgb(3 7 18);
+  box-shadow: 
+    0 4px 20px rgba(0, 0, 0, 0.3),
+    0 0 10px rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .battle-card-simple__content {
