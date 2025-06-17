@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { X } from 'lucide-react';
+import { X, ThumbsUp, MessageCircle } from 'lucide-react';
+import { Button } from './Button';
 import { useTranslation } from 'react-i18next';
 
 interface VoteCommentModalProps {
@@ -27,12 +28,22 @@ export const VoteCommentModal: React.FC<VoteCommentModalProps> = ({
     setComment('');
   };
 
+  const handleVoteOnly = () => {
+    onVote();
+    setComment('');
+  };
+
   const handleClose = () => {
     setComment('');
     onClose();
   };
 
   if (!isOpen) return null;
+
+  const playerColor = player === 'A' ? 'cyan' : 'pink';
+  const gradientClass = player === 'A' 
+    ? 'from-cyan-600 to-cyan-500 hover:from-cyan-500 hover:to-cyan-400' 
+    : 'from-pink-600 to-pink-500 hover:from-pink-500 hover:to-pink-400';
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
@@ -87,26 +98,53 @@ export const VoteCommentModal: React.FC<VoteCommentModalProps> = ({
             </div>
           </div>
 
-          {/* Action Button */}
-          <div className="flex justify-center">
-            <button
-              onClick={handleVote}
-              disabled={isLoading}
-              className={`cursor-pointer transition-all text-white px-6 py-2 rounded-lg border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px] active:border-b-[2px] active:brightness-90 active:translate-y-[2px] disabled:opacity-50 disabled:cursor-not-allowed ${
-                player === 'A' 
-                  ? 'bg-cyan-500 border-cyan-600' 
-                  : 'bg-pink-500 border-pink-600'
-              }`}
-            >
-              {isLoading ? (
-                <div className="flex items-center gap-2">
+          {/* Action Buttons */}
+          <div className="flex gap-3">
+            {/* Vote with Comment Button */}
+            {comment.trim() && (
+              <Button
+                onClick={handleVote}
+                disabled={isLoading}
+                className={`bg-gradient-to-r ${gradientClass} shadow-lg flex-1`}
+                leftIcon={isLoading ? (
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                  投票中...
-                </div>
+                ) : (
+                  <MessageCircle className="h-4 w-4" />
+                )}
+              >
+                コメント付きで投票
+              </Button>
+            )}
+
+            {/* Vote Only Button */}
+            <Button
+              onClick={handleVoteOnly}
+              disabled={isLoading}
+              variant={comment.trim() ? "outline" : "primary"}
+              className={comment.trim() ? 
+                "border-gray-600 text-gray-300 hover:bg-gray-700 flex-1" : 
+                `bg-gradient-to-r ${gradientClass} shadow-lg flex-1`
+              }
+              leftIcon={isLoading ? (
+                <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
               ) : (
-                '投票する'
+                <ThumbsUp className="h-4 w-4" />
               )}
-            </button>
+            >
+              {comment.trim() ? "投票のみ" : "投票する"}
+            </Button>
+          </div>
+
+          {/* Cancel Button */}
+          <div className="mt-3">
+            <Button
+              onClick={handleClose}
+              disabled={isLoading}
+              variant="ghost"
+              className="w-full text-gray-400 hover:text-white hover:bg-gray-700"
+            >
+              キャンセル
+            </Button>
           </div>
         </div>
       </div>
