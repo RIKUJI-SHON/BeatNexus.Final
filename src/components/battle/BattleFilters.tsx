@@ -109,7 +109,11 @@ export const BattleFilters: React.FC<BattleFiltersProps> = ({
           className="group relative flex flex-col items-center p-4 bg-gray-800/60 border border-gray-600/50 rounded-xl hover:border-purple-500/50 hover:bg-gray-800/80 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-purple-500/20"
         >
           <div className="w-16 h-16 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-full border border-purple-500/30 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300">
-            <UserCircle className="h-8 w-8 text-purple-400" />
+            <img 
+              src="/images/Profile.png" 
+              alt="Profile"
+              className="h-8 w-8 object-contain filter brightness-110 group-hover:brightness-125 transition-all duration-300"
+            />
           </div>
           <span className="text-sm font-medium text-gray-300 group-hover:text-white transition-colors">
             プロフィール
