@@ -13,7 +13,13 @@ const GetStartedSlide: React.FC<GetStartedSlideProps> = () => {
       <div className="onboarding-content">
         {/* タイトル */}
         <div className="text-center">
-          <div className="text-4xl mb-3">🌱</div>
+          <div className="flex justify-center mb-3">
+            <img 
+              src="/images/VS.png" 
+              alt="VS"
+              className="w-12 h-12 object-contain filter brightness-110"
+            />
+          </div>
           <h2 className="text-2xl font-bold text-white mb-6">
             {t('onboarding.slide4.title')}
           </h2>

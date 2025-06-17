@@ -164,11 +164,11 @@ const LatestBattles: React.FC = () => {
                     const getPositionIcon = (position: number) => {
                       switch (position) {
                         case 1:
-                          return <Crown className="h-4 w-4 text-yellow-400" />;
+                          return <img src="/images/1st-place.png" alt="1st Place" className="h-6 w-6 object-contain" />;
                         case 2:
-                          return <Medal className="h-4 w-4 text-gray-300" />;
+                          return <img src="/images/2nd-place.png" alt="2nd Place" className="h-6 w-6 object-contain" />;
                         case 3:
-                          return <Medal className="h-4 w-4 text-amber-500" />;
+                          return <img src="/images/3rd-place.png" alt="3rd Place" className="h-6 w-6 object-contain" />;
                         default:
                           return <span className="text-sm font-bold text-gray-400">#{position}</span>;
                       }

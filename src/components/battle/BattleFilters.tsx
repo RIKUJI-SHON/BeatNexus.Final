@@ -99,23 +99,23 @@ export const BattleFilters: React.FC<BattleFiltersProps> = ({
     <div className="grid grid-cols-12 gap-6">
       {/* メインコンテンツエリア */}
       <div className="col-span-12">
-        <div className="space-y-6">
+        <div className="space-y-3">
           {/* アクションボタン群 */}
-          <div className="flex items-center justify-center gap-4 max-w-2xl mx-auto">
+          <div className="flex items-center justify-center gap-6 max-w-4xl mx-auto">
         
         {/* プロフィールボタン */}
         <button
           onClick={handleProfileClick}
-          className="group flex flex-col items-center justify-end p-4 h-32 transition-all duration-300 hover:scale-105"
+          className="group flex flex-col items-center justify-end p-6 h-40 transition-all duration-300 hover:scale-105"
         >
-          <div className="w-16 h-16 flex items-center justify-center mb-1 group-hover:scale-110 transition-transform duration-300">
+          <div className="w-20 h-20 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform duration-300">
             <img 
               src="/images/Profile.png" 
               alt="Profile"
-              className="h-8 w-8 object-contain filter brightness-110 group-hover:brightness-150 group-hover:drop-shadow-lg transition-all duration-300"
+              className="h-12 w-12 object-contain filter brightness-110 group-hover:brightness-150 group-hover:drop-shadow-lg transition-all duration-300"
             />
           </div>
-          <span className="text-sm font-medium text-gray-300 group-hover:text-white group-hover:drop-shadow-lg transition-colors">
+          <span className="text-base font-medium text-gray-300 group-hover:text-white group-hover:drop-shadow-lg transition-colors">
             {t('battleFilters.buttons.profile')}
           </span>
         </button>
@@ -123,16 +123,16 @@ export const BattleFilters: React.FC<BattleFiltersProps> = ({
         {/* バトルスタートボタン（中央・メイン） */}
         <button
           onClick={handleBattleStartClick}
-          className="group flex flex-col items-center justify-end p-8 h-40 transition-all duration-300 hover:scale-110 hover:drop-shadow-2xl"
+          className="group flex flex-col items-center justify-end p-10 h-48 transition-all duration-300 hover:scale-110 hover:drop-shadow-2xl"
         >
-          <div className="w-28 h-28 flex items-center justify-center mb-2 group-hover:scale-110 transition-all duration-300">
+          <div className="w-32 h-32 flex items-center justify-center mb-3 group-hover:scale-110 transition-all duration-300">
             <img 
               src="/images/VS.png" 
               alt="Battle Start"
-              className="w-16 h-16 object-contain filter brightness-110 group-hover:brightness-200 group-hover:drop-shadow-2xl transition-all duration-300"
+              className="w-20 h-20 object-contain filter brightness-110 group-hover:brightness-200 group-hover:drop-shadow-2xl transition-all duration-300"
             />
           </div>
-          <span className="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400 group-hover:from-cyan-200 group-hover:to-purple-200 group-hover:drop-shadow-xl transition-all duration-300">
+          <span className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400 group-hover:from-cyan-200 group-hover:to-purple-200 group-hover:drop-shadow-xl transition-all duration-300">
             {t('battleFilters.buttons.battleStart')}
           </span>
         </button>
@@ -140,12 +140,16 @@ export const BattleFilters: React.FC<BattleFiltersProps> = ({
         {/* トーナメントボタン */}
         <button
           onClick={handleTournamentClick}
-          className="group flex flex-col items-center justify-end p-4 h-32 transition-all duration-300 hover:scale-105"
+          className="group flex flex-col items-center justify-end p-6 h-40 transition-all duration-300 hover:scale-105"
         >
-          <div className="w-16 h-16 flex items-center justify-center mb-1 group-hover:scale-110 transition-transform duration-300">
-            <Award className="h-8 w-8 text-yellow-400 group-hover:text-yellow-300 group-hover:drop-shadow-lg transition-all duration-300" />
+          <div className="w-20 h-20 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform duration-300">
+            <img 
+              src="/images/Tournaments.png" 
+              alt="Tournament"
+              className="h-12 w-12 object-contain filter brightness-110 group-hover:brightness-150 group-hover:drop-shadow-lg transition-all duration-300"
+            />
           </div>
-          <span className="text-sm font-medium text-gray-300 group-hover:text-white group-hover:drop-shadow-lg transition-colors">
+          <span className="text-base font-medium text-gray-300 group-hover:text-white group-hover:drop-shadow-lg transition-colors">
             {t('battleFilters.buttons.tournament')}
           </span>
         </button>

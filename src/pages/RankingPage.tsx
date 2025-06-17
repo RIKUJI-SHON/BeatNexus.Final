@@ -47,20 +47,32 @@ const RankingPage: React.FC = () => {
     switch (position) {
       case 1:
         return (
-          <div className="flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full shadow-lg shadow-yellow-500/30">
-            <Crown className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
+          <div className="flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20">
+            <img 
+              src="/images/1st-place.png" 
+              alt="1st Place"
+              className="h-12 w-12 sm:h-16 sm:w-16 object-contain"
+            />
           </div>
         );
       case 2:
         return (
-          <div className="flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-gray-300 to-gray-500 rounded-full shadow-lg shadow-gray-400/30">
-            <Medal className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
+          <div className="flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20">
+            <img 
+              src="/images/2nd-place.png" 
+              alt="2nd Place"
+              className="h-12 w-12 sm:h-16 sm:w-16 object-contain"
+            />
           </div>
         );
       case 3:
         return (
-          <div className="flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-amber-500 to-amber-700 rounded-full shadow-lg shadow-amber-500/30">
-            <Medal className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
+          <div className="flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20">
+            <img 
+              src="/images/3rd-place.png" 
+              alt="3rd Place"
+              className="h-12 w-12 sm:h-16 sm:w-16 object-contain"
+            />
           </div>
         );
       default:
