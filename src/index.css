@@ -787,12 +787,34 @@ video {
 }
 
 .battle-card:hover {
-  filter: drop-shadow(0px 0px 30px rgba(209, 38, 197, 0.6));
+  transform: translateY(-2px);
 }
 
 .battle-card__content {
   position: relative;
   z-index: 2;
+  height: 100%;
+  width: 100%;
+}
+
+/* シンプルバトルカードスタイル（グラデーション枠なし） */
+.battle-card-simple {
+  position: relative;
+  background-color: #181818;
+  border-radius: 30px;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 
+    0 4px 20px rgba(0, 0, 0, 0.3),
+    0 0 10px rgba(255, 255, 255, 0.05);
+}
+
+.battle-card-simple:hover {
+  transform: translateY(-2px);
+}
+
+.battle-card-simple__content {
+  position: relative;
   height: 100%;
   width: 100%;
 }
