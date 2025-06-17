@@ -775,7 +775,7 @@ video {
 
 .battle-card::after {
   content: '';
-  background-color: #181818;
+  background-color: rgb(3 7 18);
   position: absolute;
   z-index: 1;
   transition: 0.3s ease;

@@ -61,7 +61,7 @@ function RouterContent() {
     <>
       <div className="min-h-screen">
         <Header />
-        <main id="main-content" className="w-full" role="main">
+        <main id="main-content" className="w-full pt-16" role="main">
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/battles" element={<BattlesPage />} />

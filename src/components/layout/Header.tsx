@@ -70,7 +70,7 @@ export const Header: React.FC = () => {
   const avatarUrl = userProfile?.avatar_url || user?.user_metadata?.avatar_url || getDefaultAvatarUrl(user?.id);
 
   return (
-    <header className="bg-gray-950 text-white border-b border-gray-800 sticky top-0 z-50">
+    <header className="bg-gray-950/95 backdrop-blur-md text-white border-b border-gray-800 fixed top-0 w-full z-50">
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
