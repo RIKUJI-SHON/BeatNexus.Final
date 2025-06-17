@@ -238,7 +238,7 @@ export const BattleCard: React.FC<BattleCardProps> = ({ battle }) => {
               >
                 <div className="flex items-center gap-2">
                   <Vote className="h-4 w-4" />
-                  {isExpired ? t('battleCard.votingEnded') : t('battleCard.voteNow')}
+                {isExpired ? t('battleCard.votingEnded') : t('battleCard.voteNow')}
                 </div>
               </GlowButton>
             </div>

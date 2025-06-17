@@ -341,6 +341,23 @@
       "title": "How BeatNexus Works",
       "description": "Learn how to post battles, vote, and climb the leaderboards.",
       "button": "Read the Guide"
+    },
+    "monthlyLimit": {
+      "title": "Monthly Submission Limit",
+      "currentStatus": "This Month's Status",
+      "remainingSubmissions": "Remaining Submissions",
+      "usedCount": "Used",
+      "limitCount": "Limit",
+      "resetDate": "Reset",
+      "submitVideo": "Submit Video",
+      "nearLimitWarning": "Running low on submissions",
+      "nearLimitMessage": "You can submit {count} more times",
+      "limitReached": "Monthly limit reached",
+      "limitReachedMessage": "Resets on {date}",
+      "limitReachedButton": "Submission limit reached",
+      "loginToCheck": "Login to check submission status",
+      "checkingStatus": "Checking monthly submission status...",
+      "qualityNote": "To maintain high-quality battles, you can submit up to 30 videos per month"
     }
   },
   "archivedBattleCard": {

@@ -179,7 +179,7 @@ const LatestBattles: React.FC = () => {
 
           {/* Rankings Sidebar - BattleCard統一デザイン */}
           <div className="lg:col-span-1">
-            <Card className="group relative bg-gradient-to-br from-gray-900 via-gray-850 to-gray-950 border border-gray-700/50 shadow-xl hover:shadow-2xl hover:shadow-yellow-500/10 transition-all duration-500 rounded-xl overflow-hidden backdrop-blur-sm sticky top-24">
+            <Card className="group relative bg-gradient-to-br from-gray-900 via-gray-850 to-gray-950 border border-gray-700/50 shadow-xl hover:shadow-2xl hover:shadow-yellow-500/10 transition-all duration-500 rounded-xl overflow-hidden backdrop-blur-sm sticky top-20 z-10">
               
               {/* Animated Background Pattern */}
               <div className="absolute inset-0 opacity-5">

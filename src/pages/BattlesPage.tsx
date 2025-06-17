@@ -19,6 +19,7 @@ import { RankingEntry } from '../types';
 import { useTranslation } from 'react-i18next';
 import { getRankColorClasses } from '../utils/rankUtils';
 import { useOnboardingStore } from '../store/onboardingStore';
+import { MonthlyLimitCard } from '../components/ui/SubmissionCooldownCard';
 
 const BattlesPage: React.FC = () => {
   const { t } = useTranslation();
@@ -307,7 +308,14 @@ const BattlesPage: React.FC = () => {
           </div>
         </section>
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 lg:items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 lg:items-start">
+          {/* Left Sidebar */}
+          <aside className="lg:col-span-1 space-y-6 lg:sticky lg:top-20 lg:h-fit z-10">
+            {/* Submission Cooldown Component */}
+            <MonthlyLimitCard />
+          </aside>
+
+          {/* Main Content */}
           <div className="lg:col-span-3">
             <BattleFilters
               sortBy={sortBy}
@@ -422,25 +430,19 @@ const BattlesPage: React.FC = () => {
             </div>
           </div>
 
-          <aside className="lg:col-span-1 space-y-6 lg:sticky lg:top-8 lg:h-fit">
+          {/* Right Sidebar */}
+          <aside className="lg:col-span-1 space-y-6 lg:sticky lg:top-20 lg:h-fit z-10">
             
             {/* Top Rankings - Direct Display */}
             <div>
-              {/* Header */}
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
+              {/* Header - Centered Title */}
+              <div className="text-center mb-4">
+                <div className="flex items-center justify-center gap-2 mb-2">
                   <Trophy className="h-5 w-5 text-yellow-400" />
                   <h2 className="text-lg font-bold text-yellow-400">
                     {t('battlesPage.rankings.titleCompact')}
                   </h2>
                 </div>
-                <Link 
-                  to="/ranking"
-                  className="flex items-center gap-1 px-3 py-1 bg-cyan-500/10 border border-cyan-500/30 rounded-md text-cyan-400 hover:text-cyan-300 hover:bg-cyan-500/20 transition-all duration-300 text-sm"
-                >
-                  <span>{t('battlesPage.rankings.viewFullButton')}</span>
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
               </div>
 
               {/* Rankings Content */}
@@ -515,6 +517,19 @@ const BattlesPage: React.FC = () => {
                 <div className="text-center py-8">
                   <Users className="h-8 w-8 text-gray-600 mx-auto mb-3" />
                   <p className="text-gray-400 text-sm">{t('battleFilters.noRankings')}</p>
+                </div>
+              )}
+              
+              {/* View All Button - Below Rankings */}
+              {topRankings.length > 0 && (
+                <div className="text-center mt-4">
+                  <Link 
+                    to="/ranking"
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 border border-cyan-500/30 rounded-lg text-cyan-400 hover:text-cyan-300 hover:bg-gradient-to-r hover:from-cyan-500/20 hover:to-blue-500/20 transition-all duration-300 text-sm font-medium"
+                  >
+                    <span>{t('battlesPage.rankings.viewFullButton')}</span>
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
                 </div>
               )}
             </div>

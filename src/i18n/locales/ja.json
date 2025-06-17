@@ -341,6 +341,23 @@
       "title": "BeatNexusの仕組み",
       "description": "バトルの投稿方法、投票方法、ランキングの登り方を学びましょう。",
       "button": "ガイドを読む"
+    },
+    "monthlyLimit": {
+      "title": "月間投稿制限",
+      "currentStatus": "今月の状況",
+      "remainingSubmissions": "残り投稿回数",
+      "usedCount": "使用済み",
+      "limitCount": "上限",
+      "resetDate": "リセット",
+      "submitVideo": "動画を投稿",
+      "nearLimitWarning": "残り少なくなっています",
+      "nearLimitMessage": "あと{count}回投稿できます",
+      "limitReached": "月間上限に達しました",
+      "limitReachedMessage": "{date}にリセットされます",
+      "limitReachedButton": "投稿上限に達しました",
+      "loginToCheck": "ログインして投稿状況を確認",
+      "checkingStatus": "月間投稿状況を確認中...",
+      "qualityNote": "品質の高いバトルを維持するため、月30回まで投稿可能です"
     }
   },
   "archivedBattleCard": {

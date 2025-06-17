@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Upload, X, Play, CheckCircle, Video, AlertCircle, Crown, Music, Mic, ArrowLeft, Shield, Settings, Clock } from 'lucide-react';
+import { Upload, X, Play, CheckCircle, Video, AlertCircle, Crown, Music, Mic, ArrowLeft, Shield, Settings } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
 import { useNavigate } from 'react-router-dom';
@@ -876,26 +876,7 @@ const PostPage: React.FC = () => {
                   </div>
                 </div>
 
-                {/* 24時間制限の表示 */}
-                {!canSubmit && (
-                  <div className="bg-yellow-500/10 border border-yellow-500/50 rounded-lg p-4">
-                    <div className="flex items-start gap-2">
-                      <Clock className="h-5 w-5 text-yellow-400 mt-0.5 flex-shrink-0" />
-                      <div className="flex-1">
-                        <h4 className="font-medium text-white mb-1">24時間投稿制限</h4>
-                        <p className="text-sm text-yellow-200 mb-2">
-                          {cooldownInfo?.message || '24時間以内に投稿できるのは1本までです。'}
-                        </p>
-                        {remainingTime && (
-                          <div className="flex items-center gap-2 text-sm">
-                            <span className="text-gray-400">次回投稿可能まで:</span>
-                            <span className="font-medium text-yellow-400">{remainingTime}</span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                )}
+
 
                 {error && (
                   <div className="bg-red-500/10 border border-red-500/50 rounded-lg p-4">
@@ -1173,10 +1154,7 @@ const PostPage: React.FC = () => {
                     disabled={!acceptedGuidelines || !acceptedFacePolicy || !acceptedContent || isUploading || !canSubmit}
                     leftIcon={<Mic className="h-5 w-5" />}
                   >
-                    {!canSubmit && remainingTime 
-                      ? `投稿まで ${remainingTime}` 
-                      : t('postPage.buttons.submitToBattlePool')
-                    }
+                    {t('postPage.buttons.submitToBattlePool')}
                   </Button>
                 </div>
               </form>

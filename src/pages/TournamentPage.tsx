@@ -14,7 +14,7 @@ const TournamentPage: React.FC = () => {
           </div>
           <h1 className="text-4xl font-bold text-white mb-4">
             {t('tournament.comingSoonPage.title')}
-          </h1>
+            </h1>
           <p className="text-xl text-gray-400">
             {t('tournament.comingSoonPage.subtitle')}
           </p>
