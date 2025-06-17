@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Calendar, AlertCircle, CheckCircle, Plus, BarChart3, RefreshCw } from 'lucide-react';
-import { Card } from './Card';
+
 import { Button } from './Button';
 import { Link } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
@@ -50,7 +50,7 @@ export const MonthlyLimitCard: React.FC = () => {
       
       // 次月の1日を計算
       const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
-      const resetDate = nextMonth.toLocaleDateString('ja-JP', {
+      const resetDate = nextMonth.toLocaleDateString(t('common.locale', 'ja-JP'), {
         month: 'long',
         day: 'numeric'
       });
@@ -78,28 +78,32 @@ export const MonthlyLimitCard: React.FC = () => {
 
   if (!user) {
     return (
-      <Card className="bg-gray-900 border border-gray-800 p-4">
-        <div className="text-center">
-          <div className="w-12 h-12 bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-3">
-            <Calendar className="h-6 w-6 text-gray-600" />
+      <div className="glowing-card">
+        <div className="glowing-card__content p-4">
+          <div className="text-center">
+            <div className="w-12 h-12 bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-3">
+              <Calendar className="h-6 w-6 text-gray-600" />
+            </div>
+            <h3 className="font-medium text-white mb-2">{t('monthlyLimit.title')}</h3>
+            <p className="text-sm text-gray-400 mb-3">
+              {t('monthlyLimit.loginToCheck')}
+            </p>
           </div>
-          <h3 className="font-medium text-white mb-2">月間投稿制限</h3>
-          <p className="text-sm text-gray-400 mb-3">
-            ログインして投稿状況を確認
-          </p>
         </div>
-      </Card>
+      </div>
     );
   }
 
   if (isLoading) {
     return (
-      <Card className="bg-gray-900 border border-gray-800 p-4">
-        <div className="text-center">
-          <div className="animate-spin w-8 h-8 border-2 border-cyan-500 border-t-transparent rounded-full mx-auto mb-3"></div>
-          <p className="text-sm text-gray-400">月間投稿状況を確認中...</p>
+      <div className="glowing-card">
+        <div className="glowing-card__content p-4">
+          <div className="text-center">
+            <div className="animate-spin w-8 h-8 border-2 border-cyan-500 border-t-transparent rounded-full mx-auto mb-3"></div>
+            <p className="text-sm text-gray-400">{t('monthlyLimit.checkingStatus')}</p>
+          </div>
         </div>
-      </Card>
+      </div>
     );
   }
 
@@ -108,17 +112,17 @@ export const MonthlyLimitCard: React.FC = () => {
   const isAtLimit = monthlyData ? monthlyData.remaining === 0 : false;
 
   return (
-    <Card className="bg-gradient-to-br from-gray-900 via-gray-850 to-gray-950 border border-gray-700/50 shadow-xl">
-      <div className="p-4">
+    <div className="glowing-card">
+      <div className="glowing-card__content p-4">
         {/* Header */}
         <div className="text-center mb-4">
           <div className="flex items-center justify-center gap-2 mb-2">
             <Calendar className="h-5 w-5 text-cyan-400" />
             <h2 className="text-lg font-bold text-cyan-400">
-              月間投稿制限
+              {t('monthlyLimit.title')}
             </h2>
           </div>
-          <p className="text-xs text-gray-400">今月の状況</p>
+          <p className="text-xs text-gray-400">{t('monthlyLimit.subtitle')}</p>
         </div>
 
         {monthlyData && (
@@ -129,7 +133,7 @@ export const MonthlyLimitCard: React.FC = () => {
                 <div className="text-3xl font-bold text-white mb-1">
                   {monthlyData.remaining}
                 </div>
-                <div className="text-sm text-gray-400">残り投稿回数</div>
+                <div className="text-sm text-gray-400">{t('monthlyLimit.remainingPosts')}</div>
               </div>
 
               {/* プログレスバー */}
@@ -148,8 +152,8 @@ export const MonthlyLimitCard: React.FC = () => {
                 </div>
                 
                 <div className="flex justify-between text-xs text-gray-400">
-                  <span>使用済み: {monthlyData.used_count}回</span>
-                  <span>上限: {monthlyData.limit}回</span>
+                  <span>{t('monthlyLimit.usedPosts', { count: monthlyData.used_count })}</span>
+                  <span>{t('monthlyLimit.limitPosts', { count: monthlyData.limit })}</span>
                 </div>
               </div>
             </div>
@@ -158,7 +162,7 @@ export const MonthlyLimitCard: React.FC = () => {
             <div className="mb-4 p-3 bg-gray-800/50 rounded-lg">
               <div className="flex items-center gap-2 text-sm">
                 <RefreshCw className="h-4 w-4 text-gray-400" />
-                <span className="text-gray-400">リセット:</span>
+                <span className="text-gray-400">{t('monthlyLimit.resetLabel')}</span>
                 <span className="font-medium text-white">{monthlyData.reset_date}</span>
               </div>
             </div>
@@ -170,10 +174,10 @@ export const MonthlyLimitCard: React.FC = () => {
                   <div className="bg-yellow-500/10 border border-yellow-500/50 rounded-lg p-3">
                     <div className="flex items-center gap-2 mb-1">
                       <AlertCircle className="h-4 w-4 text-yellow-400" />
-                      <span className="text-xs font-medium text-yellow-400">残り少なくなっています</span>
+                      <span className="text-xs font-medium text-yellow-400">{t('monthlyLimit.nearLimitWarning')}</span>
                     </div>
                     <p className="text-xs text-yellow-200">
-                      あと{monthlyData.remaining}回投稿できます
+                      {t('monthlyLimit.nearLimitMessage', { count: monthlyData.remaining })}
                     </p>
                   </div>
                 )}
@@ -184,29 +188,29 @@ export const MonthlyLimitCard: React.FC = () => {
                     className="w-full bg-gradient-to-r from-cyan-500 to-purple-500 text-sm"
                     leftIcon={<Plus className="h-4 w-4" />}
                   >
-                    動画を投稿
+                    {t('monthlyLimit.postVideoButton')}
                   </Button>
                 </Link>
               </div>
             ) : (
               <div className="space-y-3">
-                <div className="bg-red-500/10 border border-red-500/50 rounded-lg p-3">
-                  <div className="flex items-center gap-2 mb-1">
-                    <AlertCircle className="h-4 w-4 text-red-400" />
-                    <span className="text-xs font-medium text-red-400">月間上限に達しました</span>
+                                  <div className="bg-red-500/10 border border-red-500/50 rounded-lg p-3">
+                    <div className="flex items-center gap-2 mb-1">
+                      <AlertCircle className="h-4 w-4 text-red-400" />
+                      <span className="text-xs font-medium text-red-400">{t('monthlyLimit.limitReachedTitle')}</span>
+                    </div>
+                    <p className="text-xs text-red-200">
+                      {t('monthlyLimit.limitReachedMessage', { date: monthlyData.reset_date })}
+                    </p>
                   </div>
-                  <p className="text-xs text-red-200">
-                    {monthlyData.reset_date}にリセットされます
-                  </p>
-                </div>
 
-                <Button
-                  variant="outline"
-                  className="w-full border-gray-600 text-gray-400 cursor-not-allowed text-sm"
-                  disabled
-                >
-                  投稿上限に達しました
-                </Button>
+                                  <Button
+                    variant="outline"
+                    className="w-full border-gray-600 text-gray-400 cursor-not-allowed text-sm"
+                    disabled
+                  >
+                    {t('monthlyLimit.limitReachedButton')}
+                  </Button>
               </div>
             )}
           </>
@@ -215,10 +219,10 @@ export const MonthlyLimitCard: React.FC = () => {
         {/* 説明 */}
         <div className="mt-4 pt-3 border-t border-gray-700/50">
           <p className="text-xs text-gray-400 text-center">
-            品質の高いバトルを維持するため、月30回まで投稿可能です
+            {t('monthlyLimit.qualityMessage')}
           </p>
         </div>
       </div>
-    </Card>
+    </div>
   );
 }; 

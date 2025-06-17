@@ -11,9 +11,9 @@
 ## 🛠️ 技術スタック
 - **フロントエンド**: React 18 + TypeScript + Vite + Tailwind CSS + Zustand
 - **バックエンド**: Supabase (PostgreSQL + Edge Functions + Storage + Auth)
-- **定期処理**: pg_cron（5分間隔でバトル終了処理）
+- **定期処理**: pg_cron（バトル終了処理5分間隔、マッチメイキング30分間隔・理想的な時間ベース緩やかなレート制限緩和）
 - **国際化**: react-i18next
-- **デプロイ**: Supabase（開発用プロジェクトID: `fjdwtxtgpqysdfqcqpwu`、テスト用: `qgqcjtjxaoplhxurbpis`）
+- **デプロイ**: Supabase（プロジェクトID: `qgqcjtjxaoplhxurbpis`）
 
 ## 📁 ディレクトリ構成
 ```
@@ -50,69 +50,115 @@ supabase/
 ```sql
 -- ユーザープロフィール
 profiles (
-  id uuid, username text, email text, avatar_url text, bio text,
-  rating integer DEFAULT 1200, language varchar DEFAULT 'English',
-  vote_count integer DEFAULT 0,  -- 🆕 投票者ランキング用
-  created_at timestamptz, updated_at timestamptz
+  id uuid PRIMARY KEY,
+  username text UNIQUE NOT NULL,
+  email text UNIQUE NOT NULL,
+  avatar_url text,
+  bio text,
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now(),
+  rating integer DEFAULT 1200,
+  language varchar CHECK (language IN ('en', 'ja')),
+  vote_count integer DEFAULT 0,
+  is_deleted boolean DEFAULT false,
+  deleted_at timestamptz
 )
 
 -- 投稿動画
 submissions (
-  id uuid, user_id uuid, video_url text, battle_format battle_format,
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id uuid NOT NULL REFERENCES profiles(id),
+  video_url text NOT NULL,
   status submission_status DEFAULT 'WAITING_OPPONENT',
-  rank_at_submission integer, active_battle_id uuid,
-  created_at timestamptz, updated_at timestamptz
+  rank_at_submission integer,
+  active_battle_id uuid,
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now(),
+  battle_format battle_format
 )
 
 -- アクティブバトル
 active_battles (
-  id uuid, player1_submission_id uuid, player2_submission_id uuid,
-  player1_user_id uuid, player2_user_id uuid,
-  battle_format battle_format, status battle_status DEFAULT 'ACTIVE',
-  votes_a integer DEFAULT 0, votes_b integer DEFAULT 0,
-  end_voting_at timestamptz DEFAULT (now() + INTERVAL '5 days'),  -- 🔧 5日間
-  created_at timestamptz, updated_at timestamptz
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  player1_submission_id uuid NOT NULL,
+  player2_submission_id uuid NOT NULL,
+  player1_user_id uuid NOT NULL REFERENCES profiles(id),
+  player2_user_id uuid NOT NULL REFERENCES profiles(id),
+  battle_format battle_format NOT NULL,
+  status battle_status DEFAULT 'ACTIVE',
+  votes_a integer DEFAULT 0,
+  votes_b integer DEFAULT 0,
+  end_voting_at timestamptz DEFAULT (now() + INTERVAL '5 days'),
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now()
 )
 
 -- 投票
 battle_votes (
-  id uuid, battle_id uuid, user_id uuid, vote char(1),
-  created_at timestamptz
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  battle_id uuid NOT NULL REFERENCES active_battles(id),
+  user_id uuid REFERENCES profiles(id),
+  vote char(1) CHECK (vote IN ('A', 'B')),
+  comment text,
+  created_at timestamptz DEFAULT now()
 )
 
 -- アーカイブバトル（完了済み）
 archived_battles (
-  id uuid, original_battle_id uuid, winner_id uuid,
-  final_votes_a integer, final_votes_b integer,
-  player1_user_id uuid, player2_user_id uuid,
-  player1_submission_id uuid, player2_submission_id uuid,
-  battle_format battle_format,
-  player1_rating_change integer, player2_rating_change integer,
-  player1_final_rating integer, player2_final_rating integer,
-  player1_video_url text, player2_video_url text,  -- 永続保存
-  archived_at timestamptz, created_at timestamptz, updated_at timestamptz
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  original_battle_id uuid NOT NULL,
+  winner_id uuid REFERENCES profiles(id),
+  final_votes_a integer DEFAULT 0,
+  final_votes_b integer DEFAULT 0,
+  archived_at timestamptz DEFAULT now(),
+  player1_user_id uuid NOT NULL REFERENCES profiles(id),
+  player2_user_id uuid NOT NULL REFERENCES profiles(id),
+  player1_submission_id uuid NOT NULL,
+  player2_submission_id uuid NOT NULL,
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now(),
+  battle_format battle_format NOT NULL,
+  player1_rating_change integer DEFAULT 0,
+  player2_rating_change integer DEFAULT 0,
+  player1_final_rating integer,
+  player2_final_rating integer,
+  player1_video_url text,
+  player2_video_url text
 )
 
 -- フォーラム投稿
 posts (
-  id uuid, user_id uuid, content text,
-  likes integer DEFAULT 0, liked_by uuid[],
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id uuid NOT NULL REFERENCES profiles(id),
+  content text NOT NULL,
+  likes integer DEFAULT 0,
+  liked_by uuid[] DEFAULT ARRAY[]::uuid[],
   comments_count integer DEFAULT 0,
-  created_at timestamptz, updated_at timestamptz
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now()
 )
 
 -- コメント
 comments (
-  id uuid, post_id uuid, user_id uuid, content text,
-  created_at timestamptz, updated_at timestamptz
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  post_id uuid NOT NULL REFERENCES posts(id),
+  user_id uuid NOT NULL REFERENCES profiles(id),
+  content text NOT NULL,
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now()
 )
 
 -- 通知
 notifications (
-  id uuid, user_id uuid, title text, message text,
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id uuid NOT NULL REFERENCES profiles(id),
+  title text NOT NULL,
+  message text NOT NULL,
   type varchar CHECK (type IN ('info', 'success', 'warning', 'battle_matched', 'battle_win', 'battle_lose', 'battle_draw')),
-  is_read boolean DEFAULT false, related_battle_id uuid,
-  created_at timestamptz, updated_at timestamptz
+  is_read boolean DEFAULT false,
+  related_battle_id uuid,
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now()
 )
 ```
 
@@ -137,14 +183,14 @@ battle_status: 'ACTIVE', 'COMPLETED', 'PROCESSING_RESULTS'
    - **投票期限**: 5日間
    
 2. **`progressive_matchmaking()`** ✅ **正常動作中**
-   - **段階的マッチング**: pg_cronで5分間隔実行
-   - **初期待機**: 2分間（即座マッチングの猶予期間）
-   - **段階的レート制限**:
-     - 2-20分: ±100レート差
-     - 20-40分: ±200レート差
-     - 40-60分: ±400レート差
-     - 60-80分: ±600レート差
-     - 80分以降: 無制限
+   - **段階的マッチング**: pg_cronで30分間隔実行
+   - **初期待機**: 10分間（即座マッチングの猶予期間）
+   - **段階的レート制限**（理想的な時間ベースシステム）:
+     - 0-6時間: ±50レート差（新鮮な対戦はほぼ同格同士）
+     - 6-24時間: ±100レート差（少し幅を持たせてマッチ確率UP）
+     - 24-72時間: ±200レート差（24時間以内にマッチできなかったら緩和）
+     - 72-168時間: ±300レート差（3日-7日経過でさらに緩和）
+     - 168時間以降: 無制限（どうしても当たらない場合は全体からマッチ）
    
 3. **`complete_battle(p_battle_id)`**
    - 投票集計 → 勝者判定 → アーカイブ → レーティング更新
@@ -159,74 +205,109 @@ battle_status: 'ACTIVE', 'COMPLETED', 'PROCESSING_RESULTS'
 6. **`get_rank_from_rating(rating)`**
    - ランク判定: Grandmaster(1800+), Master(1600+), Expert(1400+), Advanced(1300+), Intermediate(1200+), Beginner(1100+)
    
-7. **`update_battle_ratings(p_battle_id, p_winner_id)`**
+7. **`get_rank_color_from_rating(rating)`**
+   - ランク色取得: ランクに応じた色コード返却
+   
+8. **`update_battle_ratings(p_battle_id, p_winner_id)`**
    - バトル結果に基づくレーティング更新
 
-### 投票・ユーザー管理 & 投票者ランキング
-8. **`vote_battle(p_battle_id uuid, p_vote text)`** ✅ **統一・完全版**
-   - **完全なバリデーション**: 認証、自己投票防止、期限チェック、重複投票防止
-   - **投票者ランキング**: 投票時に`profiles.vote_count`を自動増加
-   - **エラーハンドリング**: 詳細な日本語エラーメッセージ
-   - **戻り値**: JSON形式（success/error、message含む）
+### 投票・ユーザー管理
+9. **`vote_battle(p_battle_id, p_vote)`**
+   - 投票機能（'A' または 'B'）
    
-9. **`get_user_vote(p_battle_id)`**
-   - ユーザーの投票状況確認
+10. **`get_user_vote(p_battle_id)`**
+    - ユーザーの投票状況確認
+    
+11. **`cancel_vote(p_battle_id)`**
+    - 投票取り消し機能
    
-10. **`update_user_profile_details(p_user_id, p_username, p_bio)`**
+12. **`update_user_profile_details(p_user_id, p_username, p_bio)`**
     - プロフィール更新
 
-11. **`withdraw_submission(p_submission_id)`**
-    - ユーザーが待機中の投稿を取り下げる
+13. **`update_user_avatar(p_user_id, p_avatar_url)`**
+    - アバター更新
 
-12. **`cancel_vote(p_battle_id)`**
-    - ユーザーが行った投票を取り消す
-
-### 取得系・補助関数
-13. **`get_user_profile(p_user_id)`**
-    - 特定ユーザーのプロフィール情報を取得
-
-14. **`get_waiting_submissions()`**
-    - マッチング待機中のすべての投稿を取得
-
-15. **`get_rank_color_from_rating(rating)`**
-    - レーティング値に応じたランクカラー（例: 'gold', 'silver'）を返す
-
-16. **`get_top_rankings()` / `get_top_voter_rankings()`**
-    - それぞれプレイヤーと投票者のトップランキングデータを取得
-
-17. **`get_user_rank(p_user_id)` / `get_user_voter_rank(p_user_id)`**
-    - 特定ユーザーのプレイヤーランクと投票者ランクを取得
-
-### 💎 トリガー連動関数（自動実行）
-- **備考**: これらの関数はテーブルのデータが変更された際に自動的に実行されます。
-18. **`handle_new_user()`**
-    - `auth.users`に新しいユーザーが追加された際、`profiles`テーブルに初期プロフィールを作成
-
-19. **`update_updated_at_column()`**
-    - 対応する行が更新されるたびに`updated_at`タイムスタンプを自動更新
-
-20. **`update_post_comments_count()`**
-    - `comments`テーブルにコメントが追加/削除された際、関連する`posts`テーブルの`comments_count`を更新
-
-### 🏆 ランキングシステム（2種類実装済み）
-21. **`rankings_view`** - プレイヤーランキング（レーティング順）
-    - 勝率、勝利数、敗北数を含む総合バトルランキング
-    - レーティング、シーズンポイント、勝率でソート可能
+### 投稿制限・セキュリティ ✅ **新機能**
+26. **`check_submission_cooldown(p_user_id)`**
+    - **24時間投稿制限チェック**: ユーザーの最後の投稿から24時間経過したかを確認
+    - **レスポンス**: 投稿可能性、残り時間、前回投稿時刻を含むJSON
+    - **リアルタイム更新**: フロントエンドで1分間隔で残り時間を更新
     
-22. **`voter_rankings_view`** - 🆕 投票者ランキング（投票数順）
-    - コミュニティ貢献度を評価する`vote_count`ベースのランキング
-    - 投票数でソート、コミュニティ活動を奨励
+27. **`create_submission_with_cooldown_check(p_user_id, p_video_url, p_battle_format)`**
+    - **安全な投稿作成**: 24時間制限チェック後に投稿を作成
+    - **制限時エラー**: 24時間以内の場合は適切なエラーメッセージを返す
+    - **自動統合**: フロントエンドの投稿フローと完全統合
 
-### 📊 ランキングビューの詳細
+### 投稿管理
+14. **`withdraw_submission(p_submission_id)`**
+    - 投稿取り消し機能
+
+15. **`get_waiting_submissions()`**
+    - 待機中投稿一覧取得
+
+### ランキング・ユーザー情報
+16. **`get_top_rankings(p_limit)`**
+    - トップランキング取得
+
+17. **`get_top_voter_rankings(p_limit)`**
+    - 投票者ランキング取得
+
+18. **`get_user_rank(p_user_id)`**
+    - ユーザーランク情報取得
+
+19. **`get_user_voter_rank(p_user_id)`**
+    - ユーザー投票ランク取得
+
+20. **`get_user_profile(p_user_id)`**
+    - ユーザープロフィール詳細取得
+
+### ユーザー削除・セキュリティ ✅ **v3完全メール解放システム**
+21. **`safe_delete_user_account(p_user_id)`** → **`safe_delete_user_account_v3(p_user_id)`**
+    - **完全メール解放**: 削除後すぐに同じメールアドレスで再登録可能
+    - **動画完全削除**: `delete_user_videos_from_storage()`でストレージから物理削除
+    - **二段階削除**:
+      - **バトル履歴あり**: ソフト削除（完全匿名化 + メール解放）
+      - **バトル履歴なし**: 物理削除（完全削除）
+    - **メール匿名化**: `permanently-deleted-{timestamp}-{user_id}@void.deleted`
+    - **メタデータ**: 元のメール情報を完全削除、再利用可能フラグ設定
+
+22. **`delete_user_videos_from_storage(p_user_id)`**
+    - **動画ファイル削除**: submissions, archived_battlesから全動画URL収集
+    - **ストレージ削除**: storage.objectsテーブルから物理削除
+    - **結果レポート**: 削除成功/失敗数、URL一覧を含むJSON返却
+
+23. **`admin_force_release_email(p_email)`** ✅ **管理者機能**
+    - **強制メール解放**: 特定のメールアドレスを管理者が強制的に解放
+    - **完全匿名化**: `force-released-{timestamp}-{user_id}@admin.released`
+    - **即座利用可能**: 解放後すぐに新規登録可能
+
+### アカウント削除システムの特徴
 ```sql
--- プレイヤーランキングビュー
-rankings_view: user_id, username, avatar_url, rating, season_points, 
-               rank_name, rank_color, battles_won, battles_lost, win_rate, position
-
--- 投票者ランキングビュー  
-voter_rankings_view: user_id, username, avatar_url, vote_count, rating,
-                     rank_name, rank_color, created_at, updated_at, position
+-- v3システムの動作フロー
+1. 動画ファイル削除（ストレージから物理削除）
+2. バトル履歴確認
+   - 履歴あり: ソフト削除（プロフィール匿名化 + auth完全匿名化）
+   - 履歴なし: 物理削除（全データ削除 + auth削除）
+3. メールアドレス即座解放（元情報完全削除）
+4. 同じメールアドレスで即座再登録可能
 ```
+
+### 削除後の状態
+- **プロフィール**: `deleted-user-{user_id}`として匿名化
+- **メールアドレス**: 完全に解放、再利用可能
+- **動画ファイル**: ストレージから物理削除
+- **バトル履歴**: 匿名ユーザーとして閲覧可能
+- **認証情報**: 完全匿名化または削除
+
+### ヘルパー関数
+23. **`get_k_factor_by_format(battle_format)`**
+    - バトル形式別Kファクター取得
+
+24. **`calculate_elo_rating(winner_rating, loser_rating, k_factor)`**
+    - Eloレーティング計算（基本版）
+
+25. **`calculate_elo_rating_change(player_rating, opponent_rating, result, k_factor)`**
+    - レーティング変化量計算
 
 ## ⚙️ Edge Functions（実装済み）
 ### `/submission-webhook` ✅ **マッチング処理の中核**
@@ -238,10 +319,15 @@ voter_rankings_view: user_id, username, avatar_url, vote_count, rating,
   4. 成功時: バトル作成、失敗時: WAITING_OPPONENT状態
 - **レスポンス**: マッチング成功/待機状態の詳細情報
 
-### `/delete-user-account`  
-- **機能**: ユーザーアカウント完全削除
-- **処理**: プロフィール削除 → 認証ユーザー削除
+### `/delete-user-account` ✅ **v3完全削除システム**
+- **機能**: ユーザーアカウント完全削除（メール即座解放）
+- **処理**: 
+  1. `safe_delete_user_account_v3()`実行
+  2. 動画ファイル物理削除
+  3. バトル履歴に応じてソフト削除/物理削除
+  4. メールアドレス完全解放
 - **権限**: 認証済みユーザーのみ
+- **レスポンス**: 削除方式、メール解放状況、動画削除結果
 
 ### マッチメイキング戦略（二段階システム）
 ```javascript
@@ -251,23 +337,35 @@ voter_rankings_view: user_id, username, avatar_url, vote_count, rating,
 - 結果: 即座バトル作成 or 待機状態
 
 // 2. 段階的マッチング（pg_cron）  
-2分後～ → progressive_matchmaking() (5分間隔)
-- レート制限: 時間経過で段階的緩和
+30分後～ → progressive_matchmaking() (30分間隔)
+- 緩やかなレート制限緩和（5日間投票期間に適応）:
+  * 0-6時間: ±50（同格重視）
+  * 6-24時間: ±100（少し幅拡大）
+  * 24-72時間: ±200（24時間後緩和）
+  * 72-168時間: ±300（3日-7日緩和）
+  * 168時間以降: 無制限（7日後全体マッチ）
 - 結果: 遅延バトル作成 or 継続待機
 ```
 
 ## ⏰ pg_cron定期処理（実装済み）
 ```sql
--- 5分間隔で実行される定期ジョブ
-1. process_expired_battles    -- バトル終了処理
-2. progressive_matchmaking    -- マッチング処理
+-- 定期実行ジョブ
+1. process_expired_battles    -- 5分間隔でバトル終了処理
+2. progressive-matchmaking-30min    -- 30分間隔でマッチング処理
 ```
+
+## 🔧 データベースビュー（実装済み）
+### ランキングビュー
+- **`rankings_view`** - レーティングベースランキング（削除ユーザー除外）
+- **`voter_rankings_view`** - 投票数ベースランキング（削除ユーザー除外）
+
+### プライバシー保護ビュー
+- **`public_active_battles`** - アクティブバトル（削除ユーザー匿名化）
+- **`public_archived_battles`** - アーカイブバトル（削除ユーザー匿名化）
 
 ## 🔧 MCP Supabase Tools 活用
 ### プロジェクト情報
-- **開発用プロジェクトID**: `fjdwtxtgpqysdfqcqpwu` (Developブランチ)
-- **テスト用プロジェクトID**: `qgqcjtjxaoplhxurbpis` (heartbeat-testブランチ)
-- **環境変数**: `.env`ファイルで開発用プロジェクトを指定
+- **プロジェクトID**: `qgqcjtjxaoplhxurbpis`
 - **確認**: `mcp_supabase_get_project(id)`でステータス確認
 
 ### 有効な拡張機能
@@ -300,27 +398,15 @@ mcp_supabase_get_logs(project_id, service)
 - **状態管理**: `src/store/`のZustandストアに集約
 - **型安全性**: DB変更時は`src/types/`も必ず更新
 
-### 🏪 実装済みストア
-- **battleStore.ts**: バトル管理（進行中・アーカイブ・待機中）
-- **rankingStore.ts**: プレイヤー・投票者ランキング両方対応
-- **authStore.ts**: 認証状態管理
-- **notificationStore.ts**: 通知システム
-- **toastStore.ts**: UI通知
-- **submissionStore.ts**: 投稿管理
-
-### 📄 実装済みページ
-- **RankingPage.tsx**: プレイヤー・投票者ランキング（タブ切り替え）
-- **BattlesPage.tsx**: アクティブバトル一覧・投票
-- **MyBattlesPage.tsx**: 個人バトル履歴
-- **CommunityPage.tsx**: フォーラム・投稿
-- **ProfilePage.tsx**: プロフィール管理
-- **PostPage.tsx**: 動画投稿・マッチング
-- **その他**: 設定、通知、ガイド等
-
 ### コンポーネント設計
 - **命名**: PascalCase（例: `BattleCard.tsx`）
 - **ストア**: camelCase（例: `battleStore.ts`）
 - **Props型**: `ComponentNameProps`
+
+### 投稿制限システム ✅ **新機能**
+- **24時間制限**: `useSubmissionCooldown`フックでリアルタイム制限チェック
+- **UI統合**: PostPageで制限状況の表示、ボタン無効化、エラーメッセージ
+- **自動更新**: 1分間隔で残り時間を更新、投稿成功後に状態リフレッシュ
 
 ### 国際化（必須）
 - **翻訳関数**: `useTranslation`フック + `t`関数必須
@@ -330,20 +416,14 @@ mcp_supabase_get_logs(project_id, service)
 ## 📝 命名規則
 | 要素 | 形式 | 例 |
 |---|---|----| 
-| テーブル・カラム | snake_case | `active_battles`, `user_id`, `vote_count` |
-| SQL関数・ビュー | snake_case | `find_match_and_create_battle`, `voter_rankings_view` |
-| TypeScript型 | PascalCase | `Battle`, `VoterRankingEntry` |
-| 関数・変数 | camelCase | `fetchBattles`, `voterRankings` |
+| テーブル・カラム | snake_case | `active_battles`, `user_id` |
+| SQL関数 | snake_case | `find_match_and_create_battle` |
+| TypeScript型 | PascalCase | `Battle`, `UserProfile` |
+| 関数・変数 | camelCase | `fetchBattles`, `userProfile` |
 | Reactコンポーネント | PascalCase.tsx | `BattleCard.tsx` |
 | その他ファイル | camelCase.ts | `battleStore.ts` |
 
 ## 🚀 開発フロー
-### 開発サーバー起動（重要）
-- **開発環境**: `npm run dev:develop` （開発用DBに接続 - 推奨）
-- **テスト環境**: `npm run dev:test` （テスト用DBに接続）
-- **通常**: `npm run dev` （.envファイルの設定を使用）
-- **ポート**: 3000番で起動
-
 ### 新機能追加時
 1. **DB変更**: MCP toolsでマイグレーション適用
 2. **型定義**: `src/types/`更新
@@ -355,13 +435,6 @@ mcp_supabase_get_logs(project_id, service)
 - **ログ確認**: `mcp_supabase_get_logs(project_id, service)`
 - **リアルタイム確認**: Supabaseダッシュボード
 - **pg_cron確認**: `cron.job`テーブル
-- **関数重複確認**: Supabaseダッシュボード → Database → Functions
-
-### ⚠️ AI開発アシスタント向け注意事項
-- **サーバー起動**: 常に `npm run dev:develop` を使用（`npm run dev` ではない）
-- **開発フロー**: 開発用DB (`fjdwtxtgpqysdfqcqpwu`) で作業
-- **テスト**: 必要時のみテスト用DB (`qgqcjtjxaoplhxurbpis`) を使用
-- **🆕 関数作成時**: 既存の同名関数をチェック、必要に応じて統合
 
 ## 🎨 UI/UX ガイドライン
 - **テーマ**: ダークテーマ中心（gray-900, gray-950ベース）
@@ -375,69 +448,44 @@ mcp_supabase_get_logs(project_id, service)
 2. **翻訳漏れ**: 新規文言の英語・日本語両方対応忘れ
 3. **RLS違反**: ポリシー未設定によるアクセス拒否
 4. **pg_cron停止**: 定期処理が動作しない
-5. **🆕 重複関数問題**: 同名関数で引数型が異なる場合の競合
-   - PostgreSQLは引数型で関数を区別するため、想定外の関数が呼ばれる
-   - 解決: 古い関数を削除し、統一された関数を作成
 
 ### セキュリティ
 - **RLS**: 全テーブル有効（パブリック読み取り、認証済み書き込み）
 - **Storage**: videos バケットへの適切なポリシー設定
 - **Edge Functions**: CORS設定とエラーハンドリング
+- **アカウント削除**: v3完全メール解放システム
+  - 動画ファイル物理削除
+  - メールアドレス即座解放
+  - プライバシー保護と参照整合性の両立
+  - 管理者による強制メール解放機能
 
 ## 🧪 テスト
 - **テストデータ**: `insert_test_data_remote.sql`使用
 - **レーティングテスト**: `test_rating_system.sql`で動作確認
 - **マニュアルテスト**: 各画面での実際の操作確認
 
-## 🆕 投票者ランキングシステムの詳細
-
-### 📊 システム概要
-- **目的**: コミュニティ参加を促進し、積極的な投票者を評価
-- **仕組み**: 各投票でユーザーの`vote_count`が増加
-- **表示**: 専用の投票者ランキングタブで確認可能
-
-### 🔧 技術実装
-```sql
--- 投票時の自動カウント増加
-UPDATE profiles SET vote_count = vote_count + 1 WHERE id = user_id;
-
--- 投票者ランキングビュー
-CREATE VIEW voter_rankings_view AS 
-SELECT user_id, username, avatar_url, vote_count, position
-FROM profiles WHERE vote_count > 0 
-ORDER BY vote_count DESC;
-```
-
-### 🎨 UI実装
-- **RankingPage.tsx**: プレイヤー・投票者タブ切り替え
-- **rankingStore.ts**: 両ランキングの状態管理
-- **色分け**: 投票数に応じたカラーコーディング
-
-## 🛠️ データベース関数の重複問題と解決
-
-### 📋 発見された問題
-PostgreSQLでは同名関数でも引数型が異なれば別の関数として扱われます。これにより：
-- `vote_battle(p_battle_id uuid, p_vote character)` - 短い版、投票者ランキング機能あり
-- `vote_battle(p_battle_id uuid, p_vote text)` - 長い版、詳細バリデーションあり
-
-フロントエンドが文字列(`'A'`, `'B'`)を送信するため、TEXT版が呼ばれ、投票者ランキングが機能しない問題が発生。
-
-### ✅ 解決方法
-1. **古い関数削除**: `DROP FUNCTION vote_battle(p_battle_id uuid, p_vote character);`
-2. **統一関数作成**: 詳細バリデーション + 投票者ランキング機能を含む完全版
-3. **機能統合**: 
-   - 認証チェック
-   - 自己投票防止
-   - 投票期限チェック
-   - 重複投票防止
-   - 投票者ランキング更新
-
-### 🎯 学習ポイント
-- PostgreSQL関数は**引数型**で区別される
-- 同名関数の競合は予期しない動作を引き起こす
-- 関数作成前に既存関数の確認が必須
-- 統一された関数設計が重要
-
 ---
 
-**🎵 Let's build the ultimate beatboxing platform! 🎵** 
+**🎵 Let's build the ultimate beatboxing platform! 🎵**
+
+### ⚡ 重要な仕様（データベース実装に基づく）
+
+#### **バトル投票期限**
+- **期限**: 5日間（`end_voting_at DEFAULT now() + INTERVAL '5 days'`）
+- **自動処理**: pg_cronで5分間隔で期限切れバトルを処理
+
+#### **マッチメイキング**
+- **即座マッチング**: ±50→±100レート差で即座実行
+- **段階的マッチング**: 30分間隔で段階的レート制限緩和
+
+#### **ユーザー削除**
+- **方式**: ソフト削除（匿名化）
+- **メール再利用**: 可能（auth.usersも匿名化）
+- **プライバシー**: 完全匿名化表示
+
+#### **ランキング**
+- **レーティング**: `rankings_view`
+- **投票者**: `voter_rankings_view`
+- **除外**: 削除ユーザーは非表示
+
+このRulesに従って、BeatNexusプロジェクトの開発・運用を進めましょう！ 

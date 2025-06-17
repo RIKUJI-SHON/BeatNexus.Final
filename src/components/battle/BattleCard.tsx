@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Battle } from '../../types';
-import { Card } from '../ui/Card';
+
 import { Button } from '../ui/Button';
-import { GlowButton } from '../ui/GlowButton';
+import { VoteButton } from '../ui/VoteButton';
 import { AuthModal } from '../auth/AuthModal';
 import { useRequireAuth } from '../../hooks/useRequireAuth';
 import { useAuthStore } from '../../store/authStore';
@@ -113,16 +113,14 @@ export const BattleCard: React.FC<BattleCardProps> = ({ battle }) => {
   return (
     <>
       <div onClick={handleCardClick} className="group cursor-pointer">
-        <Card className={`relative bg-gradient-to-br ${gradientBg} from-gray-900 to-gray-950 text-white hover:shadow-2xl hover:shadow-cyan-500/20 transform hover:-translate-y-1 hover:scale-[1.02] transition-all duration-500 mb-6 overflow-hidden border border-gray-700/50 backdrop-blur-sm`}>
-          
-          {/* Animated Background Pattern */}
-          <div className="absolute inset-0 opacity-5">
-            <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white/10 to-transparent transform rotate-45 translate-x-full group-hover:translate-x-[-100%] transition-transform duration-1000"></div>
-          </div>
+        <div className="battle-card mb-6">
+          <div className="battle-card__content text-white">
+            {/* Animated Background Pattern */}
+            <div className="absolute inset-0 opacity-5">
+              <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white/10 to-transparent transform rotate-45 translate-x-full group-hover:translate-x-[-100%] transition-transform duration-1000"></div>
+            </div>
 
-
-
-          <div className="relative p-6">
+            <div className="relative p-6">
             {/* Header: Time */}
             <div className="flex justify-end items-start mb-6">
               <div className={`flex items-center gap-2 px-3 py-1 rounded-full backdrop-blur-sm ${
@@ -231,16 +229,16 @@ export const BattleCard: React.FC<BattleCardProps> = ({ battle }) => {
 
             {/* Action Button */}
             <div className="flex justify-center">
-              <GlowButton
+              <VoteButton
                 onClick={handleVoteClick}
                 disabled={isExpired}
                 className="max-w-xs"
               >
                 <div className="flex items-center gap-2">
                   <Vote className="h-4 w-4" />
-                {isExpired ? t('battleCard.votingEnded') : t('battleCard.voteNow')}
+                  {isExpired ? t('battleCard.votingEnded') : t('battleCard.voteNow')}
                 </div>
-              </GlowButton>
+              </VoteButton>
             </div>
 
             {error && (
@@ -248,8 +246,9 @@ export const BattleCard: React.FC<BattleCardProps> = ({ battle }) => {
                 <div className="text-sm text-red-400">{error}</div>
               </div>
             )}
+            </div>
           </div>
-        </Card>
+        </div>
       </div>
 
       <AuthModal

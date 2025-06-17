@@ -101,55 +101,52 @@ export const BattleFilters: React.FC<BattleFiltersProps> = ({
       <div className="col-span-12">
         <div className="space-y-6">
           {/* アクションボタン群 */}
-          <div className="grid grid-cols-3 gap-4 max-w-2xl mx-auto">
+          <div className="flex items-center justify-center gap-4 max-w-2xl mx-auto">
         
         {/* プロフィールボタン */}
         <button
           onClick={handleProfileClick}
-          className="group relative flex flex-col items-center p-4 bg-gray-800/60 border border-gray-600/50 rounded-xl hover:border-purple-500/50 hover:bg-gray-800/80 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-purple-500/20"
+          className="group flex flex-col items-center justify-end p-4 h-32 transition-all duration-300 hover:scale-105"
         >
-          <div className="w-16 h-16 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-full border border-purple-500/30 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300">
+          <div className="w-16 h-16 flex items-center justify-center mb-1 group-hover:scale-110 transition-transform duration-300">
             <img 
               src="/images/Profile.png" 
               alt="Profile"
-              className="h-8 w-8 object-contain filter brightness-110 group-hover:brightness-125 transition-all duration-300"
+              className="h-8 w-8 object-contain filter brightness-110 group-hover:brightness-150 group-hover:drop-shadow-lg transition-all duration-300"
             />
           </div>
-          <span className="text-sm font-medium text-gray-300 group-hover:text-white transition-colors">
-            プロフィール
+          <span className="text-sm font-medium text-gray-300 group-hover:text-white group-hover:drop-shadow-lg transition-colors">
+            {t('battleFilters.buttons.profile')}
           </span>
         </button>
 
         {/* バトルスタートボタン（中央・メイン） */}
         <button
           onClick={handleBattleStartClick}
-          className="group relative flex flex-col items-center p-6 bg-gradient-to-br from-cyan-500/10 to-purple-500/10 border-2 border-cyan-500/30 rounded-xl hover:border-cyan-400 hover:bg-gradient-to-br hover:from-cyan-500/20 hover:to-purple-500/20 transition-all duration-300 hover:scale-110 hover:shadow-2xl hover:shadow-cyan-500/30 transform"
+          className="group flex flex-col items-center justify-end p-8 h-40 transition-all duration-300 hover:scale-110 hover:drop-shadow-2xl"
         >
-          {/* グローエフェクト */}
-          <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-purple-500/5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-          
-          <div className="relative w-20 h-20 bg-gradient-to-br from-cyan-500/20 to-purple-500/20 rounded-full border-2 border-cyan-500/40 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:border-cyan-400 transition-all duration-300">
+          <div className="w-28 h-28 flex items-center justify-center mb-2 group-hover:scale-110 transition-all duration-300">
             <img 
               src="/images/VS.png" 
               alt="Battle Start"
-              className="w-12 h-12 object-contain filter brightness-110 group-hover:brightness-125 transition-all duration-300"
+              className="w-16 h-16 object-contain filter brightness-110 group-hover:brightness-200 group-hover:drop-shadow-2xl transition-all duration-300"
             />
           </div>
-          <span className="text-base font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400 group-hover:from-cyan-300 group-hover:to-purple-300 transition-all duration-300">
-            バトルスタート
+          <span className="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400 group-hover:from-cyan-200 group-hover:to-purple-200 group-hover:drop-shadow-xl transition-all duration-300">
+            {t('battleFilters.buttons.battleStart')}
           </span>
         </button>
 
         {/* トーナメントボタン */}
         <button
           onClick={handleTournamentClick}
-          className="group relative flex flex-col items-center p-4 bg-gray-800/60 border border-gray-600/50 rounded-xl hover:border-yellow-500/50 hover:bg-gray-800/80 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-yellow-500/20"
+          className="group flex flex-col items-center justify-end p-4 h-32 transition-all duration-300 hover:scale-105"
         >
-          <div className="w-16 h-16 bg-gradient-to-br from-yellow-500/20 to-orange-500/20 rounded-full border border-yellow-500/30 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300">
-            <Award className="h-8 w-8 text-yellow-400" />
+          <div className="w-16 h-16 flex items-center justify-center mb-1 group-hover:scale-110 transition-transform duration-300">
+            <Award className="h-8 w-8 text-yellow-400 group-hover:text-yellow-300 group-hover:drop-shadow-lg transition-all duration-300" />
           </div>
-          <span className="text-sm font-medium text-gray-300 group-hover:text-white transition-colors">
-            トーナメント
+          <span className="text-sm font-medium text-gray-300 group-hover:text-white group-hover:drop-shadow-lg transition-colors">
+            {t('battleFilters.buttons.tournament')}
           </span>
         </button>
 
