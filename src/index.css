@@ -120,6 +120,16 @@ video {
   background: #6b7280;
 }
 
+/* スクロールバーを隠すユーティリティクラス */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
 /* ダークモード対応 */
 @media (prefers-color-scheme: light) {
   :root {

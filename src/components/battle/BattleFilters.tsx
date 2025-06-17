@@ -167,70 +167,70 @@ export const BattleFilters: React.FC<BattleFiltersProps> = ({
             </div>
           </div>
           
-          {/* 2列レイアウト */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* 1行レイアウト：検索欄とフィルター */}
+          <div className="flex flex-col xl:flex-row gap-4 items-start xl:items-end">
             
-            {/* 検索セクション */}
-            <div>
+            {/* 検索セクション - より小さく制限 */}
+            <div className="w-full xl:w-64 flex-shrink-0">
               <div className="flex items-center gap-2 mb-3">
                 <Search className="h-4 w-4 text-cyan-400" />
                 <h3 className="text-sm font-semibold text-cyan-400">{t('battleFilters.searchTitle')}</h3>
               </div>
               <div className="relative">
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder={t('battleFilters.searchPlaceholder')}
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder={t('battleFilters.searchPlaceholder')}
                   className="w-full bg-gray-800/60 border border-gray-600/50 rounded-lg pl-9 pr-3 py-2 text-sm text-white placeholder-gray-400 focus:outline-none focus:border-cyan-500/70 focus:shadow-md focus:shadow-cyan-500/20 transition-all duration-300"
-            />
+                />
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-          </div>
-        </div>
+              </div>
+            </div>
 
-            {/* フィルターセクション */}
-            <div>
+            {/* フィルターセクション - 残りのスペースを使用 */}
+            <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-3">
                 <Filter className="h-4 w-4 text-purple-400" />
                 <h3 className="text-sm font-semibold text-purple-400">{t('battleFilters.filtersTitle')}</h3>
               </div>
               
-                          {/* マイバトル & ソートボタン - 一行に配置 */}
-            <div className="flex gap-2 flex-wrap items-center">
-              {/* My Battles Filter */}
-              {isLoggedIn && (
-              <button
-                onClick={() => setShowMyBattlesOnly(!showMyBattlesOnly)}
-                  className={`px-3 py-2 rounded-lg text-xs font-medium transition-all duration-300 border flex items-center gap-1 flex-shrink-0 ${
-                  showMyBattlesOnly
-                      ? 'bg-gradient-to-r from-pink-500 to-purple-500 text-white border-pink-500/50'
-                      : 'bg-gray-800/60 text-gray-300 border-gray-600/50 hover:border-pink-500/50 hover:text-white'
-                }`}
-              >
-                  <User className="h-3 w-3" />
-                  <span className="whitespace-nowrap">{t('battleFilters.myBattlesOnly')}</span>
-              </button>
-          )}
+              {/* マイバトル & ソートボタン - 強制的に一行配置 */}
+              <div className="flex gap-1.5 items-center overflow-x-auto scrollbar-hide pb-1">
+                {/* My Battles Filter */}
+                {isLoggedIn && (
+                  <button
+                    onClick={() => setShowMyBattlesOnly(!showMyBattlesOnly)}
+                    className={`px-2.5 py-1.5 rounded-md text-xs font-medium transition-all duration-300 border flex items-center gap-1 flex-shrink-0 ${
+                      showMyBattlesOnly
+                        ? 'bg-gradient-to-r from-pink-500 to-purple-500 text-white border-pink-500/50'
+                        : 'bg-gray-800/60 text-gray-300 border-gray-600/50 hover:border-pink-500/50 hover:text-white'
+                    }`}
+                  >
+                    <User className="h-3 w-3" />
+                    <span className="whitespace-nowrap text-xs">{t('battleFilters.myBattlesOnly')}</span>
+                  </button>
+                )}
 
-              {/* Sort Options */}
-              {sortButtons.map((button) => (
-                <button
-                  key={button.key}
-                  onClick={() => handleSortClick(button.key as any)}
-                  className={`px-3 py-2 rounded-lg text-xs font-medium transition-all duration-300 border flex items-center gap-1 flex-shrink-0 ${
-                    sortBy === button.key
-                      ? `bg-gradient-to-r ${button.colors} text-white border-transparent`
-                      : `bg-gray-800/60 text-gray-300 border-gray-600/50 hover:border-gray-500/50 hover:text-white`
-                  }`}
-                  title={button.label}
-                >
+                {/* Sort Options - コンパクトサイズ */}
+                {sortButtons.map((button) => (
+                  <button
+                    key={button.key}
+                    onClick={() => handleSortClick(button.key as any)}
+                    className={`px-2.5 py-1.5 rounded-md text-xs font-medium transition-all duration-300 border flex items-center gap-1 flex-shrink-0 ${
+                      sortBy === button.key
+                        ? `bg-gradient-to-r ${button.colors} text-white border-transparent`
+                        : `bg-gray-800/60 text-gray-300 border-gray-600/50 hover:border-gray-500/50 hover:text-white`
+                    }`}
+                    title={button.label}
+                  >
                     {button.icon}
-                  <span className="whitespace-nowrap">{button.label}</span>
-                </button>
-              ))}
+                    <span className="whitespace-nowrap text-xs">{button.label}</span>
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
 
           {/* Active Filters Summary - Compact */}
         {(searchQuery || showMyBattlesOnly) && (

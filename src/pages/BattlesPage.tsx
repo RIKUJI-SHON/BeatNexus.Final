@@ -438,10 +438,32 @@ const BattlesPage: React.FC = () => {
               {/* Header - Centered Title */}
               <div className="text-center mb-4">
                 <div className="flex items-center justify-center gap-2 mb-2">
-                  <Trophy className="h-5 w-5 text-yellow-400" />
-                  <h2 className="text-lg font-bold text-yellow-400">
-                    {t('battlesPage.rankings.titleCompact')}
-                  </h2>
+                  <img
+                    src="/images/ranking-title-badge.png"
+                    alt={t('battlesPage.rankings.titleCompact')}
+                    className="w-[320px] h-[60px] object-contain"
+                    onError={(e) => {
+                      // フォールバックとしてテキストとアイコンを表示
+                      const target = e.target as HTMLImageElement;
+                      target.style.display = 'none';
+                      const parent = target.parentElement;
+                      if (parent && !parent.querySelector('.fallback-title')) {
+                        const fallbackContainer = document.createElement('div');
+                        fallbackContainer.className = 'fallback-title flex items-center gap-2';
+                        
+                        const trophyIcon = document.createElement('div');
+                        trophyIcon.innerHTML = '<svg class="h-5 w-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path></svg>';
+                        
+                        const fallbackText = document.createElement('h2');
+                        fallbackText.className = 'text-lg font-bold text-yellow-400';
+                        fallbackText.textContent = 'トップランキング';
+                        
+                        fallbackContainer.appendChild(trophyIcon);
+                        fallbackContainer.appendChild(fallbackText);
+                        parent.appendChild(fallbackContainer);
+                      }
+                    }}
+                  />
                 </div>
               </div>
 
