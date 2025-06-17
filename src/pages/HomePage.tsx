@@ -95,7 +95,7 @@ const HomePage: React.FC = () => {
           {/* Value Proposition */}
           <div className="mb-8 animate-fade-in-delay-1">
             <h2 className="text-xl md:text-2xl font-bold text-white mb-3">
-              ビートボックスバトルで競い合い、<span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400">ランキングを駆け上がろう</span>！
+              {t('home.hero.subtitle.compete')}<span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400">{t('home.hero.subtitle.climbRanking')}</span>
             </h2>
           </div>
 
@@ -123,7 +123,7 @@ const HomePage: React.FC = () => {
                   <Play className="h-5 w-5 text-cyan-400 group-hover:text-purple-400 group-hover:scale-110 transition-all" />
                 </div>
                 <span className="tracking-wide bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent group-hover:from-purple-400 group-hover:via-pink-400 group-hover:to-cyan-400 transition-all duration-300">
-                  今すぐ参加
+                  {t('home.hero.button.joinNow')}
                 </span>
                 {/* Subtle glow behind text */}
                 <div className="absolute inset-0 bg-cyan-500/5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-md"></div>
@@ -145,16 +145,16 @@ const HomePage: React.FC = () => {
           <div className="text-center mb-20">
             <div className="inline-flex items-center gap-3 px-6 py-3 bg-gray-800/50 backdrop-blur-sm rounded-2xl border border-gray-700/50 mb-8">
               <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse"></div>
-              <span className="text-cyan-400 font-medium text-sm tracking-wide">HOW IT WORKS</span>
+              <span className="text-cyan-400 font-medium text-sm tracking-wide">{t('home.howItWorks.title')}</span>
               <div className="w-2 h-2 bg-purple-400 rounded-full animate-pulse" style={{ animationDelay: '0.5s' }}></div>
             </div>
             
             <h2 className="text-5xl md:text-6xl font-bold text-white mb-6">
-              シンプルな <span className="bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">4ステップ</span>
+              {t('home.howItWorks.subtitle').split(' ').slice(0, -1).join(' ')} <span className="bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">{t('home.howItWorks.subtitle').split(' ').slice(-1)[0]}</span>
             </h2>
             <div className="w-32 h-1 bg-gradient-to-r from-cyan-500 via-purple-500 to-pink-500 rounded-full mx-auto mb-6"></div>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
-              動画投稿から勝者決定まで、すべて自動化されたバトルシステム
+              {t('home.howItWorks.description')}
             </p>
           </div>
 
@@ -179,11 +179,11 @@ const HomePage: React.FC = () => {
                   <span className="text-white font-bold text-sm">1</span>
                 </div>
                 <h3 className="text-xl font-bold text-white mb-4 group-hover:text-cyan-400 transition-colors">
-                  動画投稿
+                  {t('home.howItWorks.steps.upload.title')}
                 </h3>
                 <div className="w-12 h-0.5 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full mx-auto mb-4"></div>
                 <p className="text-gray-300 text-sm leading-relaxed">
-                  ビートボックス動画をアップロード。24時間に1回投稿可能で、自動的にマッチング待機状態に。
+                  {t('home.howItWorks.steps.upload.description')}
                 </p>
               </div>
             </Card>
@@ -208,11 +208,11 @@ const HomePage: React.FC = () => {
                   <span className="text-white font-bold text-sm">2</span>
                 </div>
                 <h3 className="text-xl font-bold text-white mb-4 group-hover:text-purple-400 transition-colors">
-                  自動マッチング
+                  {t('home.howItWorks.steps.matching.title')}
                 </h3>
                 <div className="w-12 h-0.5 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full mx-auto mb-4"></div>
                 <p className="text-gray-300 text-sm leading-relaxed">
-                  ELOレーティングをもとに相手を自動選択。段階的にマッチング範囲を拡大して最適な対戦相手を発見。
+                  {t('home.howItWorks.steps.matching.description')}
                 </p>
               </div>
             </Card>
@@ -237,11 +237,11 @@ const HomePage: React.FC = () => {
                   <span className="text-white font-bold text-sm">3</span>
                 </div>
                 <h3 className="text-xl font-bold text-white mb-4 group-hover:text-yellow-400 transition-colors">
-                  コミュニティ投票
+                  {t('home.howItWorks.steps.voting.title')}
                 </h3>
                 <div className="w-12 h-0.5 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full mx-auto mb-4"></div>
                 <p className="text-gray-300 text-sm leading-relaxed">
-                  5日間の投票期間でコミュニティが勝者を決定。投票参加でポイントを獲得し、投票者ランキングも上昇。
+                  {t('home.howItWorks.steps.voting.description')}
                 </p>
               </div>
             </Card>
@@ -266,11 +266,11 @@ const HomePage: React.FC = () => {
                   <span className="text-white font-bold text-sm">4</span>
                 </div>
                 <h3 className="text-xl font-bold text-white mb-4 group-hover:text-green-400 transition-colors">
-                  結果＆ランキング
+                  {t('home.howItWorks.steps.results.title')}
                 </h3>
                 <div className="w-12 h-0.5 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full mx-auto mb-4"></div>
                 <p className="text-gray-300 text-sm leading-relaxed">
-                  勝者決定後、ELOレーティングが自動更新。バトル履歴はアーカイブされ、ランキングが更新される。
+                  {t('home.howItWorks.steps.results.description')}
                 </p>
               </div>
             </Card>
@@ -291,12 +291,12 @@ const HomePage: React.FC = () => {
           <div className="text-center mb-20">
             <div className="inline-flex items-center gap-3 px-6 py-3 bg-gray-800/30 backdrop-blur-sm rounded-2xl border border-gray-700/30 mb-8">
               <div className="w-2 h-2 bg-gradient-to-r from-cyan-400 to-purple-400 rounded-full animate-pulse"></div>
-              <span className="text-gray-300 font-medium text-sm tracking-wide">PLATFORM FEATURES</span>
+              <span className="text-gray-300 font-medium text-sm tracking-wide">{t('home.features.title')}</span>
               <div className="w-2 h-2 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full animate-pulse" style={{ animationDelay: '0.5s' }}></div>
             </div>
             
             <h2 className="text-5xl md:text-6xl font-bold text-white mb-6">
-              パワフルな <span className="bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">プラットフォーム機能</span>
+              {t('home.features.subtitle').split(' ').slice(0, -2).join(' ')} <span className="bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">{t('home.features.subtitle').split(' ').slice(-2).join(' ')}</span>
             </h2>
             <div className="w-40 h-1 bg-gradient-to-r from-cyan-500 via-purple-500 to-pink-500 rounded-full mx-auto"></div>
           </div>
@@ -312,11 +312,11 @@ const HomePage: React.FC = () => {
                   <ChartLine className="h-10 w-10 text-cyan-400" />
                 </div>
                 <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-cyan-400 transition-colors">
-                  ELOレーティング
+                  {t('home.features.eloRating.title')}
                 </h3>
                 <div className="w-16 h-0.5 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full mb-4"></div>
                 <p className="text-gray-300 leading-relaxed">
-                  チェスと同じELOシステムでスキルを正確に評価。バトル形式別のKファクターで公平なランキングを実現。
+                  {t('home.features.eloRating.description')}
                 </p>
               </div>
             </Card>
@@ -331,11 +331,11 @@ const HomePage: React.FC = () => {
                   <Users className="h-10 w-10 text-purple-400" />
                 </div>
                 <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-purple-400 transition-colors">
-                  投票者ランキング
+                  {t('home.features.voterRanking.title')}
                 </h3>
                 <div className="w-16 h-0.5 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full mb-4"></div>
                 <p className="text-gray-300 leading-relaxed">
-                  コミュニティ投票への参加でポイント獲得。投票数ベースの専用ランキングでコミュニティ貢献度を評価。
+                  {t('home.features.voterRanking.description')}
                 </p>
               </div>
             </Card>

@@ -244,11 +244,49 @@
         "connect": "connect",
         "and": "and",
         "grow": "grow",
-        "join": "Join a global community and take your skills to the next level."
+        "join": "Join a global community and take your skills to the next level.",
+        "compete": "Compete in beatbox battles and",
+        "climbRanking": "climb the rankings!"
       },
       "button": {
         "startBattle": "Start Your Battle",
-        "watchBattles": "Watch Battles & Vote"
+        "watchBattles": "Watch Battles & Vote",
+        "joinNow": "Join Now"
+      }
+    },
+    "howItWorks": {
+      "title": "HOW IT WORKS",
+      "subtitle": "Simple 4 Steps",
+      "description": "From video upload to winner determination, everything is automated in our battle system",
+      "steps": {
+        "upload": {
+          "title": "Video Upload",
+          "description": "Upload your beatbox video. You can post once every 24 hours and automatically enter the matching queue."
+        },
+        "matching": {
+          "title": "Auto Matching",
+          "description": "Opponents are automatically selected based on ELO rating. Gradually expand matching range to find optimal opponents."
+        },
+        "voting": {
+          "title": "Community Voting",
+          "description": "Community decides the winner during a 5-day voting period. Earn points by participating in votes and climb the voter rankings."
+        },
+        "results": {
+          "title": "Results & Rankings",
+          "description": "After winner determination, ELO ratings are automatically updated. Battle history is archived and rankings are updated."
+        }
+      }
+    },
+    "features": {
+      "title": "PLATFORM FEATURES",
+      "subtitle": "Powerful Platform Features",
+      "eloRating": {
+        "title": "ELO Rating",
+        "description": "Accurately evaluate skills with the same ELO system as chess. Fair rankings with battle format-specific K-factors."
+      },
+      "voterRanking": {
+        "title": "Voter Rankings",
+        "description": "Earn points by participating in community voting. Dedicated rankings based on vote count to evaluate community contribution."
       }
     },
     "shadows": {

@@ -244,11 +244,49 @@
         "connect": "繋がり",
         "and": "そして",
         "grow": "成長",
-        "join": "を通じてグローバルコミュニティに参加し、スキルを次のレベルへ。"
+        "join": "を通じてグローバルコミュニティに参加し、スキルを次のレベルへ。",
+        "compete": "ビートボックスバトルで競い合い、",
+        "climbRanking": "ランキングを駆け上がろう！"
       },
       "button": {
         "startBattle": "バトルを始める",
-        "watchBattles": "バトルを観戦 & 投票"
+        "watchBattles": "バトルを観戦 & 投票",
+        "joinNow": "今すぐ参加"
+      }
+    },
+    "howItWorks": {
+      "title": "HOW IT WORKS",
+      "subtitle": "シンプルな 4ステップ",
+      "description": "動画投稿から勝者決定まで、すべて自動化されたバトルシステム",
+      "steps": {
+        "upload": {
+          "title": "動画投稿",
+          "description": "ビートボックス動画をアップロード。24時間に1回投稿可能で、自動的にマッチング待機状態に。"
+        },
+        "matching": {
+          "title": "自動マッチング",
+          "description": "ELOレーティングをもとに相手を自動選択。段階的にマッチング範囲を拡大して最適な対戦相手を発見。"
+        },
+        "voting": {
+          "title": "コミュニティ投票",
+          "description": "5日間の投票期間でコミュニティが勝者を決定。投票参加でポイントを獲得し、投票者ランキングも上昇。"
+        },
+        "results": {
+          "title": "結果＆ランキング",
+          "description": "勝者決定後、ELOレーティングが自動更新。バトル履歴はアーカイブされ、ランキングが更新される。"
+        }
+      }
+    },
+    "features": {
+      "title": "PLATFORM FEATURES",
+      "subtitle": "パワフルな プラットフォーム機能",
+      "eloRating": {
+        "title": "ELOレーティング",
+        "description": "チェスと同じELOシステムでスキルを正確に評価。バトル形式別のKファクターで公平なランキングを実現。"
+      },
+      "voterRanking": {
+        "title": "投票者ランキング",
+        "description": "コミュニティ投票への参加でポイント獲得。投票数ベースの専用ランキングでコミュニティ貢献度を評価。"
       }
     },
     "shadows": {
