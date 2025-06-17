@@ -214,7 +214,7 @@ const RankingPage: React.FC = () => {
                           {/* ランク */}
                           <div className="col-span-2 text-center">
                             {getPositionDisplay(entry.position)}
-                          </div>
+                  </div>
                           
                           {/* プレイヤー情報 */}
                           <div className="col-span-6 flex items-center gap-3 min-w-0">
@@ -226,10 +226,10 @@ const RankingPage: React.FC = () => {
                             <div className="min-w-0 flex-1">
                               <div className="font-medium text-white text-sm truncate group-hover:text-cyan-400 transition-colors">
                                 {entry.username}
-                              </div>
-                            </div>
-                          </div>
-                          
+            </div>
+          </div>
+        </div>
+
                           {/* レーティング */}
                           <div className="col-span-2 text-center">
                             <span className={`font-bold text-sm ${getRatingColor(entry.rating || 0)}`}>
@@ -264,20 +264,20 @@ const RankingPage: React.FC = () => {
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-xl border border-purple-500/20 backdrop-blur-sm mb-4">
                 <Vote className="h-5 w-5 text-purple-400" />
                 <h2 className="text-lg font-bold text-purple-100">{t('rankingPage.tabs.voterRankings')}</h2>
-              </div>
-              
+        </div>
+
               {/* 検索欄 */}
               <div className="relative max-w-sm mx-auto mb-6">
-                <input
-                  type="text"
+            <input
+              type="text"
                   value={voterSearchQuery}
                   onChange={(e) => setVoterSearchQuery(e.target.value)}
-                  placeholder={t('rankingPage.searchPlaceholder')}
+              placeholder={t('rankingPage.searchPlaceholder')}
                   className="w-full bg-gray-800/50 border border-gray-700 rounded-lg pl-10 pr-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-purple-500/50 focus:bg-gray-800 transition-all backdrop-blur-sm text-sm"
-                />
+            />
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-              </div>
-            </div>
+          </div>
+        </div>
 
             {/* 投票者ランキングリスト */}
             {voterLoading ? (
@@ -295,20 +295,20 @@ const RankingPage: React.FC = () => {
                     <div className="col-span-2 text-center">Votes</div>
                     <div className="col-span-2 text-center">Level</div>
                   </div>
-                </div>
+          </div>
                 
                 {/* リスト */}
                 <div className="divide-y divide-gray-700/50">
                   {filteredVoterData.slice(0, 15).map((entry) => {
-                    const isTopThree = entry.position <= 3;
+              const isTopThree = entry.position <= 3;
                     const contributionLevel = (entry.vote_count || 0) > 100 ? 'Expert' : 
                       (entry.vote_count || 0) > 50 ? 'Advanced' : 
                       (entry.vote_count || 0) > 25 ? 'Regular' : 
                       (entry.vote_count || 0) > 10 ? 'Active' : 'Beginner';
                     
-                    return (
+              return (
                       <Link 
-                        key={entry.user_id} 
+                  key={entry.user_id}
                         to={`/profile/${entry.user_id}`}
                         className={`block px-4 py-3 hover:bg-purple-500/5 transition-colors group ${
                           isTopThree ? 'bg-gradient-to-r from-purple-500/5 to-pink-500/5' : ''
@@ -317,19 +317,19 @@ const RankingPage: React.FC = () => {
                         <div className="grid grid-cols-12 gap-4 items-center">
                           {/* ランク */}
                           <div className="col-span-2 text-center">
-                            {getPositionDisplay(entry.position)}
-                          </div>
-                          
+                          {getPositionDisplay(entry.position)}
+                        </div>
+
                           {/* 投票者情報 */}
                           <div className="col-span-6 flex items-center gap-3 min-w-0">
-                            <img
-                              src={entry.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${entry.user_id}`}
-                              alt={entry.username}
+                          <img
+                            src={entry.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${entry.user_id}`}
+                            alt={entry.username}
                               className="w-8 h-8 rounded-full object-cover border border-gray-600 group-hover:border-purple-500/50 transition-colors"
-                            />
+                          />
                             <div className="min-w-0 flex-1">
                               <div className="font-medium text-white text-sm truncate group-hover:text-purple-400 transition-colors">
-                                {entry.username}
+                              {entry.username}
                               </div>
                             </div>
                           </div>
@@ -339,28 +339,28 @@ const RankingPage: React.FC = () => {
                             <span className={`font-bold text-sm ${getVoteCountColor(entry.vote_count || 0)}`}>
                               {entry.vote_count || 0}
                             </span>
-                          </div>
-                          
+                        </div>
+
                           {/* 貢献レベル */}
                           <div className="col-span-2 text-center">
                             <span className="text-xs font-medium text-purple-400 bg-purple-500/10 px-2 py-1 rounded-md">
                               {contributionLevel}
                             </span>
-                          </div>
                         </div>
-                      </Link>
-                    );
-                  })}
+                      </div>
+                    </Link>
+              );
+            })}
                 </div>
-              </div>
-            ) : (
+          </div>
+        ) : (
               <div className="text-center py-12">
                 <Users className="h-12 w-12 text-gray-600 mx-auto mb-4" />
                 <p className="text-gray-400">
                   {voterSearchQuery ? t('rankingPage.noSearchResults') : t('rankingPage.noData')}
-                </p>
-              </div>
-            )}
+            </p>
+          </div>
+        )}
           </div>
         </div>
       </div>

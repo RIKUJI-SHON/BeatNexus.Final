@@ -12,7 +12,9 @@
     "createPost": "Create Post",
     "logout": "Logout",
     "howToGuide": "How-to Guide",
-    "locale": "en-US"
+    "locale": "en-US",
+    "back": "Back",
+    "next": "Next"
   },
   "subscription": {
     "title": "Choose Your Plan",
@@ -1322,6 +1324,7 @@
     },
     "skipTour": "Skip",
     "previous": "Back",
-    "close": "Close"
+    "close": "Close",
+    "getStarted": "Get Started"
   }
 }

@@ -12,7 +12,9 @@
     "createPost": "投稿を作成",
     "logout": "ログアウト",
     "howToGuide": "使い方",
-    "locale": "ja-JP"
+    "locale": "ja-JP",
+    "back": "戻る",
+    "next": "次へ"
   },
   "subscription": {
     "title": "プランを選択",
@@ -1104,6 +1106,7 @@
     },
     "skipTour": "スキップ",
     "previous": "戻る",
-    "close": "閉じる"
+    "close": "閉じる",
+    "getStarted": "スタート"
   }
 }
