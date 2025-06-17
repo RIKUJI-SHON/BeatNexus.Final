@@ -187,56 +187,65 @@ const RankingPage: React.FC = () => {
                 <p className="text-gray-400">{t('rankingPage.loading')}</p>
               </div>
             ) : filteredPlayerData.length > 0 ? (
-              <div className="space-y-3">
-                {filteredPlayerData.slice(0, 10).map((entry) => {
-                  const isTopThree = entry.position <= 3;
-                  return (
-                    <div 
-                      key={entry.user_id}
-                      className={`relative group cursor-pointer transform hover:-translate-y-1 transition-all duration-300 ${
-                        isTopThree ? 'hover:shadow-xl hover:shadow-cyan-500/20' : 'hover:shadow-lg hover:shadow-cyan-500/10'
-                      }`}
-                    >
-                      <div className={`relative bg-gradient-to-r ${getEntryGradient(entry.position)} backdrop-blur-sm rounded-xl border ${
-                        isTopThree 
-                          ? 'border-cyan-500/30 shadow-lg shadow-cyan-500/10' 
-                          : 'border-gray-700/50'
-                      } overflow-hidden`}>
-                        
-                        <Link to={`/profile/${entry.user_id}`} className="block p-4">
-                          <div className="flex items-center gap-4">
-                            <div className="flex-shrink-0">
-                              {getPositionDisplay(entry.position)}
-                            </div>
-
-                            <div className="flex items-center gap-3 flex-1 min-w-0">
-                              <img
-                                src={entry.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${entry.user_id}`}
-                                alt={entry.username}
-                                className="w-12 h-12 rounded-full object-cover border-2 border-gray-700 group-hover:border-cyan-500/50 transition-colors"
-                              />
-                              <div className="flex-1 min-w-0">
-                                <h3 className="font-bold text-white text-sm mb-1 truncate group-hover:text-cyan-400 transition-colors">
-                                  {entry.username}
-                                </h3>
-                                
-                                <div className="flex items-center gap-3 text-xs">
-                                  <div className="flex items-center gap-1">
-                                    <span className="text-gray-400">{t('rankingPage.rating')}:</span>
-                                    <span className={`font-bold ${getRatingColor(entry.rating || 0)}`}>
-                                      {entry.rating || 0}
-                                    </span>
-                                  </div>
-                                  {getTierBadge(entry.rank_name || 'Unranked', entry.rank_color || 'gray')}
-                                </div>
+              <div className="bg-gray-900/50 border border-cyan-500/20 rounded-xl backdrop-blur-sm overflow-hidden">
+                {/* ヘッダー */}
+                <div className="bg-gradient-to-r from-cyan-500/10 to-blue-500/10 px-4 py-3 border-b border-cyan-500/20">
+                  <div className="grid grid-cols-12 gap-4 text-xs font-medium text-gray-300 uppercase tracking-wider">
+                    <div className="col-span-2 text-center">Rank</div>
+                    <div className="col-span-6">Player</div>
+                    <div className="col-span-2 text-center">Rating</div>
+                    <div className="col-span-2 text-center">Tier</div>
+                  </div>
+                </div>
+                
+                {/* リスト */}
+                <div className="divide-y divide-gray-700/50">
+                  {filteredPlayerData.slice(0, 15).map((entry) => {
+                    const isTopThree = entry.position <= 3;
+                    return (
+                      <Link 
+                        key={entry.user_id} 
+                        to={`/profile/${entry.user_id}`}
+                        className={`block px-4 py-3 hover:bg-cyan-500/5 transition-colors group ${
+                          isTopThree ? 'bg-gradient-to-r from-cyan-500/5 to-blue-500/5' : ''
+                        }`}
+                      >
+                        <div className="grid grid-cols-12 gap-4 items-center">
+                          {/* ランク */}
+                          <div className="col-span-2 text-center">
+                            {getPositionDisplay(entry.position)}
+                          </div>
+                          
+                          {/* プレイヤー情報 */}
+                          <div className="col-span-6 flex items-center gap-3 min-w-0">
+                            <img
+                              src={entry.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${entry.user_id}`}
+                              alt={entry.username}
+                              className="w-8 h-8 rounded-full object-cover border border-gray-600 group-hover:border-cyan-500/50 transition-colors"
+                            />
+                            <div className="min-w-0 flex-1">
+                              <div className="font-medium text-white text-sm truncate group-hover:text-cyan-400 transition-colors">
+                                {entry.username}
                               </div>
                             </div>
                           </div>
-                        </Link>
-                      </div>
-                    </div>
-                  );
-                })}
+                          
+                          {/* レーティング */}
+                          <div className="col-span-2 text-center">
+                            <span className={`font-bold text-sm ${getRatingColor(entry.rating || 0)}`}>
+                              {entry.rating || 0}
+                            </span>
+                          </div>
+                          
+                          {/* ティア */}
+                          <div className="col-span-2 text-center">
+                            {getTierBadge(entry.rank_name || 'Unranked', entry.rank_color || 'gray')}
+                          </div>
+                        </div>
+                      </Link>
+                    );
+                  })}
+                </div>
               </div>
             ) : (
               <div className="text-center py-12">
@@ -277,61 +286,72 @@ const RankingPage: React.FC = () => {
                 <p className="text-gray-400">{t('rankingPage.loading')}</p>
               </div>
             ) : filteredVoterData.length > 0 ? (
-              <div className="space-y-3">
-                {filteredVoterData.slice(0, 10).map((entry) => {
-                  const isTopThree = entry.position <= 3;
-                  return (
-                    <div 
-                      key={entry.user_id}
-                      className={`relative group cursor-pointer transform hover:-translate-y-1 transition-all duration-300 ${
-                        isTopThree ? 'hover:shadow-xl hover:shadow-purple-500/20' : 'hover:shadow-lg hover:shadow-purple-500/10'
-                      }`}
-                    >
-                      <div className={`relative bg-gradient-to-r ${getEntryGradient(entry.position)} backdrop-blur-sm rounded-xl border ${
-                        isTopThree 
-                          ? 'border-purple-500/30 shadow-lg shadow-purple-500/10' 
-                          : 'border-gray-700/50'
-                      } overflow-hidden`}>
-                        
-                        <Link to={`/profile/${entry.user_id}`} className="block p-4">
-                          <div className="flex items-center gap-4">
-                            <div className="flex-shrink-0">
-                              {getPositionDisplay(entry.position)}
-                            </div>
-
-                            <div className="flex items-center gap-3 flex-1 min-w-0">
-                              <img
-                                src={entry.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${entry.user_id}`}
-                                alt={entry.username}
-                                className="w-12 h-12 rounded-full object-cover border-2 border-gray-700 group-hover:border-purple-500/50 transition-colors"
-                              />
-                              <div className="flex-1 min-w-0">
-                                <h3 className="font-bold text-white text-sm mb-1 truncate group-hover:text-purple-400 transition-colors">
-                                  {entry.username}
-                                </h3>
-                                
-                                <div className="flex items-center gap-3 text-xs">
-                                  <div className="flex items-center gap-1">
-                                    <span className="text-gray-400">{t('rankingPage.votes')}:</span>
-                                    <span className={`font-bold ${getVoteCountColor(entry.vote_count || 0)}`}>
-                                      {entry.vote_count || 0}
-                                    </span>
-                                  </div>
-                                  <span className="text-purple-400 font-medium text-xs">
-                                    {((entry.vote_count || 0) > 100 ? 'Expert' : 
-                                      (entry.vote_count || 0) > 50 ? 'Advanced' : 
-                                      (entry.vote_count || 0) > 25 ? 'Regular' : 
-                                      (entry.vote_count || 0) > 10 ? 'Active' : 'Beginner')}
-                                  </span>
-                                </div>
+              <div className="bg-gray-900/50 border border-purple-500/20 rounded-xl backdrop-blur-sm overflow-hidden">
+                {/* ヘッダー */}
+                <div className="bg-gradient-to-r from-purple-500/10 to-pink-500/10 px-4 py-3 border-b border-purple-500/20">
+                  <div className="grid grid-cols-12 gap-4 text-xs font-medium text-gray-300 uppercase tracking-wider">
+                    <div className="col-span-2 text-center">Rank</div>
+                    <div className="col-span-6">Voter</div>
+                    <div className="col-span-2 text-center">Votes</div>
+                    <div className="col-span-2 text-center">Level</div>
+                  </div>
+                </div>
+                
+                {/* リスト */}
+                <div className="divide-y divide-gray-700/50">
+                  {filteredVoterData.slice(0, 15).map((entry) => {
+                    const isTopThree = entry.position <= 3;
+                    const contributionLevel = (entry.vote_count || 0) > 100 ? 'Expert' : 
+                      (entry.vote_count || 0) > 50 ? 'Advanced' : 
+                      (entry.vote_count || 0) > 25 ? 'Regular' : 
+                      (entry.vote_count || 0) > 10 ? 'Active' : 'Beginner';
+                    
+                    return (
+                      <Link 
+                        key={entry.user_id} 
+                        to={`/profile/${entry.user_id}`}
+                        className={`block px-4 py-3 hover:bg-purple-500/5 transition-colors group ${
+                          isTopThree ? 'bg-gradient-to-r from-purple-500/5 to-pink-500/5' : ''
+                        }`}
+                      >
+                        <div className="grid grid-cols-12 gap-4 items-center">
+                          {/* ランク */}
+                          <div className="col-span-2 text-center">
+                            {getPositionDisplay(entry.position)}
+                          </div>
+                          
+                          {/* 投票者情報 */}
+                          <div className="col-span-6 flex items-center gap-3 min-w-0">
+                            <img
+                              src={entry.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${entry.user_id}`}
+                              alt={entry.username}
+                              className="w-8 h-8 rounded-full object-cover border border-gray-600 group-hover:border-purple-500/50 transition-colors"
+                            />
+                            <div className="min-w-0 flex-1">
+                              <div className="font-medium text-white text-sm truncate group-hover:text-purple-400 transition-colors">
+                                {entry.username}
                               </div>
                             </div>
                           </div>
-                        </Link>
-                      </div>
-                    </div>
-                  );
-                })}
+                          
+                          {/* 投票数 */}
+                          <div className="col-span-2 text-center">
+                            <span className={`font-bold text-sm ${getVoteCountColor(entry.vote_count || 0)}`}>
+                              {entry.vote_count || 0}
+                            </span>
+                          </div>
+                          
+                          {/* 貢献レベル */}
+                          <div className="col-span-2 text-center">
+                            <span className="text-xs font-medium text-purple-400 bg-purple-500/10 px-2 py-1 rounded-md">
+                              {contributionLevel}
+                            </span>
+                          </div>
+                        </div>
+                      </Link>
+                    );
+                  })}
+                </div>
               </div>
             ) : (
               <div className="text-center py-12">
