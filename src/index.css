@@ -799,12 +799,19 @@ video {
 
 /* 月間投稿制限カード（新デザイン） */
 .glowing-card {
-  width: 240px;
+  width: 100%;
+  max-width: 240px;
   height: 380px;
   background-color: #1a1a1a;
   border-radius: 20px;
   transition: all .3s;
   position: relative;
+}
+
+@media (min-width: 1024px) {
+  .glowing-card {
+    width: 240px;
+  }
 }
 
 .glowing-card:hover {

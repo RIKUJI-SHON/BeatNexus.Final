@@ -308,15 +308,19 @@ const BattlesPage: React.FC = () => {
           </div>
         </section>
 
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-          {/* Left Sidebar */}
-          <aside className="lg:col-span-1 space-y-6 sticky-sidebar">
-            {/* Submission Cooldown Component */}
-            <MonthlyLimitCard />
-          </aside>
+        <div className={`grid grid-cols-1 gap-6 ${user ? 'lg:grid-cols-5' : 'lg:grid-cols-4'}`}>
+          {/* Left Sidebar - ログインユーザーのみ表示 */}
+          {user && (
+            <aside className="lg:col-span-1 space-y-6 sticky-sidebar">
+              {/* Submission Cooldown Component - モバイル版では親コンテナの幅いっぱいに表示 */}
+              <div className="w-full flex justify-center lg:justify-start">
+                <MonthlyLimitCard />
+              </div>
+            </aside>
+          )}
 
           {/* Main Content */}
-          <div className="lg:col-span-3">
+          <div className={user ? 'lg:col-span-3' : 'lg:col-span-3'}>
             <BattleFilters
               sortBy={sortBy}
               setSortBy={setSortBy}
