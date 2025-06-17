@@ -199,7 +199,7 @@ const BattlesPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-950 py-10">
-      <div className="container mx-auto px-4">
+      <div className="container-ultra-wide">
         {/* Welcome Area - Enhanced Design */}
         <section className="relative mb-8 overflow-hidden rounded-2xl border border-gray-700/50">
           {/* Background Image */}
@@ -308,9 +308,9 @@ const BattlesPage: React.FC = () => {
           </div>
         </section>
 
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 lg:items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
           {/* Left Sidebar */}
-          <aside className="lg:col-span-1 space-y-6 lg:sticky lg:top-20 lg:h-fit z-10">
+          <aside className="lg:col-span-1 space-y-6 sticky-sidebar">
             {/* Submission Cooldown Component */}
             <MonthlyLimitCard />
           </aside>
@@ -327,7 +327,7 @@ const BattlesPage: React.FC = () => {
               isLoggedIn={!!user}
             />
             
-            <div className="space-y-6">
+            <div className="space-y-6 mt-8">
               {sortBy !== 'completed' ? (
                 loading ? (
                   <Card className="bg-gray-900 border border-gray-800 p-8 text-center">
@@ -431,7 +431,7 @@ const BattlesPage: React.FC = () => {
           </div>
 
           {/* Right Sidebar */}
-          <aside className="lg:col-span-1 space-y-6 lg:sticky lg:top-20 lg:h-fit z-10">
+          <aside className="lg:col-span-1 space-y-6 sticky-sidebar">
             
             {/* Top Rankings - Direct Display */}
             <div>

@@ -11,6 +11,114 @@
   box-sizing: border-box;
 }
 
+/* 基本設定 */
+html, body {
+  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* 横スクロール防止 */
+* {
+  box-sizing: border-box;
+}
+
+img, video, canvas, iframe {
+  max-width: 100%;
+  height: auto;
+}
+
+/* 全幅コンテナオプション */
+.container-full {
+  width: 100%;
+  max-width: none;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.container-wide {
+  width: 100%;
+  max-width: 90rem; /* 1440px */
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.container-ultra-wide {
+  width: 100%;
+  max-width: 120rem; /* 1920px */
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+@media (min-width: 768px) {
+  .container-full,
+  .container-wide,
+  .container-ultra-wide {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container-full,
+  .container-wide,
+  .container-ultra-wide {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+/* スティッキーサイドバー用のスクロールバー */
+aside::-webkit-scrollbar {
+  width: 4px;
+}
+
+aside::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+aside::-webkit-scrollbar-thumb {
+  background: rgba(107, 114, 128, 0.3);
+  border-radius: 2px;
+}
+
+aside::-webkit-scrollbar-thumb:hover {
+  background: rgba(107, 114, 128, 0.5);
+}
+
+/* Firefox用 */
+aside {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(107, 114, 128, 0.3) transparent;
+}
+
+/* スティッキー要素の強制適用 */
+.sticky-sidebar {
+  position: -webkit-sticky !important;
+  position: sticky !important;
+  top: 5rem !important;
+  z-index: 10 !important;
+  max-height: calc(100vh - 5rem) !important;
+  overflow-y: auto !important;
+}
+
+@media (max-width: 1024px) {
+  .sticky-sidebar {
+    position: static !important;
+    max-height: none !important;
+    overflow-y: visible !important;
+  }
+}
+
 /* フォント最適化 */
 @layer base {
   html {
@@ -102,7 +210,7 @@ video {
   loading: lazy;
 }
 
-/* カスタムスクロールバー（Webkit） */
+/* カスタムスクロールバー（Webkit） - 統一スタイル */
 ::-webkit-scrollbar {
   width: 8px;
 }
@@ -119,6 +227,8 @@ video {
 ::-webkit-scrollbar-thumb:hover {
   background: #6b7280;
 }
+
+
 
 /* スクロールバーを隠すユーティリティクラス */
 .scrollbar-hide {
@@ -653,31 +763,8 @@ video {
   }
 }
 
-/* 新しいバトルカードスタイル */
+/* 新しいバトルカードスタイル（グローイングデザイン） */
 .battle-card {
-  border-radius: 20px;
-  padding: 5px;
-  box-shadow: rgba(151, 65, 252, 0.2) 0 15px 30px -5px;
-  background-image: linear-gradient(144deg, #AF40FF, #5B42F3 50%, #00DDEB);
-  transition: all 0.3s ease;
-}
-
-.battle-card:hover {
-  box-shadow: rgba(151, 65, 252, 0.4) 0 20px 40px -5px;
-  transform: translateY(-2px);
-}
-
-.battle-card__content {
-  background: rgb(5, 6, 45);
-  border-radius: 17px;
-  width: 100%;
-  height: 100%;
-  position: relative;
-  overflow: hidden;
-}
-
-/* グローイングホバーカード（月間投稿制限用） */
-.glowing-card {
   position: relative;
   background: rgb(255, 0, 179);
   background: linear-gradient(137deg, rgb(255, 0, 179) 0%, rgba(0,212,255,1) 100%);
@@ -686,7 +773,7 @@ video {
   filter: drop-shadow(0px 0px 30px rgba(209, 38, 197, 0.5));
 }
 
-.glowing-card::after {
+.battle-card::after {
   content: '';
   background-color: #181818;
   position: absolute;
@@ -699,13 +786,36 @@ video {
   border-radius: 28px;
 }
 
-.glowing-card:hover {
+.battle-card:hover {
   filter: drop-shadow(0px 0px 30px rgba(209, 38, 197, 0.6));
 }
 
-.glowing-card__content {
+.battle-card__content {
   position: relative;
   z-index: 2;
   height: 100%;
   width: 100%;
+}
+
+/* グローイングホバーカード（月間投稿制限用・グラデーション枠デザイン） */
+.glowing-card {
+  border-radius: 20px;
+  padding: 5px;
+  box-shadow: rgba(151, 65, 252, 0.2) 0 15px 30px -5px;
+  background-image: linear-gradient(144deg, #AF40FF, #5B42F3 50%, #00DDEB);
+  transition: all 0.3s ease;
+}
+
+.glowing-card:hover {
+  box-shadow: rgba(151, 65, 252, 0.4) 0 20px 40px -5px;
+  transform: translateY(-2px);
+}
+
+.glowing-card__content {
+  background: rgb(5, 6, 45);
+  border-radius: 17px;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
 }

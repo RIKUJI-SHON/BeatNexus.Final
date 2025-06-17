@@ -153,7 +153,7 @@ export const BattleFilters: React.FC<BattleFiltersProps> = ({
       </div>
 
       {/* 既存のBattleFiltersコンテンツ */}
-      <Card className="bg-gray-900/50 border border-gray-700/50 rounded-xl backdrop-blur-sm">
+      <div className="bg-gray-900/50 border border-gray-700/50 rounded-xl backdrop-blur-sm">
         <div className="p-4">
           {/* 開催中のバトル タイトル */}
           <div className="flex items-center gap-3 mb-6">
@@ -255,8 +255,8 @@ export const BattleFilters: React.FC<BattleFiltersProps> = ({
             </div>
           </div>
         )}
+        </div>
       </div>
-    </Card>
         </div>
       </div>
     </div>

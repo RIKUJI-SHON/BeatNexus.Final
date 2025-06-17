@@ -4,7 +4,6 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 // Layouts
 import { Header } from './components/layout/Header';
 import { Footer } from './components/layout/Footer';
-import { SpaceBackground } from './components/layout/SpaceBackground';
 
 // Toast System
 import ToastContainer from './components/ui/ToastContainer';
@@ -60,10 +59,9 @@ function RouterContent() {
 
   return (
     <>
-      <SpaceBackground />
-      <div className="flex flex-col min-h-screen relative">
+      <div className="min-h-screen">
         <Header />
-        <main id="main-content" className="flex-grow" role="main">
+        <main id="main-content" className="w-full" role="main">
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/battles" element={<BattlesPage />} />

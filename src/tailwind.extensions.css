@@ -47,36 +47,7 @@
   -webkit-line-clamp: 3;
 }
 
-@keyframes twinkle {
-  from {
-    opacity: 0.5;
-  }
-  to {
-    opacity: 1;
-  }
-}
 
-.shooting-stars {
-  position: absolute;
-  width: 150vw;
-  height: 100vh;
-  transform: rotate(-45deg);
-  animation: shooting 5s linear infinite;
-  background-image: 
-    radial-gradient(1px 1px at 10px 10px, white, rgba(0,0,0,0)),
-    radial-gradient(1px 1px at 150px 150px, white, rgba(0,0,0,0)),
-    radial-gradient(1px 1px at 300px 300px, white, rgba(0,0,0,0));
-  background-size: 400px 400px;
-}
-
-@keyframes shooting {
-  from {
-    transform: translateY(-100%) rotate(-45deg);
-  }
-  to {
-    transform: translateY(100%) rotate(-45deg);
-  }
-}
 
 /* Tournament page animations */
 @keyframes float {
