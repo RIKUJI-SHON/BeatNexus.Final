@@ -75,6 +75,11 @@ const ProfilePage: React.FC = () => {
   const [editBio, setEditBio] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [profileLoading, setProfileLoading] = useState(true);
+  const [userStats, setUserStats] = useState({
+    activeBattlesCount: 0,
+    archivedBattlesCount: 0,
+    winsCount: 0
+  });
   
   const displayedUserId = routeUserId || authUser?.id;
   const isOwnProfile = !routeUserId || (authUser?.id === routeUserId);
@@ -127,14 +132,70 @@ const ProfilePage: React.FC = () => {
     if (!displayedUserId) return;
     setBattleLoading(true);
     try {
+      // グローバルバトルデータを更新
       await Promise.all([
         fetchActiveBattles(),
         fetchArchivedBattles()
       ]);
+      
+      // ユーザー専用の戦績統計を直接データベースから取得
+      await fetchUserStats();
     } catch (error) {
       console.error('Error fetching battles:', error);
     } finally {
       setBattleLoading(false);
+    }
+  };
+
+  const fetchUserStats = async () => {
+    if (!displayedUserId) return;
+    
+    try {
+      // アクティブバトル数
+      const { count: activeCount, error: activeError } = await supabase
+        .from('active_battles')
+        .select('*', { count: 'exact', head: true })
+        .or(`player1_user_id.eq.${displayedUserId},player2_user_id.eq.${displayedUserId}`);
+
+      if (activeError) {
+        console.error('Error fetching active battles count:', activeError);
+      }
+
+      // アーカイブバトル数
+      const { count: archivedCount, error: archivedError } = await supabase
+        .from('archived_battles')
+        .select('*', { count: 'exact', head: true })
+        .or(`player1_user_id.eq.${displayedUserId},player2_user_id.eq.${displayedUserId}`);
+
+      if (archivedError) {
+        console.error('Error fetching archived battles count:', archivedError);
+      }
+
+      // 勝利数
+      const { count: winsCount, error: winsError } = await supabase
+        .from('archived_battles')
+        .select('*', { count: 'exact', head: true })
+        .eq('winner_id', displayedUserId);
+
+      if (winsError) {
+        console.error('Error fetching wins count:', winsError);
+      }
+
+      // 統計を更新
+      const newStats = {
+        activeBattlesCount: activeCount || 0,
+        archivedBattlesCount: archivedCount || 0,
+        winsCount: winsCount || 0
+      };
+
+      console.log('User Stats Direct Query:', {
+        displayedUserId,
+        ...newStats
+      });
+
+      setUserStats(newStats);
+    } catch (error) {
+      console.error('Error fetching user stats:', error);
     }
   };
   
@@ -246,13 +307,69 @@ const ProfilePage: React.FC = () => {
     return format(new Date(dateString), 'P', { locale: currentLocale });
   };
 
-  const userActiveBattles = activeBattles.filter(battle => 
-    displayedUserId && (battle.player1_user_id === displayedUserId || battle.player2_user_id === displayedUserId)
-  );
+  // デバッグ用のコンソールログ
+  console.log('Profile Page Debug:', {
+    displayedUserId,
+    activeBattlesCount: activeBattles.length,
+    archivedBattlesCount: archivedBattles.length,
+    activeBattles: activeBattles.slice(0, 3), // 最初の3つだけ表示
+    archivedBattles: archivedBattles.slice(0, 3), // 最初の3つだけ表示
+  });
 
-  const userArchivedBattles = archivedBattles.filter(battle => 
-    displayedUserId && (battle.player1_user_id === displayedUserId || battle.player2_user_id === displayedUserId)
-  );
+  // ユーザーのアクティブバトルをフィルタリング
+  const userActiveBattles = activeBattles.filter(battle => {
+    // Battle型のpropertyを正しく使用
+    const isPlayer1 = battle.player1_user_id === displayedUserId;
+    const isPlayer2 = battle.player2_user_id === displayedUserId;
+    const result = displayedUserId && (isPlayer1 || isPlayer2);
+    
+    if (result) {
+      console.log('Found user active battle:', {
+        battleId: battle.id,
+        isPlayer1,
+        isPlayer2,
+        player1_user_id: battle.player1_user_id,
+        player2_user_id: battle.player2_user_id,
+        displayedUserId
+      });
+    }
+    
+    return result;
+  });
+
+  // ユーザーのアーカイブバトルをフィルタリング
+  const userArchivedBattles = archivedBattles.filter(battle => {
+    const isPlayer1 = battle.player1_user_id === displayedUserId;
+    const isPlayer2 = battle.player2_user_id === displayedUserId;
+    const result = displayedUserId && (isPlayer1 || isPlayer2);
+    
+    if (result) {
+      console.log('Found user archived battle:', {
+        battleId: battle.id,
+        isPlayer1,
+        isPlayer2,
+        player1_user_id: battle.player1_user_id,
+        player2_user_id: battle.player2_user_id,
+        winner_id: battle.winner_id,
+        displayedUserId
+      });
+    }
+    
+    return result;
+  });
+
+  // 勝利数を計算
+  const userWins = userArchivedBattles.filter(battle => battle.winner_id === displayedUserId).length;
+  
+  // 統計ログ
+  console.log('Profile Stats:', {
+    totalBattles: userActiveBattles.length + userArchivedBattles.length,
+    wins: userWins,
+    activeBattles: userActiveBattles.length,
+    archivedBattles: userArchivedBattles.length,
+    userActiveBattles: userActiveBattles.map(b => ({ id: b.id, contestants: [b.player1_user_id, b.player2_user_id] })),
+    userArchivedBattles: userArchivedBattles.map(b => ({ id: b.id, players: [b.player1_user_id, b.player2_user_id], winner: b.winner_id }))
+  });
   
   const getDefaultAvatarUrl = (seed?: string) => `https://api.dicebear.com/7.x/avataaars/svg?seed=${seed || 'defaultSeed'}`;
 
@@ -280,10 +397,26 @@ const ProfilePage: React.FC = () => {
   }
   
   const stats = [
-    { name: t('profilePage.stats.battles'), value: userActiveBattles.length + userArchivedBattles.length, icon: Sword },
-    { name: t('profilePage.stats.wins'), value: userArchivedBattles.filter(b => b.winner_id === displayedUserId).length, icon: Trophy },
-    { name: t('profilePage.stats.active'), value: userActiveBattles.length, icon: Play },
-    { name: t('profilePage.stats.archived'), value: userArchivedBattles.length, icon: Archive },
+    { 
+      name: t('profilePage.stats.battles'), 
+      value: userStats.activeBattlesCount + userStats.archivedBattlesCount, 
+      icon: Sword 
+    },
+    { 
+      name: t('profilePage.stats.wins'), 
+      value: userStats.winsCount, 
+      icon: Trophy 
+    },
+    { 
+      name: t('profilePage.stats.active'), 
+      value: userStats.activeBattlesCount, 
+      icon: Play 
+    },
+    { 
+      name: t('profilePage.stats.archived'), 
+      value: userStats.archivedBattlesCount, 
+      icon: Archive 
+    },
   ];
 
   return (
