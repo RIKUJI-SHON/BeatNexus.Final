@@ -318,9 +318,10 @@ const ProfilePage: React.FC = () => {
 
   // ユーザーのアクティブバトルをフィルタリング
   const userActiveBattles = activeBattles.filter(battle => {
-    // Battle型のpropertyを正しく使用
-    const isPlayer1 = battle.player1_user_id === displayedUserId;
-    const isPlayer2 = battle.player2_user_id === displayedUserId;
+    // battleStoreで変換されたcontestant_a_id/contestant_b_idを使用
+    const battleWithIds = battle as any;
+    const isPlayer1 = battleWithIds.contestant_a_id === displayedUserId;
+    const isPlayer2 = battleWithIds.contestant_b_id === displayedUserId;
     const result = displayedUserId && (isPlayer1 || isPlayer2);
     
     if (result) {
@@ -328,8 +329,8 @@ const ProfilePage: React.FC = () => {
         battleId: battle.id,
         isPlayer1,
         isPlayer2,
-        player1_user_id: battle.player1_user_id,
-        player2_user_id: battle.player2_user_id,
+        contestant_a_id: battleWithIds.contestant_a_id,
+        contestant_b_id: battleWithIds.contestant_b_id,
         displayedUserId
       });
     }

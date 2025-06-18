@@ -20,6 +20,8 @@ export interface Battle {
   player2_submission_id: string;
   player1_user_id: string;
   player2_user_id: string;
+  contestant_a_id: string | null;
+  contestant_b_id: string | null;
   battle_format: BattleFormat;
   status: BattleStatus;
   votes_a: number;

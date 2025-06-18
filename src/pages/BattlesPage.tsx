@@ -87,16 +87,21 @@ const BattlesPage: React.FC = () => {
 
   const filteredBattles = useMemo(() => {
     try {
+      // 完了済みフィルターの場合は空の配列を返す（archived_battlesを使用するため）
+      if (sortBy === 'completed') {
+        return [];
+      }
+
       let battleList = [...(battles || [])];
 
       // MY BATTLES フィルター
       if (showMyBattlesOnly && user) {
-        battleList = battleList.filter(battle => 
-          battle.player1_user_id === user.id || battle.player2_user_id === user.id
-        );
+        battleList = battleList.filter(battle => {
+          // battleStoreで設定されるcontestant_a_id/contestant_b_idを使用
+          const battleWithIds = battle as any;
+          return battleWithIds.contestant_a_id === user.id || battleWithIds.contestant_b_id === user.id;
+        });
       }
-
-
 
       // 検索フィルター
       if (searchQuery) {
@@ -124,14 +129,6 @@ const BattlesPage: React.FC = () => {
             const bTime = b.end_voting_at ? new Date(b.end_voting_at).getTime() : 0;
             return aTime - bTime;
           });
-        case 'completed':
-          return battleList
-            .filter(battle => battle.status === 'COMPLETED')
-            .sort((a, b) => {
-              const aTime = a.end_voting_at ? new Date(b.end_voting_at).getTime() : 0;
-              const bTime = b.end_voting_at ? new Date(b.end_voting_at).getTime() : 0;
-              return bTime - aTime;
-            });
         case null:
         default:
           // フィルターが外れている場合はtrending順（人気順）
@@ -156,8 +153,6 @@ const BattlesPage: React.FC = () => {
         );
       }
 
-
-
       // 検索フィルター（アーカイブバトル用）
       if (searchQuery) {
         battleList = battleList.filter(battle => 
@@ -166,15 +161,29 @@ const BattlesPage: React.FC = () => {
         );
       }
 
-      return battleList;
+      // 完了済みフィルターが選択されている場合のソート
+      if (sortBy === 'completed') {
+        return battleList.sort((a, b) => {
+          const aTime = a.archived_at ? new Date(a.archived_at).getTime() : 0;
+          const bTime = b.archived_at ? new Date(b.archived_at).getTime() : 0;
+          return bTime - aTime; // 新しい順（最近完了した順）
+        });
+      }
+
+      // 通常のアーカイブ表示の場合はそのまま返す（archived_atの降順でソート済み）
+      return battleList.sort((a, b) => {
+        const aTime = a.archived_at ? new Date(a.archived_at).getTime() : 0;
+        const bTime = b.archived_at ? new Date(b.archived_at).getTime() : 0;
+        return bTime - aTime;
+      });
     } catch (error) {
       console.error('Error in filteredArchivedBattles:', error);
       return [];
     }
-  }, [archivedBattles, searchQuery, showMyBattlesOnly, user]);
+  }, [archivedBattles, searchQuery, showMyBattlesOnly, user, sortBy]);
 
   // ページネーション用の計算
-  const activeBattlesTotalItems = filteredBattles.length;
+  const activeBattlesTotalItems = sortBy === 'completed' ? 0 : filteredBattles.length;
   const archivedBattlesTotalItems = filteredArchivedBattles.length;
   
   const activeBattlesTotalPages = Math.ceil(activeBattlesTotalItems / ITEMS_PER_PAGE);
@@ -183,7 +192,7 @@ const BattlesPage: React.FC = () => {
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const endIndex = startIndex + ITEMS_PER_PAGE;
   
-  const paginatedActiveBattles = filteredBattles.slice(startIndex, endIndex);
+  const paginatedActiveBattles = sortBy === 'completed' ? [] : filteredBattles.slice(startIndex, endIndex);
   const paginatedArchivedBattles = filteredArchivedBattles.slice(startIndex, endIndex);
 
   // フィルターが変更されたときにページを1に戻す

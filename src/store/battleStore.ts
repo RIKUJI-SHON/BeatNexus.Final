@@ -173,15 +173,19 @@ export const useBattleStore = create<BattleState>((set, get) => ({
 
         return {
           id: battle.id,
-          title: `${battle.battle_format} Battle`,
+          player1_submission_id: battle.player1_submission_id,
+          player2_submission_id: battle.player2_submission_id,
+          player1_user_id: player1Submission?.user_id || '',
+          player2_user_id: player2Submission?.user_id || '',
+          contestant_a_id: player1Submission?.user_id || null,
+          contestant_b_id: player2Submission?.user_id || null,
           battle_format: battle.battle_format,
-          created_at: battle.created_at,
-          end_voting_at: battle.end_voting_at,
-          contestant_a_id: player1Submission?.user_id || '',
-          contestant_b_id: player2Submission?.user_id || '',
+          status: battle.status.toLowerCase(),
           votes_a: battle.votes_a || 0,
           votes_b: battle.votes_b || 0,
-          status: battle.status.toLowerCase(),
+          end_voting_at: battle.end_voting_at,
+          created_at: battle.created_at,
+          updated_at: battle.updated_at || battle.created_at,
           contestant_a: player1 ? {
             username: player1.username,
             avatar_url: player1.avatar_url
