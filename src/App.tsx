@@ -13,7 +13,8 @@ import { useToastStore } from './store/toastStore';
 import { OfflineIndicator } from './components/ui/OfflineIndicator';
 
 // Auth
-import { AuthProvider } from './components/auth/AuthProvider';
+import { AuthProvider, useAuthModal } from './components/auth/AuthProvider';
+import { AuthModal } from './components/auth/AuthModal';
 
 // Language Initialization
 import { useLanguageInitialization } from './hooks/useLanguageInitialization';
@@ -93,6 +94,7 @@ function AppContent() {
   const { fetchNotifications, subscribeToNotifications } = useNotificationStore();
   const { user } = useAuthStore();
   const { shouldShowOnboarding, setOnboardingModalOpen } = useOnboardingStore();
+  const { isAuthModalOpen, authModalMode, closeAuthModal } = useAuthModal();
   
   // 言語設定の初期化
   useLanguageInitialization();
@@ -141,6 +143,14 @@ function AppContent() {
       
       {/* Onboarding Modal */}
       <OnboardingModal />
+      
+      {/* Auth Modal - Global Level */}
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={closeAuthModal}
+        initialMode={authModalMode}
+        setMode={() => {}} // モード変更は不要（Context経由で管理）
+      />
     </Router>
   );
 }

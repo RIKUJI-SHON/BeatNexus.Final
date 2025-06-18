@@ -15,14 +15,14 @@ export const VoteButton: React.FC<VoteButtonProps> = ({
 }) => {
   return (
     <div className={`vote-button-container ${className}`}>
-      <button
-        onClick={onClick}
-        disabled={disabled}
+    <button
+      onClick={onClick}
+      disabled={disabled}
         className="vote-space-button"
-      >
+    >
         <span>{children}</span>
         <div className="bright-particles"></div>
       </button>
-    </div>
+      </div>
   );
 }; 

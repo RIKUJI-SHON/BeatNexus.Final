@@ -85,47 +85,47 @@ const OnboardingModal: React.FC = () => {
         </div>
 
         {/* メインコンテンツ */}
-        <div className="relative">
-          {/* ヘッダー - シンプルなコントロール */}
-          <div className="absolute -top-12 left-0 right-0 flex justify-between items-center">
-            {/* プログレスインジケーター */}
-            <div className="flex space-x-2">
-              {[0, 1, 2, 3].map((index) => (
-                <button
-                  key={index}
-                  onClick={() => setCurrentSlide(index)}
-                  className={`w-2 h-2 rounded-full transition-all duration-200 ${
-                    index === currentSlide
-                      ? 'bg-cyan-500'
-                      : index < currentSlide
-                      ? 'bg-cyan-600/70'
-                      : 'bg-gray-600'
-                  }`}
-                />
-              ))}
-            </div>
-
-            <div className="flex items-center space-x-3">
-              {/* スキップボタン */}
+      <div className="relative">
+        {/* ヘッダー - シンプルなコントロール */}
+        <div className="absolute -top-12 left-0 right-0 flex justify-between items-center">
+          {/* プログレスインジケーター */}
+          <div className="flex space-x-2">
+            {[0, 1, 2, 3].map((index) => (
               <button
-                onClick={handleSkip}
-                className="text-gray-400 hover:text-white transition-colors text-sm"
-              >
-                {t('onboarding.skipTour')}
-              </button>
-              
-              {/* 閉じるボタン */}
-              <button
-                onClick={handleClose}
-                className="text-gray-400 hover:text-white transition-colors p-1"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
+                key={index}
+                onClick={() => setCurrentSlide(index)}
+                className={`w-2 h-2 rounded-full transition-all duration-200 ${
+                  index === currentSlide
+                    ? 'bg-cyan-500'
+                    : index < currentSlide
+                    ? 'bg-cyan-600/70'
+                    : 'bg-gray-600'
+                }`}
+              />
+            ))}
           </div>
 
-          {/* コンテンツ */}
-          {getCurrentSlide()}
+          <div className="flex items-center space-x-3">
+            {/* スキップボタン */}
+            <button
+              onClick={handleSkip}
+              className="text-gray-400 hover:text-white transition-colors text-sm"
+            >
+              {t('onboarding.skipTour')}
+            </button>
+            
+            {/* 閉じるボタン */}
+            <button
+              onClick={handleClose}
+              className="text-gray-400 hover:text-white transition-colors p-1"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
+
+        {/* コンテンツ */}
+        {getCurrentSlide()}
         </div>
 
         {/* 右側ナビゲーションボタン */}

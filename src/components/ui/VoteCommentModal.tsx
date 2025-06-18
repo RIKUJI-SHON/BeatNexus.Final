@@ -90,8 +90,8 @@ export const VoteCommentModal: React.FC<VoteCommentModalProps> = ({
           {/* Action Button */}
           <div className="flex justify-center">
             <button
-              onClick={handleVote}
-              disabled={isLoading}
+                onClick={handleVote}
+                disabled={isLoading}
               className={`cursor-pointer transition-all text-white px-6 py-2 rounded-lg border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px] active:border-b-[2px] active:brightness-90 active:translate-y-[2px] disabled:opacity-50 disabled:cursor-not-allowed ${
                 player === 'A' 
                   ? 'bg-cyan-500 border-cyan-600' 

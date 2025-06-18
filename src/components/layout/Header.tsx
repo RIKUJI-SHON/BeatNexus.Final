@@ -7,7 +7,7 @@ import { NotificationDropdown } from '../ui/NotificationDropdown';
 import { useTranslation } from 'react-i18next';
 
 import { useAuthStore } from '../../store/authStore';
-import { AuthModal } from '../auth/AuthModal';
+import { useAuthModal } from '../auth/AuthProvider';
 import { supabase } from '../../lib/supabase';
 
 interface UserProfile {
@@ -23,12 +23,11 @@ interface UserProfile {
 
 export const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const [authModalMode, setAuthModalMode] = useState<'login' | 'signup'>('login');
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const location = useLocation();
   const navigate = useNavigate();
   const { user, signOut } = useAuthStore();
+  const { openAuthModal } = useAuthModal();
   const { t, i18n } = useTranslation();
 
   useEffect(() => {
@@ -61,8 +60,7 @@ export const Header: React.FC = () => {
   };
 
   const handleAuthClick = (mode: 'login' | 'signup') => {
-    setAuthModalMode(mode);
-    setIsAuthModalOpen(true);
+    openAuthModal(mode);
   };
 
   const getDefaultAvatarUrl = (seed?: string) => `https://api.dicebear.com/7.x/avataaars/svg?seed=${seed || 'defaultSeed'}`;
@@ -71,15 +69,15 @@ export const Header: React.FC = () => {
 
   return (
     <header className="bg-gray-950/95 backdrop-blur-md text-white border-b border-gray-800 fixed top-0 w-full z-50">
-      <div className="container mx-auto px-4">
-        <div className="flex justify-between items-center h-16">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="flex items-center h-16 gap-8">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
             <span className="font-bold text-xl tracking-tight">BeatNexus</span>
           </Link>
 
           {/* Main Navigation - Desktop */}
-          <nav className="hidden md:flex items-center space-x-1">
+          <nav className="hidden md:flex items-center space-x-1 flex-1 justify-center">
             <Link 
               to="/" 
               className={`px-4 py-2 rounded-lg font-medium transition-colors ${
@@ -182,7 +180,7 @@ export const Header: React.FC = () => {
           </nav>
 
           {/* Right Side Actions */}
-          <div className="hidden md:flex items-center space-x-2">
+          <div className="hidden md:flex items-center space-x-4">
             {user ? (
               <>
                 <Link 
@@ -207,22 +205,22 @@ export const Header: React.FC = () => {
               </>
             ) : (
               <>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="border-cyan-500/50 text-cyan-400 hover:bg-cyan-500/10"
+                <button
+                  className="header-auth-button"
                   onClick={() => handleAuthClick('login')}
                 >
-                  {t('common.login')}
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="border-cyan-500/50 text-cyan-400 hover:bg-cyan-500/10"
+                  <div className="header-auth-button-inner">
+                    {t('common.login')}
+                  </div>
+                </button>
+                <button
+                  className="header-auth-button"
                   onClick={() => handleAuthClick('signup')}
                 >
-                  {t('common.signup')}
-                </Button>
+                  <div className="header-auth-button-inner">
+                    {t('common.signup')}
+                  </div>
+                </button>
               </>
             )}
           </div>
@@ -416,41 +414,35 @@ export const Header: React.FC = () => {
                 </button>
               </div>
             ) : (
-              <div className="mt-4 pt-4 border-t border-gray-800 space-y-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="w-full border-cyan-500/50 text-cyan-400 hover:bg-cyan-500/10"
+              <div className="mt-4 pt-4 border-t border-gray-800 space-y-3 flex flex-col items-center">
+                <button
+                  className="header-auth-button"
                   onClick={() => {
                     handleAuthClick('login');
                     setIsMenuOpen(false);
                   }}
                 >
-                  {t('common.login')}
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="w-full border-cyan-500/50 text-cyan-400 hover:bg-cyan-500/10"
+                  <div className="header-auth-button-inner">
+                    {t('common.login')}
+                  </div>
+                </button>
+                <button
+                  className="header-auth-button"
                   onClick={() => {
                     handleAuthClick('signup');
                     setIsMenuOpen(false);
                   }}
                 >
-                  {t('common.signup')}
-                </Button>
+                  <div className="header-auth-button-inner">
+                    {t('common.signup')}
+                  </div>
+                </button>
               </div>
             )}
           </div>
         </div>
       )}
 
-      <AuthModal
-        isOpen={isAuthModalOpen}
-        onClose={() => setIsAuthModalOpen(false)}
-        initialMode={authModalMode}
-        setMode={setAuthModalMode}
-      />
     </header>
   );
 };

@@ -1,7 +1,24 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, createContext, useContext, useState } from 'react';
 import { useAuthStore } from '../../store/authStore';
 import { supabase } from '../../lib/supabase';
 import { useTranslation } from 'react-i18next';
+
+interface AuthModalContextType {
+  isAuthModalOpen: boolean;
+  authModalMode: 'login' | 'signup';
+  openAuthModal: (mode: 'login' | 'signup') => void;
+  closeAuthModal: () => void;
+}
+
+const AuthModalContext = createContext<AuthModalContextType | undefined>(undefined);
+
+export const useAuthModal = () => {
+  const context = useContext(AuthModalContext);
+  if (context === undefined) {
+    throw new Error('useAuthModal must be used within an AuthProvider');
+  }
+  return context;
+};
 
 interface AuthProviderProps {
   children: React.ReactNode;
@@ -12,6 +29,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const { i18n } = useTranslation();
   const processedUsers = useRef(new Set<string>());
   const authErrorCount = useRef(0);
+  
+  // AuthModal状態管理
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [authModalMode, setAuthModalMode] = useState<'login' | 'signup'>('login');
+
+  const openAuthModal = (mode: 'login' | 'signup') => {
+    setAuthModalMode(mode);
+    setIsAuthModalOpen(true);
+  };
+
+  const closeAuthModal = () => {
+    setIsAuthModalOpen(false);
+  };
 
   // ブラウザ言語を検出する関数
   const detectBrowserLanguage = (): string => {
@@ -195,5 +225,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     };
   }, [setUser, i18n]);
 
-  return <>{children}</>;
+  const authModalContextValue: AuthModalContextType = {
+    isAuthModalOpen,
+    authModalMode,
+    openAuthModal,
+    closeAuthModal,
+  };
+
+  return (
+    <AuthModalContext.Provider value={authModalContextValue}>
+      {children}
+    </AuthModalContext.Provider>
+  );
 }; 
