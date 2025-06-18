@@ -2,40 +2,47 @@ import React from 'react';
 import { X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useOnboardingStore } from '../../store/onboardingStore';
+import { useAuthStore } from '../../store/authStore';
 import { Button3D } from '../ui/Button3D';
 import WelcomeSlide from './slides/WelcomeSlide';
+import ProfileSetupSlide from './slides/ProfileSetupSlide';
+import { BioSetupSlide } from './slides/BioSetupSlide';
 import BattleGuideSlide from './slides/BattleGuideSlide';
 import VotingGuideSlide from './slides/VotingGuideSlide';
 import GetStartedSlide from './slides/GetStartedSlide';
 
 const OnboardingModal: React.FC = () => {
   const { t } = useTranslation();
+  const { user } = useAuthStore();
   const {
     isOnboardingModalOpen,
     currentSlide,
     setOnboardingModalOpen,
-    setHasSeenOnboarding,
+    completeOnboarding,
     nextSlide,
     previousSlide,
     setCurrentSlide
   } = useOnboardingStore();
 
   // モーダルを閉じる処理
-  const handleClose = () => {
-    setOnboardingModalOpen(false);
-    setHasSeenOnboarding(true);
+  const handleClose = async () => {
+    if (user) {
+      await completeOnboarding(user.id);
+    }
   };
 
   // スキップ処理
-  const handleSkip = () => {
-    setOnboardingModalOpen(false);
-    setHasSeenOnboarding(true);
+  const handleSkip = async () => {
+    if (user) {
+      await completeOnboarding(user.id);
+    }
   };
 
   // 完了処理
-  const handleComplete = () => {
-    setOnboardingModalOpen(false);
-    setHasSeenOnboarding(true);
+  const handleComplete = async () => {
+    if (user) {
+      await completeOnboarding(user.id);
+    }
   };
 
   // モーダルが閉じている場合は何も表示しない
@@ -49,10 +56,14 @@ const OnboardingModal: React.FC = () => {
       case 0:
         return <WelcomeSlide />;
       case 1:
-        return <BattleGuideSlide />;
+        return <ProfileSetupSlide />;
       case 2:
-        return <VotingGuideSlide />;
+        return <BioSetupSlide />;
       case 3:
+        return <BattleGuideSlide />;
+      case 4:
+        return <VotingGuideSlide />;
+      case 5:
         return <GetStartedSlide />;
       default:
         return <WelcomeSlide />;
@@ -61,15 +72,17 @@ const OnboardingModal: React.FC = () => {
 
   // 次へボタンのハンドラー
   const handleNext = () => {
-    if (currentSlide === 3) {
+    if (currentSlide === 5) {
       handleComplete();
     } else {
       nextSlide();
     }
   };
 
+  // 特別なサイズ調整は不要（全スライド統一）
+
   return (
-    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 md:p-4 p-2">
       {/* PC版レイアウト（横並び） */}
       <div className="relative hidden md:flex items-center gap-8">
         {/* 左側ナビゲーションボタン */}
@@ -90,7 +103,7 @@ const OnboardingModal: React.FC = () => {
         <div className="absolute -top-12 left-0 right-0 flex justify-between items-center">
           {/* プログレスインジケーター */}
           <div className="flex space-x-2">
-            {[0, 1, 2, 3].map((index) => (
+            {[0, 1, 2, 3, 4, 5].map((index) => (
               <button
                 key={index}
                 onClick={() => setCurrentSlide(index)}
@@ -140,12 +153,12 @@ const OnboardingModal: React.FC = () => {
       </div>
 
       {/* モバイル版レイアウト（縦並び） */}
-      <div className="relative flex md:hidden flex-col items-center w-full max-w-sm">
+      <div className="relative flex md:hidden flex-col items-center w-full max-w-[360px] px-2">
         {/* ヘッダー - シンプルなコントロール */}
-        <div className="w-full flex justify-between items-center mb-6">
+        <div className="w-full flex justify-between items-center mb-3">
           {/* プログレスインジケーター */}
           <div className="flex space-x-2">
-            {[0, 1, 2, 3].map((index) => (
+            {[0, 1, 2, 3, 4, 5].map((index) => (
               <button
                 key={index}
                 onClick={() => setCurrentSlide(index)}
@@ -185,7 +198,7 @@ const OnboardingModal: React.FC = () => {
         </div>
 
         {/* 下部ナビゲーションボタン */}
-        <div className="flex justify-between items-center w-full mt-6 px-4">
+        <div className="flex justify-between items-center w-full mt-3 px-4">
           {/* 戻るボタン */}
           <div className="flex-1 flex justify-start">
             {currentSlide > 0 ? (
@@ -208,7 +221,7 @@ const OnboardingModal: React.FC = () => {
               variant="primary"
               className="px-6 py-2"
             >
-              {currentSlide === 3 ? t('onboarding.getStarted') : `${t('common.next')} ❯`}
+              {currentSlide === 4 ? t('onboarding.getStarted') : `${t('common.next')} ❯`}
             </Button3D>
           </div>
         </div>

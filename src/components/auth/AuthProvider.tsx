@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, createContext, useContext, useState } from 'react';
 import { useAuthStore } from '../../store/authStore';
+import { useOnboardingStore } from '../../store/onboardingStore';
 import { supabase } from '../../lib/supabase';
 import { useTranslation } from 'react-i18next';
 
@@ -26,6 +27,7 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const { setUser } = useAuthStore();
+  const { triggerOnboardingForNewUser } = useOnboardingStore();
   const { i18n } = useTranslation();
   const processedUsers = useRef(new Set<string>());
   const authErrorCount = useRef(0);
@@ -211,10 +213,21 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           authErrorCount.current = 0;
         }
 
-        // 言語設定は新規登録時のみ実行
+        // 新規登録時の処理
         if (session?.user && String(event) === 'SIGNED_UP') {
-          console.log('New user signed up, setting language...');
+          console.log('New user signed up, setting up user...');
+          
+          // 言語設定
           await safeUpdateLanguage(session.user.id, 'signup');
+          
+          // 新規ユーザーへオンボーディング表示をトリガー（少し遅延を設ける）
+          setTimeout(async () => {
+            try {
+              await triggerOnboardingForNewUser(session.user.id);
+            } catch (error) {
+              console.error('Failed to trigger onboarding for new user:', error);
+            }
+          }, 1500); // 1.5秒遅延でプロフィール作成完了を待つ
         }
       }
     );

@@ -9,7 +9,7 @@ const GetStartedSlide: React.FC<GetStartedSlideProps> = () => {
   const { t } = useTranslation();
 
   return (
-    <div className="onboarding-card w-96 h-[500px]">
+    <div className="onboarding-card md:w-96 md:h-[500px] w-[340px] h-[440px]">
       <div className="onboarding-content">
         {/* タイトル */}
         <div className="text-center">
@@ -25,17 +25,10 @@ const GetStartedSlide: React.FC<GetStartedSlideProps> = () => {
           </h2>
         </div>
 
-        {/* スクリーンショット画像 */}
-        <div className="flex justify-center mb-6">
-          <img 
-            src="/images/onboarding/Slide1.png" 
-            alt="Getting Started Screenshot"
-            className="w-full h-32 object-cover rounded-lg shadow-lg"
-          />
-        </div>
+
 
         {/* アクション */}
-        <div className="space-y-4 mb-8">
+        <div className="space-y-5 mb-8">
           <div className="flex items-center gap-4 p-4 bg-cyan-500/10 rounded-xl border border-cyan-500/30 hover:bg-cyan-500/20 transition-colors">
             <div className="p-2 bg-cyan-500/20 rounded-lg">
               <Camera className="w-6 h-6 text-cyan-400" />

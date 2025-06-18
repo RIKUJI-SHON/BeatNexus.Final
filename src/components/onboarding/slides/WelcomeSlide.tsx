@@ -7,7 +7,7 @@ const WelcomeSlide: React.FC<WelcomeSlideProps> = () => {
   const { t } = useTranslation();
 
   return (
-    <div className="onboarding-card w-96 h-[500px]">
+    <div className="onboarding-card md:w-96 md:h-[500px] w-[340px] h-[440px]">
       <div className="onboarding-content">
         {/* タイトル */}
         <div className="text-center">

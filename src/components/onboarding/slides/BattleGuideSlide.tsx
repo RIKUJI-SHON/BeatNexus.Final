@@ -9,7 +9,7 @@ const BattleGuideSlide: React.FC<BattleGuideSlideProps> = () => {
   const { t } = useTranslation();
 
   return (
-    <div className="onboarding-card w-96 h-[500px]">
+    <div className="onboarding-card md:w-96 md:h-[500px] w-[340px] h-[440px]">
       <div className="onboarding-content">
         {/* タイトル */}
         <div className="text-center">
@@ -25,17 +25,10 @@ const BattleGuideSlide: React.FC<BattleGuideSlideProps> = () => {
           </h2>
         </div>
 
-        {/* スクリーンショット画像 */}
-        <div className="flex justify-center mb-6">
-          <img 
-            src="/images/onboarding/Slide2.png" 
-            alt="Battle Process Screenshot"
-            className="w-full h-32 object-cover rounded-lg shadow-lg"
-          />
-        </div>
+
 
         {/* ステップ */}
-        <div className="space-y-3 mb-8">
+        <div className="space-y-4 mb-8">
           <div className="flex items-center gap-3 text-base">
             <div className="p-2 bg-cyan-500/20 rounded-lg">
               <Play className="w-5 h-5 text-cyan-400" />

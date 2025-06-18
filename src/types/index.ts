@@ -7,6 +7,7 @@ export interface User {
   rating: number;
   language: string;
   vote_count: number;
+  has_seen_onboarding: boolean;
   is_deleted?: boolean;
   deleted_at?: string | null;
   created_at: string;

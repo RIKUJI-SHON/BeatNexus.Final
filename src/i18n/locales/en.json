@@ -1340,6 +1340,25 @@
       "description": "Post Video → Auto Matching → Community Vote\nto determine the winner\nA new competitive experience",
       "cta": "Start"
     },
+    "avatarSetup": {
+      "title": "Set Your Profile Picture",
+      "description": "Show your personality with a great profile picture!",
+      "avatarTitle": "Upload Avatar",
+      "avatarDescription": "Choose an image that represents you in the beatboxing community",
+      "uploadSuccess": "Avatar uploaded successfully!",
+      "skipNote": "You can set this up later in Settings"
+    },
+    "bioSetup": {
+      "title": "Tell Your Story",
+      "description": "Share your passion for beatboxing with the community!",
+      "bioTitle": "Your Bio",
+      "bioDescription": "Tell others about yourself, your style, and what makes you unique",
+      "bioPlaceholder": "I'm passionate about beatboxing and love creating amazing beats. I've been practicing for... My favorite techniques are...",
+      "saveButton": "Save Bio",
+      "saving": "Saving...",
+      "saveSuccess": "Bio saved!",
+      "skipNote": "You can write this later in your profile settings"
+    },
     "slide2": {
       "title": "How to Battle",
       "step1": "Post Video",

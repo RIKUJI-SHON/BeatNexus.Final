@@ -93,7 +93,7 @@ function AppContent() {
   const subscribeToRealTimeUpdates = useBattleStore(state => state.subscribeToRealTimeUpdates);
   const { fetchNotifications, subscribeToNotifications } = useNotificationStore();
   const { user } = useAuthStore();
-  const { shouldShowOnboarding, setOnboardingModalOpen } = useOnboardingStore();
+  // オンボーディングは AuthProvider で管理されているため、ここでは不要
   const { isAuthModalOpen, authModalMode, closeAuthModal } = useAuthModal();
   
   // 言語設定の初期化
@@ -119,17 +119,8 @@ function AppContent() {
     };
   }, [subscribeToRealTimeUpdates, subscribeToNotifications, fetchNotifications]);
 
-  // 初回ログイン時のオンボーディング表示判定
-  useEffect(() => {
-    if (user && shouldShowOnboarding()) {
-      // ログインしているユーザーで、まだオンボーディングを見ていない場合
-      const timer = setTimeout(() => {
-        setOnboardingModalOpen(true);
-      }, 1000); // 1秒遅延して表示（画面の読み込み完了を待つ）
-
-      return () => clearTimeout(timer);
-    }
-  }, [user, shouldShowOnboarding, setOnboardingModalOpen]);
+  // 注意: オンボーディング表示は AuthProvider で新規アカウント作成時のみトリガーされる
+  // ここでは手動でのオンボーディング表示制御はしない
 
   return (
     <Router>
