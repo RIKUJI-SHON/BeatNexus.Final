@@ -675,33 +675,64 @@ const PostPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-950 py-10">
+    <div className="min-h-screen bg-gray-950 py-6 sm:py-10">
       <div className="container mx-auto px-4">
         <Button
           variant="ghost"
           size="sm"
-          className="mb-8 text-gray-400 hover:text-white"
+          className="mb-6 sm:mb-8 text-gray-400 hover:text-white"
           onClick={() => navigate(-1)}
           leftIcon={<ArrowLeft className="h-4 w-4" />}
         >
           {t('postPage.backButton')}
         </Button>
 
-        <h1 className="text-4xl font-extrabold text-center mb-2 text-transparent bg-clip-text bg-gradient-to-r from-cyan-500 to-purple-500">
-          {t('postPage.title')}
-        </h1>
-        <p className="text-gray-400 text-center mb-10">
-          {t('postPage.subtitle')}
-        </p>
+        {/* Header */}
+        <div className="text-center mb-8 sm:mb-12">
+          <div className="relative">
+            {/* 背景のグラデーション効果 */}
+            <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 via-purple-500/20 to-pink-500/20 blur-3xl transform -translate-y-4"></div>
+            
+            <div className="relative">
+              <h1 className="text-3xl sm:text-4xl font-extrabold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-cyan-500 to-purple-500">
+                {t('postPage.title')}
+              </h1>
+              <p className="text-gray-400 text-center">
+                {t('postPage.subtitle')}
+              </p>
+            </div>
+          </div>
+        </div>
         
         <Card className="max-w-2xl mx-auto bg-gray-900 border border-gray-800">
-          <div className="p-8">
+          <div className="p-6 sm:p-8">
 
 
             {step === 'upload' && (
               <>
+                {/* 投稿制限情報カード */}
+                {!canSubmit && cooldownInfo && (
+                  <div className="mb-6 bg-orange-500/10 border border-orange-500/30 rounded-lg p-4">
+                    <div className="flex items-center gap-2 mb-3">
+                      <AlertCircle className="h-5 w-5 text-orange-400" />
+                      <h3 className="font-medium text-white">{t('postPage.cooldown.title', '投稿制限中')}</h3>
+                    </div>
+                    <p className="text-sm text-orange-200 mb-3">
+                      {cooldownInfo.message}
+                    </p>
+                    {remainingTime && (
+                      <div className="bg-gray-800/50 rounded-lg p-3">
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-gray-300">{t('postPage.cooldown.nextSubmission', '次回投稿可能まで')}</span>
+                          <span className="text-orange-400 font-medium">{remainingTime}</span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 {error && (
-                  <div className="mb-6 bg-red-500/10 border border-red-500/50 rounded-lg p-4">
+                  <div className="mb-6 bg-red-500/10 border border-red-500/30 rounded-xl p-4 backdrop-blur-sm">
                     <div className="flex items-start gap-2">
                       <AlertCircle className="h-5 w-5 text-red-400 mt-0.5 flex-shrink-0" />
                       <div className="flex-1">
@@ -727,7 +758,7 @@ const PostPage: React.FC = () => {
                 )}
 
                 {isProcessing && (
-                  <div className="mb-6 bg-blue-500/10 border border-blue-500/50 rounded-lg p-4">
+                  <div className="mb-6 bg-blue-500/10 border border-blue-500/30 rounded-xl p-4 backdrop-blur-sm">
                     <div className="flex items-center gap-2 mb-3">
                       <div className="w-5 h-5 border-2 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
                       <h3 className="font-medium text-white">{t('postPage.processing.title')}</h3>
@@ -760,11 +791,11 @@ const PostPage: React.FC = () => {
                 )}
 
                 <div 
-                  className={`border-2 border-dashed rounded-lg transition-colors ${
+                  className={`border-2 border-dashed rounded-xl transition-all duration-300 ${
                     isDragging 
-                      ? 'border-cyan-500 bg-cyan-500/5' 
-                      : 'border-gray-700 hover:border-cyan-500/50'
-                  }`}
+                      ? 'border-cyan-400 bg-cyan-500/10 scale-105' 
+                      : 'border-gray-700 hover:border-cyan-500/50 hover:bg-gray-800/30'
+                  } ${!canSubmit ? 'opacity-50 pointer-events-none' : ''}`}
                   onDragOver={handleDragOver}
                   onDragLeave={handleDragLeave}
                   onDrop={handleDrop}
@@ -775,73 +806,78 @@ const PostPage: React.FC = () => {
                     className="hidden" 
                     ref={fileInputRef} 
                     onChange={handleFileChange}
+                    disabled={!canSubmit}
                   />
                   
-                  <div className="p-8 text-center">
-                    <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gray-800 flex items-center justify-center">
-                      <Upload className="h-10 w-10 text-cyan-400" />
+                  <div className="p-6 sm:p-8 text-center">
+                    <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-gray-800 to-gray-700 flex items-center justify-center shadow-lg border border-gray-600">
+                      <Upload className="h-8 w-8 sm:h-10 sm:w-10 text-cyan-400" />
                     </div>
-                    <h3 className="text-xl font-semibold text-white mb-2">
+                    <h3 className="text-lg sm:text-xl font-semibold text-white mb-2">
                       {t('postPage.upload.dropHere')}
                     </h3>
-                    <p className="text-gray-400 mb-4">
+                    <p className="text-gray-400 mb-4 text-sm sm:text-base">
                       {t('postPage.upload.orBrowse')}
                     </p>
                     <Button
                       variant="outline"
                       onClick={triggerFileInput}
-                      className="border-cyan-500/50 text-cyan-400 hover:bg-cyan-500/10"
+                      disabled={!canSubmit}
+                      className="border-cyan-500/50 text-cyan-400 hover:bg-cyan-500/10 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {t('postPage.upload.selectVideo')}
                     </Button>
                   </div>
                 </div>
 
-                <div className="mt-8 space-y-6">
-                  <h3 className="text-lg font-semibold text-white flex items-center gap-2">
-                    <Crown className="h-5 w-5 text-yellow-500" />
-                    {t('postPage.guidelines.title')}
-                  </h3>
-                  <div className="space-y-4">
-                    <div className="bg-gray-800/50 rounded-lg p-4">
+                <div className="mt-6 sm:mt-8 space-y-6">
+                  <div className="text-center">
+                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-yellow-500/10 to-amber-500/10 rounded-xl border border-yellow-500/30 backdrop-blur-sm mb-4">
+                      <Crown className="h-5 w-5 text-yellow-400" />
+                      <h3 className="text-lg font-semibold text-yellow-100">{t('postPage.guidelines.title')}</h3>
+                    </div>
+                  </div>
+                  
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div className="bg-gray-800/30 backdrop-blur-sm rounded-xl p-4 border border-gray-700/50 hover:border-cyan-500/30 transition-colors">
                       <Music className="h-5 w-5 text-cyan-400 mb-2" />
-                      <h4 className="font-medium text-white mb-1">{t('postPage.guidelines.audioQuality.title')}</h4>
-                      <p className="text-sm text-gray-400">
+                      <h4 className="font-medium text-white mb-1 text-sm sm:text-base">{t('postPage.guidelines.audioQuality.title')}</h4>
+                      <p className="text-xs sm:text-sm text-gray-400">
                         {t('postPage.guidelines.audioQuality.description')}
                       </p>
                     </div>
-                    <div className="bg-gray-800/50 rounded-lg p-4">
+                    <div className="bg-gray-800/30 backdrop-blur-sm rounded-xl p-4 border border-gray-700/50 hover:border-purple-500/30 transition-colors">
                       <Video className="h-5 w-5 text-purple-400 mb-2" />
-                      <h4 className="font-medium text-white mb-1">{t('postPage.guidelines.videoLengthSize.title')}</h4>
-                      <p className="text-sm text-gray-400">
+                      <h4 className="font-medium text-white mb-1 text-sm sm:text-base">{t('postPage.guidelines.videoLengthSize.title')}</h4>
+                      <p className="text-xs sm:text-sm text-gray-400">
                         {t('postPage.guidelines.videoLengthSize.description')}
                       </p>
                     </div>
-                    <div className="bg-gray-800/50 rounded-lg p-4">
+                    <div className="bg-gray-800/30 backdrop-blur-sm rounded-xl p-4 border border-gray-700/50 hover:border-yellow-500/30 transition-colors">
                       <AlertCircle className="h-5 w-5 text-yellow-400 mb-2" />
-                      <h4 className="font-medium text-white mb-1">{t('postPage.guidelines.facePolicy.title')}</h4>
-                      <p className="text-sm text-gray-400">
+                      <h4 className="font-medium text-white mb-1 text-sm sm:text-base">{t('postPage.guidelines.facePolicy.title')}</h4>
+                      <p className="text-xs sm:text-sm text-gray-400">
                         {t('postPage.guidelines.facePolicy.description')}
                       </p>
                     </div>
-                    <div className="bg-gray-800/50 rounded-lg p-4 border border-red-500/20">
+                    <div className="bg-gray-800/30 backdrop-blur-sm rounded-xl p-4 border border-red-500/30 hover:border-red-500/50 transition-colors">
                       <Shield className="h-5 w-5 text-red-400 mb-2" />
-                      <h4 className="font-medium text-white mb-1">{t('postPage.guidelines.lipSyncPolicy.title')}</h4>
-                      <p className="text-sm text-gray-400">
+                      <h4 className="font-medium text-white mb-1 text-sm sm:text-base">{t('postPage.guidelines.lipSyncPolicy.title')}</h4>
+                      <p className="text-xs sm:text-sm text-gray-400">
                         {t('postPage.guidelines.lipSyncPolicy.description')}
                       </p>
                     </div>
-                    <div className="bg-gray-800/50 rounded-lg p-4 border border-green-500/20">
+                    <div className="bg-gray-800/30 backdrop-blur-sm rounded-xl p-4 border border-green-500/30 hover:border-green-500/50 transition-colors">
                       <Settings className="h-5 w-5 text-green-400 mb-2" />
-                      <h4 className="font-medium text-white mb-1">{t('postPage.guidelines.allowedEffects.title')}</h4>
-                      <p className="text-sm text-gray-400">
+                      <h4 className="font-medium text-white mb-1 text-sm sm:text-base">{t('postPage.guidelines.allowedEffects.title')}</h4>
+                      <p className="text-xs sm:text-sm text-gray-400">
                         {t('postPage.guidelines.allowedEffects.description')}
                       </p>
                     </div>
-                    <div className="bg-gray-800/50 rounded-lg p-4 border border-red-500/20">
+                    <div className="bg-gray-800/30 backdrop-blur-sm rounded-xl p-4 border border-red-500/30 hover:border-red-500/50 transition-colors">
                       <X className="h-5 w-5 text-red-400 mb-2" />
-                      <h4 className="font-medium text-white mb-1">{t('postPage.guidelines.notAllowed.title')}</h4>
-                      <p className="text-sm text-gray-400">
+                      <h4 className="font-medium text-white mb-1 text-sm sm:text-base">{t('postPage.guidelines.notAllowed.title')}</h4>
+                      <p className="text-xs sm:text-sm text-gray-400">
                         {t('postPage.guidelines.notAllowed.description')}
                       </p>
                     </div>
@@ -879,7 +915,7 @@ const PostPage: React.FC = () => {
 
 
                 {error && (
-                  <div className="bg-red-500/10 border border-red-500/50 rounded-lg p-4">
+                  <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4 backdrop-blur-sm">
                     <div className="flex items-start gap-2">
                       <AlertCircle className="h-5 w-5 text-red-400 mt-0.5 flex-shrink-0" />
                       <div className="flex-1">
@@ -915,7 +951,7 @@ const PostPage: React.FC = () => {
                 )}
 
                 {isProcessing && (
-                  <div className="bg-blue-500/10 border border-blue-500/50 rounded-lg p-4">
+                  <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-4 backdrop-blur-sm">
                     <div className="flex items-center gap-2 mb-3">
                       <div className="w-5 h-5 border-2 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
                       <h3 className="font-medium text-white">{t('postPage.processing.title')}</h3>
@@ -948,7 +984,7 @@ const PostPage: React.FC = () => {
                 )}
 
                 {showAutoCompression && !isProcessing && videoFile && videoDuration && (
-                  <div className="bg-green-500/10 border border-green-500/50 rounded-lg p-4">
+                  <div className="bg-green-500/10 border border-green-500/30 rounded-xl p-4 backdrop-blur-sm">
                     <div className="flex items-center gap-2 mb-3">
                       <CheckCircle className="h-5 w-5 text-green-400" />
                       <h3 className="font-medium text-white">{t('postPage.compression.autoAvailable')}</h3>
@@ -1010,7 +1046,7 @@ const PostPage: React.FC = () => {
                 )}
 
                 {showCompressionOption && !isUploading && videoFile && (
-                  <div className="bg-orange-500/10 border border-orange-500/50 rounded-lg p-4">
+                  <div className="bg-orange-500/10 border border-orange-500/30 rounded-xl p-4 backdrop-blur-sm">
                     <div className="flex items-center gap-2 mb-3">
                       <AlertCircle className="h-5 w-5 text-orange-400" />
                       <h3 className="font-medium text-white">{t('postPage.compression.fileSizeTooLarge')}</h3>
@@ -1071,10 +1107,10 @@ const PostPage: React.FC = () => {
                   </div>
                 )}
 
-                <div className="bg-gray-800/50 rounded-lg p-4">
+                <div className="bg-gray-800/30 backdrop-blur-sm rounded-xl p-4 sm:p-6 border border-gray-700/50">
                   <div className="flex items-center gap-2 mb-4">
                     <AlertCircle className="h-5 w-5 text-cyan-400" />
-                    <h3 className="font-medium text-white">
+                    <h3 className="font-medium text-white text-sm sm:text-base">
                       {t('postPage.submissionGuidelines.title')}
                     </h3>
                   </div>
@@ -1137,22 +1173,22 @@ const PostPage: React.FC = () => {
                   </div>
                 </div>
                 
-                <div className="flex gap-4">
+                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-2">
                   <Button
                     type="button"
                     variant="outline"
                     onClick={handleRemoveVideo}
-                    className="flex-1 border-gray-700 text-gray-300 hover:text-white"
+                    className="flex-1 border-gray-700 text-gray-300 hover:text-white text-sm sm:text-base"
                   >
                     {t('postPage.buttons.cancel')}
                   </Button>
                   <Button
                     type="submit"
                     variant="primary"
-                    className="flex-1 bg-gradient-to-r from-cyan-500 to-purple-500"
+                    className="flex-1 bg-gradient-to-r from-cyan-500 to-purple-500 text-sm sm:text-base"
                     isLoading={isUploading}
                     disabled={!acceptedGuidelines || !acceptedFacePolicy || !acceptedContent || isUploading || !canSubmit}
-                    leftIcon={<Mic className="h-5 w-5" />}
+                    leftIcon={<Mic className="h-4 w-4 sm:h-5 sm:w-5" />}
                   >
                     {t('postPage.buttons.submitToBattlePool')}
                   </Button>
@@ -1161,28 +1197,35 @@ const PostPage: React.FC = () => {
             )}
 
             {step === 'success' && (
-              <div className="text-center">
-                <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-green-500/20 flex items-center justify-center">
-                  <CheckCircle className="h-10 w-10 text-green-500" />
+              <div className="text-center py-4 sm:py-8">
+                <div className="relative mb-6">
+                  {/* 背景のグラデーション効果 */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-green-500/20 via-emerald-500/20 to-cyan-500/20 blur-2xl"></div>
+                  
+                  <div className="relative w-20 h-20 sm:w-24 sm:h-24 mx-auto rounded-full bg-gradient-to-br from-green-500/20 to-emerald-500/20 flex items-center justify-center shadow-lg border border-green-500/30">
+                    <CheckCircle className="h-10 w-10 sm:h-12 sm:w-12 text-green-400" />
+                  </div>
                 </div>
-                <h2 className="text-2xl font-bold text-white mb-2">
+                
+                <h2 className="text-xl sm:text-2xl font-bold text-white mb-2">
                   {t('postPage.success.title')}
                 </h2>
-                <p className="text-gray-400 mb-8">
+                <p className="text-gray-400 mb-6 sm:mb-8 text-sm sm:text-base">
                   {t('postPage.success.description')}
                 </p>
-                <div className="flex flex-col sm:flex-row justify-center gap-4">
+                
+                <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">
                   <Button
                     variant="outline"
                     onClick={() => navigate('/my-battles')}
-                    className="border-gray-700 text-gray-300 hover:text-white"
+                    className="border-gray-700 text-gray-300 hover:text-white text-sm sm:text-base"
                   >
                     {t('postPage.buttons.viewMyBattles')}
                   </Button>
                   <Button
                     variant="primary"
                     onClick={() => setStep('upload')}
-                    className="bg-gradient-to-r from-cyan-500 to-purple-500"
+                    className="bg-gradient-to-r from-cyan-500 to-purple-500 text-sm sm:text-base"
                   >
                     {t('postPage.buttons.submitAnother')}
                   </Button>
