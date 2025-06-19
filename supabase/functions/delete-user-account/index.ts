@@ -1,3 +1,19 @@
+/**
+ * 🗑️ BeatNexus ユーザーアカウント削除 Edge Function
+ * 
+ * 【v4完全メール解放システム対応】
+ * この関数は safe_delete_user_account を呼び出しますが、
+ * 内部では safe_delete_user_account_v4 が実行され、以下の最新機能が動作します：
+ * 
+ * ✅ 動画ファイル物理削除（Storageから完全削除）
+ * ✅ auth.identities完全削除（メール即座解放）
+ * ✅ バトル履歴に応じた適切な削除方式選択
+ * ✅ 完全匿名化とプライバシー保護
+ * ✅ 削除後の同メールアドレス即座再登録対応
+ * 
+ * 要件定義書（BeatNexus.mdc）記載のv4仕様と機能的に同一です。
+ */
+
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { createClient, SupabaseClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
@@ -11,7 +27,13 @@ const corsHeaders = {
 async function safeDeleteUserProfile(supabaseClient: SupabaseClient, userId: string) {
   console.log(`Attempting to safely delete profile for user ${userId}`);
   
-  // 新しい安全な削除関数を呼び出し
+  // 🔄 注意: safe_delete_user_account は内部で safe_delete_user_account_v4 を呼び出す
+  // ラッパー関数です。以下のv4の全機能が動作します：
+  // - 動画ファイル物理削除（delete_user_videos_from_storage）
+  // - auth.identities完全削除によるメール即座解放
+  // - バトル履歴に応じたソフト削除/物理削除の自動判定
+  // - タイムスタンプ付き一意匿名化メール生成
+  // 機能的には要件定義書記載のv4仕様と完全に同一です。
   const { data, error } = await supabaseClient.rpc('safe_delete_user_account', {
     p_user_id: userId
   });

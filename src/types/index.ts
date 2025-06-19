@@ -10,6 +10,7 @@ export interface User {
   has_seen_onboarding: boolean;
   is_deleted?: boolean;
   deleted_at?: string | null;
+  current_community_id: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -304,3 +305,6 @@ export interface CommunityRanking {
   rating: number;
   rank_in_community: number;
 }
+
+// 自動生成されたSupabaseデータベース型をエクスポート
+export type { Database } from './database.types';
