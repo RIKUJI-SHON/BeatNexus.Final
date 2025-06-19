@@ -234,3 +234,67 @@ export interface VoterRankInfo {
   updated_at: string;
   user_position: number;
 }
+
+// Community types
+export type CommunityRole = 'owner' | 'admin' | 'member';
+
+export interface Community {
+  id: string;
+  name: string;
+  description?: string;
+  owner_user_id: string;
+  member_count: number;
+  average_rating: number;
+  created_at: string;
+  updated_at: string;
+  password_hash?: string;
+}
+
+export interface CommunityMember {
+  community_id: string;
+  user_id: string;
+  role: CommunityRole;
+  joined_at: string;
+  username?: string;
+  avatar_url?: string;
+  rating?: number;
+}
+
+export interface CommunityChatMessage {
+  id: string;
+  community_id: string;
+  user_id: string;
+  content: string;
+  created_at: string;
+  username?: string;
+  avatar_url?: string;
+}
+
+export interface CommunityWithOwner extends Community {
+  owner_username: string;
+  owner_avatar_url?: string;
+  global_rank?: number;
+}
+
+export interface UserCommunity {
+  user_id: string;
+  community_id: string;
+  role: CommunityRole;
+  joined_at: string;
+  community_name: string;
+  community_description?: string;
+  member_count: number;
+  average_rating: number;
+  user_rank_in_community?: number;
+}
+
+export interface CommunityRanking {
+  community_id: string;
+  user_id: string;
+  role: CommunityRole;
+  joined_at: string;
+  username: string;
+  avatar_url?: string;
+  rating: number;
+  rank_in_community: number;
+}

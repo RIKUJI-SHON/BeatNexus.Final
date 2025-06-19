@@ -44,6 +44,7 @@ import SettingsPage from './pages/SettingsPage';
 import TournamentPage from './pages/TournamentPage';
 import FAQPage from './pages/FAQPage';
 import NotificationTestPage from './pages/NotificationTestPage';
+import CommunityDetailPage from './pages/CommunityDetailPage';
 
 // CSS for animations
 import './tailwind.extensions.css';
@@ -75,6 +76,7 @@ function RouterContent() {
             <Route path="/ranking" element={<RankingPage />} />
             <Route path="/rating-test" element={<RatingTestPage />} />
             <Route path="/community" element={<CommunityPage />} />
+            <Route path="/community/:id" element={<CommunityDetailPage />} />
             <Route path="/subscription" element={<SubscriptionPage />} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="/tournament" element={<TournamentPage />} />
