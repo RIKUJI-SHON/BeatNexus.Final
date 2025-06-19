@@ -88,7 +88,7 @@ const CommunityPage: React.FC = () => {
 
   const handleCreateCommunity = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!requireAuth(() => handleCreateCommunity(e))) return;
+    // if (!requireAuth(() => handleCreateCommunity(e))) return;
 
     setIsCreatingCommunity(true);
     
