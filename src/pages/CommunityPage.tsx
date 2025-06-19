@@ -29,6 +29,7 @@ const CommunityPage: React.FC = () => {
     error,
     fetchCommunities,
     fetchUserCommunities,
+    fetchUserCurrentCommunity,
     createCommunity,
     joinCommunity,
     clearError
@@ -36,9 +37,10 @@ const CommunityPage: React.FC = () => {
 
   const [searchQuery, setSearchQuery] = useState('');
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [joinPassword, setJoinPassword] = useState<{[key: string]: string}>({});
-  const [showJoinModal, setShowJoinModal] = useState<string | null>(null);
+  const [joinPassword, setJoinPassword] = useState('');
+  const [showJoinModal, setShowJoinModal] = useState<{communityId: string; community: any} | null>(null);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isCreatingCommunity, setIsCreatingCommunity] = useState(false);
   
   // コミュニティ作成フォーム
   const [createForm, setCreateForm] = useState({
@@ -53,17 +55,29 @@ const CommunityPage: React.FC = () => {
     setAuthModalOpen: setIsAuthModalOpen,
     setAuthModalMode: () => {},
   });
+  
+    useEffect(() => {
+    const checkUserCommunity = async () => {
+      if (user && !isCreatingCommunity) {
+        // ユーザーが既にコミュニティに所属している場合、そのコミュニティページにリダイレクト
+        // コミュニティ作成中やモーダル表示中はリダイレクトしない
+        const currentCommunity = await fetchUserCurrentCommunity();
+        if (currentCommunity && !showCreateModal && !showJoinModal) {
+          navigate(`/community/${currentCommunity.id}`);
+          return;
+        }
+        fetchUserCommunities();
+      }
+    };
 
-  useEffect(() => {
     fetchCommunities();
-    if (user) {
-      fetchUserCommunities();
-    }
+    checkUserCommunity();
+    
     if (error) {
       toast.error(error);
       clearError();
     }
-  }, [user, error]);
+  }, [user, error, navigate, showCreateModal, showJoinModal, isCreatingCommunity]);
 
   // 検索フィルター
   const filteredCommunities = communities.filter(community =>
@@ -76,18 +90,29 @@ const CommunityPage: React.FC = () => {
     e.preventDefault();
     if (!requireAuth(() => handleCreateCommunity(e))) return;
 
-    const result = await createCommunity(
-      createForm.name,
-      createForm.description,
-      createForm.isPrivate ? createForm.password : undefined
-    );
+    setIsCreatingCommunity(true);
+    
+    try {
+      const result = await createCommunity(
+        createForm.name,
+        createForm.description,
+        createForm.isPrivate ? createForm.password : undefined
+      );
 
-    if (result.success) {
-      toast.success(t('communityCreated'));
-      setShowCreateModal(false);
-      setCreateForm({ name: '', description: '', password: '', isPrivate: false });
-    } else {
-      toast.error(result.message);
+      if (result.success) {
+        toast.success(t('communityCreated'));
+        setShowCreateModal(false);
+        setCreateForm({ name: '', description: '', password: '', isPrivate: false });
+        
+        // 作成したコミュニティページに即座にリダイレクト
+        if (result.community_id) {
+          navigate(`/community/${result.community_id}`, { replace: true });
+        }
+      } else {
+        toast.error(result.message);
+      }
+    } finally {
+      setIsCreatingCommunity(false);
     }
   };
 
@@ -95,18 +120,28 @@ const CommunityPage: React.FC = () => {
     if (!requireAuth(() => handleJoinCommunity(communityId))) return;
 
     const community = communities.find(c => c.id === communityId);
-    const hasPassword = community && !!community.password_hash;
+    if (!community) return;
+
+    // 参加確認モーダルを表示
+    setShowJoinModal({ communityId, community });
+  };
+
+  const confirmJoinCommunity = async () => {
+    if (!showJoinModal) return;
+
+    const { communityId, community } = showJoinModal;
+    const hasPassword = !!community.password_hash;
     
-    if (hasPassword && !joinPassword[communityId]) {
-      setShowJoinModal(communityId);
+    if (hasPassword && !joinPassword.trim()) {
+      toast.error(t('passwordRequired'));
       return;
     }
 
-    const result = await joinCommunity(communityId, joinPassword[communityId]);
+    const result = await joinCommunity(communityId, hasPassword ? joinPassword : undefined);
     
     if (result.success) {
       toast.success(t('joinedCommunity'));
-      setJoinPassword(prev => ({ ...prev, [communityId]: '' }));
+      setJoinPassword('');
       setShowJoinModal(null);
     } else {
       toast.error(result.message);
@@ -137,7 +172,7 @@ const CommunityPage: React.FC = () => {
                 {community.description || t('noDescription')}
               </p>
             </div>
-          </div>
+      </div>
 
           {/* オーナー情報 */}
           <div className="flex items-center gap-3 mb-4 p-3 bg-gray-800 rounded-lg">
@@ -145,12 +180,12 @@ const CommunityPage: React.FC = () => {
               src={community.owner_avatar_url}
               alt={community.owner_username}
               size="sm"
-            />
-            <div className="flex-1">
+                  />
+                  <div className="flex-1">
               <p className="text-sm text-gray-300">{t('owner')}</p>
               <p className="text-white font-medium">{community.owner_username}</p>
-            </div>
-          </div>
+                    </div>
+                  </div>
 
           {/* 統計情報 */}
           <div className="grid grid-cols-2 gap-4 mb-4">
@@ -160,7 +195,7 @@ const CommunityPage: React.FC = () => {
                 <span className="text-white font-bold">{community.member_count}</span>
               </div>
               <p className="text-xs text-gray-400">{t('members')}</p>
-            </div>
+                </div>
             <div className="text-center p-3 bg-gray-800 rounded-lg">
               <div className="flex items-center justify-center gap-1 mb-1">
                 <Trophy className="w-4 h-4 text-yellow-400" />
@@ -181,19 +216,19 @@ const CommunityPage: React.FC = () => {
               >
                 <MessageSquare className="w-4 h-4 mr-2" />
                 {t('enterCommunity')}
-              </Button>
+                        </Button>
             ) : (
-              <Button
+                        <Button 
                 onClick={() => handleJoinCommunity(community.id)}
                 variant="outline"
                 className="flex-1 border-gray-600 text-gray-300 hover:bg-gray-800"
               >
                 <Plus className="w-4 h-4 mr-2" />
                 {t('join')}
-              </Button>
+                        </Button>
             )}
-          </div>
-        </div>
+                      </div>
+                    </div>
       </Card>
     );
   };
@@ -234,8 +269,8 @@ const CommunityPage: React.FC = () => {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10 bg-gray-900 border-gray-700 text-white placeholder-gray-400 w-full"
               />
-            </div>
-            <Button
+                          </div>
+                            <Button
               onClick={() => {
                 if (requireAuth(() => setShowCreateModal(true))) {
                   setShowCreateModal(true);
@@ -245,9 +280,9 @@ const CommunityPage: React.FC = () => {
             >
               <Plus className="w-5 h-5 mr-2" />
               {t('createCommunity')}
-            </Button>
-          </div>
-        </div>
+                            </Button>
+                            </div>
+                          </div>
       </section>
 
       {/* メインコンテンツ */}
@@ -265,7 +300,7 @@ const CommunityPage: React.FC = () => {
                 if (!community) return null;
                 return renderCommunityCard(community);
               })}
-            </div>
+                      </div>
           </section>
         )}
 
@@ -283,7 +318,7 @@ const CommunityPage: React.FC = () => {
             <div className="text-center py-12">
               <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-400"></div>
               <p className="text-gray-400 mt-4">{t('loading')}</p>
-            </div>
+                  </div>
           ) : filteredCommunities.length === 0 ? (
             <Card className="bg-gray-900 border-gray-700 p-12 text-center">
               <Users className="w-16 h-16 text-gray-600 mx-auto mb-4" />
@@ -294,7 +329,7 @@ const CommunityPage: React.FC = () => {
                 {searchQuery ? t('tryDifferentSearch') : t('createFirstCommunity')}
               </p>
               {!searchQuery && (
-                <Button
+                              <Button 
                   onClick={() => {
                     if (requireAuth(() => setShowCreateModal(true))) {
                       setShowCreateModal(true);
@@ -304,14 +339,14 @@ const CommunityPage: React.FC = () => {
                 >
                   <Plus className="w-5 h-5 mr-2" />
                   {t('createCommunity')}
-                </Button>
+                              </Button>
               )}
             </Card>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredCommunities.map(renderCommunityCard)}
-            </div>
-          )}
+                        </div>
+                      )}
         </section>
       </div>
 
@@ -335,7 +370,7 @@ const CommunityPage: React.FC = () => {
               required
               maxLength={50}
             />
-          </div>
+                              </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">
@@ -349,7 +384,7 @@ const CommunityPage: React.FC = () => {
               rows={4}
               maxLength={500}
             />
-          </div>
+                            </div>
 
           <div>
             <label className="flex items-center gap-3">
@@ -361,7 +396,7 @@ const CommunityPage: React.FC = () => {
               />
               <span className="text-sm text-gray-300">{t('privateCommunitySetting')}</span>
             </label>
-          </div>
+                          </div>
 
           {createForm.isPrivate && (
             <div>
@@ -377,8 +412,8 @@ const CommunityPage: React.FC = () => {
                 required={createForm.isPrivate}
                 minLength={4}
               />
-            </div>
-          )}
+                    </div>
+                  )}
 
           <div className="flex gap-3 pt-4">
             <Button
@@ -400,53 +435,87 @@ const CommunityPage: React.FC = () => {
         </form>
       </Modal>
 
-      {/* パスワード入力モーダル */}
-      <Modal
+      {/* コミュニティ参加確認モーダル */}
+      <Modal 
         isOpen={!!showJoinModal}
-        onClose={() => setShowJoinModal(null)}
-        title={t('enterPassword')}
+        onClose={() => {
+          setShowJoinModal(null);
+          setJoinPassword('');
+        }}
+        title={t('joinCommunity')}
       >
-        <div className="space-y-6">
-          <p className="text-gray-300">{t('privateCommunityPasswordRequired')}</p>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              {t('password')}
-            </label>
-            <Input
-              type="password"
-              value={joinPassword[showJoinModal || ''] || ''}
-              onChange={(e) => setJoinPassword(prev => ({ 
-                ...prev, 
-                [showJoinModal || '']: e.target.value 
-              }))}
-              className="bg-gray-900 border-gray-700 text-white"
-              placeholder={t('enterPassword')}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && showJoinModal) {
-                  handleJoinCommunity(showJoinModal);
-                }
-              }}
-            />
-          </div>
+        {showJoinModal && (
+          <div className="space-y-6">
+            {/* コミュニティ情報 */}
+            <div className="p-4 bg-gray-800 rounded-lg">
+              <div className="flex items-center gap-3 mb-2">
+                <h3 className="text-lg font-bold text-white">{showJoinModal.community.name}</h3>
+                {showJoinModal.community.password_hash && <Lock className="w-4 h-4 text-yellow-400" />}
+              </div>
+              {showJoinModal.community.description && (
+                <p className="text-gray-300 text-sm">{showJoinModal.community.description}</p>
+              )}
+              <div className="flex items-center gap-4 mt-3 text-sm text-gray-400">
+                <span className="flex items-center gap-1">
+                  <Users className="w-4 h-4" />
+                  {showJoinModal.community.member_count} {t('members')}
+                </span>
+                <span className="flex items-center gap-1">
+                  <Trophy className="w-4 h-4" />
+                  {Math.round(showJoinModal.community.average_rating)} {t('avgRating')}
+                </span>
+              </div>
+            </div>
 
-          <div className="flex gap-3">
-            <Button
-              variant="outline"
-              onClick={() => setShowJoinModal(null)}
-              className="flex-1 border-gray-600 text-gray-300 hover:bg-gray-800"
-            >
-              {t('cancel')}
-            </Button>
-            <Button
-              onClick={() => showJoinModal && handleJoinCommunity(showJoinModal)}
-              disabled={loading || !joinPassword[showJoinModal || '']}
-              className="flex-1 bg-gradient-to-r from-purple-500 to-cyan-500 hover:from-purple-600 hover:to-cyan-600"
-            >
-              {loading ? t('joining') : t('join')}
-            </Button>
+            <p className="text-gray-300">
+              {showJoinModal.community.password_hash 
+                ? t('privateCommunityJoinConfirm') 
+                : t('publicCommunityJoinConfirm')
+              }
+            </p>
+            
+            {/* パスワード入力（プライベートコミュニティの場合のみ） */}
+            {showJoinModal.community.password_hash && (
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  {t('password')} *
+                </label>
+                <Input
+                  type="password"
+                  value={joinPassword}
+                  onChange={(e) => setJoinPassword(e.target.value)}
+                  className="bg-gray-900 border-gray-700 text-white"
+                  placeholder={t('enterPassword')}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      confirmJoinCommunity();
+                    }
+                  }}
+                />
+              </div>
+            )}
+
+            <div className="flex gap-3">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setShowJoinModal(null);
+                  setJoinPassword('');
+                }}
+                className="flex-1 border-gray-600 text-gray-300 hover:bg-gray-800"
+              >
+                {t('cancel')}
+              </Button>
+              <Button
+                onClick={confirmJoinCommunity}
+                disabled={loading || (showJoinModal.community.password_hash && !joinPassword.trim())}
+                className="flex-1 bg-gradient-to-r from-purple-500 to-cyan-500 hover:from-purple-600 hover:to-cyan-600"
+              >
+                {loading ? t('joining') : t('join')}
+              </Button>
+            </div>
           </div>
-        </div>
+        )}
       </Modal>
 
       {/* 認証モーダル */}

@@ -28,6 +28,9 @@ interface CommunityState {
   // ユーザーが参加しているコミュニティ一覧取得
   fetchUserCommunities: () => Promise<void>;
   
+  // ユーザーの現在のコミュニティを取得
+  fetchUserCurrentCommunity: () => Promise<Community | null>;
+  
   // コミュニティ作成
   createCommunity: (name: string, description: string, password?: string) => Promise<{ success: boolean; message: string; community_id?: string }>;
   
@@ -36,6 +39,9 @@ interface CommunityState {
   
   // コミュニティ退出
   leaveCommunity: (communityId: string) => Promise<{ success: boolean; message: string }>;
+  
+  // コミュニティ削除（オーナーのみ）
+  deleteCommunity: (communityId: string) => Promise<{ success: boolean; message: string }>;
   
   // コミュニティ詳細とメンバー取得
   fetchCommunityDetails: (communityId: string) => Promise<void>;
@@ -109,6 +115,23 @@ export const useCommunityStore = create<CommunityState>((set, get) => ({
       set({ error: 'Failed to fetch your communities' });
     } finally {
       set({ loading: false });
+    }
+  },
+
+  fetchUserCurrentCommunity: async () => {
+    try {
+      const { data, error } = await supabase.rpc('get_user_current_community');
+      
+      if (error) throw error;
+      
+      if (data.success && data.community) {
+        return data.community as Community;
+      }
+      
+      return null;
+    } catch (error) {
+      console.error('Error fetching user current community:', error);
+      return null;
     }
   },
 
@@ -190,6 +213,36 @@ export const useCommunityStore = create<CommunityState>((set, get) => ({
     } catch (error) {
       console.error('Error leaving community:', error);
       const errorMessage = error instanceof Error ? error.message : 'Failed to leave community';
+      set({ error: errorMessage });
+      return { success: false, message: errorMessage };
+    } finally {
+      set({ loading: false });
+    }
+  },
+
+  deleteCommunity: async (communityId: string) => {
+    set({ loading: true, error: null });
+    try {
+      const { data, error } = await supabase.rpc('delete_community', {
+        p_community_id: communityId
+      });
+
+      if (error) throw error;
+      
+      if (data.success) {
+        // コミュニティ一覧を再取得
+        await get().fetchCommunities();
+        await get().fetchUserCommunities();
+        // 削除されたコミュニティが現在のコミュニティの場合はクリア
+        if (get().currentCommunity?.id === communityId) {
+          set({ currentCommunity: null, currentCommunityMembers: [], myRole: null });
+        }
+      }
+      
+      return data;
+    } catch (error) {
+      console.error('Error deleting community:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to delete community';
       set({ error: errorMessage });
       return { success: false, message: errorMessage };
     } finally {
@@ -292,28 +345,73 @@ export const useCommunityStore = create<CommunityState>((set, get) => ({
   fetchChatMessages: async (communityId: string) => {
     set({ loading: true, error: null });
     try {
-      const { data, error } = await supabase
+      console.log('Fetching chat messages for community:', communityId);
+      
+      // 認証状況を確認
+      const { data: { user } } = await supabase.auth.getUser();
+      console.log('Current user:', user?.id);
+      
+      if (!user) {
+        throw new Error('User not authenticated');
+      }
+
+      // RLSが無効化されているはずなので、シンプルなクエリでテスト
+      const { data: messagesData, error: messagesError } = await supabase
         .from('community_chat_messages')
-        .select(`
-          *,
-          profiles!user_id (username, avatar_url)
-        `)
+        .select('*')
         .eq('community_id', communityId)
         .order('created_at', { ascending: true })
-        .limit(100);
+        .limit(50);
 
-      if (error) throw error;
+      console.log('Messages query result:', { messagesData, messagesError });
+      
+      if (messagesError) {
+        console.error('Messages error details:', messagesError);
+        throw messagesError;
+      }
 
-      const messages: CommunityChatMessage[] = (data || []).map(msg => ({
-        id: msg.id,
-        community_id: msg.community_id,
-        user_id: msg.user_id,
-        content: msg.content,
-        created_at: msg.created_at,
-        username: msg.profiles?.username,
-        avatar_url: msg.profiles?.avatar_url
-      }));
+      if (!messagesData || messagesData.length === 0) {
+        console.log('No messages found, setting empty array');
+        set({ chatMessages: [] });
+        return;
+      }
 
+      // ユーザー情報を取得（別クエリで）
+      const userIds = [...new Set(messagesData.map(msg => msg.user_id))];
+      const { data: usersData, error: usersError } = await supabase
+        .from('profiles')
+        .select('id, username, avatar_url')
+        .in('id', userIds);
+
+      console.log('Users query result:', { usersData, usersError });
+
+      if (usersError) {
+        console.warn('Could not fetch user profiles:', usersError);
+      }
+
+      // ユーザー情報をマップに変換
+      const userMap = new Map();
+      if (usersData) {
+        usersData.forEach(user => {
+          userMap.set(user.id, user);
+        });
+      }
+
+      // メッセージとユーザー情報を結合
+      const messages: CommunityChatMessage[] = messagesData.map(msg => {
+        const user = userMap.get(msg.user_id);
+        return {
+          id: msg.id,
+          community_id: msg.community_id,
+          user_id: msg.user_id,
+          content: msg.content,
+          created_at: msg.created_at,
+          username: user?.username || `User-${msg.user_id.slice(0, 8)}`,
+          avatar_url: user?.avatar_url
+        };
+      });
+
+      console.log('Processed messages:', messages);
       set({ chatMessages: messages });
     } catch (error) {
       console.error('Error fetching chat messages:', error);

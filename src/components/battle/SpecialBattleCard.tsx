@@ -2,29 +2,31 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Battle } from '../../types';
-
-import { Button } from '../ui/Button';
-import { VoteButton } from '../ui/VoteButton';
 import { AuthModal } from '../auth/AuthModal';
 import { useRequireAuth } from '../../hooks/useRequireAuth';
 import { useAuthStore } from '../../store/authStore';
-import { Clock, Users, Vote } from 'lucide-react';
+import { Clock, Users, Vote, Crown, Video } from 'lucide-react';
 import { VSIcon } from '../ui/VSIcon';
+import { RatingChangeDisplay } from '../ui/RatingChangeDisplay';
+import { format } from 'date-fns';
+import { ja, enUS } from 'date-fns/locale';
+import { cn } from '../../lib/utils';
+import { VoteButton } from '../ui/VoteButton';
 
 interface SpecialBattleCardProps {
   battle: Battle;
 }
 
 const colorPairs = [
-  { a: '#3B82F6', b: '#F472B6', bg: 'from-blue-600/20 to-pink-600/20' }, // Blue vs Pink
-  { a: '#10B981', b: '#8B5CF6', bg: 'from-emerald-600/20 to-purple-600/20' }, // Green vs Purple
-  { a: '#F59E0B', b: '#3B82F6', bg: 'from-amber-600/20 to-blue-600/20' }, // Orange vs Blue
-  { a: '#6366F1', b: '#F97316', bg: 'from-indigo-600/20 to-orange-600/20' }, // Indigo vs Orange
-  { a: '#EC4899', b: '#10B981', bg: 'from-pink-600/20 to-emerald-600/20' }, // Pink vs Green
+  { a: '#3B82F6', b: '#F472B6' },
+  { a: '#10B981', b: '#8B5CF6' },
+  { a: '#F59E0B', b: '#3B82F6' },
+  { a: '#6366F1', b: '#F97316' },
+  { a: '#EC4899', b: '#10B981' },
 ];
 
 export const SpecialBattleCard: React.FC<SpecialBattleCardProps> = ({ battle }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [timeRemaining, setTimeRemaining] = useState<string>('');
@@ -40,6 +42,13 @@ export const SpecialBattleCard: React.FC<SpecialBattleCardProps> = ({ battle }) 
   });
 
   const updateTimeRemaining = () => {
+    if (battle.is_archived) {
+      const currentLocale = i18n.language === 'ja' ? ja : enUS;
+      setTimeRemaining(t('battleCard.archivedOn', { date: format(new Date(battle.end_voting_at), 'yyyy/MM/dd', { locale: currentLocale }) }));
+      setIsExpired(true);
+      return;
+    }
+
     const total = new Date(battle.end_voting_at).getTime() - new Date().getTime();
     
     if (total <= 0) {
@@ -64,196 +73,151 @@ export const SpecialBattleCard: React.FC<SpecialBattleCardProps> = ({ battle }) 
 
   useEffect(() => {
     updateTimeRemaining();
-    const interval = setInterval(updateTimeRemaining, 60000); // Update every minute
+    const interval = setInterval(updateTimeRemaining, 60000);
     return () => clearInterval(interval);
-  }, [battle.end_voting_at]);
+  }, [battle.end_voting_at, battle.is_archived, i18n.language]);
 
   const totalVotes = (battle.votes_a || 0) + (battle.votes_b || 0);
   const percentageA = totalVotes > 0 ? ((battle.votes_a || 0) / totalVotes) * 100 : 50;
-  const percentageB = 100 - percentageA;
-  const isALeading = (battle.votes_a || 0) > (battle.votes_b || 0);
-  const isBLeading = (battle.votes_b || 0) > (battle.votes_a || 0);
-  const isDraw = (battle.votes_a || 0) === (battle.votes_b || 0);
   
   const colorPairIndex = parseInt(battle.id.replace(/\D/g, '')) % colorPairs.length;
-  const { a: colorA, b: colorB, bg: gradientBg } = colorPairs[colorPairIndex];
+  const { a: colorA, b: colorB } = colorPairs[colorPairIndex];
 
-  const handleVoteClick = async (e: React.MouseEvent) => {
+  const handleActionClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     setError(null);
-
-    try {
-      if (user) {
-        navigate(`/battle/${battle.id}`);
-      } else {
-        requireAuth(() => navigate(`/battle/${battle.id}`));
-      }
-    } catch (err) {
-      setError(t('battleCard.errors.navigationFailed'));
-      console.error('Navigation error:', err);
+    const destination = battle.is_archived ? `/battle-replay/${battle.id}` : `/battle/${battle.id}`;
+    if (user || battle.is_archived) {
+      navigate(destination);
+    } else {
+      requireAuth(() => navigate(destination));
     }
   };
 
   const handleCardClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    try {
-      navigate(`/battle/${battle.id}`);
-    } catch (err) {
-      console.error('Navigation error:', err);
-    }
+    const destination = battle.is_archived ? `/battle-replay/${battle.id}` : `/battle/${battle.id}`;
+    navigate(destination);
   };
 
   const getDefaultAvatarUrl = (seed: string) => `https://api.dicebear.com/7.x/avataaars/svg?seed=${seed}`;
 
-
-
-
+  const PlayerDisplay = ({ 
+    player, 
+    votes, 
+    ratingChange, 
+    finalRating, 
+    color, 
+    isWinner, 
+    defaultNameKey, 
+    userId 
+  }: {
+    player: Battle['contestant_a'];
+    votes: number | undefined;
+    ratingChange: number | null | undefined;
+    finalRating: number | null | undefined;
+    color: string;
+    isWinner: boolean;
+    defaultNameKey: string;
+    userId: string;
+  }) => (
+    <div className="text-center">
+      <div className="relative inline-block mb-4">
+        {battle.is_archived && isWinner && (
+          <Crown className="absolute -top-5 -right-5 h-10 w-10 text-yellow-400 transform rotate-12 animate-pulse" style={{ filter: 'drop-shadow(0 0 10px #facc15)' }}/>
+        )}
+        <div className="w-24 h-24 md:w-28 md:h-28 rounded-full p-1 shadow-lg transition-all duration-300 group-hover:scale-105" style={{ background: `linear-gradient(135deg, ${color}, ${color}80)` }}>
+          <img src={player?.avatar_url || getDefaultAvatarUrl(userId)} alt={player?.username || t(defaultNameKey)} className="w-full h-full rounded-full object-cover border-2 border-gray-900"/>
+        </div>
+      </div>
+      <h3 className="text-lg font-bold text-white mb-2 truncate">{player?.username || t('battleCard.unknownUser')}</h3>
+      <div className={cn("text-2xl font-extrabold transition-all duration-300", isWinner ? "text-emerald-400 scale-110" : "text-gray-300")}>
+        {votes || 0}
+      </div>
+      <div className="text-xs text-gray-400 font-medium">{t('battleCard.votes')}</div>
+      {battle.is_archived && (
+        <RatingChangeDisplay 
+          ratingChange={ratingChange}
+          newRating={finalRating}
+        />
+      )}
+    </div>
+  );
 
   return (
     <>
       <div onClick={handleCardClick} className="group cursor-pointer">
         <div className="battle-card mb-6">
           <div className="battle-card__content text-white">
-
-
             <div className="relative p-6">
-            {/* Header: Time */}
-            <div className="flex justify-end items-start mb-6">
-              <div className={`flex items-center gap-2 px-3 py-1 rounded-full backdrop-blur-sm ${
-                isExpired ? 'bg-red-500/20 text-red-400 border border-red-500/30' : 
-                'bg-gray-800/60 text-gray-300 border border-gray-600/30'
-              }`}>
-                <Clock className="h-3 w-3" />
-                <span className="text-xs font-medium">{timeRemaining}</span>
-              </div>
-            </div>
-
-            {/* Main Battle Display */}
-            <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-6 mb-6">
-              
-              {/* Player A */}
-              <div className="text-center">
-                <div className="relative inline-block mb-4">
-                  <div 
-                    className="w-24 h-24 md:w-28 md:h-28 rounded-full p-1 shadow-lg"
-                    style={{ background: `linear-gradient(135deg, ${colorA}, ${colorA}80)` }}
-                  >
-                    <img
-                      src={battle.contestant_a?.avatar_url || getDefaultAvatarUrl(battle.player1_user_id)}
-                      alt={battle.contestant_a?.username || t('battleCard.contestantA')}
-                      className="w-full h-full rounded-full object-cover border-2 border-gray-900"
-                    />
-                  </div>
+              <div className="flex justify-between items-start mb-6">
+                <div className="flex items-center gap-2 text-xs font-bold px-3 py-1.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
+                  <Users className="h-3 w-3" />
+                  {t('battleCard.totalVotes')}: {totalVotes}
                 </div>
-                
-                <h3 className="text-lg font-bold text-white mb-2 truncate">
-                  {battle.contestant_a?.username || t('battleCard.unknownUser')}
-                </h3>
-                
-                <div className="text-2xl font-extrabold text-gray-300">
-                  {battle.votes_a || 0}
-                </div>
-                <div className="text-xs text-gray-400 font-medium">
-                  {t('battleCard.votes')}
+                <div className={cn('flex items-center gap-2 px-3 py-1 rounded-full backdrop-blur-sm', 
+                  isExpired ? 'bg-gray-700/50 text-gray-300 border border-gray-600/30' : 
+                  'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30')}>
+                  <Clock className="h-3 w-3" />
+                  <span className="text-xs font-medium">{timeRemaining}</span>
                 </div>
               </div>
 
-              {/* VS Section */}
-              <div className="flex flex-col items-center gap-3">
+              <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-6 mb-6">
+                <PlayerDisplay 
+                  player={battle.contestant_a}
+                  votes={battle.votes_a}
+                  ratingChange={battle.player1_rating_change}
+                  finalRating={battle.player1_final_rating}
+                  color={colorA}
+                  isWinner={battle.winner_id === battle.player1_user_id}
+                  defaultNameKey="battleCard.contestantA"
+                  userId={battle.player1_user_id}
+                />
+                
                 <VSIcon className="w-16 h-16 md:w-20 md:h-20" />
-                
-                <div className="text-center">
-                  <div className="flex items-center gap-1 text-xs text-gray-400 mb-1">
-                    <Users className="h-3 w-3" />
-                    {t('battleCard.totalVotes')}
-                  </div>
-                  <div className="text-xl font-bold text-white bg-gray-800/50 px-3 py-1 rounded-full">
-                    {totalVotes}
-                  </div>
-                </div>
+
+                <PlayerDisplay 
+                  player={battle.contestant_b}
+                  votes={battle.votes_b}
+                  ratingChange={battle.player2_rating_change}
+                  finalRating={battle.player2_final_rating}
+                  color={colorB}
+                  isWinner={battle.winner_id === battle.player2_user_id}
+                  defaultNameKey="battleCard.contestantB"
+                  userId={battle.player2_user_id}
+                />
               </div>
 
-              {/* Player B */}
-              <div className="text-center">
-                <div className="relative inline-block mb-4">
-                  <div 
-                    className="w-24 h-24 md:w-28 md:h-28 rounded-full p-1 shadow-lg"
-                    style={{ background: `linear-gradient(135deg, ${colorB}, ${colorB}80)` }}
-                  >
-                    <img
-                      src={battle.contestant_b?.avatar_url || getDefaultAvatarUrl(battle.player2_user_id)}
-                      alt={battle.contestant_b?.username || t('battleCard.contestantB')}
-                      className="w-full h-full rounded-full object-cover border-2 border-gray-900"
-                    />
+              <div className="mb-6">
+                <div className="h-2 bg-gray-800/50 rounded-full overflow-hidden shadow-inner">
+                  <div className="h-full flex">
+                    <div className="transition-all duration-1000 ease-out" style={{ width: `${percentageA}%`, background: `linear-gradient(90deg, ${colorA}cc, ${colorA}80)` }}/>
+                    <div className="transition-all duration-1000 ease-out" style={{ width: `${100-percentageA}%`, background: `linear-gradient(90deg, ${colorB}80, ${colorB}cc)` }}/>
                   </div>
                 </div>
-                
-                <h3 className="text-lg font-bold text-white mb-2 truncate">
-                  {battle.contestant_b?.username || t('battleCard.unknownUser')}
-                </h3>
-                
-                <div className="text-2xl font-extrabold text-gray-300">
-                  {battle.votes_b || 0}
-                </div>
-                <div className="text-xs text-gray-400 font-medium">
-                  {t('battleCard.votes')}
-                </div>
               </div>
-            </div>
 
-            {/* Vote Progress Bar */}
-            <div className="mb-6">
-              <div className="h-2 bg-gray-800 rounded-full overflow-hidden shadow-inner">
-                <div className="h-full flex">
-                  <div 
-                    className="transition-all duration-1000 ease-out"
-                    style={{ 
-                      width: `${percentageA}%`, 
-                      background: `linear-gradient(90deg, ${colorA}, ${colorA}80)` 
-                    }}
-                  />
-                  <div 
-                    className="transition-all duration-1000 ease-out"
-                    style={{ 
-                      width: `${percentageB}%`, 
-                      background: `linear-gradient(90deg, ${colorB}80, ${colorB})` 
-                    }}
-                  />
-                </div>
+              <div className="flex justify-center">
+                <VoteButton onClick={handleActionClick} disabled={!battle.is_archived && isExpired} className="max-w-xs">
+                  <div className="flex items-center gap-2">
+                    {battle.is_archived ? <Video className="h-4 w-4" /> : <Vote className="h-4 w-4" />}
+                    {battle.is_archived ? t('battleCard.watchReplay') : isExpired ? t('battleCard.votingEnded') : t('battleCard.voteNow')}
+                  </div>
+                </VoteButton>
               </div>
-            </div>
 
-            {/* Action Button */}
-            <div className="flex justify-center">
-              <VoteButton
-                onClick={handleVoteClick}
-                disabled={isExpired}
-                className="max-w-xs"
-              >
-                <div className="flex items-center gap-2">
-                  <Vote className="h-4 w-4" />
-                  {isExpired ? t('battleCard.votingEnded') : t('battleCard.voteNow')}
+              {error && (
+                <div className="mt-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
+                  <div className="text-sm text-red-400">{error}</div>
                 </div>
-              </VoteButton>
-            </div>
-
-            {error && (
-              <div className="mt-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
-                <div className="text-sm text-red-400">{error}</div>
-              </div>
-            )}
+              )}
             </div>
           </div>
         </div>
       </div>
-
-      <AuthModal
-        isOpen={isAuthModalOpen}
-        onClose={() => setIsAuthModalOpen(false)}
-        initialMode={authModalMode}
-        setMode={setAuthModalMode}
-      />
+      <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} initialMode={authModalMode} setMode={setAuthModalMode} />
     </>
   );
 };

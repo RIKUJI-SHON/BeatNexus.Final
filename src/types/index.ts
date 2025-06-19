@@ -39,6 +39,12 @@ export interface Battle {
   };
   video_url_a?: string;
   video_url_b?: string;
+  is_archived?: boolean;
+  winner_id?: string | null;
+  player1_rating_change?: number | null;
+  player2_rating_change?: number | null;
+  player1_final_rating?: number | null;
+  player2_final_rating?: number | null;
 }
 
 export interface ArchivedBattle {

@@ -16,7 +16,9 @@ import {
   Star,
   Calendar,
   UserPlus,
-  MoreVertical
+  MoreVertical,
+  AlertTriangle,
+  Trash2
 } from 'lucide-react';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
@@ -53,6 +55,7 @@ const CommunityDetailPage: React.FC = () => {
     subscribeToCommunityChat,
     unsubscribeFromCommunityChat,
     leaveCommunity,
+    deleteCommunity,
     kickMember,
     updateMemberRole
   } = useCommunityStore();
@@ -60,6 +63,7 @@ const CommunityDetailPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>('ranking');
   const [chatMessage, setChatMessage] = useState('');
   const [showLeaveModal, setShowLeaveModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showMemberActionModal, setShowMemberActionModal] = useState(false);
   const [selectedMember, setSelectedMember] = useState<any>(null);
   const [memberAction, setMemberAction] = useState<'kick' | 'promote' | 'demote'>('kick');
@@ -90,12 +94,25 @@ const CommunityDetailPage: React.FC = () => {
 
     const result = await leaveCommunity(id);
     if (result.success) {
-      toast.success(t('joinedCommunity'));
+      toast.success(t('leftCommunity'));
       navigate('/community');
     } else {
       toast.error(result.message);
     }
     setShowLeaveModal(false);
+  };
+
+  const handleDeleteCommunity = async () => {
+    if (!id) return;
+
+    const result = await deleteCommunity(id);
+    if (result.success) {
+      toast.success(t('communityDeleted'));
+      navigate('/community');
+    } else {
+      toast.error(result.message);
+    }
+    setShowDeleteModal(false);
   };
 
   const handleMemberAction = async () => {
@@ -598,6 +615,50 @@ const CommunityDetailPage: React.FC = () => {
                   );
                 })}
               </div>
+
+              {/* コミュニティ削除・退出セクション */}
+              <div className="mt-8 pt-6 border-t border-gray-700">
+                <h3 className="text-lg font-semibold text-red-400 mb-4 flex items-center gap-2">
+                  <AlertTriangle className="w-5 h-5" />
+                  {t('dangerZone')}
+                </h3>
+                
+                <div className="space-y-4">
+                  {myRole !== 'owner' && (
+                    <div className="flex items-center justify-between p-4 bg-red-900/20 border border-red-800 rounded-lg">
+                      <div>
+                        <h4 className="font-medium text-white mb-1">{t('leaveCommunity')}</h4>
+                        <p className="text-sm text-gray-400">{t('leaveCommunityDescription')}</p>
+                      </div>
+                      <Button
+                        variant="outline"
+                        onClick={() => setShowLeaveModal(true)}
+                        className="border-red-600 text-red-400 hover:bg-red-600 hover:text-white"
+                      >
+                        <UserMinus className="w-4 h-4 mr-2" />
+                        {t('leaveCommunity')}
+                      </Button>
+                    </div>
+                  )}
+                  
+                  {myRole === 'owner' && (
+                    <div className="flex items-center justify-between p-4 bg-red-900/20 border border-red-800 rounded-lg">
+                      <div>
+                        <h4 className="font-medium text-white mb-1">{t('deleteCommunity')}</h4>
+                        <p className="text-sm text-gray-400">{t('deleteCommunityDescription')}</p>
+                      </div>
+                      <Button
+                        variant="outline"
+                        onClick={() => setShowDeleteModal(true)}
+                        className="border-red-600 text-red-400 hover:bg-red-600 hover:text-white"
+                      >
+                        <Trash2 className="w-4 h-4 mr-2" />
+                        {t('deleteCommunity')}
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           </Card>
         )}
@@ -634,6 +695,47 @@ const CommunityDetailPage: React.FC = () => {
               disabled={loading}
             >
               {loading ? t('leaving') : t('leaveCommunity')}
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* 削除確認モーダル */}
+      <Modal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        title={t('confirmDeleteCommunity')}
+      >
+        <div className="space-y-6">
+          <div className="text-center">
+            <Trash2 className="w-16 h-16 text-red-400 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-white mb-2">
+              {t('deleteCommunityTitle')}
+            </h3>
+            <p className="text-gray-400">
+              {t('deleteCommunityDesc', { name: currentCommunity.name })}
+            </p>
+            <div className="mt-4 p-4 bg-red-900/20 border border-red-800 rounded-lg">
+              <p className="text-red-400 text-sm font-medium">
+                {t('deleteCommunityWarning')}
+              </p>
+            </div>
+          </div>
+          
+          <div className="flex gap-3">
+            <Button
+              variant="outline"
+              onClick={() => setShowDeleteModal(false)}
+              className="flex-1 border-gray-600 text-gray-300 hover:bg-gray-800"
+            >
+              {t('cancel')}
+            </Button>
+            <Button
+              onClick={handleDeleteCommunity}
+              className="flex-1 bg-red-600 hover:bg-red-700 text-white"
+              disabled={loading}
+            >
+              {loading ? t('deleting') : t('deleteCommunity')}
             </Button>
           </div>
         </div>

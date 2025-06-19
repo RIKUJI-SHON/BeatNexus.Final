@@ -54,7 +54,7 @@ const BattleReplayPage: React.FC = () => {
           contestant_a:player1_user_id(username, avatar_url),
           contestant_b:player2_user_id(username, avatar_url)
         `)
-        .eq('id', id)
+        .eq('original_battle_id', id)
         .single();
 
       if (battleError) {
