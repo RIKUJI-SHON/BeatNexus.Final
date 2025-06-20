@@ -162,6 +162,15 @@
     },
     "errors": {
       "navigationFailed": "Failed to navigate to battle page. Please try again."
+    },
+    "viewComments": "View Comments",
+    "commentsModal": {
+      "title": "Battle Comments",
+      "noComments": "No comments yet",
+      "loading": "Loading comments...",
+      "playerA": "Player A",
+      "playerB": "Player B",
+      "close": "Close"
     }
   },
   "battleFilters": {

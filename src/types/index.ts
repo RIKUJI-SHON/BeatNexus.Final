@@ -208,6 +208,15 @@ export interface BattleComment {
   created_at: string;
 }
 
+export interface ArchivedBattleVote {
+  id: string;
+  archived_battle_id: string;
+  user_id: string | null;
+  vote: 'A' | 'B';
+  comment: string | null;
+  created_at: string;
+}
+
 export interface DatabaseFunctionResponse {
   success: boolean;
   error?: string;
@@ -306,5 +315,5 @@ export interface CommunityRanking {
   rank_in_community: number;
 }
 
-// 自動生成されたSupabaseデータベース型をエクスポート
+// 自動生成されたSupabaseデータベース型をエクスポート  
 export type { Database } from './database.types';

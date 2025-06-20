@@ -5,9 +5,10 @@ import { Battle } from '../../types';
 import { Button } from '../ui/Button';
 import { VoteButton } from '../ui/VoteButton';
 import { AuthModal } from '../auth/AuthModal';
+import { BattleCommentsModal } from '../ui/BattleCommentsModal';
 import { useRequireAuth } from '../../hooks/useRequireAuth';
 import { useAuthStore } from '../../store/authStore';
-import { Clock, Users, Vote, Crown, Video } from 'lucide-react';
+import { Clock, Users, Vote, Crown, Video, MessageSquare } from 'lucide-react';
 import { VSIcon } from '../ui/VSIcon';
 import { RatingChangeDisplay } from '../ui/RatingChangeDisplay';
 import { format } from 'date-fns';
@@ -30,6 +31,7 @@ const colorPairs = [
 export const SimpleBattleCard: React.FC<SimpleBattleCardProps> = ({ battle }) => {
   const { t, i18n } = useTranslation();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isCommentsModalOpen, setIsCommentsModalOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [timeRemaining, setTimeRemaining] = useState<string>('');
   const [isExpired, setIsExpired] = useState(false);
@@ -101,6 +103,12 @@ export const SimpleBattleCard: React.FC<SimpleBattleCardProps> = ({ battle }) =>
     e.preventDefault();
     const destination = battle.is_archived ? `/battle-replay/${battle.id}` : `/battle/${battle.id}`;
     navigate(destination);
+  };
+
+  const handleCommentsClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsCommentsModalOpen(true);
   };
 
   const getDefaultAvatarUrl = (seed: string) => `https://api.dicebear.com/7.x/avataaars/svg?seed=${seed}`;
@@ -179,13 +187,22 @@ export const SimpleBattleCard: React.FC<SimpleBattleCardProps> = ({ battle }) =>
                 </div>
               </div>
 
-              <div className="flex justify-center">
+              <div className={cn("flex justify-center", battle.is_archived ? "gap-3" : "")}>
                 <VoteButton onClick={handleActionClick} disabled={!battle.is_archived && isExpired} className="max-w-xs">
                   <div className="flex items-center gap-2">
                     {battle.is_archived ? <Video className="h-4 w-4" /> : <Vote className="h-4 w-4" />}
                     {battle.is_archived ? t('battleCard.watchReplay') : isExpired ? t('battleCard.votingEnded') : t('battleCard.voteNow')}
                   </div>
                 </VoteButton>
+                
+                {battle.is_archived && (
+                  <VoteButton onClick={handleCommentsClick} className="max-w-xs bg-gray-700 hover:bg-gray-600 border-gray-800">
+                    <div className="flex items-center gap-2">
+                      <MessageSquare className="h-4 w-4" />
+                      {t('battleCard.viewComments')}
+                    </div>
+                  </VoteButton>
+                )}
               </div>
 
               {error && (
@@ -202,6 +219,13 @@ export const SimpleBattleCard: React.FC<SimpleBattleCardProps> = ({ battle }) =>
         onClose={() => setIsAuthModalOpen(false)}
         initialMode={authModalMode}
         setMode={setAuthModalMode}
+      />
+      <BattleCommentsModal
+        isOpen={isCommentsModalOpen}
+        onClose={() => setIsCommentsModalOpen(false)}
+        battleId={battle.id}
+        playerAName={battle.contestant_a?.username}
+        playerBName={battle.contestant_b?.username}
       />
     </>
   );
