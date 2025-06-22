@@ -45,8 +45,9 @@ export const MonthlyLimitCard: React.FC = () => {
       }
 
       const usedCount = submissions?.length || 0;
-      const limit = 30; // 月間上限
-      const remaining = Math.max(0, limit - usedCount);
+      // テスト段階のため上限は無制限
+      const limit = Infinity; // 無制限
+      const remaining = Infinity; // 常に無制限
       
       // 次月の1日を計算
       const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
@@ -60,7 +61,7 @@ export const MonthlyLimitCard: React.FC = () => {
         limit: limit,
         remaining: remaining,
         reset_date: resetDate,
-        can_submit: remaining > 0
+        can_submit: true // テスト段階では常に投稿可能
       });
 
     } catch (error) {
@@ -127,33 +128,26 @@ export const MonthlyLimitCard: React.FC = () => {
 
         {monthlyData && (
           <>
-            {/* 残り投稿回数 */}
+            {/* 今月の使用状況 */}
             <div className="mb-4">
               <div className="text-center mb-3">
                 <div className="text-3xl font-bold text-white mb-1">
-                  {monthlyData.remaining}
+                  {monthlyData.used_count}
                 </div>
-                <div className="text-sm text-gray-400">{t('monthlyLimit.remainingPosts')}</div>
               </div>
 
               {/* プログレスバー */}
               <div className="space-y-2">
                 <div className="w-full bg-gray-700 rounded-full h-2 overflow-hidden">
                   <div 
-                    className={`h-full transition-all duration-300 ${
-                      isAtLimit 
-                        ? 'bg-red-500' 
-                        : isNearLimit 
-                        ? 'bg-yellow-500' 
-                        : 'bg-gradient-to-r from-cyan-500 to-blue-500'
-                    }`}
-                    style={{ width: `${progressPercentage}%` }}
+                    className="h-full transition-all duration-300 bg-gradient-to-r from-green-500 to-blue-500"
+                    style={{ width: '100%' }}
                   />
                 </div>
                 
                 <div className="flex justify-between text-xs text-gray-400">
                   <span>{t('monthlyLimit.usedPosts', { count: monthlyData.used_count })}</span>
-                  <span>{t('monthlyLimit.limitPosts', { count: monthlyData.limit })}</span>
+                  <span>{t('monthlyLimit.resetLabel')} {t('monthlyLimit.testMode.unlimited')}</span>
                 </div>
               </div>
             </div>
@@ -168,58 +162,24 @@ export const MonthlyLimitCard: React.FC = () => {
             </div>
 
             {/* アクションボタン */}
-            {monthlyData.can_submit ? (
-              <div className="space-y-3">
-                {isNearLimit && (
-                  <div className="bg-yellow-500/10 border border-yellow-500/50 rounded-lg p-3">
-                    <div className="flex items-center gap-2 mb-1">
-                      <AlertCircle className="h-4 w-4 text-yellow-400" />
-                      <span className="text-xs font-medium text-yellow-400">{t('monthlyLimit.nearLimitWarning')}</span>
-                    </div>
-                    <p className="text-xs text-yellow-200">
-                      {t('monthlyLimit.nearLimitMessage', { count: monthlyData.remaining })}
-                    </p>
-                  </div>
-                )}
-                
-                <Link to="/post" className="block">
-                  <Button
-                    variant="primary"
-                    className="w-full bg-gradient-to-r from-cyan-500 to-purple-500 text-sm"
-                    leftIcon={<Plus className="h-4 w-4" />}
-                  >
-                    {t('monthlyLimit.postVideoButton')}
-                  </Button>
-                </Link>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                                  <div className="bg-red-500/10 border border-red-500/50 rounded-lg p-3">
-                    <div className="flex items-center gap-2 mb-1">
-                      <AlertCircle className="h-4 w-4 text-red-400" />
-                      <span className="text-xs font-medium text-red-400">{t('monthlyLimit.limitReachedTitle')}</span>
-                    </div>
-                    <p className="text-xs text-red-200">
-                      {t('monthlyLimit.limitReachedMessage', { date: monthlyData.reset_date })}
-                    </p>
-                  </div>
-
-                                  <Button
-                    variant="outline"
-                    className="w-full border-gray-600 text-gray-400 cursor-not-allowed text-sm"
-                    disabled
-                  >
-                    {t('monthlyLimit.limitReachedButton')}
-                  </Button>
-              </div>
-            )}
+            <div className="space-y-3">
+              <Link to="/post" className="block">
+                <Button
+                  variant="primary"
+                  className="w-full bg-gradient-to-r from-cyan-500 to-purple-500 text-sm"
+                  leftIcon={<Plus className="h-4 w-4" />}
+                >
+                  {t('monthlyLimit.postVideoButton')}
+                </Button>
+              </Link>
+            </div>
           </>
         )}
 
         {/* 説明 */}
         <div className="mt-4 pt-3 border-t border-gray-700/50">
           <p className="text-xs text-gray-400 text-center">
-            {t('monthlyLimit.qualityMessage')}
+            {t('monthlyLimit.testMode.simpleMessage')}
           </p>
         </div>
       </div>

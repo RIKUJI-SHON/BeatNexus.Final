@@ -210,7 +210,14 @@
     "limitReachedButton": "投稿上限に達しました",
     "qualityMessage": "品質の高いバトルを維持するため、月30回まで投稿可能です",
     "loginToCheck": "ログインして投稿状況を確認",
-    "checkingStatus": "月間投稿状況を確認中..."
+    "checkingStatus": "月間投稿状況を確認中...",
+        "testMode": {
+      "unlimited": "無制限",
+      "remainingUnlimited": "無制限", 
+      "testingPhase": "テスト段階のため投稿制限は無効",
+      "testingMessage": "現在プラットフォームはテスト段階です。正式運用開始まで投稿回数に制限はありません。",
+      "simpleMessage": "テスト中のため投稿回数は無制限です"
+    }
   },
   "upload": {
   },

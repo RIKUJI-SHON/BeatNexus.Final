@@ -208,7 +208,14 @@
     "limitReachedButton": "Post limit reached",
     "qualityMessage": "To maintain high-quality battles, you can post up to 30 times per month",
     "loginToCheck": "Login to check posting status",
-    "checkingStatus": "Checking monthly posting status..."
+    "checkingStatus": "Checking monthly posting status...",
+    "testMode": {
+      "unlimited": "Unlimited",
+      "remainingUnlimited": "Unlimited",
+      "testingPhase": "No submission limits during testing phase",
+      "testingMessage": "The platform is currently in testing phase. There are no submission limits until official launch.",
+      "simpleMessage": "Unlimited posts during testing phase"
+    }
   },
   "upload": {
   },
