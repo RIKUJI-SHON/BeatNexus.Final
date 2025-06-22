@@ -9,6 +9,7 @@ import { Button } from '../components/ui/Button';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { trackBeatNexusEvents } from '../utils/analytics';
+import { validateLanguageCode } from '../lib/utils';
 
 const SettingsPage: React.FC = () => {
   const { user, signOut } = useAuthStore();
@@ -32,16 +33,6 @@ const SettingsPage: React.FC = () => {
   // Delete Account State
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
   const [isDeletingAccount, setIsDeletingAccount] = useState<boolean>(false);
-
-  // 言語コードの検証関数（統一された'en', 'ja'のみ）
-  const validateLanguageCode = (language: string): string => {
-    if (language === 'ja' || language === 'en') {
-      return language;
-    }
-    // 不正な値の場合はデフォルトを返す
-    console.warn('Unexpected language value:', language);
-    return 'en'; // デフォルトは英語
-  };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {

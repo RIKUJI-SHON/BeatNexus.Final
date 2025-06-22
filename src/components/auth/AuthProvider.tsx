@@ -3,6 +3,7 @@ import { useAuthStore } from '../../store/authStore';
 import { useOnboardingStore } from '../../store/onboardingStore';
 import { supabase } from '../../lib/supabase';
 import { useTranslation } from 'react-i18next';
+import { detectBrowserLanguage } from '../../lib/utils';
 
 interface AuthModalContextType {
   isAuthModalOpen: boolean;
@@ -43,22 +44,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const closeAuthModal = () => {
     setIsAuthModalOpen(false);
-  };
-
-  // ブラウザ言語を検出する関数
-  const detectBrowserLanguage = (): string => {
-    const browserLanguages = navigator.languages || [navigator.language];
-    
-    for (const lang of browserLanguages) {
-      const normalizedLang = lang.toLowerCase();
-      if (normalizedLang.startsWith('ja')) {
-        return 'ja';
-      }
-      if (normalizedLang.startsWith('en')) {
-        return 'en';
-      }
-    }
-    return 'en'; // デフォルト
   };
 
   // 認証エラー時の自動リカバリ
@@ -102,13 +87,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  // 安全な言語設定更新（重複処理を防ぐ）
-  const safeUpdateLanguage = async (userId: string, eventType: string) => {
+  // 安全な言語設定更新（新規登録時のみ）
+  const initializeLanguageForNewUser = async (userId: string, eventType: string) => {
     const userKey = `${userId}-${eventType}`;
     
     // 既に処理済みの場合はスキップ
     if (processedUsers.current.has(userKey)) {
-      console.log(`Language update already processed for ${userKey}`);
+      console.log(`Language initialization already processed for ${userKey}`);
       return;
     }
 
@@ -116,48 +101,28 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       processedUsers.current.add(userKey);
       const browserLanguage = detectBrowserLanguage();
       
-      console.log(`Safe language update for user ${userId} (${eventType}): ${browserLanguage}`);
+      console.log(`Initializing language for new user ${userId} (${eventType}): ${browserLanguage}`);
 
-      // i18nの言語を即座に更新
-      if (i18n.language !== browserLanguage) {
-        i18n.changeLanguage(browserLanguage);
-        console.log(`i18n language changed to: ${browserLanguage}`);
-      }
-
-      // プロフィール言語設定を確認・更新（エラーでも継続）
-      try {
-        const { data: profile, error: fetchError } = await supabase
-          .from('profiles')
-          .select('language')
-          .eq('id', userId)
-          .single();
-
-        if (fetchError) {
-          console.warn('Failed to fetch profile language:', fetchError);
-          return;
-        }
-
-        if (profile?.language !== browserLanguage) {
-          console.log(`Updating profile language from ${profile?.language} to ${browserLanguage}`);
-          
+      // 新規登録時のみブラウザ言語をデータベースに設定
+      if (eventType === 'signup') {
+        try {
           const { error } = await supabase
             .from('profiles')
             .update({ language: browserLanguage })
             .eq('id', userId);
 
           if (error) {
-            console.warn('Failed to update profile language:', error);
+            console.warn('Failed to set initial language for new user:', error);
           } else {
-            console.log('Profile language updated successfully');
+            console.log('Initial language set successfully for new user');
           }
+        } catch (profileError) {
+          console.warn('Error setting initial language for new user:', profileError);
         }
-      } catch (profileError) {
-        console.warn('Error updating profile language:', profileError);
-        // プロフィール更新エラーは認証エラーとして扱わない
       }
 
     } catch (error) {
-      console.error('Error in safe language update:', error);
+      console.error('Error in language initialization for new user:', error);
       // 認証関連のエラーの場合はリカバリを試行
       const errorMessage = error instanceof Error ? error.message : String(error);
       if (errorMessage.includes('JWT') || errorMessage.includes('token') || errorMessage.includes('auth')) {
@@ -184,10 +149,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           setUser(session?.user ?? null);
           authErrorCount.current = 0; // 成功時はエラーカウントをリセット
           
-          // 既にログインしている場合は言語設定を確認（安全に）
-          if (session?.user) {
-            await safeUpdateLanguage(session.user.id, 'initial');
-          }
+          // 初期セッション取得時は言語設定処理をスキップ
+          // 言語設定は useLanguageInitialization フックで処理される
         }
       } catch (error) {
         console.error('Unexpected error in getInitialSession:', error);
@@ -218,7 +181,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           console.log('New user signed up, setting up user...');
           
           // 言語設定
-          await safeUpdateLanguage(session.user.id, 'signup');
+          await initializeLanguageForNewUser(session.user.id, 'signup');
           
           // 新規ユーザーへオンボーディング表示をトリガー（少し遅延を設ける）
           setTimeout(async () => {
