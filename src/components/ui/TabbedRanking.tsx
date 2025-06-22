@@ -36,12 +36,13 @@ export const TabbedRanking: React.FC<TabbedRankingProps> = ({
     fetchVoterRankings();
   }, [fetchRankings, fetchVoterRankings]);
 
-  const handleTabChange = (tab: RankingType) => {
-    if (tab === activeTab || isAnimating) return;
+  const handleTabChange = (isChecked: boolean) => {
+    const newTab = isChecked ? 'voter' : 'player';
+    if (newTab === activeTab || isAnimating) return;
     
     setIsAnimating(true);
     setTimeout(() => {
-      setActiveTab(tab);
+      setActiveTab(newTab);
       setTimeout(() => setIsAnimating(false), 150);
     }, 150);
   };
@@ -151,7 +152,7 @@ export const TabbedRanking: React.FC<TabbedRankingProps> = ({
           <img
             src="/images/ranking-title-badge.png"
             alt={t('battlesPage.rankings.titleCompact')}
-            className="w-[320px] h-[60px] object-contain"
+            className="w-[280px] h-[50px] object-contain"
             onError={(e) => {
               // フォールバックとしてテキストとアイコンを表示
               const target = e.target as HTMLImageElement;
@@ -177,35 +178,167 @@ export const TabbedRanking: React.FC<TabbedRankingProps> = ({
         </div>
       </div>
 
-      {/* Tab Buttons */}
-      <div className="flex bg-gray-800/30 p-1 rounded-xl mb-4 backdrop-blur-sm border border-gray-700/50">
-        <button
-          onClick={() => handleTabChange('player')}
-          className={`flex-1 flex items-center justify-center gap-1 sm:gap-1.5 px-1.5 sm:px-3 py-2.5 sm:py-3 rounded-lg text-xs sm:text-sm font-medium transition-all duration-300 min-w-0 ${
-            activeTab === 'player'
-              ? 'bg-gradient-to-r from-cyan-500/20 to-blue-500/20 text-cyan-400 border border-cyan-500/30 shadow-lg shadow-cyan-500/10'
-              : 'text-gray-400 hover:text-cyan-300 hover:bg-gray-700/30'
-          }`}
-          disabled={isAnimating}
-          title={t('rankingPage.tabs.playerRankings')}
-        >
-          <Star className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0" />
-          <span className="hidden sm:inline whitespace-nowrap">{t('rankingPage.tabs.player')}</span>
-        </button>
+      {/* Custom Switch with Neon Effect */}
+      <div className="flex justify-center mb-4">
+        <style dangerouslySetInnerHTML={{
+          __html: `
+            .ranking-switch {
+              --_switch-bg-clr: linear-gradient(135deg, rgba(30, 64, 175, 0.3), rgba(136, 19, 55, 0.3));
+              --_switch-padding: 3px;
+              --_slider-bg-clr: rgba(30, 64, 175, 0.4);
+              --_slider-bg-clr-on: linear-gradient(135deg, rgba(6, 95, 70, 0.7), rgba(157, 23, 77, 0.7));
+              --_slider-txt-clr: #ffffff;
+              --_label-padding: 0.6rem 1.2rem;
+              --_switch-easing: cubic-bezier(0.47, 1.64, 0.41, 0.8);
+              color: white;
+              width: fit-content;
+              display: flex;
+              justify-content: center;
+              position: relative;
+              border-radius: 9999px;
+              cursor: pointer;
+              display: grid;
+              grid-template-columns: repeat(2, minmax(0, 1fr));
+              position: relative;
+              isolation: isolate;
+              font-size: 0.875rem;
+              backdrop-filter: blur(8px);
+              background: rgba(17, 24, 39, 0.2);
+              border: 1px solid rgba(75, 85, 99, 0.3);
+              box-shadow: 
+                0 0 15px rgba(30, 64, 175, 0.15),
+                0 0 30px rgba(136, 19, 55, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            }
+            
+            .ranking-switch input[type="checkbox"] {
+              position: absolute;
+              width: 1px;
+              height: 1px;
+              padding: 0;
+              margin: -1px;
+              overflow: hidden;
+              clip: rect(0, 0, 0, 0);
+              white-space: nowrap;
+              border-width: 0;
+            }
+            
+            .ranking-switch > span {
+              display: grid;
+              place-content: center;
+              transition: opacity 300ms ease-in-out 150ms;
+              padding: var(--_label-padding);
+              font-weight: 600;
+              text-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+            }
+            
+            .ranking-switch::before,
+            .ranking-switch::after {
+              content: "";
+              position: absolute;
+              border-radius: inherit;
+              transition: inset 150ms ease-in-out;
+            }
+            
+            .ranking-switch::before {
+              background: var(--_slider-bg-clr);
+              inset: var(--_switch-padding) 50% var(--_switch-padding) var(--_switch-padding);
+              transition: 
+                inset 500ms var(--_switch-easing), 
+                background 500ms ease-in-out,
+                box-shadow 500ms ease-in-out;
+              z-index: -1;
+              backdrop-filter: blur(4px);
+              box-shadow: 
+                inset 0 2px 4px rgba(0, 0, 0, 0.3),
+                0 0 10px rgba(30, 64, 175, 0.2),
+                0 0 20px rgba(136, 19, 55, 0.1);
+            }
+            
+            .ranking-switch::after {
+              background: var(--_switch-bg-clr);
+              inset: 0;
+              z-index: -2;
+              border: 1px solid rgba(75, 85, 99, 0.2);
+              backdrop-filter: blur(8px);
+            }
+            
+            .ranking-switch:focus-within::after {
+              inset: -0.25rem;
+              box-shadow: 
+                0 0 0 2px rgba(30, 64, 175, 0.2),
+                0 0 15px rgba(136, 19, 55, 0.2);
+            }
+            
+            .ranking-switch:hover {
+              background: rgba(17, 24, 39, 0.3);
+              border-color: rgba(75, 85, 99, 0.4);
+              box-shadow: 
+                0 0 20px rgba(30, 64, 175, 0.2),
+                0 0 40px rgba(136, 19, 55, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.08);
+              transform: translateY(-1px);
+            }
+            
+            .ranking-switch:has(input:checked):hover > span:first-of-type,
+            .ranking-switch:has(input:not(:checked)):hover > span:last-of-type {
+              opacity: 1;
+              transition-delay: 0ms;
+              transition-duration: 100ms;
+              text-shadow: 0 0 12px rgba(255, 255, 255, 0.5);
+            }
+            
+            .ranking-switch:has(input:checked):hover::before {
+              inset: var(--_switch-padding) var(--_switch-padding) var(--_switch-padding) 45%;
+              box-shadow: 
+                inset 0 2px 4px rgba(0, 0, 0, 0.3),
+                0 0 15px rgba(136, 19, 55, 0.3),
+                0 0 25px rgba(30, 64, 175, 0.2);
+            }
+            
+            .ranking-switch:has(input:not(:checked)):hover::before {
+              inset: var(--_switch-padding) 45% var(--_switch-padding) var(--_switch-padding);
+              box-shadow: 
+                inset 0 2px 4px rgba(0, 0, 0, 0.3),
+                0 0 15px rgba(30, 64, 175, 0.3),
+                0 0 25px rgba(136, 19, 55, 0.2);
+            }
+            
+            .ranking-switch:has(input:checked)::before {
+              background: var(--_slider-bg-clr-on);
+              inset: var(--_switch-padding) var(--_switch-padding) var(--_switch-padding) 50%;
+              box-shadow: 
+                inset 0 2px 4px rgba(0, 0, 0, 0.3),
+                0 0 12px rgba(157, 23, 77, 0.3),
+                0 0 25px rgba(6, 95, 70, 0.2);
+            }
+            
+            .ranking-switch > span:last-of-type,
+            .ranking-switch > input:checked + span:first-of-type {
+              opacity: 0.7;
+            }
+            
+            .ranking-switch > input:checked ~ span:last-of-type {
+              opacity: 1;
+              text-shadow: 0 0 10px rgba(157, 23, 77, 0.5);
+            }
+            
+            .ranking-switch > input:not(:checked) + span:first-of-type {
+              text-shadow: 0 0 10px rgba(30, 64, 175, 0.5);
+            }
+          `
+        }} />
         
-        <button
-          onClick={() => handleTabChange('voter')}
-          className={`flex-1 flex items-center justify-center gap-1 sm:gap-1.5 px-1.5 sm:px-3 py-2.5 sm:py-3 rounded-lg text-xs sm:text-sm font-medium transition-all duration-300 min-w-0 ${
-            activeTab === 'voter'
-              ? 'bg-gradient-to-r from-purple-500/20 to-pink-500/20 text-purple-400 border border-purple-500/30 shadow-lg shadow-purple-500/10'
-              : 'text-gray-400 hover:text-purple-300 hover:bg-gray-700/30'
-          }`}
-          disabled={isAnimating}
-          title={t('rankingPage.tabs.voterRankings')}
-        >
-          <Vote className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0" />
-          <span className="hidden sm:inline whitespace-nowrap">{t('rankingPage.tabs.voter')}</span>
-        </button>
+        <label className="ranking-switch">
+          <input 
+            type="checkbox" 
+            checked={activeTab === 'voter'}
+            onChange={(e) => handleTabChange(e.target.checked)}
+            disabled={isAnimating}
+          />
+          <span>{t('rankingPage.tabs.player')}</span>
+          <span>{t('rankingPage.tabs.voter')}</span>
+        </label>
       </div>
 
       {/* Rankings Content */}
