@@ -20,6 +20,7 @@ import { useTranslation } from 'react-i18next';
 import { getRankColorClasses } from '../utils/rankUtils';
 import { useOnboardingStore } from '../store/onboardingStore';
 import { MonthlyLimitCard } from '../components/ui/SubmissionCooldownCard';
+import { TabbedRanking } from '../components/ui/TabbedRanking';
 
 const BattlesPage: React.FC = () => {
   const { t } = useTranslation();
@@ -446,128 +447,11 @@ const BattlesPage: React.FC = () => {
           {/* Right Sidebar */}
           <aside className="lg:col-span-1 space-y-6 sticky-sidebar">
             
-            {/* Top Rankings - Direct Display */}
-            <div>
-              {/* Header - Centered Title */}
-              <div className="text-center mb-4">
-                <div className="flex items-center justify-center gap-2 mb-2">
-                  <img
-                    src="/images/ranking-title-badge.png"
-                    alt={t('battlesPage.rankings.titleCompact')}
-                    className="w-[320px] h-[60px] object-contain"
-                    onError={(e) => {
-                      // フォールバックとしてテキストとアイコンを表示
-                      const target = e.target as HTMLImageElement;
-                      target.style.display = 'none';
-                      const parent = target.parentElement;
-                      if (parent && !parent.querySelector('.fallback-title')) {
-                        const fallbackContainer = document.createElement('div');
-                        fallbackContainer.className = 'fallback-title flex items-center gap-2';
-                        
-                        const trophyIcon = document.createElement('div');
-                        trophyIcon.innerHTML = '<svg class="h-5 w-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path></svg>';
-                        
-                        const fallbackText = document.createElement('h2');
-                        fallbackText.className = 'text-lg font-bold text-yellow-400';
-                        fallbackText.textContent = 'トップランキング';
-                        
-                        fallbackContainer.appendChild(trophyIcon);
-                        fallbackContainer.appendChild(fallbackText);
-                        parent.appendChild(fallbackContainer);
-                      }
-                    }}
-                  />
-                </div>
-              </div>
-
-              {/* Rankings Content */}
-              {rankingsLoading ? (
-                <div className="text-center text-gray-400 py-8">
-                  <div className="animate-spin w-8 h-8 border-2 border-cyan-500 border-t-transparent rounded-full mx-auto mb-3"></div>
-                  <p className="text-sm">{t('battleFilters.loading')}</p>
-                </div>
-              ) : topRankings.length > 0 ? (
-                <div className="space-y-3">
-                  {topRankings.map((entry: RankingEntry, index) => {
-                    const getPositionIcon = (position: number) => {
-                      switch (position) {
-                        case 1:
-                          return <img src="/images/1st-place.png" alt="1st Place" className="h-6 w-6 object-contain" />;
-                        case 2:
-                          return <img src="/images/2nd-place.png" alt="2nd Place" className="h-6 w-6 object-contain" />;
-                        case 3:
-                          return <img src="/images/3rd-place.png" alt="3rd Place" className="h-6 w-6 object-contain" />;
-                        default:
-                          return <span className="text-sm font-bold text-gray-400">#{position}</span>;
-                      }
-                    };
-
-                    const getRatingColor = (rankColor: string) => {
-                      switch (rankColor) {
-                        case 'rainbow':
-                        case 'purple':
-                          return 'text-purple-400';
-                        case 'blue':
-                          return 'text-blue-400';
-                        case 'green':
-                          return 'text-green-400';
-                        case 'yellow':
-                          return 'text-yellow-400';
-                        case 'gray':
-                          return 'text-gray-400';
-                        default:
-                          return 'text-white';
-                      }
-                    };
-
-                    return (
-                      <Link 
-                        key={entry.user_id}
-                        to={`/profile/${entry.user_id}`}
-                        className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800/30 transition-all duration-300 group"
-                      >
-                        <div className="flex items-center justify-center w-8 h-8">
-                          {getPositionIcon(entry.position)}
-                        </div>
-                        
-                        <img
-                          src={entry.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${entry.user_id}`}
-                          alt={entry.username}
-                          className="w-10 h-10 rounded-lg object-cover border border-gray-600/50 group-hover:border-cyan-500/50 transition-colors"
-                        />
-                        
-                        <div className="flex-1 min-w-0">
-                          <div className="font-medium text-white truncate text-sm group-hover:text-cyan-400 transition-colors">
-                            {entry.username}
-                          </div>
-                          <div className={`text-sm font-bold ${getRatingColor(entry.rank_color)}`}>
-                            {entry.season_points} BP
-                          </div>
-                        </div>
-                      </Link>
-                    );
-                  })}
-                </div>
-              ) : (
-                <div className="text-center py-8">
-                  <Users className="h-8 w-8 text-gray-600 mx-auto mb-3" />
-                  <p className="text-gray-400 text-sm">{t('battleFilters.noRankings')}</p>
-                </div>
-              )}
-              
-              {/* View All Button - Below Rankings */}
-              {topRankings.length > 0 && (
-                <div className="text-center mt-4">
-                  <Link 
-                    to="/ranking"
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 border border-cyan-500/30 rounded-lg text-cyan-400 hover:text-cyan-300 hover:bg-gradient-to-r hover:from-cyan-500/20 hover:to-blue-500/20 transition-all duration-300 text-sm font-medium"
-                  >
-                    <span>{t('battlesPage.rankings.viewFullButton')}</span>
-                    <ArrowRight className="h-4 w-4" />
-                  </Link>
-                </div>
-              )}
-            </div>
+            {/* Top Rankings with Tabs */}
+            <TabbedRanking 
+              maxItems={10}
+              showViewAllButton={true}
+            />
 
 
           </aside>

@@ -933,7 +933,9 @@
     "description": "プレイヤーランキングと投票者ランキングでコミュニティの活発さを表示",
     "tabs": {
       "playerRankings": "プレイヤーランキング",
-      "voterRankings": "投票者ランキング"
+      "voterRankings": "投票者ランキング",
+      "player": "プレイヤー",
+      "voter": "投票者"
     },
     "playerDescription": "バトル戦績に基づくビートボクサーランキング",
     "voterDescription": "投票数に基づくアクティブなコミュニティメンバーランキング",

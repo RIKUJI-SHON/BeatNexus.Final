@@ -670,7 +670,9 @@
     "description": "Player rankings and voter rankings showing community activity",
     "tabs": {
       "playerRankings": "Player Rankings", 
-      "voterRankings": "Voter Rankings"
+      "voterRankings": "Voter Rankings",
+      "player": "Player",
+      "voter": "Voter"
     },
     "playerDescription": "Beatboxer rankings based on battle performance",
     "voterDescription": "Active community member rankings based on voting participation",
