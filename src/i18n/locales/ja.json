@@ -784,7 +784,7 @@
     "backButton": "戻る",
     "selectFormat": {
       "label": "バトル形式を選択",
-      "mainBattle": "メインバトル (60-120秒)",
+      "mainBattle": "メインバトル【必須】60秒から120秒",
       "miniBattle": "ミニバトル (30-59秒)",
       "themeChallenge": "スキル/テーマチャレンジ"
     },
@@ -801,7 +801,7 @@
       },
       "videoLengthSize": {
         "title": "動画の長さとサイズ",
-        "description": "フォーマットのガイドライン（メインバトルは60-120秒）に従ってください。最適なパフォーマンスのために、ファイルサイズは75MB以下に抑えてください。"
+        "description": "【重要】メインバトルは60秒から120秒が絶対ルールです。この時間内でないと投稿できません。最適なパフォーマンスのために、ファイルサイズは75MB以下に抑えてください。"
       },
       "facePolicy": {
         "title": "顔出しポリシー",
@@ -893,7 +893,7 @@
     },
     "submissionGuidelines": {
       "title": "動画投稿ガイドライン",
-      "followFormatLength": "フォーマットの長さ要件に従ってください",
+      "followFormatLength": "【必須】メインバトルは60秒から120秒のルール厳守",
       "ensureAudioQuality": "クリアな音質を確保してください",
       "faceOptional": "顔出しは任意ですが、口元の表示を推奨",
       "noBackgroundMusic": "背景音楽やバッキングトラックは禁止",

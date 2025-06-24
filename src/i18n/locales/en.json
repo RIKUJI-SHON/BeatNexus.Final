@@ -720,7 +720,7 @@
     "backButton": "Back",
     "selectFormat": {
       "label": "Select Battle Format",
-      "mainBattle": "Main Battle (60-120 seconds)",
+      "mainBattle": "Main Battle 【REQUIRED】60 to 120 seconds",
       "miniBattle": "Mini Battle (30-59 seconds)",
       "themeChallenge": "Skill/Theme Challenge"
     },
@@ -737,7 +737,7 @@
       },
       "videoLengthSize": {
         "title": "Video Length & Size",
-        "description": "Follow format guidelines (60-120s for main battles). Keep file size under 75MB for best performance."
+        "description": "【IMPORTANT】Main battles MUST be 60 to 120 seconds - this is a strict rule. Videos outside this range cannot be submitted. Keep file size under 75MB for best performance."
       },
       "facePolicy": {
         "title": "Face Policy",
@@ -829,7 +829,7 @@
     },
     "submissionGuidelines": {
       "title": "Video Submission Guidelines",
-      "followFormatLength": "Follow the format length requirements",
+      "followFormatLength": "【REQUIRED】Main battles must strictly follow 60-120 seconds rule",
       "ensureAudioQuality": "Ensure clear audio quality",
       "faceOptional": "Showing your face is optional, but mouth area is recommended",
       "noBackgroundMusic": "No background music or backing tracks",
