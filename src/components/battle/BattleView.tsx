@@ -779,19 +779,19 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle }) => {
                     
                     {/* Player A Button */}
                     <div className="relative">
-                      {/* Button Base Platform */}
-                      <div className="absolute -bottom-1.5 -left-1.5 -right-1.5 h-4 bg-gradient-to-b from-gray-600 to-gray-700 rounded-full shadow-md"></div>
-                      
                       {/* Button */}
                       {isLoadingVoteStatus ? (
-                        <div className="w-20 h-20 rounded-full bg-cyan-600/50 flex items-center justify-center animate-pulse border-3 border-cyan-400/50">
+                        <div className="w-15 h-12 rounded-full bg-cyan-600/50 flex items-center justify-center animate-pulse">
                           <div className="w-6 h-6 border-3 border-white border-t-transparent rounded-full animate-spin"></div>
                         </div>
                       ) : hasVoted === 'A' ? (
                         <div className="relative">
-                          <div className="w-20 h-20 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 border-3 border-green-400 flex items-center justify-center shadow-xl shadow-green-500/50 animate-pulse">
-                            <ThumbsUp className="h-8 w-8 text-white" />
-                          </div>
+                          <button className="vote-btn-player-a vote-btn-voted">
+                            <div className="back"></div>
+                            <div className="front">
+                              <ThumbsUp className="h-5 w-5" />
+                            </div>
+                          </button>
                           <button 
                             onClick={handleCancelVote} 
                             disabled={isVoting}
@@ -804,9 +804,12 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle }) => {
                         <button 
                           onClick={() => setShowVoteModal('A')} 
                           disabled={isVoting || !!hasVoted || isUserParticipant}
-                          className="w-20 h-20 rounded-full bg-gradient-to-br from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 border-3 border-cyan-400 flex items-center justify-center shadow-xl shadow-cyan-500/50 transform hover:scale-110 hover:shadow-cyan-500/70 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed group active:scale-95"
+                          className="vote-btn-player-a"
                         >
-                          <ThumbsUp className="h-8 w-8 text-white group-hover:scale-110 transition-transform duration-200" />
+                          <div className="back"></div>
+                          <div className="front">
+                            <ThumbsUp className="h-5 w-5" />
+                          </div>
                         </button>
                       )}
                       
@@ -827,19 +830,19 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle }) => {
 
                     {/* Player B Button */}
                     <div className="relative">
-                      {/* Button Base Platform */}
-                      <div className="absolute -bottom-1.5 -left-1.5 -right-1.5 h-4 bg-gradient-to-b from-gray-600 to-gray-700 rounded-full shadow-md"></div>
-                      
                       {/* Button */}
                       {isLoadingVoteStatus ? (
-                        <div className="w-20 h-20 rounded-full bg-pink-600/50 flex items-center justify-center animate-pulse border-3 border-pink-400/50">
+                        <div className="w-15 h-12 rounded-full bg-pink-600/50 flex items-center justify-center animate-pulse">
                           <div className="w-6 h-6 border-3 border-white border-t-transparent rounded-full animate-spin"></div>
                         </div>
                       ) : hasVoted === 'B' ? (
                         <div className="relative">
-                          <div className="w-20 h-20 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 border-3 border-green-400 flex items-center justify-center shadow-xl shadow-green-500/50 animate-pulse">
-                            <ThumbsUp className="h-8 w-8 text-white" />
-                          </div>
+                          <button className="vote-btn-player-b vote-btn-voted">
+                            <div className="back"></div>
+                            <div className="front">
+                              <ThumbsUp className="h-5 w-5" />
+                            </div>
+                          </button>
                           <button 
                             onClick={handleCancelVote} 
                             disabled={isVoting}
@@ -852,9 +855,12 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle }) => {
                         <button 
                           onClick={() => setShowVoteModal('B')} 
                           disabled={isVoting || !!hasVoted || isUserParticipant}
-                          className="w-20 h-20 rounded-full bg-gradient-to-br from-pink-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 border-3 border-pink-400 flex items-center justify-center shadow-xl shadow-pink-500/50 transform hover:scale-110 hover:shadow-pink-500/70 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed group active:scale-95"
+                          className="vote-btn-player-b"
                         >
-                          <ThumbsUp className="h-8 w-8 text-white group-hover:scale-110 transition-transform duration-200" />
+                          <div className="back"></div>
+                          <div className="front">
+                            <ThumbsUp className="h-5 w-5" />
+                          </div>
                         </button>
                       )}
                       

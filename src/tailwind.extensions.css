@@ -211,3 +211,129 @@
   font-weight: 600;
   font-size: 13px;
 }
+
+/* Battle Vote Buttons */
+.vote-btn-player-a {
+  --primary: 59, 130, 246; /* Blue for Player A */
+  --secondary: 30, 64, 175;
+  width: 60px;
+  height: 50px;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  user-select: none;
+  touch-action: manipulation;
+  outline: 10px solid rgb(var(--primary), .5);
+  border-radius: 100%;
+  position: relative;
+  transition: .3s;
+}
+
+.vote-btn-player-a .back {
+  background: rgb(var(--secondary));
+  border-radius: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.vote-btn-player-a .front {
+  background: linear-gradient(0deg, rgba(var(--primary), .6) 20%, rgba(var(--primary)) 50%);
+  box-shadow: 0 .5em 1em -0.2em rgba(var(--secondary), .5);
+  border-radius: 100%;
+  position: absolute;
+  border: 1px solid rgb(var(--secondary));
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.2rem;
+  font-weight: 600;
+  font-family: inherit;
+  transform: translateY(-15%);
+  transition: .15s;
+  color: white;
+}
+
+.vote-btn-player-a:active .front {
+  transform: translateY(0%);
+  box-shadow: 0 0;
+}
+
+.vote-btn-player-a:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.vote-btn-player-b {
+  --primary: 255, 90, 120; /* Pink/Red for Player B */
+  --secondary: 150, 50, 60;
+  width: 60px;
+  height: 50px;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  user-select: none;
+  touch-action: manipulation;
+  outline: 10px solid rgb(var(--primary), .5);
+  border-radius: 100%;
+  position: relative;
+  transition: .3s;
+}
+
+.vote-btn-player-b .back {
+  background: rgb(var(--secondary));
+  border-radius: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.vote-btn-player-b .front {
+  background: linear-gradient(0deg, rgba(var(--primary), .6) 20%, rgba(var(--primary)) 50%);
+  box-shadow: 0 .5em 1em -0.2em rgba(var(--secondary), .5);
+  border-radius: 100%;
+  position: absolute;
+  border: 1px solid rgb(var(--secondary));
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.2rem;
+  font-weight: 600;
+  font-family: inherit;
+  transform: translateY(-15%);
+  transition: .15s;
+  color: white;
+}
+
+.vote-btn-player-b:active .front {
+  transform: translateY(0%);
+  box-shadow: 0 0;
+}
+
+.vote-btn-player-b:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Voted state styling */
+.vote-btn-voted {
+  --primary: 34, 197, 94; /* Green for voted state */
+  --secondary: 22, 101, 52;
+  animation: pulse 2s infinite;
+}
+
+.vote-btn-voted .front {
+  background: linear-gradient(0deg, rgba(var(--primary), .6) 20%, rgba(var(--primary)) 50%);
+}
