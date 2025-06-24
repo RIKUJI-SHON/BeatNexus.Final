@@ -78,58 +78,58 @@ export const BattleFilters: React.FC<BattleFiltersProps> = ({
       <div className="col-span-12">
         <div className="space-y-3">
           {/* アクションボタン群 */}
-          <div className="flex items-center justify-center gap-6 max-w-4xl mx-auto">
-        {/* プロフィールボタン */}
-        <button
-          onClick={handleProfileClick}
-              className="group flex flex-col items-center justify-end p-6 h-40 transition-all duration-300 hover:scale-105"
-        >
-              <div className="w-20 h-20 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform duration-300">
-            <img 
-              src="/images/Profile.png" 
-              alt="Profile"
-                  className="h-12 w-12 object-contain filter brightness-110 group-hover:brightness-150 group-hover:drop-shadow-lg transition-all duration-300"
-            />
-          </div>
-              <span className="text-base font-medium text-gray-300 group-hover:text-white group-hover:drop-shadow-lg transition-colors">
-            {t('battleFilters.buttons.profile')}
-          </span>
-        </button>
+          <div className="flex items-center justify-center gap-3 sm:gap-6 max-w-4xl mx-auto px-4">
+            {/* プロフィールボタン */}
+            <button
+              onClick={handleProfileClick}
+              className="group flex flex-col items-center justify-end p-3 sm:p-6 h-28 sm:h-40 transition-all duration-300 hover:scale-105"
+            >
+              <div className="w-12 sm:w-20 h-12 sm:h-20 flex items-center justify-center mb-1 sm:mb-2 group-hover:scale-110 transition-transform duration-300">
+                <img 
+                  src="/images/Profile.png" 
+                  alt="Profile"
+                  className="h-8 sm:h-12 w-8 sm:w-12 object-contain filter brightness-110 group-hover:brightness-150 group-hover:drop-shadow-lg transition-all duration-300"
+                />
+              </div>
+              <span className="text-xs sm:text-base font-medium text-gray-300 group-hover:text-white group-hover:drop-shadow-lg transition-colors text-center">
+                {t('battleFilters.buttons.profile')}
+              </span>
+            </button>
 
-        {/* バトルスタートボタン（中央・メイン） */}
-        <button
-          onClick={handleBattleStartClick}
-              className="group flex flex-col items-center justify-end p-10 h-48 transition-all duration-300 hover:scale-110 hover:drop-shadow-2xl"
-        >
-              <div className="w-32 h-32 flex items-center justify-center mb-3 group-hover:scale-110 transition-all duration-300">
-            <img 
-              src="/images/VS.png" 
-              alt="Battle Start"
-                  className="w-20 h-20 object-contain filter brightness-110 group-hover:brightness-200 group-hover:drop-shadow-2xl transition-all duration-300"
-            />
-          </div>
-              <span className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400 group-hover:from-cyan-200 group-hover:to-purple-200 group-hover:drop-shadow-xl transition-all duration-300">
-            {t('battleFilters.buttons.battleStart')}
-          </span>
-        </button>
+            {/* バトルスタートボタン（中央・メイン） */}
+            <button
+              onClick={handleBattleStartClick}
+              className="group flex flex-col items-center justify-end p-4 sm:p-10 h-32 sm:h-48 transition-all duration-300 hover:scale-110 hover:drop-shadow-2xl"
+            >
+              <div className="w-16 sm:w-32 h-16 sm:h-32 flex items-center justify-center mb-1 sm:mb-3 group-hover:scale-110 transition-all duration-300">
+                <img 
+                  src="/images/VS.png" 
+                  alt="Battle Start"
+                  className="w-12 sm:w-20 h-12 sm:h-20 object-contain filter brightness-110 group-hover:brightness-200 group-hover:drop-shadow-2xl transition-all duration-300"
+                />
+              </div>
+              <span className="text-sm sm:text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400 group-hover:from-cyan-200 group-hover:to-purple-200 group-hover:drop-shadow-xl transition-all duration-300 text-center">
+                {t('battleFilters.buttons.battleStart')}
+              </span>
+            </button>
 
-        {/* トーナメントボタン */}
-        <button
-          onClick={handleTournamentClick}
-              className="group flex flex-col items-center justify-end p-6 h-40 transition-all duration-300 hover:scale-105"
-        >
-              <div className="w-20 h-20 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform duration-300">
+            {/* トーナメントボタン */}
+            <button
+              onClick={handleTournamentClick}
+              className="group flex flex-col items-center justify-end p-3 sm:p-6 h-28 sm:h-40 transition-all duration-300 hover:scale-105"
+            >
+              <div className="w-12 sm:w-20 h-12 sm:h-20 flex items-center justify-center mb-1 sm:mb-2 group-hover:scale-110 transition-transform duration-300">
                 <img 
                   src="/images/Tournaments.png" 
                   alt="Tournament"
-                  className="h-12 w-12 object-contain filter brightness-110 group-hover:brightness-150 group-hover:drop-shadow-lg transition-all duration-300"
+                  className="h-8 sm:h-12 w-8 sm:w-12 object-contain filter brightness-110 group-hover:brightness-150 group-hover:drop-shadow-lg transition-all duration-300"
                 />
+              </div>
+              <span className="text-xs sm:text-base font-medium text-gray-300 group-hover:text-white group-hover:drop-shadow-lg transition-colors text-center">
+                {t('battleFilters.buttons.tournament')}
+              </span>
+            </button>
           </div>
-              <span className="text-base font-medium text-gray-300 group-hover:text-white group-hover:drop-shadow-lg transition-colors">
-            {t('battleFilters.buttons.tournament')}
-          </span>
-        </button>
-      </div>
 
           {/* フィルターカード - SimpleBattleCardと同じデザイン */}
           <div className="battle-card-simple mb-6 group cursor-default">

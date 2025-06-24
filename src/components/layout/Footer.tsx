@@ -93,11 +93,11 @@ export const Footer: React.FC = () => {
             <h3 className="font-semibold text-lg mb-4">{t('footer.contactUs')}</h3>
             <div className="space-y-3">
               <a 
-                href="mailto:info@beatnexus.com"
+                href="mailto:beatnexus.app@gmail.com"
                 className="flex items-center text-gray-400 hover:text-white transition-colors"
               >
                 <Mail className="h-5 w-5 mr-2" />
-                info@beatnexus.com
+                beatnexus.app@gmail.com
               </a>
               <p className="text-gray-400">
                 {t('footer.contactMessage')}

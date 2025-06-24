@@ -216,7 +216,7 @@ const FAQPage: React.FC = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button 
                 className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg"
-                onClick={() => window.location.href = 'mailto:support@beatnexus.com'}
+                onClick={() => window.location.href = 'mailto:beatnexus.app@gmail.com'}
               >
                 {t('faq.stillNeedHelp.contactSupport')}
               </button>
