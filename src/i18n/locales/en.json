@@ -1497,6 +1497,18 @@
   },
   "profile": "View Profile",
   "editProfile": "Edit Profile",
+  "voteCommentModal": {
+    "title": "Vote for Player {{player}}",
+    "subtitle": "Vote for {{playerName}}",
+    "description": "Comments are required. Please share your thoughts.",
+    "commentLabel": "Comment (Required)",
+    "commentPlaceholder": "Share your thoughts about Player {{player}}...",
+    "commentRequired": "A comment is required to vote",
+    "voteButton": "Vote",
+    "voting": "Voting...",
+    "characterCount": "{{count}}/500 characters",
+    "close": "Close"
+  },
   "community": {
     "title": "Communities",
     "description": "Join communities to compete with like-minded beatboxers!",

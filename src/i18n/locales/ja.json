@@ -1281,6 +1281,18 @@
   },
   "profile": "プロフィールを見る",
   "editProfile": "プロフィールを編集",
+  "voteCommentModal": {
+    "title": "Vote for Player {{player}}",
+    "subtitle": "{{playerName}}への投票",
+    "description": "コメントは必須です。あなたの感想をシェアしてください。",
+    "commentLabel": "コメント（必須）",
+    "commentPlaceholder": "Player {{player}}についての感想をシェアしてください...",
+    "commentRequired": "投票にはコメントが必要です",
+    "voteButton": "投票する",
+    "voting": "投票中...",
+    "characterCount": "{{count}}/500文字",
+    "close": "閉じる"
+  },
   "community": {
     "title": "コミュニティ",
     "description": "同じ志を持つビートボクサーたちとコミュニティに参加して競い合おう！",
