@@ -70,7 +70,7 @@ export const Header: React.FC = () => {
   return (
     <header className="bg-gray-950/95 backdrop-blur-md text-white border-b border-gray-800 fixed top-0 w-full z-50">
       <div className="max-w-7xl mx-auto px-6">
-        <div className="flex items-center h-16 gap-8">
+        <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
             <span className="font-bold text-xl tracking-tight">BeatNexus</span>
@@ -225,7 +225,7 @@ export const Header: React.FC = () => {
             )}
           </div>
 
-          {/* Mobile menu button */}
+          {/* Mobile menu button - 右端に配置 */}
           <button 
             className="md:hidden text-gray-400 hover:text-white"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
