@@ -13,9 +13,10 @@ import { trackBeatNexusEvents } from '../../utils/analytics';
 
 interface BattleViewProps {
   battle: Battle;
+  isArchived?: boolean; // アーカイブバトルかどうかを示すフラグ
 }
 
-export const BattleView: React.FC<BattleViewProps> = ({ battle }) => {
+export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = false }) => {
   const { t } = useTranslation();
   const [hasVoted, setHasVoted] = useState<'A' | 'B' | null>(null);
   const [votesA, setVotesA] = useState(battle.votes_a);
@@ -67,8 +68,12 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle }) => {
       }
     };
     
-    // Track battle view event
-    trackBeatNexusEvents.battleView(battle.id);
+    // Track battle view event based on battle type
+    if (isArchived) {
+      trackBeatNexusEvents.archivedBattleView(battle.id);
+    } else {
+      trackBeatNexusEvents.activeBattleView(battle.id);
+    }
     
     loadVoteStatus();
     // Load comments when component mounts
@@ -88,7 +93,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle }) => {
       await voteBattleWithComment(battle.id, player, comment);
       
       // Track vote event
-      trackBeatNexusEvents.battleVote(battle.id, player);
+      trackBeatNexusEvents.battleVote(battle.id);
       
       // Update local state
       setHasVoted(player);

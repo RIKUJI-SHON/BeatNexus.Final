@@ -73,7 +73,7 @@ const BattleViewPage: React.FC = () => {
   
   return (
     <div className="min-h-screen bg-gray-950">
-      <BattleView battle={battle!} />
+      <BattleView battle={battle!} isArchived={false} />
     </div>
   );
 };

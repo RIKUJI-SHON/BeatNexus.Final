@@ -3,25 +3,50 @@ import ReactGA from 'react-ga4';
 // Google Analytics トラッキング ID
 const GA_TRACKING_ID = 'G-P7Q1HTZNNW';
 
-// 開発環境かどうかの判定
-const isDevelopment = import.meta.env.DEV;
+// 開発環境かどうかの判定（複数条件でより確実に判定）
+const isDevelopment = import.meta.env.DEV || 
+                      import.meta.env.MODE === 'development' ||
+                      window.location.hostname === 'localhost' ||
+                      window.location.hostname === '127.0.0.1' ||
+                      window.location.port === '3000';
 
 /**
  * Google Analytics の初期化
  */
 export const initializeGA = (): void => {
+  // 開発環境の詳細ログ
+  console.log('GA Environment Check:', {
+    'import.meta.env.DEV': import.meta.env.DEV,
+    'import.meta.env.MODE': import.meta.env.MODE,
+    'window.location.hostname': window.location.hostname,
+    'window.location.port': window.location.port,
+    'isDevelopment': isDevelopment
+  });
+
   if (!isDevelopment) {
-    ReactGA.initialize(GA_TRACKING_ID, {
-      gtagOptions: {
-        // プライバシー設定
-        anonymize_ip: true,
-        cookie_flags: 'SameSite=Strict;Secure',
-      },
-    });
-    console.log('Google Analytics initialized');
+    try {
+      ReactGA.initialize(GA_TRACKING_ID, {
+        gtagOptions: {
+          // プライバシー設定
+          anonymize_ip: true,
+          cookie_flags: 'SameSite=Strict;Secure',
+        },
+      });
+      console.log('🚀 Google Analytics initialized for PRODUCTION');
+    } catch (error) {
+      console.error('❌ Failed to initialize Google Analytics:', error);
+    }
   } else {
     // 開発環境ではログのみ出力
-    console.log('Google Analytics: Development mode - tracking disabled');
+    console.log('🛠️ Google Analytics: Development mode - tracking DISABLED');
+    console.log('📍 Running on:', window.location.origin);
+    
+    // 開発環境でのGAスクリプト読み込みも防ぐ
+    if (typeof window !== 'undefined') {
+      (window as any).gtag = (window as any).gtag || function() {
+        console.log('🚫 gtag call blocked in development:', arguments);
+      };
+    }
   }
 };
 
@@ -74,8 +99,9 @@ export const trackEvent = (
  */
 export const trackBeatNexusEvents = {
   // バトル関連
-  battleView: (battleId: string) => trackEvent('view_battle', 'battle', battleId),
-  battleVote: (battleId: string, vote: 'A' | 'B') => trackEvent('vote_battle', 'battle', `${battleId}_${vote}`),
+  activeBattleView: (battleId: string) => trackEvent('view_active_battle', 'battle', battleId),
+  archivedBattleView: (battleId: string) => trackEvent('view_archived_battle', 'battle', battleId),
+  battleVote: (battleId: string) => trackEvent('vote_battle', 'battle', battleId),
   battleShare: (battleId: string) => trackEvent('share_battle', 'battle', battleId),
   
   // 投稿関連
@@ -124,7 +150,11 @@ export const setUserProperties = (userId: string): void => {
  * @param errorInfo - 追加のエラー情報
  */
 export const trackError = (error: string, errorInfo?: string): void => {
-  trackEvent('error', 'application', `${error}${errorInfo ? ` - ${errorInfo}` : ''}`);
+  if (!isDevelopment) {
+    trackEvent('error', 'application', `${error}${errorInfo ? ` - ${errorInfo}` : ''}`);
+  } else {
+    console.log(`GA [DEV]: Error would be tracked - ${error}${errorInfo ? ` - ${errorInfo}` : ''}`);
+  }
 };
 
 /**

@@ -13,6 +13,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '../store/authStore';
 import { Badge } from '../components/ui/Badge';
 import { VSIcon } from '../components/ui/VSIcon';
+import { trackBeatNexusEvents } from '../utils/analytics';
 
 // カラーパレット（BattleViewと統一）
 const colorPairs = [
@@ -71,6 +72,9 @@ const BattleReplayPage: React.FC = () => {
       }
 
       setBattle(battleData);
+
+      // Track archived battle view event
+      trackBeatNexusEvents.archivedBattleView(battleData.original_battle_id);
 
       // コメントを取得
       if (battleData?.id) {
