@@ -33,14 +33,18 @@ export const VoteCommentModal: React.FC<VoteCommentModalProps> = ({
     if (trimmedText.length === 0) {
       return {
         isValid: false,
-        errorMessage: 'コメントは必須です。投票理由をお聞かせください。'
+        errorMessage: t('language') === 'ja' 
+          ? 'コメントは必須です。投票理由をお聞かせください。'
+          : 'Comment is required. Please share your voting reason.'
       };
     }
     
     if (trimmedText.length < MIN_COMMENT_LENGTH) {
       return {
         isValid: false,
-        errorMessage: `コメントは${MIN_COMMENT_LENGTH}文字以上で入力してください。`
+        errorMessage: t('language') === 'ja' 
+          ? `コメントは${MIN_COMMENT_LENGTH}文字以上で入力してください。`
+          : `Comment must be at least ${MIN_COMMENT_LENGTH} characters long.`
       };
     }
     
@@ -121,19 +125,25 @@ export const VoteCommentModal: React.FC<VoteCommentModalProps> = ({
               {playerName ? `${playerName}への投票` : `Player ${player}への投票`}
             </p>
             <p className="text-gray-400 text-xs">
-              コメントは必須です。投票理由をお聞かせください。
+              {t('language') === 'ja' 
+                ? 'コメントは必須です。投票理由をお聞かせください。'
+                : 'Comment is required. Please share your voting reason.'
+              }
             </p>
           </div>
 
           {/* Comment Input */}
           <div className="mb-6">
             <label className="block text-sm font-medium text-gray-300 mb-2">
-              コメント（必須）
+              {t('language') === 'ja' ? 'コメント（必須）' : 'Comment (Required)'}
             </label>
             <textarea
               value={comment}
               onChange={handleCommentChange}
-              placeholder={`Player ${player}への投票理由を教えてください...`}
+              placeholder={t('language') === 'ja' 
+                ? `Player ${player}への投票理由を教えてください...`
+                : `Please tell us why you're voting for Player ${player}...`
+              }
               className={`w-full p-3 rounded-lg bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 ${
                 error 
                   ? 'border-red-500 focus:ring-red-500/50' 
@@ -148,13 +158,16 @@ export const VoteCommentModal: React.FC<VoteCommentModalProps> = ({
             {/* 文字数カウンタとエラーメッセージ */}
             <div className="mt-1 flex justify-between items-start">
               <div className="text-xs text-gray-500">
-                {comment.length}/500文字
+                {comment.length}/500{t('language') === 'ja' ? '文字' : ' characters'}
               </div>
               
               {/* 🔧 最小文字数インジケーター */}
               {comment.trim().length > 0 && comment.trim().length < MIN_COMMENT_LENGTH && (
                 <div className="text-xs text-orange-400">
-                  あと{MIN_COMMENT_LENGTH - comment.trim().length}文字必要
+                  {t('language') === 'ja' 
+                    ? `あと${MIN_COMMENT_LENGTH - comment.trim().length}文字必要`
+                    : `${MIN_COMMENT_LENGTH - comment.trim().length} more characters needed`
+                  }
                 </div>
               )}
             </div>
