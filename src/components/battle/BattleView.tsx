@@ -79,8 +79,8 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle }) => {
   const comments = battleComments[battle.id] || [];
   const isLoadingComments = commentsLoading[battle.id] || false;
 
-  // Handle vote with optional comment
-  const handleVote = async (player: 'A' | 'B', comment?: string) => {
+  // Handle vote with required comment
+  const handleVote = async (player: 'A' | 'B', comment: string) => {
     if (!user || isUserParticipant || hasVoted) return;
     
     setIsVoting(true);

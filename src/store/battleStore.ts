@@ -32,7 +32,7 @@ interface BattleState {
   fetchTotalSubmissionsCount: () => Promise<void>;
   subscribeToRealTimeUpdates: () => () => void;
   voteBattle: (battleId: string, vote: 'A' | 'B') => Promise<void>;
-  voteBattleWithComment: (battleId: string, vote: 'A' | 'B', comment?: string) => Promise<void>;
+  voteBattleWithComment: (battleId: string, vote: 'A' | 'B', comment: string) => Promise<void>;
   cancelVote: (battleId: string) => Promise<void>;
   getUserVote: (battleId: string) => Promise<{ hasVoted: boolean; vote: 'A' | 'B' | null }>;
   fetchBattleComments: (battleId: string) => Promise<void>;
@@ -1233,7 +1233,7 @@ export const useBattleStore = create<BattleState>((set, get) => ({
     // Implementation of fetchUserSubmissions function
   },
 
-  voteBattleWithComment: async (battleId: string, vote: 'A' | 'B', comment?: string) => {
+  voteBattleWithComment: async (battleId: string, vote: 'A' | 'B', comment: string) => {
     console.log('🗳️💬 Starting vote with comment process:', { battleId, vote, comment, timestamp: new Date().toISOString() });
     
     try {
