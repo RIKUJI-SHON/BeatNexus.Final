@@ -143,6 +143,20 @@ export const usePushNotification = (): UsePushNotificationReturn => {
       return false
     }
 
+    // 認証情報を確認
+    const { data: { user: authUser }, error: authError } = await supabase.auth.getUser()
+    if (authError || !authUser) {
+      console.error('[Push] Auth error:', authError)
+      setState(prev => ({ ...prev, error: 'ユーザー認証に失敗しました' }))
+      return false
+    }
+
+    console.log('[Push] Auth user check:', {
+      store_user_id: user.id,
+      auth_user_id: authUser.id,
+      match: user.id === authUser.id
+    })
+
     if (!state.isSupported) {
       setState(prev => ({ ...prev, error: 'プッシュ通知はサポートされていません' }))
       return false
@@ -168,20 +182,35 @@ export const usePushNotification = (): UsePushNotificationReturn => {
 
       // Supabaseに購読情報を保存
       const subscriptionData = {
-        user_id: user.id,
+        user_id: authUser.id,
         subscription: subscription.toJSON(),
         user_agent: navigator.userAgent
       }
 
+      console.log('[Push] Attempting to save subscription data:', {
+        user_id: authUser.id,
+        subscription_endpoint: subscription.toJSON().endpoint,
+        user_agent: navigator.userAgent?.substring(0, 50) + '...'
+      })
+
+      // 既存の購読情報を削除してから新しいものを挿入
+      await supabase
+        .from('push_subscriptions')
+        .delete()
+        .eq('user_id', authUser.id)
+
       const { error: dbError } = await supabase
         .from('push_subscriptions')
-        .upsert(subscriptionData, {
-          onConflict: 'user_id, (subscription->\'endpoint\')'
-        })
+        .insert(subscriptionData)
 
       if (dbError) {
-        console.error('[Push] Database error:', dbError)
-        throw new Error('購読情報の保存に失敗しました')
+        console.error('[Push] Database error details:', {
+          message: dbError.message,
+          details: dbError.details,
+          hint: dbError.hint,
+          code: dbError.code
+        })
+        throw new Error(`購読情報の保存に失敗しました: ${dbError.message}`)
       }
 
       setState(prev => ({
