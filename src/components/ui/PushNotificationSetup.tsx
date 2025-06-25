@@ -8,6 +8,7 @@ import React from 'react'
 import { usePushNotification } from '../../hooks/usePushNotification'
 import { Button } from './Button'
 import { Badge } from './Badge'
+import { Bell, BellOff } from 'lucide-react'
 
 interface PushNotificationSetupProps {
   className?: string
@@ -42,10 +43,10 @@ export const PushNotificationSetup: React.FC<PushNotificationSetupProps> = ({
   // サポートされていない場合
   if (!isSupported) {
     return (
-      <div className={`p-4 bg-gray-50 rounded-lg ${className}`}>
+      <div className={`p-4 bg-gray-800 border border-gray-700 rounded-lg ${className}`}>
         <div className="flex items-center space-x-2">
-          <span className="text-gray-500">📱</span>
-          <span className="text-sm text-gray-600">
+          <BellOff className="h-5 w-5 text-gray-500" />
+          <span className="text-sm text-gray-400">
             お使いのブラウザはプッシュ通知をサポートしていません
           </span>
         </div>
@@ -53,51 +54,46 @@ export const PushNotificationSetup: React.FC<PushNotificationSetupProps> = ({
     )
   }
 
-  // 許可状況に応じた表示
-  const getPermissionBadge = () => {
-    switch (permission) {
-      case 'granted':
-        return <Badge variant="success">許可済み</Badge>
-      case 'denied':
-        return <Badge variant="danger">拒否済み</Badge>
-      default:
-        return <Badge variant="secondary">未設定</Badge>
+  // 購読状況に応じた表示
+  const getSubscriptionBadge = () => {
+    if (permission === 'denied') {
+      return <Badge variant="danger">拒否済み</Badge>
     }
+    
+    if (isSubscribed) {
+      return <Badge variant="success">有効</Badge>
+    }
+    
+    if (permission === 'granted') {
+      return <Badge variant="secondary">無効</Badge>
+    }
+    
+    return <Badge variant="secondary">未設定</Badge>
   }
 
   return (
-    <div className={`space-y-4 ${className}`}>
+    <div className={`bg-gray-800 border border-gray-700 rounded-lg p-4 space-y-4 ${className}`}>
       {/* ヘッダー */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-2">
-          <span className="text-lg">🛎️</span>
-          <h3 className="text-lg font-semibold text-gray-900">
-            プッシュ通知
-          </h3>
-          {getPermissionBadge()}
+        <div className="flex items-center space-x-3">
+          <Bell className="h-5 w-5 text-cyan-400" />
+          <div className="flex items-center space-x-2">
+            <span className="text-base font-medium text-gray-100">
+              プッシュ通知
+            </span>
+            {getSubscriptionBadge()}
+          </div>
         </div>
-        
-        {isSubscribed && (
-          <Badge variant="success">有効</Badge>
-        )}
       </div>
 
-      {/* 説明文 */}
-      <div className="text-sm text-gray-600 space-y-2">
-        <p>以下のタイミングで通知をお送りします：</p>
-        <ul className="list-disc list-inside ml-4 space-y-1">
-          <li>🥊 バトルのマッチングが成立した時</li>
-          <li>🗳️ あなたのバトルに投票が入った時</li>
-          <li>🏆 バトルの結果が確定した時</li>
-        </ul>
-      </div>
+
 
       {/* エラー表示 */}
       {error && (
-        <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+        <div className="p-3 bg-red-900 border border-red-600 rounded-lg">
           <div className="flex items-center space-x-2">
-            <span className="text-red-500">⚠️</span>
-            <span className="text-sm text-red-700">{error}</span>
+            <span className="text-red-400">⚠️</span>
+            <span className="text-sm text-red-300">{error}</span>
           </div>
         </div>
       )}
@@ -108,22 +104,22 @@ export const PushNotificationSetup: React.FC<PushNotificationSetupProps> = ({
           <Button
             onClick={handleEnable}
             disabled={isLoading || permission === 'denied'}
-            className="flex-1"
+            className="flex-1 bg-cyan-600 hover:bg-cyan-700 disabled:opacity-50"
             variant="primary"
           >
             {isLoading ? (
               <>
-                <span className="mr-2">⏳</span>
+                <Bell className="h-4 w-4 mr-2 animate-pulse" />
                 設定中...
               </>
             ) : permission === 'denied' ? (
               <>
-                <span className="mr-2">🚫</span>
+                <BellOff className="h-4 w-4 mr-2" />
                 ブラウザ設定で許可してください
               </>
             ) : (
               <>
-                <span className="mr-2">🔔</span>
+                <Bell className="h-4 w-4 mr-2" />
                 通知を有効にする
               </>
             )}
@@ -132,17 +128,17 @@ export const PushNotificationSetup: React.FC<PushNotificationSetupProps> = ({
           <Button
             onClick={handleDisable}
             disabled={isLoading}
-            className="flex-1"
+            className="flex-1 bg-gray-700 hover:bg-gray-600 text-gray-300"
             variant="secondary"
           >
             {isLoading ? (
               <>
-                <span className="mr-2">⏳</span>
+                <BellOff className="h-4 w-4 mr-2 animate-pulse" />
                 無効化中...
               </>
             ) : (
               <>
-                <span className="mr-2">🔕</span>
+                <BellOff className="h-4 w-4 mr-2" />
                 通知を無効にする
               </>
             )}
@@ -152,9 +148,9 @@ export const PushNotificationSetup: React.FC<PushNotificationSetupProps> = ({
 
       {/* ブラウザ設定への案内（denied の場合） */}
       {permission === 'denied' && (
-        <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
-          <div className="text-sm text-blue-700 space-y-2">
-            <p className="font-medium">通知を有効にするには：</p>
+        <div className="p-3 bg-blue-900 border border-blue-600 rounded-lg">
+          <div className="text-sm text-blue-300 space-y-2">
+            <p className="font-medium text-blue-200">通知を有効にするには：</p>
             <ol className="list-decimal list-inside ml-2 space-y-1">
               <li>ブラウザのアドレスバー左側の🔒アイコンをクリック</li>
               <li>「通知」を「許可」に変更</li>
@@ -164,20 +160,7 @@ export const PushNotificationSetup: React.FC<PushNotificationSetupProps> = ({
         </div>
       )}
 
-      {/* 購読済みの場合の詳細情報 */}
-      {isSubscribed && (
-        <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
-          <div className="flex items-center space-x-2">
-            <span className="text-green-500">✅</span>
-            <span className="text-sm text-green-700 font-medium">
-              プッシュ通知が有効になっています
-            </span>
-          </div>
-          <p className="text-xs text-green-600 mt-1">
-            BeatNexusからリアルタイムで通知が届きます
-          </p>
-        </div>
-      )}
+
     </div>
   )
 }
