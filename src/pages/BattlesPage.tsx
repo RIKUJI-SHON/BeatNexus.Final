@@ -323,7 +323,7 @@ const BattlesPage: React.FC = () => {
           {user && (
           <aside className="lg:col-span-1 space-y-6 sticky-sidebar">
               {/* Submission Cooldown Component - モバイル版では非表示、デスクトップのみ表示 */}
-              <div className="w-full hidden lg:flex justify-start">
+              <div className="w-full hidden lg:block">
             <MonthlyLimitCard />
               </div>
           </aside>
@@ -457,13 +457,16 @@ const BattlesPage: React.FC = () => {
           </aside>
         </div>
 
-        {/* Mobile Monthly Limit Card - モバイル版でのみ表示、ページ最下部に配置 */}
-        {user && (
-          <div className="lg:hidden mt-8 w-full flex justify-center">
+      </div>
+      
+      {/* Mobile Monthly Limit Card - モバイル版でのみ表示、コンテナの外に配置 */}
+      {user && (
+        <div className="lg:hidden mt-8 w-full">
+          <div className="w-full px-4 sm:px-6">
             <MonthlyLimitCard />
           </div>
-        )}
-      </div>
+        </div>
+      )}
       <AuthModal
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}

@@ -79,8 +79,8 @@ export const MonthlyLimitCard: React.FC = () => {
 
   if (!user) {
     return (
-      <div className="glowing-card">
-        <div className="glowing-card__content p-4">
+      <div className="glowing-card w-full">
+        <div className="glowing-card__content p-4 sm:p-6 lg:p-3">
           <div className="text-center">
             <div className="w-12 h-12 bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-3">
               <Calendar className="h-6 w-6 text-gray-600" />
@@ -97,8 +97,8 @@ export const MonthlyLimitCard: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="glowing-card">
-        <div className="glowing-card__content p-4">
+      <div className="glowing-card w-full">
+        <div className="glowing-card__content p-4 sm:p-6 lg:p-3">
           <div className="text-center">
             <div className="animate-spin w-8 h-8 border-2 border-cyan-500 border-t-transparent rounded-full mx-auto mb-3"></div>
             <p className="text-sm text-gray-400">{t('monthlyLimit.checkingStatus')}</p>
@@ -113,8 +113,8 @@ export const MonthlyLimitCard: React.FC = () => {
   const isAtLimit = monthlyData ? monthlyData.remaining === 0 : false;
 
   return (
-    <div className="glowing-card">
-      <div className="glowing-card__content p-4">
+    <div className="glowing-card w-full mx-auto">
+      <div className="glowing-card__content p-4 sm:p-6 lg:p-3 text-center">
         {/* Header */}
         <div className="text-center mb-4">
           <div className="flex items-center justify-center gap-2 mb-2">
@@ -123,16 +123,18 @@ export const MonthlyLimitCard: React.FC = () => {
               {t('monthlyLimit.title')}
             </h2>
           </div>
-          <p className="text-xs text-gray-400">{t('monthlyLimit.subtitle')}</p>
         </div>
 
         {monthlyData && (
           <>
-            {/* 今月の使用状況 */}
+            {/* 残り投稿可能回数を表示 */}
             <div className="mb-4">
               <div className="text-center mb-3">
+                <div className="text-xs text-gray-400 mb-1">
+                  {t('monthlyLimit.remainingPosts')}
+                </div>
                 <div className="text-3xl font-bold text-white mb-1">
-                  {monthlyData.used_count}
+                  {monthlyData.remaining === Infinity ? t('monthlyLimit.testMode.unlimited') : monthlyData.remaining}
                 </div>
               </div>
 
@@ -145,7 +147,7 @@ export const MonthlyLimitCard: React.FC = () => {
                   />
                 </div>
                 
-                <div className="flex justify-between text-xs text-gray-400">
+                <div className="flex flex-col sm:flex-row sm:justify-between text-xs text-gray-400 gap-1 sm:gap-0">
                   <span>{t('monthlyLimit.usedPosts', { count: monthlyData.used_count })}</span>
                   <span>{t('monthlyLimit.resetLabel')} {t('monthlyLimit.testMode.unlimited')}</span>
                 </div>
@@ -153,25 +155,12 @@ export const MonthlyLimitCard: React.FC = () => {
             </div>
 
             {/* リセット日 */}
-            <div className="mb-4 p-3 bg-gray-800/50 rounded-lg">
-              <div className="flex items-center gap-2 text-sm">
+            <div className="mb-4 p-3 sm:p-4 bg-gray-800/50 rounded-lg">
+              <div className="flex items-center justify-center gap-2 text-sm">
                 <RefreshCw className="h-4 w-4 text-gray-400" />
                 <span className="text-gray-400">{t('monthlyLimit.resetLabel')}</span>
                 <span className="font-medium text-white">{monthlyData.reset_date}</span>
               </div>
-            </div>
-
-            {/* アクションボタン */}
-            <div className="space-y-3">
-              <Link to="/post" className="block">
-                <Button
-                  variant="primary"
-                  className="w-full bg-gradient-to-r from-cyan-500 to-purple-500 text-sm"
-                  leftIcon={<Plus className="h-4 w-4" />}
-                >
-                  {t('monthlyLimit.postVideoButton')}
-                </Button>
-              </Link>
             </div>
           </>
         )}
