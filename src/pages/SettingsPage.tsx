@@ -6,6 +6,7 @@ import { ChevronDown, Check, Eye, EyeOff, Save } from 'lucide-react';
 import { Modal } from '../components/ui/Modal';
 import { Input } from '../components/ui/Input';
 import { Button } from '../components/ui/Button';
+import { PushNotificationSetup } from '../components/ui/PushNotificationSetup';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { trackBeatNexusEvents } from '../utils/analytics';
@@ -259,7 +260,8 @@ const SettingsPage: React.FC = () => {
           {/* Language Settings */}
           <section>
             <h2 className="text-xl font-semibold mb-4 text-gray-300 border-b border-gray-700 pb-2">{t('settingsPage.preferences.title')}</h2>
-            <div className="space-y-6">
+            <div className="space-y-8">
+              {/* Language Setting */}
               <div>
                 <h3 className="text-lg font-medium text-gray-100">{t('settingsPage.language.title')}</h3>
                 <p className="text-sm text-gray-400 mb-2">{t('settingsPage.language.description')}</p>
@@ -329,6 +331,23 @@ const SettingsPage: React.FC = () => {
                   {hasChanges && (
                     <p className="text-sm text-cyan-400 mt-2">{t('settingsPage.preferences.unsavedChanges')}</p>
                   )}
+                </div>
+              </div>
+
+              {/* Push Notification Setting */}
+              <div>
+                <h3 className="text-lg font-medium text-gray-100 mb-2">プッシュ通知</h3>
+                <p className="text-sm text-gray-400 mb-4">バトルの更新やマッチング通知を受け取る設定を管理します。</p>
+                <div className="bg-gray-800 border border-gray-700 rounded-lg p-4">
+                  <PushNotificationSetup 
+                    onSetupComplete={(isSubscribed) => {
+                      if (isSubscribed) {
+                        toast.success('設定完了', 'プッシュ通知が有効になりました')
+                      } else {
+                        toast.info('設定変更', 'プッシュ通知が無効になりました')
+                      }
+                    }}
+                  />
                 </div>
               </div>
             </div>

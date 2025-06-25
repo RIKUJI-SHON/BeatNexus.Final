@@ -185,6 +185,128 @@ self.addEventListener('message', (event) => {
   }
 });
 
+// Push notification event - プッシュ通知受信
+self.addEventListener('push', (event) => {
+  console.log('[SW] Push event received:', event);
+  
+  try {
+    let notificationData = {
+      title: 'BeatNexus 通知',
+      body: 'プッシュ通知を受信しました',
+      icon: '/bn_icon_192.png',
+      badge: '/bn_icon_192.png',
+      data: {}
+    };
+
+    // ペイロードがある場合は解析
+    if (event.data) {
+      try {
+        const payload = event.data.json();
+        notificationData = {
+          ...notificationData,
+          ...payload
+        };
+      } catch (error) {
+        console.warn('[SW] Failed to parse push payload:', error);
+        notificationData.body = event.data.text() || notificationData.body;
+      }
+    }
+
+    // 通知を表示
+    event.waitUntil(
+      self.registration.showNotification(notificationData.title, {
+        body: notificationData.body,
+        icon: notificationData.icon,
+        badge: notificationData.badge,
+        data: notificationData.data,
+        actions: notificationData.actions || [],
+        requireInteraction: false,
+        tag: notificationData.data?.type || 'general', // 同タイプの通知は置き換える
+        renotify: true
+      })
+    );
+  } catch (error) {
+    handleError('Push notification', error);
+  }
+});
+
+// Notification click event - 通知クリック
+self.addEventListener('notificationclick', (event) => {
+  console.log('[SW] Notification click:', event);
+  
+  try {
+    // 通知を閉じる
+    event.notification.close();
+
+    const notificationData = event.notification.data || {};
+    const targetUrl = notificationData.url || '/';
+    
+    // アクションボタンがクリックされた場合
+    if (event.action) {
+      console.log('[SW] Notification action clicked:', event.action);
+      // アクションに応じた処理（現在は view のみ）
+    }
+
+    // ウィンドウを開くかフォーカス
+    event.waitUntil(
+      self.clients.matchAll({ type: 'window', includeUncontrolled: true })
+        .then((clients) => {
+          // 既に対象URLが開かれているかチェック
+          const targetClient = clients.find(client => {
+            const clientUrl = new URL(client.url);
+            const targetUrlObj = new URL(targetUrl, self.location.origin);
+            return clientUrl.pathname === targetUrlObj.pathname;
+          });
+
+          if (targetClient) {
+            // 既存のタブにフォーカス
+            return targetClient.focus();
+          } else {
+            // 新しいタブを開く
+            const fullUrl = new URL(targetUrl, self.location.origin).href;
+            return self.clients.openWindow(fullUrl);
+          }
+        })
+        .catch((error) => {
+          handleError('Notification click handling', error);
+          // エラー時はホームページを開く
+          return self.clients.openWindow('/');
+        })
+    );
+  } catch (error) {
+    handleError('Notification click', error);
+  }
+});
+
+// Push subscription change event - 購読情報変更
+self.addEventListener('pushsubscriptionchange', (event) => {
+  console.log('[SW] Push subscription changed');
+  
+  event.waitUntil(
+    // 新しい購読を取得して再登録
+    self.registration.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: 'BIqUQJtbziGnenLraVzJ0Du0TA5_RXchfdbKL0BsSjPWbuyNYkNnCw7bRVbolMW-hXpxKZwuWoWpgX2WjO9P0xk' // VAPID公開鍵
+    })
+    .then((newSubscription) => {
+      console.log('[SW] New push subscription:', newSubscription);
+      
+      // フロントエンドに新しい購読情報を送信
+      return self.clients.matchAll().then((clients) => {
+        clients.forEach((client) => {
+          client.postMessage({
+            type: 'PUSH_SUBSCRIPTION_CHANGED',
+            subscription: newSubscription.toJSON()
+          });
+        });
+      });
+    })
+    .catch((error) => {
+      handleError('Push subscription change', error);
+    })
+  );
+});
+
 // エラーイベント
 self.addEventListener('error', (event) => {
   handleError('Global error', event.error);
@@ -194,4 +316,4 @@ self.addEventListener('unhandledrejection', (event) => {
   handleError('Unhandled rejection', event.reason);
 });
 
-console.log('[SW] Service Worker script loaded successfully'); 
+console.log('[SW] Service Worker script loaded successfully with push notification support'); 
