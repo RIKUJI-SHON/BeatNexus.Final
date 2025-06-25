@@ -6,6 +6,34 @@ import { VitePWA } from 'vite-plugin-pwa';
 export default defineConfig({
   plugins: [
     react(),
+    // カスタムプラグインでvoid-elementsの問題を解決
+    {
+      name: 'void-elements-fix',
+      load(id) {
+        if (id.includes('void-elements')) {
+          return `
+            const voidElements = {
+              "area": true,
+              "base": true,
+              "br": true,
+              "col": true,
+              "embed": true,
+              "hr": true,
+              "img": true,
+              "input": true,
+              "link": true,
+              "meta": true,
+              "param": true,
+              "source": true,
+              "track": true,
+              "wbr": true
+            };
+            export default voidElements;
+            export { voidElements };
+          `;
+        }
+      }
+    }
     // VitePWAを無効化してブラウザネイティブPWAを使用
     // VitePWA({
     //   registerType: 'autoUpdate',
@@ -17,6 +45,26 @@ export default defineConfig({
   ],
   optimizeDeps: {
     exclude: ['lucide-react'],
+    include: ['void-elements', 'html-parse-stringify'],
+    esbuildOptions: {
+      // CommonJSパッケージのサポート強化
+      target: 'esnext'
+    }
+  },
+  esbuild: {
+    // ESBuildでのCommonJS処理を改善
+    target: 'esnext',
+    format: 'esm'
+  },
+  resolve: {
+    alias: {
+      // CommonJSパッケージのデフォルトエクスポート問題を解決
+    }
+  },
+  define: {
+    // CommonJSパッケージの互換性確保
+    'process.env': {},
+    global: 'globalThis'
   },
   build: {
     // パフォーマンス最適化
@@ -29,6 +77,7 @@ export default defineConfig({
       }
     },
     rollupOptions: {
+      external: [],
       output: {
         // チャンク分割でロード時間を改善
         manualChunks: {
@@ -41,7 +90,13 @@ export default defineConfig({
       }
     },
     // ファイルサイズ警告の閾値を調整
-    chunkSizeWarningLimit: 1000
+    chunkSizeWarningLimit: 1000,
+    commonjsOptions: {
+      // CommonJSパッケージの変換設定
+      include: [/void-elements/, /html-parse-stringify/, /node_modules/],
+      transformMixedEsModules: true,
+      defaultIsModuleExports: 'auto'
+    }
   },
   server: {
     port: 3000,

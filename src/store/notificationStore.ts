@@ -328,9 +328,17 @@ export const useNotificationStore = create<NotificationState>()(
               if (status === 'SUBSCRIBED') {
                 console.log('✅ Successfully subscribed to notifications realtime updates');
               } else if (status === 'CHANNEL_ERROR') {
-                console.error('❌ Error subscribing to notifications channel');
+                console.warn('⚠️ Notifications connection failed, continuing with manual refresh mode');
+                // 接続失敗時のフォールバック: 定期的な手動更新
+                const fallbackInterval = setInterval(() => {
+                  console.log('🔄 Manual refresh for notifications...');
+                  get().fetchNotifications();
+                }, 60000); // 1分ごと
+                
+                // 10分後にクリーンアップ
+                setTimeout(() => clearInterval(fallbackInterval), 600000);
               } else if (status === 'TIMED_OUT') {
-                console.warn('⏰ Notifications subscription timed out');
+                console.warn('⏰ Notifications subscription timed out, will retry automatically');
               } else if (status === 'CLOSED') {
                 console.log('🔒 Notifications subscription closed');
               }
@@ -338,7 +346,12 @@ export const useNotificationStore = create<NotificationState>()(
 
           return () => {
             console.log('🧹 Cleaning up notifications subscription...');
-            supabase.removeChannel(channel);
+            try {
+              supabase.removeChannel(channel);
+              console.log('✅ Notifications subscription cleaned up');
+            } catch (error) {
+              console.warn('Warning during notifications cleanup:', error);
+            }
           };
         };
 
@@ -346,6 +359,14 @@ export const useNotificationStore = create<NotificationState>()(
         let cleanup: (() => void) | null = null;
         setupSubscription().then(cleanupFn => {
           cleanup = cleanupFn;
+        }).catch(error => {
+          console.error('Failed to setup notifications subscription:', error);
+          // フォールバック: 手動更新モード
+          const fallbackInterval = setInterval(() => {
+            get().fetchNotifications();
+          }, 120000); // 2分ごと
+          
+          cleanup = () => clearInterval(fallbackInterval);
         });
 
         return () => {

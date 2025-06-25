@@ -809,145 +809,37 @@ export const useBattleStore = create<BattleState>((set, get) => ({
   },
 
   subscribeToRealTimeUpdates: () => {
-    console.log('🚀 Setting up real-time subscriptions for battles and submissions...');
+    console.log('🔄 Setting up real-time subscriptions...');
     
+    // エラー処理用のヘルパー関数
+    const handleChannelError = (channelName: string, status: string) => {
+      if (status === 'CHANNEL_ERROR') {
+        console.warn(`⚠️ ${channelName} connection failed, continuing with manual refresh mode`);
+        // 接続失敗時のフォールバック: 定期的な手動更新
+        const fallbackInterval = setInterval(() => {
+          console.log(`🔄 Manual refresh for ${channelName}...`);
+          if (channelName.includes('active')) get().fetchActiveBattles();
+          if (channelName.includes('archived')) get().fetchArchivedBattles();
+          if (channelName.includes('waiting')) get().fetchWaitingSubmissions();
+        }, 30000); // 30秒ごと
+        
+        // 10分後にクリーンアップ
+        setTimeout(() => clearInterval(fallbackInterval), 600000);
+      } else if (status === 'TIMED_OUT') {
+        console.warn(`⏰ ${channelName} subscription timed out, will retry automatically`);
+      } else if (status === 'CLOSED') {
+        console.log(`🔒 ${channelName} subscription closed`);
+      }
+    };
+
+    // アクティブバトルのリアルタイム監視
     const battlesChannel = supabase
       .channel('active-battles')
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'active_battles' },
         (payload) => {
-          console.log('⚔️ Active battles update received:', payload);
-          console.log('⚔️ Event type:', payload.eventType);
-          console.log('⚔️ New data:', payload.new);
-          console.log('⚔️ Old data:', payload.old);
-          
-          // バトルが削除された場合（完了してアーカイブされた可能性）
-          if (payload.eventType === 'DELETE') {
-            console.log('🗑️ Battle deleted (possibly completed):', payload.old);
-            // バトル完了通知は archived_battles チャンネルで処理
-          }
-          
-          // 新しいバトルが作成された場合（マッチング完了）
-          if (payload.eventType === 'INSERT') {
-            console.log('🆕 New battle created:', payload.new);
-            console.log('🔍 Checking if current user participates in this battle...');
-            
-            // 現在のユーザーがこのバトルに参加している場合は通知を送信
-            const sendMatchNotification = async () => {
-              try {
-                console.log('🔍 Starting match notification process...');
-                
-                const { data: { user }, error: authError } = await supabase.auth.getUser();
-                if (authError) {
-                  console.error('❌ Auth error in match notification:', authError);
-                  return;
-                }
-                
-                if (!user) {
-                  console.log('❌ No authenticated user found');
-                  return;
-                }
-
-                console.log('👤 Checking participation for user:', user.id);
-                const battle = payload.new as any;
-                console.log('⚔️ Battle data:', {
-                  id: battle.id,
-                  player1_user_id: battle.player1_user_id,
-                  player2_user_id: battle.player2_user_id,
-                  status: battle.status,
-                  battle_format: battle.battle_format
-                });
-                
-                // このバトルに現在のユーザーが参加しているかチェック
-                const userParticipates = battle.player1_user_id === user.id || battle.player2_user_id === user.id;
-                console.log('🎯 User participates in this battle:', userParticipates);
-                console.log('🎯 User ID:', user.id);
-                console.log('🎯 Player1 ID:', battle.player1_user_id);
-                console.log('🎯 Player2 ID:', battle.player2_user_id);
-
-                if (userParticipates) {
-                  console.log('🔔 User participates! Sending match notification...');
-                  
-                  // 翻訳キーの確認
-                  const titleKey = 'notifications.battleMatched.title';
-                  const messageKey = 'notifications.battleMatched.message';
-                  console.log('🌐 Checking translation keys...');
-                  console.log('🌐 Title key:', titleKey, '→', i18n.t(titleKey));
-                  console.log('🌐 Message key:', messageKey, '→', i18n.t(messageKey));
-                  
-                  // 通知ストアの状態確認
-                  const notificationStore = useNotificationStore.getState();
-                  console.log('📦 Notification store state:', {
-                    notifications: notificationStore.notifications?.length || 0,
-                    unreadCount: notificationStore.unreadCount || 0,
-                    hasCreateFunction: typeof notificationStore.createNotification === 'function',
-                    hasAddFunction: typeof notificationStore.addNotification === 'function'
-                  });
-                  
-                  // データベースベースの通知を作成
-                  try {
-                    console.log('💾 Attempting to create database notification...');
-                    const notificationData = {
-                      title: i18n.t(titleKey),
-                      message: i18n.t(messageKey),
-                      type: 'battle_matched' as const,
-                      relatedBattleId: battle.id,
-                    };
-                    console.log('💾 Notification data:', notificationData);
-                    
-                    await notificationStore.createNotification(notificationData);
-                    console.log('✅ Database notification created for match');
-                  } catch (error) {
-                    console.warn('⚠️ Failed to create database notification, using memory fallback:', error);
-                    console.warn('⚠️ Error details:', {
-                      name: error instanceof Error ? error.name : 'Unknown',
-                      message: error instanceof Error ? error.message : String(error),
-                      stack: error instanceof Error ? error.stack : undefined
-                    });
-                    
-                    // フォールバック：メモリベース通知
-                    try {
-                      console.log('🔄 Attempting memory fallback notification...');
-                      notificationStore.addNotification({
-                        title: i18n.t(titleKey),
-                        message: i18n.t(messageKey),
-                        type: 'battle_matched',
-                        relatedBattleId: battle.id,
-                      });
-                      console.log('✅ Memory fallback notification created');
-                    } catch (fallbackError) {
-                      console.error('💥 Memory fallback also failed:', fallbackError);
-                    }
-                  }
-                  
-                  // Toastも表示
-                  try {
-                    console.log('🍞 Attempting to show toast notification...');
-                    const toastMessage = i18n.t(messageKey);
-                    console.log('🍞 Toast message:', toastMessage);
-                    toast.success(toastMessage);
-                    console.log('✅ Toast notification shown');
-                  } catch (toastError) {
-                    console.error('💥 Toast notification failed:', toastError);
-                  }
-                  
-                  console.log('✅ Match notification process completed successfully');
-                } else {
-                  console.log('ℹ️ User does not participate in this battle, no notification needed');
-                }
-              } catch (error) {
-                console.error('💥 Error in match notification process:', error);
-                console.error('💥 Error details:', {
-                  name: error instanceof Error ? error.name : 'Unknown',
-                  message: error instanceof Error ? error.message : String(error),
-                  stack: error instanceof Error ? error.stack : undefined
-                });
-              }
-            };
-
-            sendMatchNotification();
-          }
+          console.log('⚔️ Active battle change:', payload);
           
           // バトルリストを更新
           get().fetchBattles();
@@ -957,12 +849,8 @@ export const useBattleStore = create<BattleState>((set, get) => ({
         console.log('⚔️ Active battles channel status:', status);
         if (status === 'SUBSCRIBED') {
           console.log('✅ Successfully subscribed to active battles realtime updates');
-        } else if (status === 'CHANNEL_ERROR') {
-          console.error('❌ Error subscribing to active battles channel');
-        } else if (status === 'TIMED_OUT') {
-          console.warn('⏰ Active battles subscription timed out');
-        } else if (status === 'CLOSED') {
-          console.log('🔒 Active battles subscription closed');
+        } else {
+          handleChannelError('active battles', status);
         }
       });
 
@@ -1040,12 +928,8 @@ export const useBattleStore = create<BattleState>((set, get) => ({
         console.log('🏆 Archived battles channel status:', status);
         if (status === 'SUBSCRIBED') {
           console.log('✅ Successfully subscribed to archived battles realtime updates');
-        } else if (status === 'CHANNEL_ERROR') {
-          console.error('❌ Error subscribing to archived battles channel');
-        } else if (status === 'TIMED_OUT') {
-          console.warn('⏰ Archived battles subscription timed out');
-        } else if (status === 'CLOSED') {
-          console.log('🔒 Archived battles subscription closed');
+        } else {
+          handleChannelError('archived battles', status);
         }
       });
 
@@ -1066,22 +950,22 @@ export const useBattleStore = create<BattleState>((set, get) => ({
         console.log('⏳ Waiting submissions channel status:', status);
         if (status === 'SUBSCRIBED') {
           console.log('✅ Successfully subscribed to waiting submissions realtime updates');
-        } else if (status === 'CHANNEL_ERROR') {
-          console.error('❌ Error subscribing to waiting submissions channel');
-        } else if (status === 'TIMED_OUT') {
-          console.warn('⏰ Waiting submissions subscription timed out');
-        } else if (status === 'CLOSED') {
-          console.log('🔒 Waiting submissions subscription closed');
+        } else {
+          handleChannelError('waiting submissions', status);
         }
       });
 
     // Cleanup function
     return () => {
       console.log('🧹 Cleaning up real-time subscriptions...');
-      supabase.removeChannel(battlesChannel);
-      supabase.removeChannel(archivedBattlesChannel);
-      supabase.removeChannel(waitingSubmissionsChannel);
-      console.log('✅ All real-time subscriptions cleaned up');
+      try {
+        supabase.removeChannel(battlesChannel);
+        supabase.removeChannel(archivedBattlesChannel);
+        supabase.removeChannel(waitingSubmissionsChannel);
+        console.log('✅ All real-time subscriptions cleaned up');
+      } catch (error) {
+        console.warn('Warning during cleanup:', error);
+      }
     };
   },
 
