@@ -290,89 +290,22 @@ export const useNotificationStore = create<NotificationState>()(
       },
 
       subscribeToNotifications: () => {
-        console.log('🔔 Setting up notifications real-time subscription...');
+        console.log('🔔 Notifications system using manual refresh mode (WebSocket disabled for stability)');
         
-        let channel: any = null;
-        let isSetupComplete = false;
+        // WebSocket接続が不安定なため、手動更新ベースに切り替え
+        // 初期データ取得
+        get().fetchNotifications();
         
-        // まず現在のユーザーを取得
-        const setupSubscription = async () => {
-          try {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) {
-              console.log('❌ No user found for notifications subscription');
-              return () => {};
-            }
-
-            console.log('👤 Setting up notifications subscription for user:', user.id);
-            
-            // 少し待ってからチャンネルを設定（WebSocket接続の安定化）
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            
-            channel = supabase
-              .channel(`user-notifications-${user.id}`)
-              .on(
-                'postgres_changes',
-                { 
-                  event: '*', 
-                  schema: 'public', 
-                  table: 'notifications',
-                  filter: `user_id=eq.${user.id}`
-                },
-                (payload) => {
-                  console.log('📨 Notification change received:', payload);
-                  
-                  // データベースから最新の通知を再取得
-                  console.log('🔄 Fetching latest notifications...');
-                  get().fetchNotifications();
-                }
-              )
-              .subscribe((status, err) => {
-                console.log('🔔 Notifications subscription status:', status);
-                if (status === 'SUBSCRIBED') {
-                  console.log('✅ Successfully subscribed to notifications realtime updates');
-                  isSetupComplete = true;
-                  // 最初のサブスクリプション時にも最新データを取得
-                  get().fetchNotifications();
-                } else if (status === 'CHANNEL_ERROR') {
-                  console.warn('⚠️ Notifications connection failed:', err);
-                  console.warn('⚠️ Continuing with manual refresh mode');
-                } else if (status === 'TIMED_OUT') {
-                  console.warn('⏰ Notifications subscription timed out, will retry automatically');
-                } else if (status === 'CLOSED') {
-                  console.log('🔒 Notifications subscription closed');
-                }
-              });
-
-            return () => {
-              console.log('🧹 Cleaning up notifications subscription...');
-              try {
-                if (channel) {
-                  supabase.removeChannel(channel);
-                  console.log('✅ Notifications subscription cleaned up');
-                }
-              } catch (error) {
-                console.warn('Warning during notifications cleanup:', error);
-              }
-            };
-          } catch (error) {
-            console.error('Error setting up notifications subscription:', error);
-            return () => {};
-          }
-        };
-
-        // 非同期で設定を開始
-        let cleanup: (() => void) | null = null;
-        setupSubscription().then(cleanupFn => {
-          cleanup = cleanupFn;
-        }).catch(error => {
-          console.error('Failed to setup notifications subscription:', error);
-        });
-
+        // 定期的な手動更新（5分ごと）
+        const refreshInterval = setInterval(() => {
+          console.log('🔄 Manual refresh for notifications...');
+          get().fetchNotifications();
+        }, 300000); // 5分ごと
+        
+        // クリーンアップ関数を返す
         return () => {
-          if (cleanup) {
-            cleanup();
-          }
+          console.log('🧹 Cleaning up notifications manual refresh...');
+          clearInterval(refreshInterval);
         };
       },
     }),

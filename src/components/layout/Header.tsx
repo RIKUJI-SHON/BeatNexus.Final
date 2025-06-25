@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu, X, Bell, ShoppingCart, Plus, User, Crown, Settings, LogOut, Check, Swords, Clock, CheckCircle, Trophy, Award, Handshake } from 'lucide-react';
+import { Menu, X, Bell, ShoppingCart, Plus, User, Crown, Settings, LogOut, Check, Swords, Clock, CheckCircle, Trophy, Award, Handshake, RefreshCw } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { HoverCard } from '../ui/HoverCard';
 import { NotificationDropdown } from '../ui/NotificationDropdown';
@@ -35,9 +35,11 @@ export const Header: React.FC = () => {
   const {
     notifications,
     unreadCount,
+    loading,
     markAsRead,
     markAllAsRead,
     removeNotification,
+    fetchNotifications,
   } = useNotificationStore();
 
   useEffect(() => {
@@ -360,14 +362,24 @@ export const Header: React.FC = () => {
                     {/* ヘッダー */}
                     <div className="flex items-center justify-between p-4 border-b border-gray-700">
                       <h3 className="text-white font-semibold">{t('notifications.title')}</h3>
-                      {unreadCount > 0 && (
+                      <div className="flex items-center gap-2">
                         <button
-                          onClick={markAllAsRead}
-                          className="text-cyan-400 hover:text-cyan-300 text-sm transition-colors"
+                          onClick={fetchNotifications}
+                          disabled={loading}
+                          className="p-1 text-gray-400 hover:text-cyan-300 transition-colors disabled:opacity-50"
+                          title="手動更新"
                         >
-                          {t('notifications.markAllRead')}
+                          <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
                         </button>
-                      )}
+                        {unreadCount > 0 && (
+                          <button
+                            onClick={markAllAsRead}
+                            className="text-cyan-400 hover:text-cyan-300 text-sm transition-colors"
+                          >
+                            {t('notifications.markAllRead')}
+                          </button>
+                        )}
+                      </div>
                     </div>
 
                     {/* 通知リスト */}

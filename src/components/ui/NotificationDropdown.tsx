@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Bell, X, Check, Swords, Clock, CheckCircle, Trophy, Award, Handshake } from 'lucide-react';
+import { Bell, X, Check, Swords, Clock, CheckCircle, Trophy, Award, Handshake, RefreshCw } from 'lucide-react';
 import { useNotificationStore, type Notification } from '../../store/notificationStore';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -13,9 +13,11 @@ export const NotificationDropdown: React.FC = () => {
   const {
     notifications,
     unreadCount,
+    loading,
     markAsRead,
     markAllAsRead,
     removeNotification,
+    fetchNotifications,
   } = useNotificationStore();
 
   // 外側クリックで閉じる
@@ -118,14 +120,24 @@ export const NotificationDropdown: React.FC = () => {
           {/* ヘッダー */}
           <div className="flex items-center justify-between p-4 border-b border-gray-700">
             <h3 className="text-white font-semibold">{t('notifications.title')}</h3>
-            {unreadCount > 0 && (
+            <div className="flex items-center gap-2">
               <button
-                onClick={markAllAsRead}
-                className="text-cyan-400 hover:text-cyan-300 text-sm transition-colors"
+                onClick={fetchNotifications}
+                disabled={loading}
+                className="p-1 text-gray-400 hover:text-cyan-300 transition-colors disabled:opacity-50"
+                title="手動更新"
               >
-                {t('notifications.markAllRead')}
+                <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
               </button>
-            )}
+              {unreadCount > 0 && (
+                <button
+                  onClick={markAllAsRead}
+                  className="text-cyan-400 hover:text-cyan-300 text-sm transition-colors"
+                >
+                  {t('notifications.markAllRead')}
+                </button>
+              )}
+            </div>
           </div>
 
           {/* 通知リスト */}
