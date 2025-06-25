@@ -47,23 +47,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     autoRefreshToken: true,
     storageKey: 'beatnexus_auth_token',
   },
-  realtime: {
-    params: {
-      eventsPerSecond: 10,
-    },
-    heartbeatIntervalMs: 30000,
-    // WebSocket接続のタイムアウトとリトライ設定を追加
-    reconnectAfterMs: (tries: number) => {
-      // リトライ間隔: 1秒, 2秒, 4秒, 8秒, 16秒, 最大30秒
-      const interval = Math.min(1000 * Math.pow(2, tries), 30000);
-      console.log(`🔄 WebSocket reconnect attempt ${tries + 1} in ${interval}ms`);
-      return interval;
-    },
-    // デバッグ情報を有効化
-    logger: import.meta.env.DEV ? (level: string, message: string, data?: any) => {
-      console.log(`🔍 Realtime [${level}]:`, message, data);
-    } : undefined,
-  },
+  // リアルタイム機能は廃止しました（UX改善のため）
   global: {
     headers: {
       'X-Client-Info': 'beatnexus-web',

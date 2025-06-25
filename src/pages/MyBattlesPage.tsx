@@ -34,7 +34,7 @@ const MyBattlesPage: React.FC = () => {
     error: battlesError, 
     fetchBattles,
     fetchArchivedBattles,
-    subscribeToRealTimeUpdates
+    // subscribeToRealTimeUpdates // 廃止済み
   } = useBattleStore();
   const { 
     submissions, 
@@ -54,14 +54,8 @@ const MyBattlesPage: React.FC = () => {
     fetchSubmissions();
     fetchArchivedBattles(); // アーカイブされたバトルも取得
     
-    // リアルタイム更新を開始
-    const unsubscribe = subscribeToRealTimeUpdates();
-    
-    return () => {
-      // コンポーネントがアンマウントされる時にリアルタイム更新を停止
-      unsubscribe();
-    };
-  }, [user, navigate, fetchBattles, fetchSubmissions, fetchArchivedBattles, subscribeToRealTimeUpdates]);
+    // リアルタイム機能は廃止しました（UX改善のため）
+  }, [user, navigate, fetchBattles, fetchSubmissions, fetchArchivedBattles]);
 
   // Filter battles for current user
   const userBattles = battles.filter(battle => 

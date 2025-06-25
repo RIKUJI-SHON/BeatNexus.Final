@@ -92,7 +92,7 @@ function RouterContent() {
 
 function AppContent() {
   const { toasts, removeToast } = useToastStore();
-  const subscribeToRealTimeUpdates = useBattleStore(state => state.subscribeToRealTimeUpdates);
+  // const subscribeToRealTimeUpdates = useBattleStore(state => state.subscribeToRealTimeUpdates); // 廃止済み
   const { fetchNotifications, subscribeToNotifications } = useNotificationStore();
   const { user } = useAuthStore();
   // オンボーディングは AuthProvider で管理されているため、ここでは不要
@@ -105,8 +105,7 @@ function AppContent() {
     // Google Analytics初期化
     initializeGA();
     
-    // バトルのリアルタイム更新を購読
-    const unsubscribeBattles = subscribeToRealTimeUpdates();
+    // バトルのリアルタイム更新は廃止しました（UX改善のため）
     
     // 通知のリアルタイム更新を購読
     const unsubscribeNotifications = subscribeToNotifications();
@@ -116,10 +115,9 @@ function AppContent() {
 
     // クリーンアップ
     return () => {
-      unsubscribeBattles();
       unsubscribeNotifications();
     };
-  }, [subscribeToRealTimeUpdates, subscribeToNotifications, fetchNotifications]);
+  }, [subscribeToNotifications, fetchNotifications]);
 
   // 注意: オンボーディング表示は AuthProvider で新規アカウント作成時のみトリガーされる
   // ここでは手動でのオンボーディング表示制御はしない

@@ -36,7 +36,7 @@ const BattlesPage: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 10; // 1ページあたりの表示件数
   
-  const { battles, activeBattles, archivedBattles, archivedBattlesCount, communityMembersCount, totalVotesCount, totalSubmissionsCount, loading, archiveLoading, error, fetchBattles, fetchArchivedBattles, fetchArchivedBattlesCount, fetchCommunityMembersCount, fetchTotalVotesCount, fetchTotalSubmissionsCount, subscribeToRealTimeUpdates } = useBattleStore();
+  const { battles, activeBattles, archivedBattles, archivedBattlesCount, communityMembersCount, totalVotesCount, totalSubmissionsCount, loading, archiveLoading, error, fetchBattles, fetchArchivedBattles, fetchArchivedBattlesCount, fetchCommunityMembersCount, fetchTotalVotesCount, fetchTotalSubmissionsCount } = useBattleStore();
   const { rankings, loading: rankingsLoading, fetchRankings } = useRankingStore();
   const { user } = useAuthStore();
   
@@ -44,8 +44,6 @@ const BattlesPage: React.FC = () => {
   const topRankings = rankings?.slice(0, 10) || [];
 
   useEffect(() => {
-    let unsubscribe: (() => void) | undefined;
-    
     const initializeData = async () => {
     try {
         await fetchBattles();
@@ -56,21 +54,13 @@ const BattlesPage: React.FC = () => {
         await fetchTotalVotesCount();
         await fetchTotalSubmissionsCount();
         
-        // リアルタイム購読を開始
-        unsubscribe = subscribeToRealTimeUpdates();
+        // リアルタイム機能は廃止しました（UX改善のため）
     } catch (error) {
       console.error('Error in useEffect:', error);
     }
     };
     
     initializeData();
-    
-    // クリーンアップでリアルタイム購読を停止
-    return () => {
-      if (unsubscribe) {
-        unsubscribe();
-      }
-    };
   }, []); // 空の依存配列でマウント時のみ実行
 
   const requireAuth = useRequireAuth({
