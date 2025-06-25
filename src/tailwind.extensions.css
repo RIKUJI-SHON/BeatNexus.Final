@@ -216,17 +216,25 @@
 .vote-btn-player-a {
   --primary: 59, 130, 246; /* Blue for Player A */
   --secondary: 30, 64, 175;
-  width: 60px;
-  height: 50px;
+  width: 48px;
+  height: 40px;
   border: none;
   outline: none;
   cursor: pointer;
   user-select: none;
   touch-action: manipulation;
-  outline: 10px solid rgb(var(--primary), .5);
+  outline: 8px solid rgb(var(--primary), .5);
   border-radius: 100%;
   position: relative;
   transition: .3s;
+}
+
+@media (min-width: 768px) {
+  .vote-btn-player-a {
+    width: 60px;
+    height: 50px;
+    outline: 10px solid rgb(var(--primary), .5);
+  }
 }
 
 .vote-btn-player-a .back {
@@ -273,17 +281,25 @@
 .vote-btn-player-b {
   --primary: 255, 90, 120; /* Pink/Red for Player B */
   --secondary: 150, 50, 60;
-  width: 60px;
-  height: 50px;
+  width: 48px;
+  height: 40px;
   border: none;
   outline: none;
   cursor: pointer;
   user-select: none;
   touch-action: manipulation;
-  outline: 10px solid rgb(var(--primary), .5);
+  outline: 8px solid rgb(var(--primary), .5);
   border-radius: 100%;
   position: relative;
   transition: .3s;
+}
+
+@media (min-width: 768px) {
+  .vote-btn-player-b {
+    width: 60px;
+    height: 50px;
+    outline: 10px solid rgb(var(--primary), .5);
+  }
 }
 
 .vote-btn-player-b .back {

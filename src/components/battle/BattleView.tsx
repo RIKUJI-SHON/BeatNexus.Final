@@ -240,10 +240,6 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
               <Timer className="h-4 w-4 text-cyan-400" />
               <span className="font-medium">{getTimeRemaining(battle.end_voting_at)}</span>
             </div>
-            <div className="flex items-center gap-2 bg-gray-800/50 px-4 py-2 rounded-full backdrop-blur-sm">
-              <Users className="h-4 w-4 text-pink-400" />
-              <span className="font-medium">{totalVotes} {t('battle.votes')}</span>
-            </div>
           </div>
         </div>
 
@@ -446,7 +442,6 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                   <span className="font-medium">{battle.contestant_a?.username || 'Player A'}</span>
                   <span className="font-bold">{percentageA.toFixed(1)}%</span>
                 </div>
-                <span className="font-medium text-gray-300">Vote Distribution</span>
                 <div className="flex items-center gap-2">
                   <span className="font-bold">{(100 - percentageA).toFixed(1)}%</span>
                   <span className="font-medium">{battle.contestant_b?.username || 'Player B'}</span>
@@ -701,8 +696,8 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                     </div>
 
                     {/* Participant Console */}
-                    <div className="mx-12 flex flex-col items-center">
-                      <div className="bg-gray-900 rounded-2xl p-6 border border-red-500/30 shadow-lg shadow-red-500/20">
+                    <div className="mx-4 md:mx-12 flex flex-col items-center">
+                      <div className="bg-gray-900 rounded-2xl p-4 md:p-6 border border-red-500/30 shadow-lg shadow-red-500/20">
                         
                         {/* Participant Status Display */}
                         <div className="text-center mb-4">
@@ -746,11 +741,11 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                   </div>
                 ) : (
                   /* Spectator View - Voting Allowed */
-                  <div className="flex items-center justify-center gap-12">
+                  <div className="flex items-center justify-center gap-4 md:gap-12">
                     
                     {/* Player A Vote Counter */}
                     <div className="flex flex-col items-center">
-                      <div className={`bg-gray-800 rounded-xl p-4 border shadow-lg transition-all duration-500 relative ${
+                      <div className={`bg-gray-800 rounded-xl p-2 md:p-4 border shadow-lg transition-all duration-500 relative ${
                         hasVoted === 'A' 
                           ? 'border-green-400/60 shadow-green-500/30 scale-110' 
                           : 'border-cyan-500/30 shadow-lg'
@@ -761,7 +756,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                           {hasVoted === 'A' ? '✅ YOUR VOTE' : 'PLAYER A'}
                         </div>
                         <div className="text-center">
-                          <div className={`text-3xl font-bold transition-all duration-500 ease-out transform ${
+                          <div className={`text-xl md:text-3xl font-bold transition-all duration-500 ease-out transform ${
                             hasVoted === 'A' 
                               ? 'text-green-300 animate-pulse' 
                               : 'text-cyan-300'
@@ -775,7 +770,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                           </div>
                         </div>
                         {hasVoted === 'A' && (
-                          <div className="absolute -top-2 -right-2 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center shadow-lg animate-bounce">
+                          <div className="absolute -top-2 -right-2 w-4 h-4 md:w-6 md:h-6 bg-green-500 rounded-full flex items-center justify-center shadow-lg animate-bounce">
                             <span className="text-white text-xs font-bold">✓</span>
                           </div>
                         )}
@@ -794,15 +789,15 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                           <button className="vote-btn-player-a vote-btn-voted">
                             <div className="back"></div>
                             <div className="front">
-                              <ThumbsUp className="h-5 w-5" />
+                              <ThumbsUp className="h-4 w-4 md:h-5 md:w-5" />
                             </div>
                           </button>
                           <button 
                             onClick={handleCancelVote} 
                             disabled={isVoting}
-                            className="absolute -top-1 -right-1 w-7 h-7 bg-red-500 hover:bg-red-600 rounded-full flex items-center justify-center text-white shadow-lg transition-all duration-200 hover:scale-110 disabled:opacity-50"
+                            className="absolute -top-1 -right-1 w-5 h-5 md:w-7 md:h-7 bg-red-500 hover:bg-red-600 rounded-full flex items-center justify-center text-white shadow-lg transition-all duration-200 hover:scale-110 disabled:opacity-50"
                           >
-                            <X className="h-3.5 w-3.5" />
+                            <X className="h-2.5 w-2.5 md:h-3.5 md:w-3.5" />
                           </button>
                         </div>
                       ) : (
@@ -813,7 +808,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                         >
                           <div className="back"></div>
                           <div className="front">
-                            <ThumbsUp className="h-5 w-5" />
+                            <ThumbsUp className="h-4 w-4 md:h-5 md:w-5" />
                           </div>
                         </button>
                       )}
@@ -845,15 +840,15 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                           <button className="vote-btn-player-b vote-btn-voted">
                             <div className="back"></div>
                             <div className="front">
-                              <ThumbsUp className="h-5 w-5" />
+                              <ThumbsUp className="h-4 w-4 md:h-5 md:w-5" />
                             </div>
                           </button>
                           <button 
                             onClick={handleCancelVote} 
                             disabled={isVoting}
-                            className="absolute -top-1 -right-1 w-7 h-7 bg-red-500 hover:bg-red-600 rounded-full flex items-center justify-center text-white shadow-lg transition-all duration-200 hover:scale-110 disabled:opacity-50"
+                            className="absolute -top-1 -right-1 w-5 h-5 md:w-7 md:h-7 bg-red-500 hover:bg-red-600 rounded-full flex items-center justify-center text-white shadow-lg transition-all duration-200 hover:scale-110 disabled:opacity-50"
                           >
-                            <X className="h-3.5 w-3.5" />
+                            <X className="h-2.5 w-2.5 md:h-3.5 md:w-3.5" />
                           </button>
                         </div>
                       ) : (
@@ -864,7 +859,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                         >
                           <div className="back"></div>
                           <div className="front">
-                            <ThumbsUp className="h-5 w-5" />
+                            <ThumbsUp className="h-4 w-4 md:h-5 md:w-5" />
                           </div>
                         </button>
                       )}
@@ -879,7 +874,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
 
                     {/* Player B Vote Counter */}
                     <div className="flex flex-col items-center">
-                      <div className={`bg-gray-800 rounded-xl p-4 border shadow-lg transition-all duration-500 relative ${
+                      <div className={`bg-gray-800 rounded-xl p-2 md:p-4 border shadow-lg transition-all duration-500 relative ${
                         hasVoted === 'B' 
                           ? 'border-green-400/60 shadow-green-500/30 scale-110' 
                           : 'border-pink-500/30 shadow-lg'
@@ -890,7 +885,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                           {hasVoted === 'B' ? '✅ YOUR VOTE' : 'PLAYER B'}
                         </div>
                         <div className="text-center">
-                          <div className={`text-3xl font-bold transition-all duration-500 ease-out transform ${
+                          <div className={`text-xl md:text-3xl font-bold transition-all duration-500 ease-out transform ${
                             hasVoted === 'B' 
                               ? 'text-green-300 animate-pulse' 
                               : 'text-pink-300'
@@ -904,7 +899,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                           </div>
                         </div>
                         {hasVoted === 'B' && (
-                          <div className="absolute -top-2 -right-2 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center shadow-lg animate-bounce">
+                          <div className="absolute -top-2 -right-2 w-4 h-4 md:w-6 md:h-6 bg-green-500 rounded-full flex items-center justify-center shadow-lg animate-bounce">
                             <span className="text-white text-xs font-bold">✓</span>
                           </div>
                         )}
