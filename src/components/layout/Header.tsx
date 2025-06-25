@@ -487,7 +487,7 @@ export const Header: React.FC = () => {
                           onClick={() => setIsProfileDropdownOpen(false)}
                         >
                           <User className="h-5 w-5" />
-                          PROFILE
+                          {t('hoverCard.profile')}
                         </Link>
                         <Link 
                           to="/my-battles"
@@ -495,7 +495,7 @@ export const Header: React.FC = () => {
                           onClick={() => setIsProfileDropdownOpen(false)}
                         >
                           <Crown className="h-5 w-5" />
-                          MY BATTLES
+                          {t('hoverCard.myBattles')}
                         </Link>
                         <Link 
                           to="/settings"
@@ -503,7 +503,7 @@ export const Header: React.FC = () => {
                           onClick={() => setIsProfileDropdownOpen(false)}
                         >
                           <Settings className="h-5 w-5" />
-                          SETTINGS
+                          {t('hoverCard.settings')}
                         </Link>
                         <button 
                           className="w-full flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-gray-800 rounded-lg transition-colors"
@@ -514,7 +514,7 @@ export const Header: React.FC = () => {
                           }}
                         >
                           <LogOut className="h-5 w-5" />
-                          LOGOUT
+                          {t('hoverCard.logout')}
                         </button>
                       </div>
                     </div>

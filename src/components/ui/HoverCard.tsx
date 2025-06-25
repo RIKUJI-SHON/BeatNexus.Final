@@ -2,6 +2,7 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ExternalLink, User, Settings, LogOut, Crown } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
+import { useTranslation } from 'react-i18next';
 
 interface UserProfile {
   id: string;
@@ -21,6 +22,7 @@ interface HoverCardProps {
 }
 
 export const HoverCard: React.FC<HoverCardProps> = ({ children, className, userProfile }) => {
+  const { t } = useTranslation();
   const { signOut, user } = useAuthStore();
   const navigate = useNavigate();
 
@@ -72,28 +74,28 @@ export const HoverCard: React.FC<HoverCardProps> = ({ children, className, userP
               className="flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-gray-800 rounded-lg transition-colors"
             >
               <User className="h-5 w-5" />
-              PROFILE
+              {t('hoverCard.profile')}
             </Link>
             <Link 
               to="/my-battles"
               className="flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-gray-800 rounded-lg transition-colors"
             >
               <Crown className="h-5 w-5" />
-              MY BATTLES
+              {t('hoverCard.myBattles')}
             </Link>
             <Link 
               to="/settings"
               className="flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-gray-800 rounded-lg transition-colors"
             >
               <Settings className="h-5 w-5" />
-              SETTINGS
+              {t('hoverCard.settings')}
             </Link>
             <button 
               className="w-full flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-gray-800 rounded-lg transition-colors"
               onClick={handleLogout}
             >
               <LogOut className="h-5 w-5" />
-              LOGOUT
+              {t('hoverCard.logout')}
             </button>
           </div>
         </div>

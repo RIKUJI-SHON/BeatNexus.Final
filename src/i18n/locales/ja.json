@@ -29,6 +29,12 @@
     "enterPassword": "パスワードを入力",
     "noDescription": "説明がありません"
   },
+  "hoverCard": {
+    "profile": "プロフィール",
+    "myBattles": "マイバトル",
+    "settings": "設定",
+    "logout": "ログアウト"
+  },
   "subscription": {
     "title": "プランを選択",
     "subtitle": "あなたのビートボックスの旅をサポートする最適なプランをお選びください",
