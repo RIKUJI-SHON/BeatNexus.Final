@@ -2,10 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { Trophy, Medal, Crown, Search, Users, Star, Vote } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Card } from '../components/ui/Card';
-import { Badge } from '../components/ui/Badge';
 import { useRankingStore } from '../store/rankingStore';
 import { useTranslation } from 'react-i18next';
-import { getRankColorClasses } from '../utils/rankUtils';
 import { trackBeatNexusEvents } from '../utils/analytics';
 import { VoterRankingEntry } from '../types';
 
@@ -122,23 +120,7 @@ const RankingPage: React.FC = () => {
     return 'text-gray-500';
   };
 
-  const getTierBadge = (rankName: string, rankColor: string) => {
-    const { bgColor, textColor } = getRankColorClasses(rankColor);
 
-    return (
-      <Badge variant="secondary" className={`${bgColor} ${textColor} text-xs px-2 sm:px-3 py-1 font-medium`}>
-        {rankName}
-      </Badge>
-    );
-  };
-
-  const getContributionLevel = (voteCount: number) => {
-    if (voteCount > 100) return 'Expert';
-    if (voteCount > 50) return 'Advanced';
-    if (voteCount > 25) return 'Regular';
-    if (voteCount > 10) return 'Active';
-    return 'Beginner';
-  };
 
   if (currentError) {
     return (
@@ -401,11 +383,10 @@ const RankingPage: React.FC = () => {
                   ? 'bg-gradient-to-r from-cyan-500/10 to-blue-500/10 border-cyan-500/20' 
                   : 'bg-gradient-to-r from-purple-500/10 to-pink-500/10 border-purple-500/20'
               }`}>
-                <div className="grid grid-cols-12 gap-4 text-xs font-medium text-gray-300 uppercase tracking-wider">
+                <div className="grid grid-cols-10 gap-4 text-xs font-medium text-gray-300 uppercase tracking-wider">
                   <div className="col-span-2 text-center">Rank</div>
                   <div className="col-span-6">{activeTab === 'player' ? 'Player' : 'Voter'}</div>
                   <div className="col-span-2 text-center">{activeTab === 'player' ? 'Rating' : 'Votes'}</div>
-                  <div className="col-span-2 text-center">{activeTab === 'player' ? 'Tier' : 'Level'}</div>
                 </div>
               </div>
               
@@ -413,7 +394,6 @@ const RankingPage: React.FC = () => {
               <div className="divide-y divide-gray-700/50">
                 {filteredData.slice(0, 15).map((entry) => {
                   const isTopThree = entry.position <= 3;
-                  const contributionLevel = activeTab === 'voter' ? getContributionLevel(getVoteCount(entry)) : '';
                   
                   return (
                     <Link 
@@ -431,7 +411,7 @@ const RankingPage: React.FC = () => {
                           : ''
                       }`}
                     >
-                      <div className="grid grid-cols-12 gap-4 items-center">
+                      <div className="grid grid-cols-10 gap-4 items-center">
                         {/* ランク */}
                         <div className="col-span-2 text-center">
                           {getPositionDisplay(entry.position)}
@@ -468,17 +448,6 @@ const RankingPage: React.FC = () => {
                           }`}>
                             {activeTab === 'player' ? (entry.rating || 0) : (getVoteCount(entry))}
                           </span>
-                        </div>
-                        
-                        {/* ティア/レベル */}
-                        <div className="col-span-2 text-center">
-                          {activeTab === 'player' ? (
-                            getTierBadge(entry.rank_name || 'Unranked', entry.rank_color || 'gray')
-                          ) : (
-                            <span className="text-xs font-medium text-purple-400 bg-purple-500/10 px-2 py-1 rounded-md">
-                              {contributionLevel}
-                            </span>
-                          )}
                         </div>
                       </div>
                     </Link>
