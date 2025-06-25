@@ -254,8 +254,8 @@ const BattlesPage: React.FC = () => {
               </div>
             </div>
             
-            {/* Enhanced Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-3xl mx-auto mb-6 animate-fade-in-delay-2">
+            {/* Enhanced Stats Grid - Hidden on mobile */}
+            <div className="hidden md:grid grid-cols-1 md:grid-cols-3 gap-4 max-w-3xl mx-auto mb-6 animate-fade-in-delay-2">
               {/* Total Submissions */}
               <Card className="group relative bg-gradient-to-br from-gray-900 via-gray-850 to-gray-950 border border-gray-700/50 shadow-xl hover:shadow-2xl hover:shadow-cyan-500/10 transition-all duration-500 rounded-xl overflow-hidden backdrop-blur-sm p-4">
                 <div className="absolute inset-0 opacity-5">
@@ -322,8 +322,8 @@ const BattlesPage: React.FC = () => {
           {/* Left Sidebar - ログインユーザーのみ表示 */}
           {user && (
           <aside className="lg:col-span-1 space-y-6 sticky-sidebar">
-              {/* Submission Cooldown Component - モバイル版では親コンテナの幅いっぱいに表示 */}
-              <div className="w-full flex justify-center lg:justify-start">
+              {/* Submission Cooldown Component - モバイル版では非表示、デスクトップのみ表示 */}
+              <div className="w-full hidden lg:flex justify-start">
             <MonthlyLimitCard />
               </div>
           </aside>
@@ -456,6 +456,13 @@ const BattlesPage: React.FC = () => {
 
           </aside>
         </div>
+
+        {/* Mobile Monthly Limit Card - モバイル版でのみ表示、ページ最下部に配置 */}
+        {user && (
+          <div className="lg:hidden mt-8 w-full flex justify-center">
+            <MonthlyLimitCard />
+          </div>
+        )}
       </div>
       <AuthModal
         isOpen={isAuthModalOpen}

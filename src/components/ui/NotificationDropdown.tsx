@@ -114,7 +114,7 @@ export const NotificationDropdown: React.FC = () => {
 
       {/* ドロップダウンメニュー */}
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-80 bg-gray-900 border border-gray-700 rounded-lg shadow-xl z-50 max-h-96 overflow-hidden">
+        <div className="fixed right-4 top-16 w-80 bg-gray-900 border border-gray-700 rounded-lg shadow-xl z-50 max-h-96 overflow-hidden">
           {/* ヘッダー */}
           <div className="flex items-center justify-between p-4 border-b border-gray-700">
             <h3 className="text-white font-semibold">{t('notifications.title')}</h3>

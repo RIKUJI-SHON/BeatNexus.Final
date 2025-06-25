@@ -44,7 +44,7 @@ export const HoverCard: React.FC<HoverCardProps> = ({ children, className, userP
   return (
     <div className="group relative">
       {children}
-      <div className="invisible group-hover:visible absolute right-0 top-full mt-2 w-72 opacity-0 group-hover:opacity-100 transition-all duration-300 z-50">
+      <div className="invisible group-hover:visible fixed right-4 top-16 w-72 opacity-0 group-hover:opacity-100 transition-all duration-300 z-50">
         <div className="bg-gray-900 rounded-lg border border-cyan-500/20 shadow-xl overflow-hidden">
           {/* User Info Section */}
           <div className="p-4 bg-gradient-to-r from-gray-800 to-gray-900">
