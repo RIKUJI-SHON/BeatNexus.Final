@@ -89,89 +89,46 @@ serve(async (req) => {
     const player1Name = (battle.player1_username as any)?.username || 'Unknown'
     const player2Name = (battle.player2_username as any)?.username || 'Unknown'
     
-    let resultMessage = ''
-    if (battle.winner_id === battle.player1_user_id) {
-      resultMessage = `🏆 ${player1Name} の勝利！ (${battle.final_votes_a}票 vs ${battle.final_votes_b}票)`
-    } else if (battle.winner_id === battle.player2_user_id) {
-      resultMessage = `🏆 ${player2Name} の勝利！ (${battle.final_votes_b}票 vs ${battle.final_votes_a}票)`
-    } else {
-      resultMessage = `🤝 引き分け (${battle.final_votes_a}票 vs ${battle.final_votes_b}票)`
+    // 4. 全プレイヤーに統一された通知を送信（結果は隠す）
+    const pushSubscriptions = subscriptions.map(sub => sub.subscription as PushSubscription)
+
+    const payload = {
+      title: "🏁 バトルの結果が出ました",
+      body: `${player1Name} vs ${player2Name} のバトルが終了しました。結果を確認してください！`,
+      icon: '/bn_icon_192.png',
+      data: {
+        battleId: battle_id,
+        url: `/battles/${battle_id}`,
+        type: 'battle_completed',
+        player1Name,
+        player2Name
+      },
+      actions: [
+        {
+          action: 'view',
+          title: '結果を見る'
+        }
+      ]
     }
 
-    // 4. 各プレイヤーに対してパーソナライズされた通知を送信
-    const notificationPromises = subscriptions.map(async (sub) => {
-      const isPlayer1 = sub.user_id === battle.player1_user_id
-      const isWinner = sub.user_id === battle.winner_id
-      const isDraw = !battle.winner_id
-      
-      let personalizedTitle = ''
-      let personalizedBody = ''
-      
-      if (isDraw) {
-        personalizedTitle = "🤝 バトル結果：引き分け"
-        personalizedBody = `${player1Name} vs ${player2Name} - 引き分けでした！`
-      } else if (isWinner) {
-        personalizedTitle = "🏆 バトル勝利！"
-        personalizedBody = `おめでとうございます！あなたの勝利です。${resultMessage}`
-      } else {
-        personalizedTitle = "⚔️ バトル結果"
-        personalizedBody = `残念でした。${resultMessage}`
+    // 5. 通知を一括送信
+    const result = await sendBulkWebPush({
+      subscriptions: pushSubscriptions,
+      payload,
+      options: {
+        urgency: 'normal', // 結果確定は通常の重要度
+        TTL: 24 * 60 * 60 // 24時間
       }
-
-      const payload = {
-        title: personalizedTitle,
-        body: personalizedBody,
-        icon: '/bn_icon_192.png',
-        data: {
-          battleId: battle_id,
-          url: `/battles/${battle_id}`,
-          type: 'battle_completed',
-          isWinner,
-          isDraw,
-          winnerId: battle.winner_id,
-          player1Votes: battle.final_votes_a,
-          player2Votes: battle.final_votes_b
-        },
-        actions: [
-          {
-            action: 'view',
-            title: '結果を見る'
-          }
-        ]
-      }
-
-      return sendBulkWebPush({
-        subscriptions: [sub.subscription as PushSubscription],
-        payload,
-        options: {
-          urgency: 'normal', // 結果確定は通常の重要度
-          TTL: 24 * 60 * 60 // 24時間
-        }
-      })
     })
 
-    // 5. 全ての通知送信を並列実行
-    const results = await Promise.allSettled(notificationPromises)
-
-    const successCount = results.filter(result => 
-      result.status === 'fulfilled' && result.value.successCount > 0
-    ).length
-
-    const totalCount = results.length
-
-    console.log(`📊 Battle completed notifications: ${successCount}/${totalCount} sent successfully`)
+    console.log(`📊 Battle completed notifications: ${result.successCount}/${result.totalSent} sent successfully`)
 
     return new Response(
       JSON.stringify({ 
         success: true,
-        message: `Notifications sent to ${successCount}/${totalCount} recipients`,
+        message: `Notifications sent to ${result.successCount}/${result.totalSent} recipients`,
         battle_id,
-        result_message: resultMessage,
-        results: results.map(result => 
-          result.status === 'fulfilled' 
-            ? { success: true, details: result.value }
-            : { success: false, error: result.reason?.message }
-        )
+        result
       }), 
       { 
         status: 200, 

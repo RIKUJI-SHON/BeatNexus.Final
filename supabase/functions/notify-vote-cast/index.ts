@@ -106,21 +106,18 @@ serve(async (req) => {
       }
     }
 
-    // 5. 各プレイヤーに通知を送信（自分・相手どちらに投票されたかは問わない）
+    // 5. 各プレイヤーに通知を送信（投票先は明かさない）
     const pushSubscriptions = subscriptions.map(sub => sub.subscription as PushSubscription)
 
     const payload = {
       title: "🗳️ 新しい投票が入りました",
-      body: voted_user_id 
-        ? `${voter.username} が ${votedPlayerName} に投票しました。`
-        : `${voter.username} があなたのバトルに投票しました。`,
+      body: `${voter.username} があなたのバトルに投票しました。`,
       icon: '/bn_icon_192.png',
       data: {
         battleId: battle_id,
         url: `/battles/${battle_id}`,
         type: 'vote_cast',
-        voterName: voter.username,
-        votedUserId: voted_user_id
+        voterName: voter.username
       },
       actions: [
         {
