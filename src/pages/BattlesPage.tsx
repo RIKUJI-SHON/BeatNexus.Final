@@ -40,7 +40,7 @@ const BattlesPage: React.FC = () => {
   const { rankings, loading: rankingsLoading, fetchRankings } = useRankingStore();
   const { user } = useAuthStore();
   
-  // Get top 10 rankings safely
+  // Get top 10 rankings safely (not used, TabbedRanking handles its own limit)
   const topRankings = rankings?.slice(0, 10) || [];
 
   useEffect(() => {
@@ -439,7 +439,7 @@ const BattlesPage: React.FC = () => {
             
             {/* Top Rankings with Tabs */}
             <TabbedRanking 
-              maxItems={10}
+              maxItems={5}
               showViewAllButton={true}
             />
 
