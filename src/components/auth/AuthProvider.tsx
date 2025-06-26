@@ -27,7 +27,7 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const { setUser } = useAuthStore();
+  const { setUserFromAuth } = useAuthStore();
   const { triggerOnboardingForNewUser } = useOnboardingStore();
   const { i18n } = useTranslation();
   const processedUsers = useRef(new Set<string>());
@@ -56,7 +56,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       console.log('Too many auth errors, signing out...');
       try {
         await supabase.auth.signOut();
-        setUser(null);
+        setUserFromAuth(null);
         authErrorCount.current = 0;
         // ページをリロードして状態をリセット
         window.location.reload();
@@ -75,7 +75,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         console.error('Session refresh failed:', refreshError);
         // リフレッシュに失敗した場合はログアウト
         await supabase.auth.signOut();
-        setUser(null);
+        setUserFromAuth(null);
       } else {
         console.log('Session refreshed successfully');
         authErrorCount.current = 0; // エラーカウントをリセット
@@ -83,7 +83,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     } catch (refreshError) {
       console.error('Unexpected error during session refresh:', refreshError);
       await supabase.auth.signOut();
-      setUser(null);
+      setUserFromAuth(null);
     }
   };
 
@@ -146,7 +146,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         }
 
         if (mounted) {
-          setUser(session?.user ?? null);
+          setUserFromAuth(session?.user ?? null);
           authErrorCount.current = 0; // 成功時はエラーカウントをリセット
           
           // 初期セッション取得時は言語設定処理をスキップ
@@ -169,7 +169,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         
         if (!mounted) return;
         
-        setUser(session?.user ?? null);
+        setUserFromAuth(session?.user ?? null);
 
         // 認証成功時はエラーカウントをリセット
         if (session?.user) {
@@ -199,7 +199,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       mounted = false;
       subscription.unsubscribe();
     };
-  }, [setUser, i18n]);
+  }, [setUserFromAuth, i18n]);
 
   const authModalContextValue: AuthModalContextType = {
     isAuthModalOpen,

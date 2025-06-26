@@ -10,6 +10,10 @@ const isDevelopment = import.meta.env.DEV ||
                       window.location.hostname === '127.0.0.1' ||
                       window.location.port === '3000';
 
+// User IDの重複設定を防ぐためのトラッキング
+let currentSetUserId: string | null = null;
+let sessionStartTime: number | null = null;
+
 /**
  * Google Analytics の初期化
  */
@@ -112,7 +116,12 @@ export const trackBeatNexusEvents = {
   profileView: (userId: string) => trackEvent('view_profile', 'user', userId),
   profileEdit: () => trackEvent('edit_profile', 'user'),
   userRegister: () => trackEvent('register', 'user'),
-  userLogin: () => trackEvent('login', 'user'),
+  userLogin: (triggeredByUserAction: boolean = true) => {
+    // ユーザーアクション（実際のログイン）による場合のみイベントを発火
+    if (triggeredByUserAction) {
+      trackEvent('login', 'user');
+    }
+  },
   userLogout: () => trackEvent('logout', 'user'),
   
   // ランキング関連
@@ -134,13 +143,54 @@ export const trackBeatNexusEvents = {
 /**
  * ユーザー情報の設定（プライバシー保護）
  * @param userId - ユーザーID（ハッシュ化されたもの）
+ * @param isNewLogin - 新規ログインかどうか（デフォルト: false）
  */
-export const setUserProperties = (userId: string): void => {
+export const setUserProperties = (userId: string, isNewLogin: boolean = false): void => {
+  // 同じUser IDが既に設定されている場合はスキップ
+  if (currentSetUserId === userId) {
+    console.log(`GA: User ID already set for user ${userId}, skipping duplicate setting`);
+    return;
+  }
+
+  // セッション開始から短時間内（10秒以内）での重複設定を防ぐ
+  const now = Date.now();
+  if (sessionStartTime && (now - sessionStartTime) < 10000) {
+    console.log(`GA: Preventing duplicate User ID setting within session start period`);
+    return;
+  }
+
   if (!isDevelopment) {
     ReactGA.set({ user_id: userId });
-    console.log('GA: User properties set');
+    currentSetUserId = userId;
+    sessionStartTime = now;
+    console.log(`GA: User properties set for user ${userId}`);
+    
+    // 新規ログインの場合のみログインイベントを発火
+    if (isNewLogin) {
+      trackBeatNexusEvents.userLogin(true);
+    }
   } else {
+    currentSetUserId = userId;
+    sessionStartTime = now;
     console.log(`GA [DEV]: User properties would be set for user ${userId}`);
+    
+    if (isNewLogin) {
+      console.log(`GA [DEV]: Login event would be tracked for user ${userId}`);
+    }
+  }
+};
+
+/**
+ * ユーザーログアウト時のUser IDクリア
+ */
+export const clearUserProperties = (): void => {
+  currentSetUserId = null;
+  sessionStartTime = null;
+  if (!isDevelopment) {
+    ReactGA.set({ user_id: undefined });
+    console.log('GA: User properties cleared (logged out)');
+  } else {
+    console.log('GA [DEV]: User properties would be cleared (logged out)');
   }
 };
 
