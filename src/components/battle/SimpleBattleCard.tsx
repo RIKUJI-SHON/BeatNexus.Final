@@ -114,8 +114,8 @@ export const SimpleBattleCard: React.FC<SimpleBattleCardProps> = ({ battle }) =>
                   <h3 className="text-lg font-bold text-white mb-2 truncate">{battle.contestant_a?.username || t('battleCard.unknownUser')}</h3>
                   {battle.is_archived && (
                     <>
-                      <div className="text-2xl font-extrabold text-gray-300">{battle.votes_a || 0}</div>
-                      <div className="text-xs text-gray-400 font-medium">{t('battleCard.votes')}</div>
+                  <div className="text-2xl font-extrabold text-gray-300">{battle.votes_a || 0}</div>
+                  <div className="text-xs text-gray-400 font-medium">{t('battleCard.votes')}</div>
                     </>
                   )}
                   {battle.is_archived && (
@@ -152,8 +152,8 @@ export const SimpleBattleCard: React.FC<SimpleBattleCardProps> = ({ battle }) =>
                   <h3 className="text-lg font-bold text-white mb-2 truncate">{battle.contestant_b?.username || t('battleCard.unknownUser')}</h3>
                   {battle.is_archived && (
                     <>
-                      <div className="text-2xl font-extrabold text-gray-300">{battle.votes_b || 0}</div>
-                      <div className="text-xs text-gray-400 font-medium">{t('battleCard.votes')}</div>
+                  <div className="text-2xl font-extrabold text-gray-300">{battle.votes_b || 0}</div>
+                  <div className="text-xs text-gray-400 font-medium">{t('battleCard.votes')}</div>
                     </>
                   )}
                   {battle.is_archived && (
@@ -166,17 +166,17 @@ export const SimpleBattleCard: React.FC<SimpleBattleCardProps> = ({ battle }) =>
               </div>
 
               {battle.is_archived && (
-                <div className="mb-6">
+              <div className="mb-6">
                   <div className="h-2 bg-gray-800/80 rounded-full overflow-hidden shadow-inner border border-gray-700/50">
-                    <div className="h-full flex">
+                  <div className="h-full flex">
                       <div className="transition-all duration-1000 ease-out group-hover:brightness-110" style={{ width: `${percentageA}%`, background: `linear-gradient(90deg, ${colorA}, ${colorA}80)` }}/>
                       <div className="transition-all duration-1000 ease-out group-hover:brightness-110" style={{ width: `${100-percentageA}%`, background: `linear-gradient(90deg, ${colorB}80, ${colorB})` }}/>
                     </div>
                   </div>
                 </div>
               )}
-
-              {battle.is_archived && (
+                
+                {battle.is_archived && (
                 <div className="flex justify-center">
                   <VoteButton onClick={handleCommentsClick} className="max-w-xs bg-gray-700 hover:bg-gray-600 border-gray-800">
                     <div className="flex items-center gap-2">

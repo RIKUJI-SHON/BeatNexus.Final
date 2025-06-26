@@ -114,10 +114,10 @@ export const SpecialBattleCard: React.FC<SpecialBattleCardProps> = ({ battle }) 
       <h3 className="text-lg font-bold text-white mb-2 truncate">{player?.username || t('battleCard.unknownUser')}</h3>
       {battle.is_archived && (
         <>
-          <div className={cn("text-2xl font-extrabold transition-all duration-300", isWinner ? "text-emerald-400 scale-110" : "text-gray-300")}>
-            {votes || 0}
-          </div>
-          <div className="text-xs text-gray-400 font-medium">{t('battleCard.votes')}</div>
+      <div className={cn("text-2xl font-extrabold transition-all duration-300", isWinner ? "text-emerald-400 scale-110" : "text-gray-300")}>
+        {votes || 0}
+      </div>
+      <div className="text-xs text-gray-400 font-medium">{t('battleCard.votes')}</div>
         </>
       )}
       {battle.is_archived && (
@@ -158,7 +158,7 @@ export const SpecialBattleCard: React.FC<SpecialBattleCardProps> = ({ battle }) 
                 
                 {/* VS Icon with Total Votes */}
                 <div className="flex flex-col items-center gap-3">
-                  <VSIcon className="w-16 h-16 md:w-20 md:h-20" />
+                <VSIcon className="w-16 h-16 md:w-20 md:h-20" />
                   
                   {/* Total Votes Display - Special Battle Style */}
                   <div className="bg-cyan-500/10 backdrop-blur-sm border border-cyan-500/30 rounded-xl px-3 py-2 shadow-lg">
@@ -182,17 +182,17 @@ export const SpecialBattleCard: React.FC<SpecialBattleCardProps> = ({ battle }) 
               </div>
 
               {battle.is_archived && (
-                <div className="mb-6">
-                  <div className="h-2 bg-gray-800/50 rounded-full overflow-hidden shadow-inner">
-                    <div className="h-full flex">
-                      <div className="transition-all duration-1000 ease-out" style={{ width: `${percentageA}%`, background: `linear-gradient(90deg, ${colorA}cc, ${colorA}80)` }}/>
-                      <div className="transition-all duration-1000 ease-out" style={{ width: `${100-percentageA}%`, background: `linear-gradient(90deg, ${colorB}80, ${colorB}cc)` }}/>
-                    </div>
+              <div className="mb-6">
+                <div className="h-2 bg-gray-800/50 rounded-full overflow-hidden shadow-inner">
+                  <div className="h-full flex">
+                    <div className="transition-all duration-1000 ease-out" style={{ width: `${percentageA}%`, background: `linear-gradient(90deg, ${colorA}cc, ${colorA}80)` }}/>
+                    <div className="transition-all duration-1000 ease-out" style={{ width: `${100-percentageA}%`, background: `linear-gradient(90deg, ${colorB}80, ${colorB}cc)` }}/>
                   </div>
                 </div>
+              </div>
               )}
-
-              {battle.is_archived && (
+                
+                {battle.is_archived && (
                 <div className="flex justify-center">
                   <VoteButton onClick={handleCommentsClick} className="max-w-xs bg-gray-700 hover:bg-gray-600 border-gray-800">
                     <div className="flex items-center gap-2">

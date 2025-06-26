@@ -254,6 +254,46 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
           <div className="relative p-8">
 
 
+            {/* Player Names - Above Videos */}
+            <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto_1fr] gap-6 items-center mb-4">
+              {/* Player A Name */}
+              <div className="flex items-center gap-3">
+                <div 
+                  className="w-10 h-10 rounded-full p-1 flex-shrink-0"
+                  style={{ background: `linear-gradient(135deg, ${playerColorA}, ${playerColorA}80)` }}
+                >
+                  <img
+                    src={battle.contestant_a?.avatar_url || getDefaultAvatarUrl(battle.player1_user_id)}
+                    alt={battle.contestant_a?.username}
+                    className="w-full h-full rounded-full border border-gray-900 object-cover"
+                  />
+                </div>
+                <div className="text-white font-bold text-lg">
+                  {battle.contestant_a?.username || 'Player A'}
+                </div>
+              </div>
+
+              {/* Center Space */}
+              <div></div>
+
+              {/* Player B Name */}
+              <div className="flex items-center gap-3 lg:justify-end">
+                <div className="text-white font-bold text-lg">
+                  {battle.contestant_b?.username || 'Player B'}
+                </div>
+                <div 
+                  className="w-10 h-10 rounded-full p-1 flex-shrink-0"
+                  style={{ background: `linear-gradient(135deg, ${playerColorB}, ${playerColorB}80)` }}
+                >
+                  <img
+                    src={battle.contestant_b?.avatar_url || getDefaultAvatarUrl(battle.player2_user_id)}
+                    alt={battle.contestant_b?.username}
+                    className="w-full h-full rounded-full border border-gray-900 object-cover"
+                  />
+                </div>
+              </div>
+            </div>
+
             {/* Battle Arena */}
             <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto_1fr] gap-6 items-center mb-8">
               {/* Player A Video Preview */}
@@ -293,42 +333,6 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                       </p>
                     </div>
                   )}
-                  
-                  {/* Player A Overlay - Top Left */}
-                  <div className="absolute top-4 left-4">
-                    <div className="flex items-center gap-3">
-                      <div 
-                        className="w-10 h-10 rounded-full p-1 flex-shrink-0"
-                        style={{ background: `linear-gradient(135deg, ${playerColorA}, ${playerColorA}80)` }}
-                      >
-                        <img
-                          src={battle.contestant_a?.avatar_url || getDefaultAvatarUrl(battle.player1_user_id)}
-                          alt={battle.contestant_a?.username}
-                          className="w-full h-full rounded-full border border-gray-900 object-cover"
-                        />
-                      </div>
-                      <div className="min-w-0">
-                        <div className="text-white font-bold text-sm truncate max-w-[120px] drop-shadow-lg">
-                          {battle.contestant_a?.username || 'Player A'}
-                        </div>
-                        {(hasVoted || isArchived) ? (
-                          <div className="flex items-center gap-2">
-                            <div 
-                              className="text-xl font-bold drop-shadow-lg"
-                              style={{ color: playerColorA }}
-                            >
-                              {votesA}
-                            </div>
-                            <span className="text-xs text-gray-300 drop-shadow-lg">{t('battleCard.votes')}</span>
-                          </div>
-                        ) : (
-                          <div className="text-xs text-gray-400 drop-shadow-lg">
-                            {t('battleView.voteToSeeResults')}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
 
                   {/* Winner Badge */}
                   {isALeading && (
@@ -385,42 +389,6 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                       </p>
                     </div>
                   )}
-                  
-                  {/* Player B Overlay - Top Left */}
-                  <div className="absolute top-4 left-4">
-                    <div className="flex items-center gap-3">
-                      <div 
-                        className="w-10 h-10 rounded-full p-1 flex-shrink-0"
-                        style={{ background: `linear-gradient(135deg, ${playerColorB}, ${playerColorB}80)` }}
-                      >
-                        <img
-                          src={battle.contestant_b?.avatar_url || getDefaultAvatarUrl(battle.player2_user_id)}
-                          alt={battle.contestant_b?.username}
-                          className="w-full h-full rounded-full border border-gray-900 object-cover"
-                        />
-                      </div>
-                      <div className="min-w-0">
-                        <div className="text-white font-bold text-sm truncate max-w-[120px] drop-shadow-lg">
-                          {battle.contestant_b?.username || 'Player B'}
-                        </div>
-                        {(hasVoted || isArchived) ? (
-                          <div className="flex items-center gap-2">
-                            <div 
-                              className="text-xl font-bold drop-shadow-lg"
-                              style={{ color: playerColorB }}
-                            >
-                              {votesB}
-                            </div>
-                            <span className="text-xs text-gray-300 drop-shadow-lg">{t('battleCard.votes')}</span>
-                          </div>
-                        ) : (
-                          <div className="text-xs text-gray-400 drop-shadow-lg">
-                            {t('battleView.voteToSeeResults')}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
 
                   {/* Winner Badge */}
                   {isBLeading && (
