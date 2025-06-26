@@ -10,6 +10,8 @@ import { format } from 'date-fns';
 import { ja, enUS } from 'date-fns/locale';
 import { cn } from '../../lib/utils';
 import { VoteButton } from '../ui/VoteButton';
+import { getCurrentRank } from '../../lib/rankUtils';
+import { supabase } from '../../lib/supabase';
 
 interface SpecialBattleCardProps {
   battle: Battle;
@@ -22,6 +24,13 @@ export const SpecialBattleCard: React.FC<SpecialBattleCardProps> = ({ battle }) 
   const [isCommentsModalOpen, setIsCommentsModalOpen] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState<string>('');
   const [isExpired, setIsExpired] = useState(false);
+  const [playerRatings, setPlayerRatings] = useState<{
+    playerA: { rating: number; loading: boolean };
+    playerB: { rating: number; loading: boolean };
+  }>({
+    playerA: { rating: 1200, loading: true },
+    playerB: { rating: 1200, loading: true }
+  });
   const navigate = useNavigate();
 
   const updateTimeRemaining = () => {
@@ -54,8 +63,48 @@ export const SpecialBattleCard: React.FC<SpecialBattleCardProps> = ({ battle }) 
     setIsExpired(false);
   };
 
+  // Load player ratings
+  const loadPlayerRatings = async () => {
+    try {
+      // Player Aのレート取得
+      const { data: playerAData, error: errorA } = await supabase
+        .from('profiles')
+        .select('rating')
+        .eq('id', battle.player1_user_id)
+        .single();
+
+      // Player Bのレート取得
+      const { data: playerBData, error: errorB } = await supabase
+        .from('profiles')
+        .select('rating')
+        .eq('id', battle.player2_user_id)
+        .single();
+
+      setPlayerRatings({
+        playerA: { 
+          rating: playerAData?.rating || 1200, 
+          loading: false 
+        },
+        playerB: { 
+          rating: playerBData?.rating || 1200, 
+          loading: false 
+        }
+      });
+
+      if (errorA) console.warn('⚠️ Player A rating fetch error:', errorA);
+      if (errorB) console.warn('⚠️ Player B rating fetch error:', errorB);
+    } catch (error) {
+      console.error('❌ Failed to load player ratings:', error);
+      setPlayerRatings({
+        playerA: { rating: 1200, loading: false },
+        playerB: { rating: 1200, loading: false }
+      });
+    }
+  };
+
   useEffect(() => {
     updateTimeRemaining();
+    loadPlayerRatings(); // レート情報を読み込み
     const interval = setInterval(updateTimeRemaining, 60000);
     return () => clearInterval(interval);
   }, [battle.end_voting_at, battle.is_archived, i18n.language]);
@@ -91,7 +140,9 @@ export const SpecialBattleCard: React.FC<SpecialBattleCardProps> = ({ battle }) 
     color, 
     isWinner, 
     defaultNameKey, 
-    userId 
+    userId,
+    currentRating,
+    ratingLoading
   }: {
     player: Battle['contestant_a'];
     votes: number | undefined;
@@ -101,6 +152,8 @@ export const SpecialBattleCard: React.FC<SpecialBattleCardProps> = ({ battle }) 
     isWinner: boolean;
     defaultNameKey: string;
     userId: string;
+    currentRating: number;
+    ratingLoading: boolean;
   }) => (
     <div className="text-center">
       <div className="relative inline-block mb-4">
@@ -111,7 +164,20 @@ export const SpecialBattleCard: React.FC<SpecialBattleCardProps> = ({ battle }) 
           <img src={player?.avatar_url || getDefaultAvatarUrl(userId)} alt={player?.username || t(defaultNameKey)} className="w-full h-full rounded-full object-cover border-2 border-gray-900"/>
         </div>
       </div>
-      <h3 className="text-lg font-bold text-white mb-2 truncate">{player?.username || t('battleCard.unknownUser')}</h3>
+      <h3 className="text-xl font-bold text-white mb-2 truncate">{player?.username || t('battleCard.unknownUser')}</h3>
+      {/* Player Rating Display */}
+      <div className="mb-2 flex items-center justify-center">
+        {ratingLoading ? (
+          <div className="text-xs text-gray-400">---</div>
+        ) : (
+          <div 
+            className="text-sm font-medium"
+            style={{ color: getCurrentRank(currentRating).iconColor }}
+          >
+            {currentRating}
+          </div>
+        )}
+      </div>
       {battle.is_archived && (
         <>
       <div className={cn("text-2xl font-extrabold transition-all duration-300", isWinner ? "text-emerald-400 scale-110" : "text-gray-300")}>
@@ -154,6 +220,8 @@ export const SpecialBattleCard: React.FC<SpecialBattleCardProps> = ({ battle }) 
                   isWinner={battle.winner_id === battle.player1_user_id}
                   defaultNameKey="battleCard.contestantA"
                   userId={battle.player1_user_id}
+                  currentRating={playerRatings.playerA.rating}
+                  ratingLoading={playerRatings.playerA.loading}
                 />
                 
                 {/* VS Icon with Total Votes */}
@@ -178,6 +246,8 @@ export const SpecialBattleCard: React.FC<SpecialBattleCardProps> = ({ battle }) 
                   isWinner={battle.winner_id === battle.player2_user_id}
                   defaultNameKey="battleCard.contestantB"
                   userId={battle.player2_user_id}
+                  currentRating={playerRatings.playerB.rating}
+                  ratingLoading={playerRatings.playerB.loading}
                 />
               </div>
 

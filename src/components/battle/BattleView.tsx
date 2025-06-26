@@ -10,6 +10,8 @@ import { Battle } from '../../types';
 import { useTranslation } from 'react-i18next';
 import { VSIcon } from '../ui/VSIcon';
 import { trackBeatNexusEvents } from '../../utils/analytics';
+import { getCurrentRank } from '../../lib/rankUtils';
+import { supabase } from '../../lib/supabase';
 
 interface BattleViewProps {
   battle: Battle;
@@ -27,6 +29,13 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
   const [isSubmittingComment, setIsSubmittingComment] = useState(false);
   const [isVoting, setIsVoting] = useState(false);
   const [showVoteModal, setShowVoteModal] = useState<'A' | 'B' | null>(null);
+  const [playerRatings, setPlayerRatings] = useState<{
+    playerA: { rating: number; loading: boolean };
+    playerB: { rating: number; loading: boolean };
+  }>({
+    playerA: { rating: 1200, loading: true },
+    playerB: { rating: 1200, loading: true }
+  });
   
   const { 
     voteBattle, 
@@ -49,6 +58,45 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
   
 
   
+  // Load player ratings
+  const loadPlayerRatings = async () => {
+    try {
+      // Player Aのレート取得
+      const { data: playerAData, error: errorA } = await supabase
+        .from('profiles')
+        .select('rating')
+        .eq('id', battle.player1_user_id)
+        .single();
+
+      // Player Bのレート取得
+      const { data: playerBData, error: errorB } = await supabase
+        .from('profiles')
+        .select('rating')
+        .eq('id', battle.player2_user_id)
+        .single();
+
+      setPlayerRatings({
+        playerA: { 
+          rating: playerAData?.rating || 1200, 
+          loading: false 
+        },
+        playerB: { 
+          rating: playerBData?.rating || 1200, 
+          loading: false 
+        }
+      });
+
+      if (errorA) console.warn('⚠️ Player A rating fetch error:', errorA);
+      if (errorB) console.warn('⚠️ Player B rating fetch error:', errorB);
+    } catch (error) {
+      console.error('❌ Failed to load player ratings:', error);
+      setPlayerRatings({
+        playerA: { rating: 1200, loading: false },
+        playerB: { rating: 1200, loading: false }
+      });
+    }
+  };
+
   // Load user's current vote status when component mounts
   useEffect(() => {
     const loadVoteStatus = async () => {
@@ -76,6 +124,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
     }
     
     loadVoteStatus();
+    loadPlayerRatings(); // レート情報を読み込み
     // Load comments when component mounts
     fetchBattleComments(battle.id);
   }, [battle.id, getUserVote, fetchBattleComments]);
@@ -268,8 +317,22 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                     className="w-full h-full rounded-full border border-gray-900 object-cover"
                   />
                 </div>
-                <div className="text-white font-bold text-lg">
-                  {battle.contestant_a?.username || 'Player A'}
+                <div className="flex flex-col">
+                  <div className="text-white font-bold text-xl">
+                    {battle.contestant_a?.username || 'Player A'}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {playerRatings.playerA.loading ? (
+                      <div className="text-sm text-gray-400">読み込み中...</div>
+                    ) : (
+                      <div 
+                        className="text-sm font-medium"
+                        style={{ color: getCurrentRank(playerRatings.playerA.rating).iconColor }}
+                      >
+                        {playerRatings.playerA.rating}
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -278,8 +341,22 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
 
               {/* Player B Name */}
               <div className="flex items-center gap-3 lg:justify-end">
-                <div className="text-white font-bold text-lg">
-                  {battle.contestant_b?.username || 'Player B'}
+                <div className="flex flex-col lg:items-end">
+                  <div className="text-white font-bold text-xl">
+                    {battle.contestant_b?.username || 'Player B'}
+                  </div>
+                  <div className="flex items-center gap-2 lg:flex-row-reverse">
+                    {playerRatings.playerB.loading ? (
+                      <div className="text-sm text-gray-400">読み込み中...</div>
+                    ) : (
+                      <div 
+                        className="text-sm font-medium"
+                        style={{ color: getCurrentRank(playerRatings.playerB.rating).iconColor }}
+                      >
+                        {playerRatings.playerB.rating}
+                      </div>
+                    )}
+                  </div>
                 </div>
                 <div 
                   className="w-10 h-10 rounded-full p-1 flex-shrink-0"

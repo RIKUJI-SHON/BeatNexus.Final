@@ -10,6 +10,8 @@ import { RatingChangeDisplay } from '../ui/RatingChangeDisplay';
 import { format } from 'date-fns';
 import { ja, enUS } from 'date-fns/locale';
 import { cn } from '../../lib/utils';
+import { getCurrentRank } from '../../lib/rankUtils';
+import { supabase } from '../../lib/supabase';
 
 interface SimpleBattleCardProps {
   battle: Battle;
@@ -22,6 +24,13 @@ export const SimpleBattleCard: React.FC<SimpleBattleCardProps> = ({ battle }) =>
   const [isCommentsModalOpen, setIsCommentsModalOpen] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState<string>('');
   const [isExpired, setIsExpired] = useState(false);
+  const [playerRatings, setPlayerRatings] = useState<{
+    playerA: { rating: number; loading: boolean };
+    playerB: { rating: number; loading: boolean };
+  }>({
+    playerA: { rating: 1200, loading: true },
+    playerB: { rating: 1200, loading: true }
+  });
   const navigate = useNavigate();
 
   const updateTimeRemaining = () => {
@@ -54,8 +63,48 @@ export const SimpleBattleCard: React.FC<SimpleBattleCardProps> = ({ battle }) =>
     setIsExpired(false);
   };
 
+  // Load player ratings
+  const loadPlayerRatings = async () => {
+    try {
+      // Player Aのレート取得
+      const { data: playerAData, error: errorA } = await supabase
+        .from('profiles')
+        .select('rating')
+        .eq('id', battle.player1_user_id)
+        .single();
+
+      // Player Bのレート取得
+      const { data: playerBData, error: errorB } = await supabase
+        .from('profiles')
+        .select('rating')
+        .eq('id', battle.player2_user_id)
+        .single();
+
+      setPlayerRatings({
+        playerA: { 
+          rating: playerAData?.rating || 1200, 
+          loading: false 
+        },
+        playerB: { 
+          rating: playerBData?.rating || 1200, 
+          loading: false 
+        }
+      });
+
+      if (errorA) console.warn('⚠️ Player A rating fetch error:', errorA);
+      if (errorB) console.warn('⚠️ Player B rating fetch error:', errorB);
+    } catch (error) {
+      console.error('❌ Failed to load player ratings:', error);
+      setPlayerRatings({
+        playerA: { rating: 1200, loading: false },
+        playerB: { rating: 1200, loading: false }
+      });
+    }
+  };
+
   useEffect(() => {
     updateTimeRemaining();
+    loadPlayerRatings(); // レート情報を読み込み
     const interval = setInterval(updateTimeRemaining, 60000);
     return () => clearInterval(interval);
   }, [battle.end_voting_at, battle.is_archived, i18n.language]);
@@ -111,7 +160,20 @@ export const SimpleBattleCard: React.FC<SimpleBattleCardProps> = ({ battle }) =>
                       <img src={battle.contestant_a?.avatar_url || getDefaultAvatarUrl(battle.player1_user_id)} alt={battle.contestant_a?.username || t('battleCard.contestantA')} className="w-full h-full rounded-full object-cover border-2 border-gray-900"/>
                     </div>
                   </div>
-                  <h3 className="text-lg font-bold text-white mb-2 truncate">{battle.contestant_a?.username || t('battleCard.unknownUser')}</h3>
+                  <h3 className="text-xl font-bold text-white mb-2 truncate">{battle.contestant_a?.username || t('battleCard.unknownUser')}</h3>
+                  {/* Player A Rating Display */}
+                  <div className="mb-2 flex items-center justify-center">
+                    {playerRatings.playerA.loading ? (
+                      <div className="text-xs text-gray-400">---</div>
+                    ) : (
+                      <div 
+                        className="text-sm font-medium"
+                        style={{ color: getCurrentRank(playerRatings.playerA.rating).iconColor }}
+                      >
+                        {playerRatings.playerA.rating}
+                      </div>
+                    )}
+                  </div>
                   {battle.is_archived && (
                     <>
                   <div className="text-2xl font-extrabold text-gray-300">{battle.votes_a || 0}</div>
@@ -149,7 +211,20 @@ export const SimpleBattleCard: React.FC<SimpleBattleCardProps> = ({ battle }) =>
                       <img src={battle.contestant_b?.avatar_url || getDefaultAvatarUrl(battle.player2_user_id)} alt={battle.contestant_b?.username || t('battleCard.contestantB')} className="w-full h-full rounded-full object-cover border-2 border-gray-900"/>
                     </div>
                   </div>
-                  <h3 className="text-lg font-bold text-white mb-2 truncate">{battle.contestant_b?.username || t('battleCard.unknownUser')}</h3>
+                  <h3 className="text-xl font-bold text-white mb-2 truncate">{battle.contestant_b?.username || t('battleCard.unknownUser')}</h3>
+                  {/* Player B Rating Display */}
+                  <div className="mb-2 flex items-center justify-center">
+                    {playerRatings.playerB.loading ? (
+                      <div className="text-xs text-gray-400">---</div>
+                    ) : (
+                      <div 
+                        className="text-sm font-medium"
+                        style={{ color: getCurrentRank(playerRatings.playerB.rating).iconColor }}
+                      >
+                        {playerRatings.playerB.rating}
+                      </div>
+                    )}
+                  </div>
                   {battle.is_archived && (
                     <>
                   <div className="text-2xl font-extrabold text-gray-300">{battle.votes_b || 0}</div>
