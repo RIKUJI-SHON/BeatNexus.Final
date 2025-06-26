@@ -7,6 +7,7 @@ interface RatingChangeDisplayProps {
   oldRating: number;
   newRating: number;
   isWinner: boolean;
+  isTie?: boolean; // 🆕 引き分けフラグ追加
   className?: string;
 }
 
@@ -15,6 +16,7 @@ export const RatingChangeDisplay: React.FC<RatingChangeDisplayProps> = ({
   oldRating,
   newRating,
   isWinner,
+  isTie = false, // 🆕 引き分けフラグのデフォルト値
   className = ''
 }) => {
   const ratingChange = newRating - oldRating;
@@ -37,9 +39,15 @@ export const RatingChangeDisplay: React.FC<RatingChangeDisplayProps> = ({
           <span className="font-semibold text-white">{playerName}</span>
           <Badge 
             variant="secondary" 
-            className={`${isWinner ? 'bg-green-500/20 text-green-300' : 'bg-red-500/20 text-red-300'} text-xs`}
+            className={`${
+              isTie 
+                ? 'bg-yellow-500/20 text-yellow-300' 
+                : isWinner 
+                  ? 'bg-green-500/20 text-green-300' 
+                  : 'bg-red-500/20 text-red-300'
+            } text-xs`}
           >
-            {isWinner ? '勝利' : '敗北'}
+            {isTie ? '引き分け' : isWinner ? '勝利' : '敗北'}
           </Badge>
         </div>
         <Badge variant="secondary" className="bg-gray-600/20 text-gray-300 text-xs">

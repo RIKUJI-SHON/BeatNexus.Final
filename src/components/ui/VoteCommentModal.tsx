@@ -67,7 +67,7 @@ export const VoteCommentModal: React.FC<VoteCommentModalProps> = ({
               <span className="text-white font-bold text-sm">{player}</span>
             </div>
             <h2 className="text-xl font-bold text-white">
-              {t('voteCommentModal.title', { player })}
+              {playerName ? t('voteCommentModal.title', { player: playerName }) : t('voteCommentModal.title', { player: `Player ${player}` })}
             </h2>
           </div>
           <button
@@ -98,7 +98,7 @@ export const VoteCommentModal: React.FC<VoteCommentModalProps> = ({
             <textarea
               value={comment}
               onChange={handleCommentChange}
-              placeholder={t('voteCommentModal.commentPlaceholder', { player })}
+              placeholder={playerName ? t('voteCommentModal.commentPlaceholder', { player: playerName }) : t('voteCommentModal.commentPlaceholder', { player: `Player ${player}` })}
               className={`w-full p-3 rounded-lg bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 border resize-none ${
                 showError ? 'border-red-500 focus:ring-red-500/50' : 'border-gray-600 focus:ring-cyan-500/50'
               }`}

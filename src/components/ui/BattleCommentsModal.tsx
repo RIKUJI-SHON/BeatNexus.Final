@@ -98,7 +98,7 @@ export const BattleCommentsModal: React.FC<BattleCommentsModalProps> = ({
                       <span className={`text-xs px-2 py-1 rounded-full ${
                         comment.vote === 'A' ? 'bg-cyan-500/20 text-cyan-300' : 'bg-pink-500/20 text-pink-300'
                       }`}>
-                        Player {comment.vote}に投票
+                        {comment.vote === 'A' ? playerAName : playerBName}に投票
                       </span>
                       <span className="text-xs text-gray-500">
                         {format(new Date(comment.created_at), 'PPp', { locale: currentLocale })}

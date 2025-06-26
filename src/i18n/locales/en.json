@@ -1504,11 +1504,11 @@
   "profile": "View Profile",
   "editProfile": "Edit Profile",
   "voteCommentModal": {
-    "title": "Vote for Player {{player}}",
+    "title": "Vote for {{player}}",
     "subtitle": "Vote for {{playerName}}",
     "description": "Comments are required. Please share your thoughts.",
     "commentLabel": "Comment (Required)",
-    "commentPlaceholder": "Share your thoughts about Player {{player}}...",
+    "commentPlaceholder": "Share your thoughts about {{player}}...",
     "commentRequired": "A comment is required to vote",
     "voteButton": "Vote",
     "voting": "Voting...",

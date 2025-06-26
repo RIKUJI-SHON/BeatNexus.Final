@@ -19,14 +19,7 @@ interface SimpleBattleCardProps {
   battle: Battle;
 }
 
-const colorPairs = [
-  { a: '#3B82F6', b: '#F472B6' },
-  { a: '#10B981', b: '#8B5CF6' },
-  { a: 'from-emerald-600/20 to-purple-600/20' },
-  { a: '#F59E0B', b: '#3B82F6' },
-  { a: '#6366F1', b: '#F97316' },
-  { a: '#EC4899', b: '#10B981' },
-];
+// 色の固定化のため、colorPairs配列は不要になりました
 
 export const SimpleBattleCard: React.FC<SimpleBattleCardProps> = ({ battle }) => {
   const { t, i18n } = useTranslation();
@@ -84,8 +77,9 @@ export const SimpleBattleCard: React.FC<SimpleBattleCardProps> = ({ battle }) =>
   const totalVotes = (battle.votes_a || 0) + (battle.votes_b || 0);
   const percentageA = totalVotes > 0 ? ((battle.votes_a || 0) / totalVotes) * 100 : 50;
   
-  const colorPairIndex = parseInt(battle.id.replace(/\D/g, '')) % colorPairs.length;
-  const { a: colorA, b: colorB } = colorPairs[colorPairIndex];
+  // 固定色: プレイヤーAを青、プレイヤーBを赤
+  const colorA = '#3B82F6'; // Blue for Player A
+  const colorB = '#EF4444'; // Red for Player B
 
   const handleActionClick = (e: React.MouseEvent) => {
     e.preventDefault();

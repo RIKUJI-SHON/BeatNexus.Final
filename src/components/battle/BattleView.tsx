@@ -191,17 +191,12 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
   
   const getDefaultAvatarUrl = (seed: string) => `https://api.dicebear.com/7.x/avataaars/svg?seed=${seed}`;
 
-  // Color pairs for consistent theming (same as BattleReplayPage)
-  const colorPairs = [
-    { a: '#06b6d4', b: '#ec4899', bg: 'from-cyan-500/20 to-pink-500/20' },
-    { a: '#10b981', b: '#f59e0b', bg: 'from-emerald-500/20 to-amber-500/20' },
-    { a: '#8b5cf6', b: '#ef4444', bg: 'from-violet-500/20 to-red-500/20' },
-    { a: '#06b6d4', b: '#8b5cf6', bg: 'from-cyan-500/20 to-violet-500/20' },
-    { a: '#f59e0b', b: '#ec4899', bg: 'from-amber-500/20 to-pink-500/20' }
-  ];
+  // 色の固定化のため、colorPairs配列は不要になりました
 
-  const colorPairIndex = parseInt(battle.id.replace(/\D/g, '')) % colorPairs.length;
-  const { a: playerColorA, b: playerColorB, bg: gradientBg } = colorPairs[colorPairIndex];
+  // 固定色: プレイヤーAを青、プレイヤーBを赤  
+  const playerColorA = '#3B82F6'; // Blue for Player A
+  const playerColorB = '#EF4444'; // Red for Player B
+  const gradientBg = 'from-blue-500/20 to-red-500/20';
 
 
 
@@ -977,7 +972,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                       <span className={`text-xs px-2 py-1 rounded-full ${
                         comment.vote === 'A' ? 'bg-cyan-500/20 text-cyan-300' : 'bg-pink-500/20 text-pink-300'
                       }`}>
-                        Player {comment.vote}に投票
+                        {comment.vote === 'A' ? battle.contestant_a?.username : battle.contestant_b?.username}に投票
                       </span>
                       <span className="text-xs text-gray-500">
                         {new Date(comment.created_at).toLocaleDateString('ja-JP')}
@@ -1007,6 +1002,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
         onClose={() => setShowVoteModal(null)}
         onVote={(comment) => handleVote(showVoteModal!, comment)}
         player={showVoteModal || 'A'}
+        playerName={showVoteModal === 'A' ? battle.contestant_a?.username : battle.contestant_b?.username}
         isLoading={isVoting}
       />
     </div>
