@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Battle } from '../../types';
 import { BattleCommentsModal } from '../ui/BattleCommentsModal';
-import { Clock, Users, Crown, MessageSquare, ThumbsUp } from 'lucide-react';
+import { Clock, Crown, MessageSquare, ThumbsUp } from 'lucide-react';
 import { VSIcon } from '../ui/VSIcon';
 import { RatingChangeDisplay } from '../ui/RatingChangeDisplay';
 import { format } from 'date-fns';
@@ -135,11 +135,7 @@ export const SpecialBattleCard: React.FC<SpecialBattleCardProps> = ({ battle }) 
         <div className="battle-card mb-6">
           <div className="battle-card__content text-white">
             <div className="relative p-6">
-              <div className="flex justify-between items-start mb-6">
-                <div className="flex items-center gap-2 text-xs font-bold px-3 py-1.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
-                  <Users className="h-3 w-3" />
-                  {t('battleCard.totalVotes')}: {totalVotes}
-                </div>
+              <div className="flex justify-center items-start mb-6">
                 <div className={cn('flex items-center gap-2 px-3 py-1 rounded-full backdrop-blur-sm', 
                   isExpired ? 'bg-gray-700/50 text-gray-300 border border-gray-600/30' : 
                   'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30')}>
@@ -160,7 +156,18 @@ export const SpecialBattleCard: React.FC<SpecialBattleCardProps> = ({ battle }) 
                   userId={battle.player1_user_id}
                 />
                 
-                <VSIcon className="w-16 h-16 md:w-20 md:h-20" />
+                {/* VS Icon with Total Votes */}
+                <div className="flex flex-col items-center gap-3">
+                  <VSIcon className="w-16 h-16 md:w-20 md:h-20" />
+                  
+                  {/* Total Votes Display - Special Battle Style */}
+                  <div className="bg-cyan-500/10 backdrop-blur-sm border border-cyan-500/30 rounded-xl px-3 py-2 shadow-lg">
+                    <div className="text-center">
+                      <div className="text-xl font-bold text-cyan-300">{totalVotes}</div>
+                      <div className="text-xs font-medium text-cyan-400/80 uppercase tracking-wide">VOTES</div>
+                    </div>
+                  </div>
+                </div>
 
                 <PlayerDisplay 
                   player={battle.contestant_b}
