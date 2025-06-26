@@ -2,13 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Battle } from '../../types';
-import { Button } from '../ui/Button';
 import { VoteButton } from '../ui/VoteButton';
-import { AuthModal } from '../auth/AuthModal';
 import { BattleCommentsModal } from '../ui/BattleCommentsModal';
-import { useRequireAuth } from '../../hooks/useRequireAuth';
-import { useAuthStore } from '../../store/authStore';
-import { Clock, Users, Vote, Crown, Video, MessageSquare } from 'lucide-react';
+import { Clock, Users, Crown, MessageSquare, ThumbsUp } from 'lucide-react';
 import { VSIcon } from '../ui/VSIcon';
 import { RatingChangeDisplay } from '../ui/RatingChangeDisplay';
 import { format } from 'date-fns';
@@ -23,20 +19,10 @@ interface SimpleBattleCardProps {
 
 export const SimpleBattleCard: React.FC<SimpleBattleCardProps> = ({ battle }) => {
   const { t, i18n } = useTranslation();
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isCommentsModalOpen, setIsCommentsModalOpen] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [timeRemaining, setTimeRemaining] = useState<string>('');
   const [isExpired, setIsExpired] = useState(false);
   const navigate = useNavigate();
-  const { user } = useAuthStore();
-  const [authModalMode, setAuthModalMode] = useState<'login' | 'signup'>('login');
-  
-  const requireAuth = useRequireAuth({
-    showAuthModal: true,
-    setAuthModalOpen: setIsAuthModalOpen,
-    setAuthModalMode: setAuthModalMode,
-  });
 
   const updateTimeRemaining = () => {
     if (battle.is_archived) {
@@ -81,17 +67,7 @@ export const SimpleBattleCard: React.FC<SimpleBattleCardProps> = ({ battle }) =>
   const colorA = '#3B82F6'; // Blue for Player A
   const colorB = '#EF4444'; // Red for Player B
 
-  const handleActionClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setError(null);
-    const destination = battle.is_archived ? `/battle-replay/${battle.id}` : `/battle/${battle.id}`;
-    if (user || battle.is_archived) {
-      navigate(destination);
-    } else {
-      requireAuth(() => navigate(destination));
-    }
-  };
+
 
   const handleCardClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -138,8 +114,12 @@ export const SimpleBattleCard: React.FC<SimpleBattleCardProps> = ({ battle }) =>
                     </div>
                   </div>
                   <h3 className="text-lg font-bold text-white mb-2 truncate">{battle.contestant_a?.username || t('battleCard.unknownUser')}</h3>
-                  <div className="text-2xl font-extrabold text-gray-300">{battle.votes_a || 0}</div>
-                  <div className="text-xs text-gray-400 font-medium">{t('battleCard.votes')}</div>
+                  {battle.is_archived && (
+                    <>
+                      <div className="text-2xl font-extrabold text-gray-300">{battle.votes_a || 0}</div>
+                      <div className="text-xs text-gray-400 font-medium">{t('battleCard.votes')}</div>
+                    </>
+                  )}
                   {battle.is_archived && (
                     <RatingChangeDisplay 
                       ratingChange={battle.player1_rating_change}
@@ -161,8 +141,12 @@ export const SimpleBattleCard: React.FC<SimpleBattleCardProps> = ({ battle }) =>
                     </div>
                   </div>
                   <h3 className="text-lg font-bold text-white mb-2 truncate">{battle.contestant_b?.username || t('battleCard.unknownUser')}</h3>
-                  <div className="text-2xl font-extrabold text-gray-300">{battle.votes_b || 0}</div>
-                  <div className="text-xs text-gray-400 font-medium">{t('battleCard.votes')}</div>
+                  {battle.is_archived && (
+                    <>
+                      <div className="text-2xl font-extrabold text-gray-300">{battle.votes_b || 0}</div>
+                      <div className="text-xs text-gray-400 font-medium">{t('battleCard.votes')}</div>
+                    </>
+                  )}
                   {battle.is_archived && (
                     <RatingChangeDisplay 
                       ratingChange={battle.player2_rating_change}
@@ -172,48 +156,34 @@ export const SimpleBattleCard: React.FC<SimpleBattleCardProps> = ({ battle }) =>
                 </div>
               </div>
 
-              <div className="mb-6">
-                <div className="h-2 bg-gray-800 rounded-full overflow-hidden shadow-inner">
-                  <div className="h-full flex">
-                    <div className="transition-all duration-1000 ease-out" style={{ width: `${percentageA}%`, background: `linear-gradient(90deg, ${colorA}, ${colorA}80)` }}/>
-                    <div className="transition-all duration-1000 ease-out" style={{ width: `${100-percentageA}%`, background: `linear-gradient(90deg, ${colorB}80, ${colorB})` }}/>
+              {battle.is_archived && (
+                <div className="mb-6">
+                  <div className="h-2 bg-gray-800 rounded-full overflow-hidden shadow-inner">
+                    <div className="h-full flex">
+                      <div className="transition-all duration-1000 ease-out" style={{ width: `${percentageA}%`, background: `linear-gradient(90deg, ${colorA}, ${colorA}80)` }}/>
+                      <div className="transition-all duration-1000 ease-out" style={{ width: `${100-percentageA}%`, background: `linear-gradient(90deg, ${colorB}80, ${colorB})` }}/>
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
 
-              <div className={cn("flex justify-center", battle.is_archived ? "gap-3" : "")}>
-                <VoteButton onClick={handleActionClick} disabled={!battle.is_archived && isExpired} className="max-w-xs">
-                  <div className="flex items-center gap-2">
-                    {battle.is_archived ? <Video className="h-4 w-4" /> : <Vote className="h-4 w-4" />}
-                    {battle.is_archived ? t('battleCard.watchReplay') : isExpired ? t('battleCard.votingEnded') : t('battleCard.voteNow')}
-                  </div>
-                </VoteButton>
-                
-                {battle.is_archived && (
+              {battle.is_archived && (
+                <div className="flex justify-center">
                   <VoteButton onClick={handleCommentsClick} className="max-w-xs bg-gray-700 hover:bg-gray-600 border-gray-800">
                     <div className="flex items-center gap-2">
                       <MessageSquare className="h-4 w-4" />
                       {t('battleCard.viewComments')}
                     </div>
                   </VoteButton>
-                )}
-              </div>
-
-              {error && (
-                <div className="mt-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
-                  <div className="text-sm text-red-400">{error}</div>
                 </div>
               )}
+
+
             </div>
           </div>
         </div>
       </div>
-      <AuthModal
-        isOpen={isAuthModalOpen}
-        onClose={() => setIsAuthModalOpen(false)}
-        initialMode={authModalMode}
-        setMode={setAuthModalMode}
-      />
+
       <BattleCommentsModal
         isOpen={isCommentsModalOpen}
         onClose={() => setIsCommentsModalOpen(false)}

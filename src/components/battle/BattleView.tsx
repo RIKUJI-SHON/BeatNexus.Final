@@ -235,6 +235,11 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
               <Timer className="h-4 w-4 text-cyan-400" />
               <span className="font-medium">{getTimeRemaining(battle.end_voting_at)}</span>
             </div>
+            {/* Total votes always visible */}
+            <div className="flex items-center gap-2 bg-gray-800/50 px-4 py-2 rounded-full backdrop-blur-sm">
+              <Users className="h-4 w-4 text-green-400" />
+              <span className="font-medium">{totalVotes} votes</span>
+            </div>
           </div>
         </div>
 
@@ -306,15 +311,21 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                         <div className="text-white font-bold text-sm truncate max-w-[120px] drop-shadow-lg">
                           {battle.contestant_a?.username || 'Player A'}
                         </div>
-                        <div className="flex items-center gap-2">
-                          <div 
-                            className="text-xl font-bold drop-shadow-lg"
-                            style={{ color: playerColorA }}
-                          >
-                            {votesA}
+                        {(hasVoted || isArchived) ? (
+                          <div className="flex items-center gap-2">
+                            <div 
+                              className="text-xl font-bold drop-shadow-lg"
+                              style={{ color: playerColorA }}
+                            >
+                              {votesA}
+                            </div>
+                            <span className="text-xs text-gray-300 drop-shadow-lg">{t('battleCard.votes')}</span>
                           </div>
-                          <span className="text-xs text-gray-300 drop-shadow-lg">{t('battleCard.votes')}</span>
-                        </div>
+                        ) : (
+                          <div className="text-xs text-gray-400 drop-shadow-lg">
+                            {t('battleView.voteToSeeResults')}
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -334,7 +345,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
               <div className="flex items-center justify-center lg:px-6">
                 <div className="flex flex-col items-center gap-4">
                   <VSIcon className="w-12 h-12 md:w-16 md:h-16" />
-                  <div className="text-center bg-gray-800/50 px-4 py-2 rounded-xl backdrop-blur-sm border border-gray-600/30">
+                                    <div className="text-center bg-gray-800/50 px-4 py-2 rounded-xl backdrop-blur-sm border border-gray-600/30">
                     <div className="flex items-center gap-2 text-gray-400 mb-1">
                       <Users className="h-4 w-4" />
                       <span className="text-sm font-medium">Total Votes</span>
@@ -401,15 +412,21 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                         <div className="text-white font-bold text-sm truncate max-w-[120px] drop-shadow-lg">
                           {battle.contestant_b?.username || 'Player B'}
                         </div>
-                        <div className="flex items-center gap-2">
-                          <div 
-                            className="text-xl font-bold drop-shadow-lg"
-                            style={{ color: playerColorB }}
-                          >
-                            {votesB}
+                        {(hasVoted || isArchived) ? (
+                          <div className="flex items-center gap-2">
+                            <div 
+                              className="text-xl font-bold drop-shadow-lg"
+                              style={{ color: playerColorB }}
+                            >
+                              {votesB}
+                            </div>
+                            <span className="text-xs text-gray-300 drop-shadow-lg">{t('battleCard.votes')}</span>
                           </div>
-                          <span className="text-xs text-gray-300 drop-shadow-lg">{t('battleCard.votes')}</span>
-                        </div>
+                        ) : (
+                          <div className="text-xs text-gray-400 drop-shadow-lg">
+                            {t('battleView.voteToSeeResults')}
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -426,57 +443,59 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
               </div>
             </div>
             
-            {/* Vote Distribution Bar */}
-            <div className="max-w-2xl mx-auto">
-              <div className="flex justify-between text-sm text-gray-400 mb-3">
-                <div className="flex items-center gap-2">
-                  <div 
-                    className="w-3 h-3 rounded-full"
-                    style={{ backgroundColor: playerColorA }}
-                  ></div>
-                  <span className="font-medium">{battle.contestant_a?.username || 'Player A'}</span>
-                  <span className="font-bold">{percentageA.toFixed(1)}%</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="font-bold">{(100 - percentageA).toFixed(1)}%</span>
-                  <span className="font-medium">{battle.contestant_b?.username || 'Player B'}</span>
-                  <div 
-                    className="w-3 h-3 rounded-full"
-                    style={{ backgroundColor: playerColorB }}
-                  ></div>
-                </div>
-              </div>
-              <div className="h-4 bg-gray-800 rounded-full overflow-hidden shadow-inner border border-gray-700">
-                <div className="h-full flex">
-                  <div 
-                    className="transition-all duration-1000 ease-out relative"
-                    style={{ 
-                      width: `${percentageA}%`, 
-                      background: `linear-gradient(90deg, ${playerColorA}, ${playerColorA}80)` 
-                    }}
-                  >
-                    {percentageA > 15 && (
-                      <div className="absolute right-2 top-1/2 transform -translate-y-1/2 text-white text-xs font-bold">
-                        {votesA}
-                      </div>
-                    )}
+            {/* Vote Distribution Bar - Only show if voted or archived */}
+            {(hasVoted || isArchived) && (
+              <div className="max-w-2xl mx-auto">
+                <div className="flex justify-between text-sm text-gray-400 mb-3">
+                  <div className="flex items-center gap-2">
+                    <div 
+                      className="w-3 h-3 rounded-full"
+                      style={{ backgroundColor: playerColorA }}
+                    ></div>
+                    <span className="font-medium">{battle.contestant_a?.username || 'Player A'}</span>
+                    <span className="font-bold">{percentageA.toFixed(1)}%</span>
                   </div>
-                  <div 
-                    className="transition-all duration-1000 ease-out relative"
-                    style={{ 
-                      width: `${100 - percentageA}%`, 
-                      background: `linear-gradient(90deg, ${playerColorB}80, ${playerColorB})` 
-                    }}
-                  >
-                    {(100 - percentageA) > 15 && (
-                      <div className="absolute left-2 top-1/2 transform -translate-y-1/2 text-white text-xs font-bold">
-                        {votesB}
-                      </div>
-                    )}
+                  <div className="flex items-center gap-2">
+                    <span className="font-bold">{(100 - percentageA).toFixed(1)}%</span>
+                    <span className="font-medium">{battle.contestant_b?.username || 'Player B'}</span>
+                    <div 
+                      className="w-3 h-3 rounded-full"
+                      style={{ backgroundColor: playerColorB }}
+                    ></div>
                   </div>
                 </div>
+                <div className="h-4 bg-gray-800 rounded-full overflow-hidden shadow-inner border border-gray-700">
+                  <div className="h-full flex">
+                    <div 
+                      className="transition-all duration-1000 ease-out relative"
+                      style={{ 
+                        width: `${percentageA}%`, 
+                        background: `linear-gradient(90deg, ${playerColorA}, ${playerColorA}80)` 
+                      }}
+                    >
+                      {percentageA > 15 && (
+                        <div className="absolute right-2 top-1/2 transform -translate-y-1/2 text-white text-xs font-bold">
+                          {votesA}
+                        </div>
+                      )}
+                    </div>
+                    <div 
+                      className="transition-all duration-1000 ease-out relative"
+                      style={{ 
+                        width: `${100 - percentageA}%`, 
+                        background: `linear-gradient(90deg, ${playerColorB}80, ${playerColorB})` 
+                      }}
+                    >
+                      {(100 - percentageA) > 15 && (
+                        <div className="absolute left-2 top-1/2 transform -translate-y-1/2 text-white text-xs font-bold">
+                          {votesB}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
       </div>
@@ -938,59 +957,78 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
             <h3 className="text-xl font-bold text-white">
               {t('battleView.comments')}
             </h3>
-            <div className="text-sm text-gray-400">
-              ({comments.length})
-            </div>
+            {(hasVoted || isArchived) && (
+              <div className="text-sm text-gray-400">
+                ({comments.length})
+              </div>
+            )}
           </div>
 
-          {/* Comments List */}
-          {isLoadingComments ? (
-            <div className="flex items-center justify-center py-8">
-              <div className="w-6 h-6 border-2 border-cyan-500 border-t-transparent rounded-full animate-spin"></div>
-              <span className="ml-2 text-gray-400">{t('battleView.loading')}</span>
-            </div>
-          ) : comments.length > 0 ? (
-            <div className="space-y-4">
-              {comments.map((comment) => (
-                <div key={comment.id} className="flex items-start gap-4 p-4 bg-gray-800 rounded-xl border border-gray-700/50">
-                  <div className="relative">
-                    <img
-                      src={comment.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${comment.user_id}`}
-                      alt={comment.username}
-                      className="w-10 h-10 rounded-full border-2 border-gray-600"
-                    />
-                    <div className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center ${
-                      comment.vote === 'A' ? 'bg-gradient-to-r from-cyan-500 to-cyan-400' : 'bg-gradient-to-r from-pink-500 to-pink-400'
-                    }`}>
-                      <span className="text-white font-bold text-xs">{comment.vote}</span>
-                    </div>
-                  </div>
-                  
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="font-semibold text-white">{comment.username}</span>
-                      <span className={`text-xs px-2 py-1 rounded-full ${
-                        comment.vote === 'A' ? 'bg-cyan-500/20 text-cyan-300' : 'bg-pink-500/20 text-pink-300'
-                      }`}>
-                        {comment.vote === 'A' ? battle.contestant_a?.username : battle.contestant_b?.username}に投票
-                      </span>
-                      <span className="text-xs text-gray-500">
-                        {new Date(comment.created_at).toLocaleDateString('ja-JP')}
-                      </span>
-                    </div>
-                    {comment.comment ? (
-                      <p className="text-gray-300 text-sm">{comment.comment}</p>
-                    ) : (
-                      <p className="text-gray-500 text-sm italic">投票のみ</p>
-                    )}
-                  </div>
+          {/* Comments or Vote prompt */}
+          {(hasVoted || isArchived) ? (
+            <>
+              {/* Comments List */}
+              {isLoadingComments ? (
+                <div className="flex items-center justify-center py-8">
+                  <div className="w-6 h-6 border-2 border-cyan-500 border-t-transparent rounded-full animate-spin"></div>
+                  <span className="ml-2 text-gray-400">{t('battleView.loading')}</span>
                 </div>
-              ))}
-            </div>
+              ) : comments.length > 0 ? (
+                <div className="space-y-4">
+                  {comments.map((comment) => (
+                    <div key={comment.id} className="flex items-start gap-4 p-4 bg-gray-800 rounded-xl border border-gray-700/50">
+                      <div className="relative">
+                        <img
+                          src={comment.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${comment.user_id}`}
+                          alt={comment.username}
+                          className="w-10 h-10 rounded-full border-2 border-gray-600"
+                        />
+                        <div className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center ${
+                          comment.vote === 'A' ? 'bg-gradient-to-r from-cyan-500 to-cyan-400' : 'bg-gradient-to-r from-pink-500 to-pink-400'
+                        }`}>
+                          <span className="text-white font-bold text-xs">{comment.vote}</span>
+                        </div>
+                      </div>
+                      
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="font-semibold text-white">{comment.username}</span>
+                          <span className={`text-xs px-2 py-1 rounded-full ${
+                            comment.vote === 'A' ? 'bg-cyan-500/20 text-cyan-300' : 'bg-pink-500/20 text-pink-300'
+                          }`}>
+                            {comment.vote === 'A' ? battle.contestant_a?.username : battle.contestant_b?.username}に投票
+                          </span>
+                          <span className="text-xs text-gray-500">
+                            {new Date(comment.created_at).toLocaleDateString('ja-JP')}
+                          </span>
+                        </div>
+                        {comment.comment ? (
+                          <p className="text-gray-300 text-sm">{comment.comment}</p>
+                        ) : (
+                          <p className="text-gray-500 text-sm italic">投票のみ</p>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <MessageCircle className="h-12 w-12 text-gray-500 mx-auto mb-3" />
+                  <p className="text-gray-400">{t('battleView.noComments')}</p>
+                </div>
+              )}
+            </>
           ) : (
-            <div className="text-center py-8">
-              <MessageCircle className="h-12 w-12 text-gray-500 mx-auto mb-3" />
-              <p className="text-gray-400">{t('battleView.noComments')}</p>
+            <div className="text-center py-12">
+              <div className="w-16 h-16 bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
+                <ThumbsUp className="h-8 w-8 text-gray-500" />
+              </div>
+              <h4 className="text-lg font-bold text-white mb-2">
+                {t('battleView.voteToSeeComments')}
+              </h4>
+              <p className="text-gray-400">
+                {t('battleView.voteToSeeCommentsDesc')}
+              </p>
             </div>
           )}
         </div>

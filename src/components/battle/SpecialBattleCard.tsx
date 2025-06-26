@@ -2,11 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Battle } from '../../types';
-import { AuthModal } from '../auth/AuthModal';
 import { BattleCommentsModal } from '../ui/BattleCommentsModal';
-import { useRequireAuth } from '../../hooks/useRequireAuth';
-import { useAuthStore } from '../../store/authStore';
-import { Clock, Users, Vote, Crown, Video, MessageSquare } from 'lucide-react';
+import { Clock, Users, Crown, MessageSquare, ThumbsUp } from 'lucide-react';
 import { VSIcon } from '../ui/VSIcon';
 import { RatingChangeDisplay } from '../ui/RatingChangeDisplay';
 import { format } from 'date-fns';
@@ -22,20 +19,10 @@ interface SpecialBattleCardProps {
 
 export const SpecialBattleCard: React.FC<SpecialBattleCardProps> = ({ battle }) => {
   const { t, i18n } = useTranslation();
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isCommentsModalOpen, setIsCommentsModalOpen] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [timeRemaining, setTimeRemaining] = useState<string>('');
   const [isExpired, setIsExpired] = useState(false);
   const navigate = useNavigate();
-  const { user } = useAuthStore();
-  const [authModalMode, setAuthModalMode] = useState<'login' | 'signup'>('login');
-  
-  const requireAuth = useRequireAuth({
-    showAuthModal: true,
-    setAuthModalOpen: setIsAuthModalOpen,
-    setAuthModalMode: setAuthModalMode,
-  });
 
   const updateTimeRemaining = () => {
     if (battle.is_archived) {
@@ -80,17 +67,7 @@ export const SpecialBattleCard: React.FC<SpecialBattleCardProps> = ({ battle }) 
   const colorA = '#3B82F6'; // Blue for Player A
   const colorB = '#EF4444'; // Red for Player B
 
-  const handleActionClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setError(null);
-    const destination = battle.is_archived ? `/battle-replay/${battle.id}` : `/battle/${battle.id}`;
-    if (user || battle.is_archived) {
-      navigate(destination);
-    } else {
-      requireAuth(() => navigate(destination));
-    }
-  };
+
 
   const handleCardClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -135,10 +112,14 @@ export const SpecialBattleCard: React.FC<SpecialBattleCardProps> = ({ battle }) 
         </div>
       </div>
       <h3 className="text-lg font-bold text-white mb-2 truncate">{player?.username || t('battleCard.unknownUser')}</h3>
-      <div className={cn("text-2xl font-extrabold transition-all duration-300", isWinner ? "text-emerald-400 scale-110" : "text-gray-300")}>
-        {votes || 0}
-      </div>
-      <div className="text-xs text-gray-400 font-medium">{t('battleCard.votes')}</div>
+      {battle.is_archived && (
+        <>
+          <div className={cn("text-2xl font-extrabold transition-all duration-300", isWinner ? "text-emerald-400 scale-110" : "text-gray-300")}>
+            {votes || 0}
+          </div>
+          <div className="text-xs text-gray-400 font-medium">{t('battleCard.votes')}</div>
+        </>
+      )}
       {battle.is_archived && (
         <RatingChangeDisplay 
           ratingChange={ratingChange}
@@ -193,43 +174,34 @@ export const SpecialBattleCard: React.FC<SpecialBattleCardProps> = ({ battle }) 
                 />
               </div>
 
-              <div className="mb-6">
-                <div className="h-2 bg-gray-800/50 rounded-full overflow-hidden shadow-inner">
-                  <div className="h-full flex">
-                    <div className="transition-all duration-1000 ease-out" style={{ width: `${percentageA}%`, background: `linear-gradient(90deg, ${colorA}cc, ${colorA}80)` }}/>
-                    <div className="transition-all duration-1000 ease-out" style={{ width: `${100-percentageA}%`, background: `linear-gradient(90deg, ${colorB}80, ${colorB}cc)` }}/>
+              {battle.is_archived && (
+                <div className="mb-6">
+                  <div className="h-2 bg-gray-800/50 rounded-full overflow-hidden shadow-inner">
+                    <div className="h-full flex">
+                      <div className="transition-all duration-1000 ease-out" style={{ width: `${percentageA}%`, background: `linear-gradient(90deg, ${colorA}cc, ${colorA}80)` }}/>
+                      <div className="transition-all duration-1000 ease-out" style={{ width: `${100-percentageA}%`, background: `linear-gradient(90deg, ${colorB}80, ${colorB}cc)` }}/>
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
 
-              <div className={cn("flex justify-center", battle.is_archived ? "gap-3" : "")}>
-                <VoteButton onClick={handleActionClick} disabled={!battle.is_archived && isExpired} className="max-w-xs">
-                  <div className="flex items-center gap-2">
-                    {battle.is_archived ? <Video className="h-4 w-4" /> : <Vote className="h-4 w-4" />}
-                    {battle.is_archived ? t('battleCard.watchReplay') : isExpired ? t('battleCard.votingEnded') : t('battleCard.voteNow')}
-                  </div>
-                </VoteButton>
-                
-                {battle.is_archived && (
+              {battle.is_archived && (
+                <div className="flex justify-center">
                   <VoteButton onClick={handleCommentsClick} className="max-w-xs bg-gray-700 hover:bg-gray-600 border-gray-800">
                     <div className="flex items-center gap-2">
                       <MessageSquare className="h-4 w-4" />
                       {t('battleCard.viewComments')}
                     </div>
                   </VoteButton>
-                )}
-              </div>
-
-              {error && (
-                <div className="mt-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
-                  <div className="text-sm text-red-400">{error}</div>
                 </div>
               )}
+
+
             </div>
           </div>
         </div>
       </div>
-      <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} initialMode={authModalMode} setMode={setAuthModalMode} />
+
       <BattleCommentsModal
         isOpen={isCommentsModalOpen}
         onClose={() => setIsCommentsModalOpen(false)}
