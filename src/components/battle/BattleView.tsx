@@ -9,6 +9,7 @@ import { useAuthStore } from '../../store/authStore';
 import { Battle } from '../../types';
 import { useTranslation } from 'react-i18next';
 import { VSIcon } from '../ui/VSIcon';
+import { VotingTips } from '../ui/VotingTips';
 import { trackBeatNexusEvents } from '../../utils/analytics';
 import { getCurrentRank } from '../../lib/rankUtils';
 import { supabase } from '../../lib/supabase';
@@ -758,17 +759,12 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
               {/* Main Console Base - Compact Horizontal */}
               <div className="relative bg-gray-900 rounded-2xl px-8 py-5 border-3 border-gray-600 shadow-xl max-w-2xl">
               
-              {/* Top Panel with LED Indicators */}
-              <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-gray-700 to-gray-800 px-6 py-1.5 rounded-full border border-gray-500 flex items-center gap-3">
-                <div className="flex items-center gap-1.5">
-                  <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse shadow-md shadow-green-500/50"></div>
-                  <span className="text-green-400 text-xs font-bold">ACTIVE</span>
-                </div>
-                <div className="w-px h-3 bg-gray-500"></div>
-                <div className="flex items-center gap-1.5">
-                  <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse shadow-md shadow-blue-500/50 delay-500"></div>
-                  <span className="text-blue-400 text-xs font-bold">VOTING</span>
-                </div>
+              {/* Top Panel with Voting Tips */}
+              <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-gray-700 to-gray-800 px-4 py-1.5 rounded-full border border-gray-500">
+                <VotingTips 
+                  playerAName={battle.contestant_a?.username || 'Player A'}
+                  playerBName={battle.contestant_b?.username || 'Player B'}
+                />
               </div>
 
               {/* Console Surface - Centered Buttons Only */}

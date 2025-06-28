@@ -155,7 +155,20 @@
     "participantCannotVote": "Participants cannot vote",
     "voteSuccess": "Vote submitted successfully",
     "voteError": "Failed to submit vote",
-    "cancelVote": "Cancel vote"
+    "cancelVote": "Cancel vote",
+    "votingGuide": "Voting Guide",
+    "evaluationCriteria": "Evaluation Criteria",
+    "criteria": {
+      "technicality": "Technicality",
+      "technicalityDesc": "Can complex patterns be controlled as clear, accurate timing and uninterrupted flow?",
+      "musicality": "Musicality", 
+      "musicalityDesc": "Do beats, melodies, and composition come together as one song with storytelling and emotional ups and downs that captivate the audience?",
+      "originality": "Originality",
+      "originalityDesc": "Does it show freshness and innovation with novel sounds and ideas without relying on imitation of others?",
+      "showmanship": "Showmanship",
+      "showmanshipDesc": "Can facial expressions, movements, and stage control captivate the audience and maximize the appeal of technique and musicality?"
+    },
+    "tipsNote": "Use these criteria as reference for better judgment"
   },
   "battleCard": {
     "votingEndsIn": "{{days}}d {{hours}}h left",

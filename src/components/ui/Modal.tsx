@@ -1,4 +1,5 @@
 import React from 'react';
+import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 
 interface ModalProps {
@@ -7,6 +8,8 @@ interface ModalProps {
   title?: string;
   children: React.ReactNode;
   size?: 'sm' | 'md' | 'lg' | 'xl';
+  topLayer?: boolean; // 最上層表示オプション
+  backgroundOpacity?: 'light' | 'normal' | 'heavy'; // 背景透明度オプション
 }
 
 export const Modal: React.FC<ModalProps> = ({
@@ -15,6 +18,8 @@ export const Modal: React.FC<ModalProps> = ({
   title,
   children,
   size = 'md',
+  topLayer = false,
+  backgroundOpacity = 'normal',
 }) => {
   if (!isOpen) return null;
 
@@ -25,9 +30,18 @@ export const Modal: React.FC<ModalProps> = ({
     xl: 'max-w-xl',
   };
 
-  return (
+  const backgroundClasses: Record<typeof backgroundOpacity, string> = {
+    light: 'bg-black/50',   // 動画が見える程度の軽い背景
+    normal: 'bg-black/80',  // 通常の背景
+    heavy: 'bg-black/95',   // 濃い背景
+  };
+
+  // 最上層表示の場合はz-indexを最大値に
+  const zIndexClass = topLayer ? 'z-[9999]' : 'z-50';
+
+  const modalContent = (
     <div 
-      className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 transition-opacity duration-300 ease-in-out"
+      className={`fixed inset-0 ${backgroundClasses[backgroundOpacity]} flex items-center justify-center ${zIndexClass} p-4 transition-opacity duration-300 ease-in-out`}
       onClick={onClose} // Overlay click to close
     >
       <div 
@@ -49,4 +63,12 @@ export const Modal: React.FC<ModalProps> = ({
       </div>
     </div>
   );
+
+  // Portal を使用して document.body に直接レンダリング
+  // SSR対応：documentが存在しない場合は通常レンダリング
+  if (typeof document === 'undefined') {
+    return modalContent;
+  }
+  
+  return createPortal(modalContent, document.body);
 }; 

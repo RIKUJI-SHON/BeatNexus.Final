@@ -171,7 +171,20 @@
     "participantCannotVote": "参加者は投票できません",
     "voteSuccess": "投票が完了しました",
     "voteError": "投票に失敗しました",
-    "cancelVote": "投票を取り消す"
+    "cancelVote": "投票を取り消す",
+    "votingGuide": "投票ガイド",
+    "evaluationCriteria": "評価項目",
+    "criteria": {
+      "technicality": "技術性",
+      "technicalityDesc": "複雑なパターンを明瞭かつ正確なタイミングで、途切れないフローとして制御できているか",
+      "musicality": "音楽性", 
+      "musicalityDesc": "ビート・メロディ・構成が一曲としてまとまり、物語性や感情の起伏を持って聴衆を惹きつけるか",
+      "originality": "独創性",
+      "originalityDesc": "他者の模倣に頼らず、斬新なサウンドやアイデアで新鮮さと革新性を示しているか",
+      "showmanship": "パフォーマンス性",
+      "showmanshipDesc": "表情・動き・舞台掌握で観客を魅了し、技術や音楽性の魅力を最大限に引き出せているか"
+    },
+    "tipsNote": "これらの項目を参考に、より良い判断を行いましょう"
   },
   "battleCard": {
     "votingEndsIn": "残り{{days}}日 {{hours}}時間",
