@@ -1541,7 +1541,16 @@
     "voteButton": "Vote",
     "voting": "Voting...",
     "characterCount": "{{count}}/500 characters",
-    "close": "Close"
+    "close": "Close",
+    "templateTitle": "Choose a Template",
+    "templates": [
+      "The ___ part was amazing",
+      "The ___ technique was impressive",
+      "Great ___ and rhythm",
+      "The ___ expression was rich",
+      "The ___ creativity was outstanding",
+      "The ___ originality stood out"
+    ]
   },
   "community": {
     "title": "Communities",

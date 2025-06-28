@@ -51,13 +51,22 @@ export const VoteCommentModal: React.FC<VoteCommentModalProps> = ({
     }
   };
 
+  const handleTemplateSelect = (template: string) => {
+    setComment(template);
+    // テンプレート選択時にエラーを非表示
+    if (showError) {
+      setShowError(false);
+    }
+  };
+
   if (!isOpen) return null;
 
   const isCommentEmpty = !comment.trim();
+  const templates = t('voteCommentModal.templates', { returnObjects: true }) as string[];
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl border border-gray-700 shadow-2xl max-w-md w-full max-h-[90vh] overflow-hidden">
+      <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl border border-gray-700 shadow-2xl max-w-md md:max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-700">
           <div className="flex items-center gap-3">
@@ -88,6 +97,25 @@ export const VoteCommentModal: React.FC<VoteCommentModalProps> = ({
             <p className="text-gray-400 text-xs">
               {t('voteCommentModal.description')}
             </p>
+          </div>
+
+          {/* Template Section */}
+          <div className="mb-4">
+            <h3 className="text-sm font-medium text-gray-300 mb-3">
+              {t('voteCommentModal.templateTitle')}
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+              {templates.map((template, index) => (
+                <button
+                  key={index}
+                  onClick={() => handleTemplateSelect(template)}
+                  disabled={isLoading}
+                  className="text-left p-3 rounded-lg bg-gray-800 hover:bg-gray-700 border border-gray-600 hover:border-gray-500 transition-all text-gray-300 hover:text-white text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {template}
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* Comment Input */}
