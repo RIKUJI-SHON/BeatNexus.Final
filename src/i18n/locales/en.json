@@ -168,7 +168,10 @@
       "showmanship": "Showmanship",
       "showmanshipDesc": "Can facial expressions, movements, and stage control captivate the audience and maximize the appeal of technique and musicality?"
     },
-    "tipsNote": "Use these criteria as reference for better judgment"
+    "tipsNote": "Use these criteria as reference for better judgment",
+    "notSet": "Not Set",
+    "totalScores": "Total Scores",
+    "unsetItems": "{{count}} items not set"
   },
   "battleCard": {
     "votingEndsIn": "{{days}}d {{hours}}h left",

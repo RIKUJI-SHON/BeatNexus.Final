@@ -184,7 +184,10 @@
       "showmanship": "パフォーマンス性",
       "showmanshipDesc": "表情・動き・舞台掌握で観客を魅了し、技術や音楽性の魅力を最大限に引き出せているか"
     },
-    "tipsNote": "これらの項目を参考に、より良い判断を行いましょう"
+    "tipsNote": "これらの項目を参考に、より良い判断を行いましょう",
+    "notSet": "未設定",
+    "totalScores": "合計点数",
+    "unsetItems": "{{count}}項目が未設定です"
   },
   "battleCard": {
     "votingEndsIn": "残り{{days}}日 {{hours}}時間",
