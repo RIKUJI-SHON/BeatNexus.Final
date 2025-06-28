@@ -303,78 +303,67 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
           <div className="relative p-8">
 
 
-            {/* Player Names - Above Videos */}
-            <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto_1fr] gap-6 items-center mb-4">
-              {/* Player A Name */}
-              <div className="flex items-center gap-3">
-                <div 
-                  className="w-10 h-10 rounded-full p-1 flex-shrink-0"
-                  style={{ background: `linear-gradient(135deg, ${playerColorA}, ${playerColorA}80)` }}
-                >
-                  <img
-                    src={battle.contestant_a?.avatar_url || getDefaultAvatarUrl(battle.player1_user_id)}
-                    alt={battle.contestant_a?.username}
-                    className="w-full h-full rounded-full border border-gray-900 object-cover"
-                  />
-                </div>
-                <div className="flex flex-col">
-                  <div className="text-white font-bold text-xl">
-                    {battle.contestant_a?.username || 'Player A'}
-                  </div>
-                  <div className="flex items-center gap-2">
-                    {playerRatings.playerA.loading ? (
-                      <div className="text-sm text-gray-400">読み込み中...</div>
-                    ) : (
-                      <div 
-                        className="text-sm font-medium"
-                        style={{ color: getCurrentRank(playerRatings.playerA.rating).iconColor }}
-                      >
-                        {playerRatings.playerA.rating}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              {/* Center Space */}
-              <div></div>
-
-              {/* Player B Name */}
-              <div className="flex items-center gap-3 lg:justify-end">
-                <div className="flex flex-col lg:items-end">
-                  <div className="text-white font-bold text-xl">
-                    {battle.contestant_b?.username || 'Player B'}
-                  </div>
-                  <div className="flex items-center gap-2 lg:flex-row-reverse">
-                    {playerRatings.playerB.loading ? (
-                      <div className="text-sm text-gray-400">読み込み中...</div>
-                    ) : (
-                      <div 
-                        className="text-sm font-medium"
-                        style={{ color: getCurrentRank(playerRatings.playerB.rating).iconColor }}
-                      >
-                        {playerRatings.playerB.rating}
-                      </div>
-                    )}
-                  </div>
-                </div>
-                <div 
-                  className="w-10 h-10 rounded-full p-1 flex-shrink-0"
-                  style={{ background: `linear-gradient(135deg, ${playerColorB}, ${playerColorB}80)` }}
-                >
-                  <img
-                    src={battle.contestant_b?.avatar_url || getDefaultAvatarUrl(battle.player2_user_id)}
-                    alt={battle.contestant_b?.username}
-                    className="w-full h-full rounded-full border border-gray-900 object-cover"
-                  />
-                </div>
-              </div>
-            </div>
-
             {/* Battle Arena */}
             <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto_1fr] gap-6 items-center mb-8">
-              {/* Player A Video Preview */}
+              {/* Player A Section */}
               <div className="relative">
+                {/* Player A Name - Above Video on Mobile, Separate Position on Desktop */}
+                <div className="flex items-center gap-3 mb-4 lg:hidden">
+                  <div 
+                    className="w-10 h-10 rounded-full p-1 flex-shrink-0"
+                    style={{ background: `linear-gradient(135deg, ${playerColorA}, ${playerColorA}80)` }}
+                  >
+                    <img
+                      src={battle.contestant_a?.avatar_url || getDefaultAvatarUrl(battle.player1_user_id)}
+                      alt={battle.contestant_a?.username}
+                      className="w-full h-full rounded-full border border-gray-900 object-cover"
+                    />
+                  </div>
+                  <div className="flex flex-col">
+                    <div className="text-white font-bold text-xl">
+                      {battle.contestant_a?.username || 'Player A'}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {playerRatings.playerA.loading ? (
+                        <div className="text-sm text-gray-400">読み込み中...</div>
+                      ) : (
+                        <div className="text-sm font-medium text-white">
+                          {playerRatings.playerA.rating}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Player A Name - Desktop Layout */}
+                <div className="hidden lg:flex items-center gap-3 mb-4">
+                  <div 
+                    className="w-10 h-10 rounded-full p-1 flex-shrink-0"
+                    style={{ background: `linear-gradient(135deg, ${playerColorA}, ${playerColorA}80)` }}
+                  >
+                    <img
+                      src={battle.contestant_a?.avatar_url || getDefaultAvatarUrl(battle.player1_user_id)}
+                      alt={battle.contestant_a?.username}
+                      className="w-full h-full rounded-full border border-gray-900 object-cover"
+                    />
+                  </div>
+                  <div className="flex flex-col">
+                    <div className="text-white font-bold text-xl">
+                      {battle.contestant_a?.username || 'Player A'}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {playerRatings.playerA.loading ? (
+                        <div className="text-sm text-gray-400">読み込み中...</div>
+                      ) : (
+                        <div className="text-sm font-medium text-white">
+                          {playerRatings.playerA.rating}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Player A Video Preview */}
                 <div className="aspect-video bg-black rounded-xl overflow-hidden relative shadow-2xl border-2" style={{ borderColor: playerColorA }}>
                   {battle.video_url_a ? (
                     <video
@@ -429,8 +418,37 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                 </div>
               </div>
 
-              {/* Player B Video Preview */}
+              {/* Player B Section */}
               <div className="relative">
+                {/* Player B Name - Desktop Layout (Above Video) */}
+                <div className="hidden lg:flex items-center gap-3 mb-4 lg:justify-end">
+                  <div className="flex flex-col lg:items-end">
+                    <div className="text-white font-bold text-xl">
+                      {battle.contestant_b?.username || 'Player B'}
+                    </div>
+                    <div className="flex items-center gap-2 lg:flex-row-reverse">
+                      {playerRatings.playerB.loading ? (
+                        <div className="text-sm text-gray-400">読み込み中...</div>
+                      ) : (
+                        <div className="text-sm font-medium text-white">
+                          {playerRatings.playerB.rating}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div 
+                    className="w-10 h-10 rounded-full p-1 flex-shrink-0"
+                    style={{ background: `linear-gradient(135deg, ${playerColorB}, ${playerColorB}80)` }}
+                  >
+                    <img
+                      src={battle.contestant_b?.avatar_url || getDefaultAvatarUrl(battle.player2_user_id)}
+                      alt={battle.contestant_b?.username}
+                      className="w-full h-full rounded-full border border-gray-900 object-cover"
+                    />
+                  </div>
+                </div>
+
+                {/* Player B Video Preview */}
                 <div className="aspect-video bg-black rounded-xl overflow-hidden relative shadow-2xl border-2" style={{ borderColor: playerColorB }}>
                   {battle.video_url_b ? (
                     <video
@@ -475,6 +493,34 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                       </div>
                     </div>
                   )}
+                </div>
+
+                {/* Player B Name - Below Video on Mobile */}
+                <div className="flex items-center gap-3 mt-4 lg:hidden justify-end">
+                  <div className="flex flex-col items-end">
+                    <div className="text-white font-bold text-xl">
+                      {battle.contestant_b?.username || 'Player B'}
+                    </div>
+                    <div className="flex items-center gap-2 flex-row-reverse">
+                      {playerRatings.playerB.loading ? (
+                        <div className="text-sm text-gray-400">読み込み中...</div>
+                      ) : (
+                        <div className="text-sm font-medium text-white">
+                          {playerRatings.playerB.rating}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div 
+                    className="w-10 h-10 rounded-full p-1 flex-shrink-0"
+                    style={{ background: `linear-gradient(135deg, ${playerColorB}, ${playerColorB}80)` }}
+                  >
+                    <img
+                      src={battle.contestant_b?.avatar_url || getDefaultAvatarUrl(battle.player2_user_id)}
+                      alt={battle.contestant_b?.username}
+                      className="w-full h-full rounded-full border border-gray-900 object-cover"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
