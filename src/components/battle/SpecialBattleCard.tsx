@@ -164,7 +164,12 @@ export const SpecialBattleCard: React.FC<SpecialBattleCardProps> = ({ battle }) 
           <img src={player?.avatar_url || getDefaultAvatarUrl(userId)} alt={player?.username || t(defaultNameKey)} className="w-full h-full rounded-full object-cover border-2 border-gray-900"/>
         </div>
       </div>
-      <h3 className="text-xl font-bold text-white mb-2 truncate">{player?.username || t('battleCard.unknownUser')}</h3>
+      <h3 
+        className="text-xl font-bold text-white mb-2 truncate max-w-[120px] md:max-w-[140px] mx-auto" 
+        title={player?.username || t('battleCard.unknownUser')}
+      >
+        {player?.username || t('battleCard.unknownUser')}
+      </h3>
       {/* Player Rating Display */}
       <div className="mb-2 flex items-center justify-center">
         {ratingLoading ? (

@@ -160,7 +160,12 @@ export const SimpleBattleCard: React.FC<SimpleBattleCardProps> = ({ battle }) =>
                       <img src={battle.contestant_a?.avatar_url || getDefaultAvatarUrl(battle.player1_user_id)} alt={battle.contestant_a?.username || t('battleCard.contestantA')} className="w-full h-full rounded-full object-cover border-2 border-gray-900"/>
                     </div>
                   </div>
-                  <h3 className="text-xl font-bold text-white mb-2 truncate">{battle.contestant_a?.username || t('battleCard.unknownUser')}</h3>
+                  <h3 
+                    className="text-xl font-bold text-white mb-2 truncate max-w-[120px] md:max-w-[140px] mx-auto" 
+                    title={battle.contestant_a?.username || t('battleCard.unknownUser')}
+                  >
+                    {battle.contestant_a?.username || t('battleCard.unknownUser')}
+                  </h3>
                   {/* Player A Rating Display */}
                   <div className="mb-2 flex items-center justify-center">
                     {playerRatings.playerA.loading ? (
@@ -211,7 +216,12 @@ export const SimpleBattleCard: React.FC<SimpleBattleCardProps> = ({ battle }) =>
                       <img src={battle.contestant_b?.avatar_url || getDefaultAvatarUrl(battle.player2_user_id)} alt={battle.contestant_b?.username || t('battleCard.contestantB')} className="w-full h-full rounded-full object-cover border-2 border-gray-900"/>
                     </div>
                   </div>
-                  <h3 className="text-xl font-bold text-white mb-2 truncate">{battle.contestant_b?.username || t('battleCard.unknownUser')}</h3>
+                  <h3 
+                    className="text-xl font-bold text-white mb-2 truncate max-w-[120px] md:max-w-[140px] mx-auto" 
+                    title={battle.contestant_b?.username || t('battleCard.unknownUser')}
+                  >
+                    {battle.contestant_b?.username || t('battleCard.unknownUser')}
+                  </h3>
                   {/* Player B Rating Display */}
                   <div className="mb-2 flex items-center justify-center">
                     {playerRatings.playerB.loading ? (

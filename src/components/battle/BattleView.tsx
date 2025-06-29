@@ -272,10 +272,26 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
           
           {/* Main Battle Title with Player Names */}
           <div className="mb-6">
-            <h1 className="text-3xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-white to-pink-400 mb-4 drop-shadow-lg">
-              {battle.contestant_a?.username || 'Player A'}
-              <span className="text-gray-400 mx-4">VS</span>
-              {battle.contestant_b?.username || 'Player B'}
+            <h1 className="text-2xl md:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-white to-pink-400 mb-4 drop-shadow-lg">
+              <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2 md:gap-4">
+                <div className="text-right">
+                  <span 
+                    className="truncate max-w-full inline-block" 
+                    title={battle.contestant_a?.username || 'Player A'}
+                  >
+                    {battle.contestant_a?.username || 'Player A'}
+                  </span>
+                </div>
+                <span className="text-gray-400 flex-shrink-0 whitespace-nowrap">VS</span>
+                <div className="text-left">
+                  <span 
+                    className="truncate max-w-full inline-block" 
+                    title={battle.contestant_b?.username || 'Player B'}
+                  >
+                    {battle.contestant_b?.username || 'Player B'}
+                  </span>
+                </div>
+              </div>
             </h1>
           </div>
           
@@ -321,7 +337,10 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                     />
                   </div>
                   <div className="flex flex-col">
-                    <div className="text-white font-bold text-xl">
+                    <div 
+                      className="text-white font-bold text-xl truncate max-w-[140px] md:max-w-[180px]" 
+                      title={battle.contestant_a?.username || 'Player A'}
+                    >
                       {battle.contestant_a?.username || 'Player A'}
                     </div>
                     <div className="flex items-center gap-2">
@@ -349,7 +368,10 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                     />
                   </div>
                   <div className="flex flex-col">
-                    <div className="text-white font-bold text-xl">
+                    <div 
+                      className="text-white font-bold text-xl truncate max-w-[140px] md:max-w-[180px]" 
+                      title={battle.contestant_a?.username || 'Player A'}
+                    >
                       {battle.contestant_a?.username || 'Player A'}
                     </div>
                     <div className="flex items-center gap-2">
@@ -424,7 +446,10 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                 {/* Player B Name - Desktop Layout (Above Video) */}
                 <div className="hidden lg:flex items-center gap-3 mb-4 lg:justify-end">
                   <div className="flex flex-col lg:items-end">
-                    <div className="text-white font-bold text-xl">
+                    <div 
+                      className="text-white font-bold text-xl truncate max-w-[140px] md:max-w-[180px]" 
+                      title={battle.contestant_b?.username || 'Player B'}
+                    >
                       {battle.contestant_b?.username || 'Player B'}
                     </div>
                     <div className="flex items-center gap-2 lg:flex-row-reverse">
@@ -499,7 +524,10 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                 {/* Player B Name - Below Video on Mobile */}
                 <div className="flex items-center gap-3 mt-4 lg:hidden justify-end">
                   <div className="flex flex-col items-end">
-                    <div className="text-white font-bold text-xl">
+                    <div 
+                      className="text-white font-bold text-xl truncate max-w-[140px] md:max-w-[180px]" 
+                      title={battle.contestant_b?.username || 'Player B'}
+                    >
                       {battle.contestant_b?.username || 'Player B'}
                     </div>
                     <div className="flex items-center gap-2 flex-row-reverse">
@@ -530,19 +558,29 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
             {(hasVoted || isArchived) && (
               <div className="max-w-2xl mx-auto">
                 <div className="flex justify-between text-sm text-gray-400 mb-3">
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 min-w-0">
                     <div 
-                      className="w-3 h-3 rounded-full"
+                      className="w-3 h-3 rounded-full flex-shrink-0"
                       style={{ backgroundColor: playerColorA }}
                     ></div>
-                    <span className="font-medium">{battle.contestant_a?.username || 'Player A'}</span>
-                    <span className="font-bold">{percentageA.toFixed(1)}%</span>
+                    <span 
+                      className="font-medium truncate max-w-[100px] md:max-w-[130px]" 
+                      title={battle.contestant_a?.username || 'Player A'}
+                    >
+                      {battle.contestant_a?.username || 'Player A'}
+                    </span>
+                    <span className="font-bold flex-shrink-0">{percentageA.toFixed(1)}%</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="font-bold">{(100 - percentageA).toFixed(1)}%</span>
-                    <span className="font-medium">{battle.contestant_b?.username || 'Player B'}</span>
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="font-bold flex-shrink-0">{(100 - percentageA).toFixed(1)}%</span>
+                    <span 
+                      className="font-medium truncate max-w-[100px] md:max-w-[130px]" 
+                      title={battle.contestant_b?.username || 'Player B'}
+                    >
+                      {battle.contestant_b?.username || 'Player B'}
+                    </span>
                     <div 
-                      className="w-3 h-3 rounded-full"
+                      className="w-3 h-3 rounded-full flex-shrink-0"
                       style={{ backgroundColor: playerColorB }}
                     ></div>
                   </div>
@@ -624,7 +662,10 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                     </div>
                     
                     <div className="flex-1">
-                      <h3 className="text-2xl font-bold text-white mb-1">
+                      <h3 
+                        className="text-2xl font-bold text-white mb-1 truncate max-w-[180px] md:max-w-[220px]" 
+                        title={battle.contestant_a?.username || 'Contestant A'}
+                      >
                         {battle.contestant_a?.username || 'Contestant A'}
                       </h3>
                       <div className="flex items-center gap-3">
@@ -705,7 +746,10 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                     </div>
                     
                     <div className="flex-1">
-                      <h3 className="text-2xl font-bold text-white mb-1">
+                      <h3 
+                        className="text-2xl font-bold text-white mb-1 truncate max-w-[180px] md:max-w-[220px]" 
+                        title={battle.contestant_b?.username || 'Contestant B'}
+                      >
                         {battle.contestant_b?.username || 'Contestant B'}
                       </h3>
                       <div className="flex items-center gap-3">

@@ -107,7 +107,10 @@ export const TabbedRanking: React.FC<TabbedRankingProps> = ({
       />
       
       <div className="flex-1 min-w-0">
-        <div className="font-medium text-white truncate text-sm group-hover:text-cyan-400 transition-colors">
+        <div 
+          className="font-medium text-white truncate text-sm group-hover:text-cyan-400 transition-colors max-w-[100px] md:max-w-[120px]" 
+          title={entry.username}
+        >
           {entry.username}
         </div>
         <div className={`text-sm font-bold ${getRatingColor(entry.rank_color)}`}>
@@ -134,7 +137,10 @@ export const TabbedRanking: React.FC<TabbedRankingProps> = ({
       />
       
       <div className="flex-1 min-w-0">
-        <div className="font-medium text-white truncate text-sm group-hover:text-purple-400 transition-colors">
+        <div 
+          className="font-medium text-white truncate text-sm group-hover:text-purple-400 transition-colors max-w-[100px] md:max-w-[120px]" 
+          title={entry.username}
+        >
           {entry.username}
         </div>
         <div className={`text-sm font-bold ${getVoteCountColor(entry.vote_count)}`}>
