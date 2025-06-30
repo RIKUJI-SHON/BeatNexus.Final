@@ -187,7 +187,13 @@
     "tipsNote": "これらの項目を参考に、より良い判断を行いましょう",
     "notSet": "未設定",
     "totalScores": "合計点数",
-    "unsetItems": "{{count}}項目が未設定です"
+    "unsetItems": "{{count}}項目が未設定です",
+    "watchAdToViewComments": "広告を視聴してコメントを見る",
+    "commentsLocked": "コメントがロックされています",
+    "watchAdButton": "広告を視聴",
+    "viewingAd": "広告を視聴中...",
+    "commentsUnlocked": "コメントが表示されました！",
+    "adWatchingFeature": "広告視聴機能"
   },
   "battleCard": {
     "votingEndsIn": "残り{{days}}日 {{hours}}時間",

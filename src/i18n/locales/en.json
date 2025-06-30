@@ -171,7 +171,13 @@
     "tipsNote": "Use these criteria as reference for better judgment",
     "notSet": "Not Set",
     "totalScores": "Total Scores",
-    "unsetItems": "{{count}} items not set"
+    "unsetItems": "{{count}} items not set",
+    "watchAdToViewComments": "Watch Ad to View Comments",
+    "commentsLocked": "Comments are locked",
+    "watchAdButton": "Watch Ad",
+    "viewingAd": "Watching Ad...",
+    "commentsUnlocked": "Comments unlocked!",
+    "adWatchingFeature": "Ad Watching Feature"
   },
   "battleCard": {
     "votingEndsIn": "{{days}}d {{hours}}h left",
