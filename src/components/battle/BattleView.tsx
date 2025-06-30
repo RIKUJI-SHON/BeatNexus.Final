@@ -42,6 +42,9 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
   const [hasWatchedAd, setHasWatchedAd] = useState(false);
   const [isWatchingAd, setIsWatchingAd] = useState(false);
   
+  // 🆕 投票詳細表示フラグ（投票済み or アーカイブ）
+  const showVoteDetails = hasVoted !== null || isArchived;
+  
   const { 
     voteBattle, 
     voteBattleWithComment, 
@@ -691,7 +694,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                         <div className={`text-3xl font-black ${
                           isALeading ? 'text-cyan-400 animate-pulse' : 'text-cyan-300'
                         }`}>
-                          {votesA}
+                          {showVoteDetails ? votesA : '--'}
                         </div>
                         <span className="text-cyan-200 text-sm font-medium">votes</span>
                       </div>
@@ -775,7 +778,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                         <div className={`text-3xl font-black ${
                           isBLeading ? 'text-pink-400 animate-pulse' : 'text-pink-300'
                         }`}>
-                          {votesB}
+                          {showVoteDetails ? votesB : '--'}
                         </div>
                         <span className="text-pink-200 text-sm font-medium">votes</span>
                       </div>
@@ -853,7 +856,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                               ? 'text-green-300 animate-pulse' 
                               : 'text-cyan-300'
                           }`}>
-                            {battle.votes_a}
+                            {showVoteDetails ? votesA : '--'}
                           </div>
                           <div className={`text-xs mt-1 transition-colors duration-300 ${
                             hasVoted === 'A' ? 'text-green-400' : 'text-cyan-400'
@@ -917,8 +920,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
 
                     {/* Central Total Votes Counter or Divider */}
                     <div className="flex flex-col items-center">
-                      {!hasVoted && !isArchived && !isUserParticipant ? (
-                        /* Show total votes counter when user hasn't voted yet */
+                      {!showVoteDetails ? (
                         <div className="bg-gray-800 rounded-xl p-2 md:p-4 border border-purple-500/30 shadow-lg transition-all duration-500">
                           <div className="text-xs font-bold mb-1 text-center text-purple-300">
                             TOTAL
@@ -933,7 +935,6 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                           </div>
                         </div>
                       ) : (
-                        /* Show power indicator divider after voting or for participants */
                         <>
                           <div className="w-px h-8 bg-gradient-to-b from-transparent via-gray-500 to-transparent"></div>
                           <div className="w-3 h-3 rounded-full bg-gradient-to-r from-cyan-500 to-pink-500 animate-pulse shadow-md my-1"></div>
@@ -1006,7 +1007,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                               ? 'text-green-300 animate-pulse' 
                               : 'text-pink-300'
                           }`}>
-                            {battle.votes_b}
+                            {showVoteDetails ? votesB : '--'}
                           </div>
                           <div className={`text-xs mt-1 transition-colors duration-300 ${
                             hasVoted === 'B' ? 'text-green-400' : 'text-pink-400'

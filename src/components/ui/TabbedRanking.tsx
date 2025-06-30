@@ -114,7 +114,7 @@ export const TabbedRanking: React.FC<TabbedRankingProps> = ({
           {entry.username}
         </div>
         <div className={`text-sm font-bold ${getRatingColor(entry.rank_color)}`}>
-          {entry.season_points} BP
+          {entry.season_points} SP
         </div>
       </div>
     </Link>
@@ -144,7 +144,7 @@ export const TabbedRanking: React.FC<TabbedRankingProps> = ({
           {entry.username}
         </div>
         <div className={`text-sm font-bold ${getVoteCountColor(entry.vote_count)}`}>
-          {entry.vote_count} {t('rankingPage.table.voteCount')}
+          {`${entry.vote_count * 100} VP`}
         </div>
       </div>
     </Link>
