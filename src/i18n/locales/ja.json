@@ -230,6 +230,10 @@
       "playerA": "Player A",
       "playerB": "Player B",
       "close": "閉じる"
+    },
+    "timeLeft": {
+      "minutes": "残り{{count}}分{{seconds}}秒",
+      "seconds": "残り{{count}}秒"
     }
   },
   "battleFilters": {

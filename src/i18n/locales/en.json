@@ -212,6 +212,10 @@
       "playerA": "Player A",
       "playerB": "Player B",
       "close": "Close"
+    },
+    "timeLeft": {
+      "minutes": "{{count}}m {{seconds}}s left",
+      "seconds": "{{count}}s left"
     }
   },
   "battleFilters": {

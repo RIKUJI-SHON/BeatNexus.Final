@@ -52,13 +52,16 @@ export const SpecialBattleCard: React.FC<SpecialBattleCardProps> = ({ battle }) 
     const days = Math.floor(total / (1000 * 60 * 60 * 24));
     const hours = Math.floor((total % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
     const minutes = Math.floor((total % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((total % (1000 * 60)) / 1000);
     
     if (days > 0) {
       setTimeRemaining(t('battleCard.votingEndsIn', { days, hours }));
     } else if (hours > 0) {
       setTimeRemaining(t('battleCard.votingEndsInHours', { hours, minutes }));
+    } else if (minutes > 0) {
+      setTimeRemaining(t('battleCard.timeLeft.minutes', { count: minutes, seconds }));
     } else {
-      setTimeRemaining(t('battleCard.votingEndsInMinutes', { minutes }));
+      setTimeRemaining(t('battleCard.timeLeft.seconds', { count: seconds }));
     }
     setIsExpired(false);
   };
