@@ -121,14 +121,18 @@ export const useRankingStore = create<RankingState>((set, get) => ({
 
   fetchSeasons: async () => {
     try {
+      console.log('[DEBUG] fetchSeasons: Starting season fetch...');
       const { data, error } = await supabase
         .from('seasons')
         .select('*')
         .order('start_at', { ascending: false });
 
+      console.log('[DEBUG] fetchSeasons: Raw response:', { data, error });
+
       if (error) throw error;
 
       const currentSeason = data?.find(season => season.status === 'active') || null;
+      console.log('[DEBUG] fetchSeasons: Current season found:', currentSeason);
       
       set({ 
         seasons: data || [], 
@@ -137,6 +141,12 @@ export const useRankingStore = create<RankingState>((set, get) => ({
         // 現在のシーズンが存在する場合、デフォルトをcurrent_seasonに変更
         activeRankingType: currentSeason ? 'current_season' : 'all_time',
         activeVoterRankingType: currentSeason ? 'current_season' : 'all_time'
+      });
+      
+      console.log('[DEBUG] fetchSeasons: Final state set:', {
+        seasonsCount: data?.length || 0,
+        currentSeason: currentSeason?.name,
+        activeRankingType: currentSeason ? 'current_season' : 'all_time'
       });
     } catch (error) {
       console.error('Failed to fetch seasons:', error);

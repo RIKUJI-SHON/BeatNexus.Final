@@ -61,6 +61,7 @@ const RankingPage: React.FC = () => {
   const [showSeasonDropdown, setShowSeasonDropdown] = useState(false);
 
   useEffect(() => {
+    console.log('[DEBUG] RankingPage: useEffect triggered - fetching initial data');
     // 初期データ取得
     fetchSeasons();
     fetchRankings();
@@ -70,7 +71,7 @@ const RankingPage: React.FC = () => {
     
     // Track initial ranking view
     trackBeatNexusEvents.rankingView('rating');
-  }, [fetchRankings, fetchVoterRankings, fetchSeasonRankings, fetchSeasonVoterRankings, fetchSeasons]);
+  }, []); // 空の依存配列で1回だけ実行
 
   const handleTabChange = (isChecked: boolean) => {
     const newTab = isChecked ? 'voter' : 'player';
@@ -311,6 +312,13 @@ const RankingPage: React.FC = () => {
   const getDropdownOptions = () => {
     const options = [];
     
+    console.log('[DEBUG] getDropdownOptions: Current state:', {
+      currentSeason,
+      seasonsLength: seasons.length,
+      activeRankingType,
+      selectedSeasonId
+    });
+    
     // Current Season / All Time options
     options.push({
       type: 'all_time',
@@ -320,6 +328,7 @@ const RankingPage: React.FC = () => {
     });
     
     if (currentSeason) {
+      console.log('[DEBUG] getDropdownOptions: Adding current season option:', currentSeason.name);
       options.push({
         type: 'current_season',
         label: `${currentSeason.name} (${t('rankingPage.seasonSelector.currentSeasonLabel')})`,
@@ -327,10 +336,13 @@ const RankingPage: React.FC = () => {
         isSelected: activeRankingType === 'current_season' && selectedSeasonId === currentSeason.id,
         seasonId: currentSeason.id,
       });
+    } else {
+      console.log('[DEBUG] getDropdownOptions: No current season found');
     }
     
     // Past seasons
     const pastSeasons = seasons.filter(s => s.status === 'completed');
+    console.log('[DEBUG] getDropdownOptions: Past seasons count:', pastSeasons.length);
     pastSeasons.forEach(season => {
       options.push({
         type: 'historical_season',
@@ -341,6 +353,7 @@ const RankingPage: React.FC = () => {
       });
     });
     
+    console.log('[DEBUG] getDropdownOptions: Final options:', options);
     return options;
   };
 
