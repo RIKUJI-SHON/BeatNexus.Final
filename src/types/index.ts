@@ -5,6 +5,8 @@ export interface User {
   avatar_url: string | null;
   bio: string | null;
   rating: number;
+  season_points: number;
+  season_vote_points: number;
   language: string;
   vote_count: number;
   has_seen_onboarding: boolean;
@@ -317,3 +319,64 @@ export interface CommunityRanking {
 
 // 自動生成されたSupabaseデータベース型をエクスポート  
 export type { Database } from './database.types';
+
+// シーズンシステム関連の型定義
+export interface Season {
+  id: string;
+  name: string;
+  start_at: string;
+  end_at: string;
+  status: 'active' | 'completed' | 'upcoming';
+  created_at: string;
+  updated_at: string;
+}
+
+export interface SeasonRankingEntry {
+  user_id: string;
+  username: string;
+  avatar_url: string | null;
+  season_points: number;
+  rating: number;
+  rank_name: string;
+  rank_color: string;
+  position: number;
+}
+
+export interface SeasonVoterRankingEntry {
+  user_id: string;
+  username: string;
+  avatar_url: string | null;
+  vote_count: number; // これはseason_vote_pointsの値
+  rating: number;
+  rank_name: string;
+  rank_color: string;
+  created_at: string;
+  updated_at: string;
+  position: number;
+}
+
+export interface HistoricalSeasonRanking {
+  id: string;
+  season_id: string;
+  user_id: string;
+  username: string;
+  avatar_url: string | null;
+  final_season_points: number;
+  final_rank: number;
+  created_at: string;
+}
+
+export interface HistoricalSeasonVoterRanking {
+  id: string;
+  season_id: string;
+  user_id: string;
+  username: string;
+  avatar_url: string | null;
+  final_season_vote_points: number;
+  final_rank: number;
+  created_at: string;
+}
+
+// ランキングタブの種類を定義
+export type RankingType = 'current_season' | 'all_time';
+export type VoterRankingType = 'current_season' | 'all_time';

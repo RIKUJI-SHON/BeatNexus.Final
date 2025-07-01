@@ -742,8 +742,19 @@
       "player": "Player",
       "voter": "Voter"
     },
+    "seasonTabs": {
+      "currentSeason": "Current Season",
+      "allTime": "All Time",
+      "historicalSeasons": "Past Seasons"
+    },
+    "seasonSelector": {
+      "selectSeason": "Select Season",
+      "currentSeasonLabel": "Current Season",
+      "completedSeasonLabel": "Completed Season"
+    },
     "playerDescription": "Beatboxer rankings based on battle performance",
     "voterDescription": "Active community member rankings based on voting participation",
+
     "searchPlaceholder": "Search by username...",
     "loading": "Loading rankings...",
     "eloRating": "Elo Rating",

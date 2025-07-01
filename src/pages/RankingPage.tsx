@@ -1,17 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { Trophy, Medal, Crown, Search, Users, Star, Vote } from 'lucide-react';
+import { Trophy, Medal, Crown, Search, Users, Star, Vote, Calendar, ChevronDown } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Card } from '../components/ui/Card';
 import { useRankingStore } from '../store/rankingStore';
 import { useTranslation } from 'react-i18next';
 import { trackBeatNexusEvents } from '../utils/analytics';
-import { VoterRankingEntry } from '../types';
+import { VoterRankingEntry, SeasonRankingEntry, SeasonVoterRankingEntry, RankingType, VoterRankingType } from '../types';
 
 type TabType = 'player' | 'voter';
 
 const RankingPage: React.FC = () => {
   const { t } = useTranslation();
   const { 
+    // 通算ランキング
     rankings, 
     voterRankings, 
     loading, 
@@ -19,19 +20,57 @@ const RankingPage: React.FC = () => {
     error, 
     voterError, 
     fetchRankings, 
-    fetchVoterRankings 
+    fetchVoterRankings,
+    
+    // シーズンランキング
+    seasonRankings,
+    seasonVoterRankings,
+    seasonLoading,
+    seasonVoterLoading,
+    seasonError,
+    seasonVoterError,
+    fetchSeasonRankings,
+    fetchSeasonVoterRankings,
+    
+    // シーズン情報
+    seasons,
+    currentSeason,
+    selectedSeasonId,
+    fetchSeasons,
+    
+    // 過去のシーズンランキング
+    historicalSeasonRankings,
+    historicalSeasonVoterRankings,
+    historicalLoading,
+    historicalVoterLoading,
+    historicalError,
+    historicalVoterError,
+    fetchHistoricalSeasonRankings,
+    fetchHistoricalSeasonVoterRankings,
+    
+    // タブ状態
+    activeRankingType,
+    activeVoterRankingType,
+    setActiveRankingType,
+    setActiveVoterRankingType,
+    setSelectedSeasonId
   } = useRankingStore();
   
   const [activeTab, setActiveTab] = useState<TabType>('player');
   const [searchQuery, setSearchQuery] = useState('');
+  const [showSeasonDropdown, setShowSeasonDropdown] = useState(false);
 
   useEffect(() => {
+    // 初期データ取得
+    fetchSeasons();
     fetchRankings();
     fetchVoterRankings();
+    fetchSeasonRankings();
+    fetchSeasonVoterRankings();
     
     // Track initial ranking view
     trackBeatNexusEvents.rankingView('rating');
-  }, [fetchRankings, fetchVoterRankings]);
+  }, [fetchRankings, fetchVoterRankings, fetchSeasonRankings, fetchSeasonVoterRankings, fetchSeasons]);
 
   const handleTabChange = (isChecked: boolean) => {
     const newTab = isChecked ? 'voter' : 'player';
@@ -42,67 +81,216 @@ const RankingPage: React.FC = () => {
     trackBeatNexusEvents.rankingView(newTab === 'voter' ? 'voter' : 'rating');
   };
 
-  // フィルタリング
-  const currentData = activeTab === 'player' ? rankings : voterRankings;
-  const currentLoading = activeTab === 'player' ? loading : voterLoading;
-  const currentError = activeTab === 'player' ? error : voterError;
-  
-  const filteredData = currentData.filter(entry => 
+  const handleRankingTypeChange = (type: RankingType) => {
+    setActiveRankingType(type);
+    if (type === 'current_season') {
+      trackBeatNexusEvents.rankingView('rating');
+    } else {
+      trackBeatNexusEvents.rankingView('rating');
+    }
+  };
+
+  const handleVoterRankingTypeChange = (type: VoterRankingType) => {
+    setActiveVoterRankingType(type);
+    if (type === 'current_season') {
+      trackBeatNexusEvents.rankingView('voter');
+    } else {
+      trackBeatNexusEvents.rankingView('voter');
+    }
+  };
+
+  const handleSeasonSelect = (seasonId: string | 'all_time') => {
+    if (seasonId === 'all_time') {
+      // All Time選択時
+      handleRankingTypeChange('all_time');
+      handleVoterRankingTypeChange('all_time');
+    } else {
+      // シーズン選択時
+      handleRankingTypeChange('current_season');
+      handleVoterRankingTypeChange('current_season');
+      setSelectedSeasonId(seasonId);
+      
+      // 過去のシーズンを選択した場合、履歴データを取得
+      if (seasonId !== currentSeason?.id) {
+        fetchHistoricalSeasonRankings(seasonId);
+        fetchHistoricalSeasonVoterRankings(seasonId);
+      }
+    }
+    setShowSeasonDropdown(false);
+  };
+
+  // 現在表示するデータを決定
+  const getCurrentData = () => {
+    if (activeTab === 'player') {
+      const rankingType = activeRankingType;
+      if (rankingType === 'current_season') {
+        if (selectedSeasonId === currentSeason?.id) {
+          return seasonRankings;
+        } else {
+          // 過去のシーズンの場合は変換が必要
+          return historicalSeasonRankings.map((entry, index) => ({
+            ...entry,
+            season_points: entry.final_season_points,
+            rating: 0, // 履歴には含まれないため
+            rank_name: 'Historical',
+            rank_color: 'gray',
+            position: entry.final_rank
+          }));
+        }
+      } else {
+        return rankings;
+      }
+    } else {
+      const voterRankingType = activeVoterRankingType;
+      if (voterRankingType === 'current_season') {
+        if (selectedSeasonId === currentSeason?.id) {
+          return seasonVoterRankings;
+        } else {
+          // 過去のシーズンの場合は変換が必要
+          return historicalSeasonVoterRankings.map((entry, index) => ({
+            ...entry,
+            vote_count: entry.final_season_vote_points,
+            rating: 0,
+            rank_name: 'Historical',
+            rank_color: 'gray',
+            created_at: entry.created_at,
+            updated_at: entry.created_at,
+            position: entry.final_rank
+          }));
+        }
+      } else {
+        return voterRankings;
+      }
+    }
+  };
+
+  // 現在の読み込み状態を決定
+  const getCurrentLoading = () => {
+    if (activeTab === 'player') {
+      const rankingType = activeRankingType;
+      if (rankingType === 'current_season') {
+        if (selectedSeasonId === currentSeason?.id) {
+          return seasonLoading;
+        } else {
+          return historicalLoading;
+        }
+      } else {
+        return loading;
+      }
+    } else {
+      const voterRankingType = activeVoterRankingType;
+      if (voterRankingType === 'current_season') {
+        if (selectedSeasonId === currentSeason?.id) {
+          return seasonVoterLoading;
+        } else {
+          return historicalVoterLoading;
+        }
+      } else {
+        return voterLoading;
+      }
+    }
+  };
+
+  // 現在のエラー状態を決定
+  const getCurrentError = () => {
+    if (activeTab === 'player') {
+      const rankingType = activeRankingType;
+      if (rankingType === 'current_season') {
+        if (selectedSeasonId === currentSeason?.id) {
+          return seasonError;
+        } else {
+          return historicalError;
+        }
+      } else {
+        return error;
+      }
+    } else {
+      const voterRankingType = activeVoterRankingType;
+      if (voterRankingType === 'current_season') {
+        if (selectedSeasonId === currentSeason?.id) {
+          return seasonVoterError;
+        } else {
+          return historicalVoterError;
+        }
+      } else {
+        return voterError;
+      }
+    }
+  };
+
+  const currentData = getCurrentData();
+  const currentLoading = getCurrentLoading();
+  const currentError = getCurrentError();
+
+  // フィルター済みデータ
+  const filteredData = currentData.filter(entry =>
     entry.username.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // Type-safe helper functions
+  // Type guards and utility functions
   const isVoterEntry = (entry: any): entry is VoterRankingEntry => {
-    return 'vote_count' in entry;
+    return 'vote_count' in entry && typeof entry.vote_count === 'number';
+  };
+
+  const isSeasonRankingEntry = (entry: any): entry is SeasonRankingEntry => {
+    return 'season_points' in entry && typeof entry.season_points === 'number';
   };
 
   const getVoteCount = (entry: any): number => {
     return isVoterEntry(entry) ? entry.vote_count : 0;
   };
 
+  const getRatingOrSeasonPoints = (entry: any): number => {
+    if (activeTab === 'player') {
+      if (activeRankingType === 'current_season') {
+        return isSeasonRankingEntry(entry) ? entry.season_points : 0;
+      } else {
+        return entry.rating || 0;
+      }
+    } else {
+      return getVoteCount(entry);
+    }
+  };
+
   const getPositionDisplay = (position: number) => {
-    switch (position) {
-      case 1:
-        return (
-          <div className="flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20">
-            <img 
-              src="/images/1st-place.png" 
-              alt="1st Place"
-              className="h-12 w-12 sm:h-16 sm:w-16 object-contain"
-            />
+    if (position === 1) {
+      return (
+        <div className="flex items-center justify-center">
+          <div className="relative">
+            <Crown className="h-6 w-6 text-yellow-400" />
+            <div className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full animate-pulse"></div>
           </div>
-        );
-      case 2:
-        return (
-          <div className="flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20">
-            <img 
-              src="/images/2nd-place.png" 
-              alt="2nd Place"
-              className="h-12 w-12 sm:h-16 sm:w-16 object-contain"
-            />
+        </div>
+      );
+    } else if (position === 2) {
+      return (
+        <div className="flex items-center justify-center">
+          <div className="relative">
+            <Medal className="h-5 w-5 text-gray-300" />
+            <div className="absolute -top-1 -right-1 w-2 h-2 bg-gray-300 rounded-full animate-pulse"></div>
           </div>
-        );
-      case 3:
-        return (
-          <div className="flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20">
-            <img 
-              src="/images/3rd-place.png" 
-              alt="3rd Place"
-              className="h-12 w-12 sm:h-16 sm:w-16 object-contain"
-            />
+        </div>
+      );
+    } else if (position === 3) {
+      return (
+        <div className="flex items-center justify-center">
+          <div className="relative">
+            <Trophy className="h-5 w-5 text-amber-600" />
+            <div className="absolute -top-1 -right-1 w-2 h-2 bg-amber-600 rounded-full animate-pulse"></div>
           </div>
-        );
-      default:
-        return (
-          <div className="flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-gray-700 to-gray-800 rounded-full shadow-lg border border-gray-600">
-            <span className="text-sm sm:text-xl font-bold text-white">#{position}</span>
-          </div>
-        );
+        </div>
+      );
+    } else {
+      return (
+        <div className="flex items-center justify-center">
+          <span className="text-lg font-bold text-gray-400">#{position}</span>
+        </div>
+      );
     }
   };
 
   const getRatingColor = (rating: number) => {
-    if (rating >= 1800) return 'text-purple-400';
+    if (rating >= 1800) return 'text-red-400';
     if (rating >= 1600) return 'text-purple-400';
     if (rating >= 1400) return 'text-blue-400';
     if (rating >= 1300) return 'text-green-400';
@@ -112,15 +300,52 @@ const RankingPage: React.FC = () => {
   };
 
   const getVoteCountColor = (voteCount: number) => {
-    if (voteCount >= 100) return 'text-purple-400';
-    if (voteCount >= 50) return 'text-blue-400';
+    if (voteCount >= 50) return 'text-red-400';
     if (voteCount >= 25) return 'text-green-400';
     if (voteCount >= 10) return 'text-yellow-400';
     if (voteCount >= 5) return 'text-gray-400';
     return 'text-gray-500';
   };
 
+  // ドロップダウンの選択肢を生成
+  const getDropdownOptions = () => {
+    const options = [];
+    
+    // Current Season / All Time options
+    options.push({
+      type: 'all_time',
+      label: t('rankingPage.seasonTabs.allTime'),
+      isActive: activeRankingType === 'all_time',
+      isSelected: activeRankingType === 'all_time',
+    });
+    
+    if (currentSeason) {
+      options.push({
+        type: 'current_season',
+        label: `${currentSeason.name} (${t('rankingPage.seasonSelector.currentSeasonLabel')})`,
+        isActive: activeRankingType === 'current_season' && selectedSeasonId === currentSeason.id,
+        isSelected: activeRankingType === 'current_season' && selectedSeasonId === currentSeason.id,
+        seasonId: currentSeason.id,
+      });
+    }
+    
+    // Past seasons
+    const pastSeasons = seasons.filter(s => s.status === 'completed');
+    pastSeasons.forEach(season => {
+      options.push({
+        type: 'historical_season',
+        label: `${season.name} (${t('rankingPage.seasonSelector.completedSeasonLabel')})`,
+        isActive: activeRankingType === 'current_season' && selectedSeasonId === season.id,
+        isSelected: activeRankingType === 'current_season' && selectedSeasonId === season.id,
+        seasonId: season.id,
+      });
+    });
+    
+    return options;
+  };
 
+  const dropdownOptions = getDropdownOptions();
+  const selectedOption = dropdownOptions.find(opt => opt.isSelected);
 
   if (currentError) {
     return (
@@ -136,6 +361,8 @@ const RankingPage: React.FC = () => {
               onClick={() => {
                 fetchRankings();
                 fetchVoterRankings();
+                fetchSeasonRankings();
+                fetchSeasonVoterRankings();
               }}
               className="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
             >
@@ -168,7 +395,7 @@ const RankingPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Custom Switch */}
+        {/* Player/Voter Switch */}
         <div className="flex justify-center mb-8">
           <style dangerouslySetInnerHTML={{
             __html: `
@@ -329,41 +556,71 @@ const RankingPage: React.FC = () => {
           </label>
         </div>
 
+        {/* Search and Season Selector */}
+        <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mb-6">
+          {/* 検索欄 */}
+          <div className="relative w-full sm:w-80">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder={t('rankingPage.searchPlaceholder')}
+              className={`w-full bg-gray-800/50 border border-gray-700 rounded-lg pl-10 pr-4 py-3 text-white placeholder-gray-400 focus:outline-none transition-all backdrop-blur-sm text-sm ${
+                activeTab === 'player' 
+                  ? 'focus:border-cyan-500/50 focus:bg-gray-800' 
+                  : 'focus:border-purple-500/50 focus:bg-gray-800'
+              }`}
+            />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+          </div>
+
+          {/* Season/All-time Selector */}
+          <div className="relative w-full sm:w-auto">
+            <button
+              onClick={() => setShowSeasonDropdown(!showSeasonDropdown)}
+              className={`flex items-center gap-2 px-4 py-3 rounded-lg border backdrop-blur-sm transition-colors w-full sm:w-auto ${
+                activeTab === 'player'
+                  ? 'bg-cyan-500/10 border-cyan-500/20 text-cyan-100 hover:bg-cyan-500/20'
+                  : 'bg-purple-500/10 border-purple-500/20 text-purple-100 hover:bg-purple-500/20'
+              }`}
+            >
+              <Calendar className="h-4 w-4" />
+              <span className="flex-1 text-left sm:text-center">
+                {selectedOption?.label || t('rankingPage.seasonSelector.selectSeason')}
+              </span>
+              <ChevronDown className={`h-4 w-4 transition-transform ${showSeasonDropdown ? 'rotate-180' : ''}`} />
+            </button>
+
+            {showSeasonDropdown && (
+              <div className={`absolute top-full left-0 mt-2 w-full sm:w-80 rounded-lg border backdrop-blur-sm z-50 ${
+                activeTab === 'player'
+                  ? 'bg-gray-800/90 border-cyan-500/20'
+                  : 'bg-gray-800/90 border-purple-500/20'
+              }`}>
+                <div className="py-2">
+                  {dropdownOptions.map((option, index) => (
+                    <button
+                      key={index}
+                      onClick={() => handleSeasonSelect(option.seasonId || option.type)}
+                      className={`w-full px-4 py-2 text-left hover:bg-gray-700/50 transition-colors ${
+                        option.isSelected
+                          ? activeTab === 'player'
+                            ? 'bg-cyan-500/20 text-cyan-100'
+                            : 'bg-purple-500/20 text-purple-100'
+                          : 'text-gray-300'
+                      }`}
+                    >
+                      <span>{option.label}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
         {/* Content Area */}
         <div className="space-y-6">
-          {/* ヘッダー */}
-          <div className="text-center">
-            <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl border backdrop-blur-sm mb-4 ${
-              activeTab === 'player' 
-                ? 'bg-gradient-to-r from-cyan-500/10 to-blue-500/10 border-cyan-500/20' 
-                : 'bg-gradient-to-r from-purple-500/10 to-pink-500/10 border-purple-500/20'
-            }`}>
-              {activeTab === 'player' ? (
-                <Star className="h-5 w-5 text-cyan-400" />
-              ) : (
-                <Vote className="h-5 w-5 text-purple-400" />
-              )}
-              <h2 className={`text-lg font-bold ${activeTab === 'player' ? 'text-cyan-100' : 'text-purple-100'}`}>
-                {activeTab === 'player' ? t('rankingPage.tabs.playerRankings') : t('rankingPage.tabs.voterRankings')}
-              </h2>
-            </div>
-            
-            {/* 検索欄 */}
-            <div className="relative max-w-sm mx-auto mb-6">
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder={t('rankingPage.searchPlaceholder')}
-                className={`w-full bg-gray-800/50 border border-gray-700 rounded-lg pl-10 pr-4 py-3 text-white placeholder-gray-400 focus:outline-none transition-all backdrop-blur-sm text-sm ${
-                  activeTab === 'player' 
-                    ? 'focus:border-cyan-500/50 focus:bg-gray-800' 
-                    : 'focus:border-purple-500/50 focus:bg-gray-800'
-                }`}
-              />
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-            </div>
-          </div>
 
           {/* ランキングリスト */}
           {currentLoading ? (
@@ -386,7 +643,12 @@ const RankingPage: React.FC = () => {
                 <div className="grid grid-cols-10 gap-4 text-xs font-medium text-gray-300 uppercase tracking-wider">
                   <div className="col-span-2 text-center">Rank</div>
                   <div className="col-span-6">{activeTab === 'player' ? 'Player' : 'Voter'}</div>
-                  <div className="col-span-2 text-center">{activeTab === 'player' ? 'Rating' : 'Votes'}</div>
+                  <div className="col-span-2 text-center">
+                    {activeTab === 'player' 
+                      ? (activeRankingType === 'current_season' ? t('rankingPage.table.seasonPoints') : t('rankingPage.table.rating'))
+                      : t('rankingPage.table.voteCount')
+                    }
+                  </div>
                 </div>
               </div>
               
@@ -439,14 +701,17 @@ const RankingPage: React.FC = () => {
                           </div>
                         </div>
 
-                        {/* レーティング/投票数 */}
+                        {/* レーティング/シーズンポイント/投票数 */}
                         <div className="col-span-2 text-center">
                           <span className={`font-bold text-sm ${
                             activeTab === 'player' 
-                              ? getRatingColor(entry.rating || 0)
+                              ? getRatingColor(getRatingOrSeasonPoints(entry))
                               : getVoteCountColor(getVoteCount(entry))
                           }`}>
-                            {activeTab === 'player' ? (entry.rating || 0) : (getVoteCount(entry))}
+                            {activeTab === 'player' 
+                              ? getRatingOrSeasonPoints(entry)
+                              : `${getVoteCount(entry) * 100} VP`
+                            }
                           </span>
                         </div>
                       </div>
@@ -459,7 +724,7 @@ const RankingPage: React.FC = () => {
             <div className="text-center py-12">
               <Users className="h-12 w-12 text-gray-600 mx-auto mb-4" />
               <p className="text-gray-400">
-                {searchQuery ? t('rankingPage.noSearchResults') : t('rankingPage.noData')}
+                {searchQuery ? t('rankingPage.noUsersFound') : t('rankingPage.noRankingsYet')}
               </p>
             </div>
           )}

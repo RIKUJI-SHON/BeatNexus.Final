@@ -1006,8 +1006,19 @@
       "player": "プレイヤー",
       "voter": "投票者"
     },
+    "seasonTabs": {
+      "currentSeason": "今シーズン",
+      "allTime": "通算ランキング",
+      "historicalSeasons": "過去のシーズン"
+    },
+    "seasonSelector": {
+      "selectSeason": "シーズンを選択",
+      "currentSeasonLabel": "現在のシーズン",
+      "completedSeasonLabel": "完了したシーズン"
+    },
     "playerDescription": "バトル戦績に基づくビートボクサーランキング",
     "voterDescription": "投票数に基づくアクティブなコミュニティメンバーランキング",
+
     "searchPlaceholder": "ユーザー名で検索...",
     "loading": "ランキング読み込み中...",
     "eloRating": "Eloレーティング",
