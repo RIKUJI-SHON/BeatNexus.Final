@@ -70,8 +70,8 @@ export const useRankingStore = create<RankingState>((set, get) => ({
   historicalError: null,
   historicalVoterError: null,
   
-  activeRankingType: 'current_season',
-  activeVoterRankingType: 'current_season',
+  activeRankingType: 'all_time',
+  activeVoterRankingType: 'all_time',
 
   fetchRankings: async () => {
     set({ loading: true, error: null });
@@ -133,7 +133,10 @@ export const useRankingStore = create<RankingState>((set, get) => ({
       set({ 
         seasons: data || [], 
         currentSeason,
-        selectedSeasonId: get().selectedSeasonId || currentSeason?.id || null
+        selectedSeasonId: get().selectedSeasonId || currentSeason?.id || null,
+        // 現在のシーズンが存在する場合、デフォルトをcurrent_seasonに変更
+        activeRankingType: currentSeason ? 'current_season' : 'all_time',
+        activeVoterRankingType: currentSeason ? 'current_season' : 'all_time'
       });
     } catch (error) {
       console.error('Failed to fetch seasons:', error);
