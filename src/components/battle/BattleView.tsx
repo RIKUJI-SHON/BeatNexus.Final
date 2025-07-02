@@ -42,9 +42,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
   const [hasWatchedAd, setHasWatchedAd] = useState(false);
   const [isWatchingAd, setIsWatchingAd] = useState(false);
   
-  // 🆕 投票詳細表示フラグ（投票済み or アーカイブ）
-  const showVoteDetails = hasVoted !== null || isArchived;
-  
+  // Stores
   const { 
     voteBattle, 
     voteBattleWithComment, 
@@ -55,7 +53,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
     commentsLoading 
   } = useBattleStore();
   const { user } = useAuthStore();
-
+  
   // 🔍 厳密な型チェックと参加者判定 - battleStoreの変換後データに合わせて修正
   const player1Id = battle.player1_user_id || (battle as any).contestant_a_id;
   const player2Id = battle.player2_user_id || (battle as any).contestant_b_id;
@@ -64,8 +62,8 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
     (String(player1Id) === String(user.id) || String(player2Id) === String(user.id)) : 
     false;
   
+  const showVoteDetails = hasVoted !== null || isArchived || isUserParticipant;
 
-  
   // Load player ratings
   const loadPlayerRatings = async () => {
     try {
@@ -576,8 +574,8 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
               </div>
             </div>
             
-            {/* Vote Distribution Bar - Only show if voted or archived */}
-            {(hasVoted || isArchived) && (
+            {/* Vote Distribution Bar - Only show if voted, archived, or participant */}
+            {(hasVoted || isArchived || isUserParticipant) && (
               <div className="max-w-2xl mx-auto">
                 <div className="flex justify-between text-sm text-gray-400 mb-3">
                   <div className="flex items-center gap-2 min-w-0">
