@@ -91,7 +91,7 @@ export const BattleFilters: React.FC<BattleFiltersProps> = ({
                   className="h-8 sm:h-12 w-8 sm:w-12 object-contain filter brightness-110 group-hover:brightness-150 group-hover:drop-shadow-lg transition-all duration-300"
                 />
               </div>
-              <span className="text-xs sm:text-base font-medium text-gray-300 group-hover:text-white group-hover:drop-shadow-lg transition-colors text-center">
+              <span className="text-xs sm:text-base font-medium text-gray-300 group-hover:text-white group-hover:drop-shadow-lg transition-colors text-center whitespace-nowrap">
                 {t('battleFilters.buttons.profile')}
               </span>
             </button>
@@ -108,7 +108,7 @@ export const BattleFilters: React.FC<BattleFiltersProps> = ({
                   className="w-12 sm:w-20 h-12 sm:h-20 object-contain filter brightness-110 group-hover:brightness-200 group-hover:drop-shadow-2xl transition-all duration-300"
                 />
               </div>
-              <span className="text-sm sm:text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400 group-hover:from-cyan-200 group-hover:to-purple-200 group-hover:drop-shadow-xl transition-all duration-300 text-center">
+              <span className="text-xs sm:text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400 group-hover:from-cyan-200 group-hover:to-purple-200 group-hover:drop-shadow-xl transition-all duration-300 text-center whitespace-nowrap">
                 {t('battleFilters.buttons.battleStart')}
               </span>
             </button>
@@ -125,7 +125,7 @@ export const BattleFilters: React.FC<BattleFiltersProps> = ({
                   className="h-8 sm:h-12 w-8 sm:w-12 object-contain filter brightness-110 group-hover:brightness-150 group-hover:drop-shadow-lg transition-all duration-300"
                 />
               </div>
-              <span className="text-xs sm:text-base font-medium text-gray-300 group-hover:text-white group-hover:drop-shadow-lg transition-colors text-center">
+              <span className="text-xs sm:text-base font-medium text-gray-300 group-hover:text-white group-hover:drop-shadow-lg transition-colors text-center whitespace-nowrap">
                 {t('battleFilters.buttons.tournament')}
               </span>
             </button>
