@@ -173,7 +173,7 @@
     "voteError": "投票に失敗しました",
     "cancelVote": "投票を取り消す",
     "votingGuide": "投票ガイド",
-    "evaluationCriteria": "評価項目",
+    "evaluationCriteria": "Judge's Scorecard",
     "criteria": {
       "technicality": "技術性",
       "technicalityDesc": "複雑なパターンを明瞭かつ正確なタイミングで、途切れないフローとして制御できているか",

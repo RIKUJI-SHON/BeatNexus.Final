@@ -157,7 +157,7 @@
     "voteError": "Failed to submit vote",
     "cancelVote": "Cancel vote",
     "votingGuide": "Voting Guide",
-    "evaluationCriteria": "Evaluation Criteria",
+    "evaluationCriteria": "Judge's Scorecard",
     "criteria": {
       "technicality": "Technicality",
       "technicalityDesc": "Can complex patterns be controlled as clear, accurate timing and uninterrupted flow?",
