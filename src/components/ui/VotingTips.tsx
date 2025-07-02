@@ -127,21 +127,14 @@ export const VotingTips: React.FC<VotingTipsProps> = ({
         <div className="space-y-3">
           {/* Total Scores Display */}
           <div className="text-sm font-medium text-white mb-2 text-center">{t('battleView.totalScores')}</div>
-          <div className="flex justify-between items-center text-sm">
-            <div className="flex items-center gap-2">
-              <div className="w-2.5 h-2.5 rounded-full bg-cyan-500"></div>
-              <span className="text-cyan-300 font-medium">{playerAName}</span>
-              <span className="text-cyan-300 font-bold">
-                {totalScores.playerATotal}
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-pink-300 font-bold">
-                {totalScores.playerBTotal}
-              </span>
-              <span className="text-pink-300 font-medium">{playerBName}</span>
-              <div className="w-2.5 h-2.5 rounded-full bg-pink-500"></div>
-            </div>
+          <div className="flex justify-center items-end gap-2 text-3xl font-bold select-none">
+            <span className="text-cyan-300 leading-none">
+              {totalScores.playerATotal}
+            </span>
+            <span className="text-gray-400 text-2xl leading-none">:</span>
+            <span className="text-pink-300 leading-none">
+              {totalScores.playerBTotal}
+            </span>
           </div>
           {totalScores.setCount < 4 && (
             <div className="text-xs text-gray-500 text-center mt-2 mb-3">

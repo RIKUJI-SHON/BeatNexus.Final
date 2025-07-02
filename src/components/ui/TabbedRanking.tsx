@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 import { Trophy, Star, Vote, ArrowRight, Users } from 'lucide-react';
 import { useRankingStore } from '../../store/rankingStore';
 import { useTranslation } from 'react-i18next';
-import { RankingEntry, VoterRankingEntry } from '../../types';
+import { RankingEntry, VoterRankingEntry, SeasonVoterRankingEntry } from '../../types';
+import { getRankFromRating } from '../../utils/rankUtils';
 
 type RankingType = 'player' | 'voter';
 
@@ -21,11 +22,11 @@ export const TabbedRanking: React.FC<TabbedRankingProps> = ({
   const { t } = useTranslation();
   const { 
     rankings, 
-    voterRankings, 
+    seasonVoterRankings,
     loading: rankingsLoading, 
-    voterLoading,
+    seasonVoterLoading,
     fetchRankings, 
-    fetchVoterRankings 
+    fetchSeasonVoterRankings 
   } = useRankingStore();
   
   const [activeTab, setActiveTab] = useState<RankingType>('player');
@@ -33,8 +34,8 @@ export const TabbedRanking: React.FC<TabbedRankingProps> = ({
 
   useEffect(() => {
     fetchRankings();
-    fetchVoterRankings();
-  }, [fetchRankings, fetchVoterRankings]);
+    fetchSeasonVoterRankings();
+  }, [fetchRankings, fetchSeasonVoterRankings]);
 
   const handleTabChange = (isChecked: boolean) => {
     const newTab = isChecked ? 'voter' : 'player';
@@ -87,8 +88,8 @@ export const TabbedRanking: React.FC<TabbedRankingProps> = ({
     return 'text-gray-500';
   };
 
-  const currentData = activeTab === 'player' ? rankings.slice(0, maxItems) : voterRankings.slice(0, maxItems);
-  const currentLoading = activeTab === 'player' ? rankingsLoading : voterLoading;
+  const currentData = activeTab === 'player' ? rankings.slice(0, maxItems) : seasonVoterRankings.slice(0, maxItems);
+  const currentLoading = activeTab === 'player' ? rankingsLoading : seasonVoterLoading;
 
   const renderPlayerRanking = (entry: RankingEntry) => (
     <Link 
@@ -120,35 +121,38 @@ export const TabbedRanking: React.FC<TabbedRankingProps> = ({
     </Link>
   );
 
-  const renderVoterRanking = (entry: VoterRankingEntry) => (
-    <Link 
-      key={entry.user_id}
-      to={`/profile/${entry.user_id}`}
-      className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800/30 transition-all duration-300 group"
-    >
-      <div className="flex items-center justify-center w-8 h-8">
-        {getPositionIcon(entry.position)}
-      </div>
-      
-      <img
-        src={entry.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${entry.user_id}`}
-        alt={entry.username}
-        className="w-10 h-10 rounded-lg object-cover border border-gray-600/50 group-hover:border-purple-500/50 transition-colors"
-      />
-      
-      <div className="flex-1 min-w-0">
-        <div 
-          className="font-medium text-white truncate text-sm group-hover:text-purple-400 transition-colors max-w-[100px] md:max-w-[120px]" 
-          title={entry.username}
-        >
-          {entry.username}
+  const renderVoterRanking = (entry: SeasonVoterRankingEntry) => {
+    
+    return (
+      <Link 
+        key={entry.user_id}
+        to={`/profile/${entry.user_id}`}
+        className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800/30 transition-all duration-300 group"
+      >
+        <div className="flex items-center justify-center w-8 h-8">
+          {getPositionIcon(entry.position)}
         </div>
-        <div className={`text-sm font-bold ${getVoteCountColor(entry.vote_count)}`}>
-          {`${entry.vote_count * 100} VP`}
+        
+        <img
+          src={entry.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${entry.user_id}`}
+          alt={entry.username}
+          className="w-10 h-10 rounded-lg object-cover border border-gray-600/50 group-hover:border-purple-500/50 transition-colors"
+        />
+        
+        <div className="flex-1 min-w-0">
+          <div 
+            className="font-medium text-white truncate text-sm group-hover:text-purple-400 transition-colors max-w-[100px] md:max-w-[120px]" 
+            title={entry.username}
+          >
+            {entry.username}
+          </div>
+          <div className={`text-sm font-bold ${getVoteCountColor(entry.vote_count)}`}>
+            {`${entry.vote_count * 100} VP`}
+          </div>
         </div>
-      </div>
-    </Link>
-  );
+      </Link>
+    );
+  };
 
   return (
     <div className={className}>
@@ -358,7 +362,7 @@ export const TabbedRanking: React.FC<TabbedRankingProps> = ({
           <div className="space-y-1">
             {activeTab === 'player'
               ? (currentData as RankingEntry[]).map(renderPlayerRanking)
-              : (currentData as VoterRankingEntry[]).map(renderVoterRanking)
+              : (currentData as SeasonVoterRankingEntry[]).map(renderVoterRanking)
             }
           </div>
         ) : (
