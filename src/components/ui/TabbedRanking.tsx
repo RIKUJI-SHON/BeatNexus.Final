@@ -124,34 +124,34 @@ export const TabbedRanking: React.FC<TabbedRankingProps> = ({
   const renderVoterRanking = (entry: SeasonVoterRankingEntry) => {
     
     return (
-      <Link 
-        key={entry.user_id}
-        to={`/profile/${entry.user_id}`}
-        className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800/30 transition-all duration-300 group"
-      >
-        <div className="flex items-center justify-center w-8 h-8">
-          {getPositionIcon(entry.position)}
-        </div>
-        
-        <img
-          src={entry.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${entry.user_id}`}
-          alt={entry.username}
-          className="w-10 h-10 rounded-lg object-cover border border-gray-600/50 group-hover:border-purple-500/50 transition-colors"
-        />
-        
-        <div className="flex-1 min-w-0">
+    <Link 
+      key={entry.user_id}
+      to={`/profile/${entry.user_id}`}
+      className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800/30 transition-all duration-300 group"
+    >
+      <div className="flex items-center justify-center w-8 h-8">
+        {getPositionIcon(entry.position)}
+      </div>
+      
+      <img
+        src={entry.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${entry.user_id}`}
+        alt={entry.username}
+        className="w-10 h-10 rounded-lg object-cover border border-gray-600/50 group-hover:border-purple-500/50 transition-colors"
+      />
+      
+      <div className="flex-1 min-w-0">
           <div 
             className="font-medium text-white truncate text-sm group-hover:text-purple-400 transition-colors max-w-[100px] md:max-w-[120px]" 
             title={entry.username}
           >
-            {entry.username}
-          </div>
-          <div className={`text-sm font-bold ${getVoteCountColor(entry.vote_count)}`}>
-            {`${entry.vote_count * 100} VP`}
-          </div>
+          {entry.username}
         </div>
-      </Link>
-    );
+        <div className={`text-sm font-bold ${getVoteCountColor(entry.vote_count)}`}>
+            {`${entry.vote_count * 100} VP`}
+        </div>
+      </div>
+    </Link>
+  );
   };
 
   return (

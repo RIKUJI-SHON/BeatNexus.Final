@@ -149,7 +149,7 @@ export const SimpleBattleCard: React.FC<SimpleBattleCardProps> = ({ battle }) =>
                 </div>
               </div>
 
-              <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-6 mb-6">
+              <div className="grid grid-cols-3 items-center gap-4 md:gap-6 mb-6">
                 {/* Player A */}
                 <div className="text-center">
                   <div className="relative inline-block mb-4">
@@ -161,7 +161,7 @@ export const SimpleBattleCard: React.FC<SimpleBattleCardProps> = ({ battle }) =>
                     </div>
                   </div>
                   <h3 
-                    className="text-xl font-bold text-white mb-2 truncate max-w-[120px] md:max-w-[140px] mx-auto" 
+                    className="text-base sm:text-xl font-bold text-white mb-2 truncate max-w-[90px] sm:max-w-[120px] md:max-w-[140px] mx-auto" 
                     title={battle.contestant_a?.username || t('battleCard.unknownUser')}
                   >
                     {battle.contestant_a?.username || t('battleCard.unknownUser')}
@@ -217,7 +217,7 @@ export const SimpleBattleCard: React.FC<SimpleBattleCardProps> = ({ battle }) =>
                     </div>
                   </div>
                   <h3 
-                    className="text-xl font-bold text-white mb-2 truncate max-w-[120px] md:max-w-[140px] mx-auto" 
+                    className="text-base sm:text-xl font-bold text-white mb-2 truncate max-w-[90px] sm:max-w-[120px] md:max-w-[140px] mx-auto" 
                     title={battle.contestant_b?.username || t('battleCard.unknownUser')}
                   >
                     {battle.contestant_b?.username || t('battleCard.unknownUser')}

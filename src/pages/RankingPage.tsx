@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Trophy, Medal, Crown, Search, Users, Star, Vote, Calendar, ChevronDown } from 'lucide-react';
+import { Trophy, Search, Users, Star, Vote, Calendar, ChevronDown } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Card } from '../components/ui/Card';
 import { useRankingStore } from '../store/rankingStore';
@@ -228,6 +228,9 @@ const RankingPage: React.FC = () => {
     entry.username.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  // 🏆 NEW: Top 3 extraction for highlight display
+  const topThree = filteredData.slice(0, 3);
+
   // Type guards and utility functions
   const isVoterEntry = (entry: any): entry is VoterRankingEntry => {
     return 'vote_count' in entry && typeof entry.vote_count === 'number';
@@ -253,41 +256,16 @@ const RankingPage: React.FC = () => {
     }
   };
 
+  // 表示用: 数字をアイコンの代わりに表示
   const getPositionDisplay = (position: number) => {
-    if (position === 1) {
-      return (
-        <div className="flex items-center justify-center">
-          <div className="relative">
-            <Crown className="h-6 w-6 text-yellow-400" />
-            <div className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full animate-pulse"></div>
-          </div>
-        </div>
-      );
-    } else if (position === 2) {
-      return (
-        <div className="flex items-center justify-center">
-          <div className="relative">
-            <Medal className="h-5 w-5 text-gray-300" />
-            <div className="absolute -top-1 -right-1 w-2 h-2 bg-gray-300 rounded-full animate-pulse"></div>
-          </div>
-        </div>
-      );
-    } else if (position === 3) {
-      return (
-        <div className="flex items-center justify-center">
-          <div className="relative">
-            <Trophy className="h-5 w-5 text-amber-600" />
-            <div className="absolute -top-1 -right-1 w-2 h-2 bg-amber-600 rounded-full animate-pulse"></div>
-          </div>
-        </div>
-      );
-    } else {
-      return (
-        <div className="flex items-center justify-center">
-          <span className="text-lg font-bold text-gray-400">#{position}</span>
-        </div>
-      );
-    }
+    const colorMap: Record<number, string> = {
+      1: 'text-yellow-400',
+      2: 'text-gray-300',
+      3: 'text-amber-600'
+    };
+    return (
+      <span className={`text-lg md:text-xl font-extrabold ${colorMap[position] || 'text-gray-400'}`}>#{position}</span>
+    );
   };
 
   const getRatingColor = (rating: number) => {
@@ -306,6 +284,20 @@ const RankingPage: React.FC = () => {
     if (voteCount >= 10) return 'text-yellow-400';
     if (voteCount >= 5) return 'text-gray-400';
     return 'text-gray-500';
+  };
+
+  // 🏅 トップ3用バッジ画像
+  const getBadgeImage = (position: number) => {
+    switch (position) {
+      case 1:
+        return { src: '/images/1st-place.png', alt: '1st Place' };
+      case 2:
+        return { src: '/images/2nd-place.png', alt: '2nd Place' };
+      case 3:
+        return { src: '/images/3rd-place.png', alt: '3rd Place' };
+      default:
+        return { src: '', alt: '' };
+    }
   };
 
   // ドロップダウンの選択肢を生成
@@ -635,6 +627,80 @@ const RankingPage: React.FC = () => {
         {/* Content Area */}
         <div className="space-y-6">
 
+          {/* 🏆 Top 3 Highlight Section */}
+          {!currentLoading && topThree.length === 3 && (
+            <div className="flex justify-center gap-4">
+              {([...topThree].sort((a, b) => {
+                // 並び順: 2位,1位,3位 で真ん中が1位
+                const orderMap: Record<number, number> = {2: 0, 1: 1, 3: 2};
+                return orderMap[a.position] - orderMap[b.position];
+              })).map((entry) => {
+                const isPlayerTab = activeTab === 'player';
+                const avatarSize = 'h-20 w-20'; // 全員同サイズ
+
+                return (
+                  <Link
+                    key={`top-${entry.user_id}`}
+                    to={`/profile/${entry.user_id}`}
+                    className={`relative flex flex-col items-center p-3 w-28 sm:w-32 md:w-40 h-48 sm:h-52 md:h-56 rounded-xl bg-gray-900/60 border backdrop-blur-sm transition-transform hover:-translate-y-1 ${
+                      isPlayerTab ? 'border-cyan-500' : 'border-purple-500'
+                    }`}
+                    style={{
+                      boxShadow: '0 0 10px rgba(0,0,0,0.3)',
+                    }}
+                  >
+                    {/* Avatar */}
+                    <div className={`rounded-full h-14 w-14 sm:h-16 sm:w-16 md:h-20 md:w-20 overflow-hidden border-4 ${isPlayerTab ? 'border-cyan-500' : 'border-purple-500'}`}>
+                      <img
+                        src={
+                          entry.avatar_url ||
+                          `https://api.dicebear.com/7.x/avataaars/svg?seed=${entry.user_id}`
+                        }
+                        alt={entry.username}
+                        className="object-cover w-full h-full"
+                      />
+                    </div>
+
+                    {/* Username */}
+                    <div className="mt-3 text-center">
+                      <div
+                        className={`font-semibold truncate max-w-[120px] ${
+                          isPlayerTab ? 'text-cyan-200' : 'text-purple-200'
+                        }`}
+                      >
+                        {entry.username}
+                      </div>
+                      <div
+                        className={`text-sm font-bold mt-1 ${
+                          isPlayerTab
+                            ? getRatingColor(getRatingOrSeasonPoints(entry))
+                            : getVoteCountColor(getVoteCount(entry))
+                        }`}
+                      >
+                        {isPlayerTab
+                          ? getRatingOrSeasonPoints(entry)
+                          : `${getVoteCount(entry) * 100} VP`
+                        }
+                      </div>
+                    </div>
+
+                    {/* バッジ画像 */}
+                    {(() => {
+                      const badge = getBadgeImage(entry.position);
+                      return badge.src ? (
+                        <img
+                          src={badge.src}
+                          alt={badge.alt}
+                          className="mt-2 h-8 w-8 sm:h-9 sm:w-9 md:h-10 md:w-10 object-contain"
+                        />
+                      ) : null;
+                    })()}
+                  </Link>
+                );
+              })}
+            </div>
+          )}
+
           {/* ランキングリスト */}
           {currentLoading ? (
             <div className="text-center py-12">
@@ -667,7 +733,7 @@ const RankingPage: React.FC = () => {
               
               {/* リスト */}
               <div className="divide-y divide-gray-700/50">
-                {filteredData.slice(0, 15).map((entry) => {
+                {filteredData.slice(3, 15).map((entry) => {
                   const isTopThree = entry.position <= 3;
                   
                   return (
