@@ -1648,5 +1648,17 @@
     "promoteConfirmMessage": "Promote this member to admin?",
     "demoteConfirmMessage": "Demote this admin to member?",
     "roleUpdateSuccess": "Role updated successfully"
+  },
+  "auth": {
+    "phoneNumber": "Phone Number",
+    "phoneRequirement": "We require a valid phone number to keep our voting system honorable!",
+    "phoneVerify": "Verify Phone Number",
+    "phoneVerifyCodePlaceholder": "Enter verification code",
+    "phoneVerifyCodeButton": "Verify",
+    "phoneVerified": "Phone number verified!",
+    "error": {
+      "invalidPhone": "Phone number is required",
+      "verificationFailed": "Phone verification failed: {{error}}"
+    }
   }
 }

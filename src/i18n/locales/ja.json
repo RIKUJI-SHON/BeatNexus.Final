@@ -1433,5 +1433,17 @@
     "promoteConfirmMessage": "このメンバーを管理者に昇格しますか？",
     "demoteConfirmMessage": "この管理者をメンバーに降格しますか？",
     "roleUpdateSuccess": "役割を更新しました"
+  },
+  "auth": {
+    "phoneNumber": "電話番号",
+    "phoneRequirement": "投票システムの健全性を保つため電話番号認証が必要です！",
+    "phoneVerify": "電話番号を認証する",
+    "phoneVerifyCodePlaceholder": "認証コードを入力",
+    "phoneVerifyCodeButton": "認証",
+    "phoneVerified": "電話番号が認証されました！",
+    "error": {
+      "invalidPhone": "電話番号を入力してください",
+      "verificationFailed": "電話番号認証に失敗しました: {{error}}"
+    }
   }
 }
