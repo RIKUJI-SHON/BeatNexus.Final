@@ -330,8 +330,6 @@ export interface Season {
   start_at: string;
   end_at: string;
   status: 'active' | 'completed' | 'upcoming' | 'ended';
-  created_at: string;
-  updated_at: string;
 }
 
 export interface SeasonRankingEntry {

@@ -204,8 +204,8 @@ export const useRankingStore = create<RankingState>((set, get) => ({
         id: `${entry.user_id}-${seasonId}`,
         season_id: seasonId,
         user_id: entry.user_id,
-        final_rank: entry.rank,
-        final_season_points: entry.points,
+        rank: entry.rank,
+        points: entry.points,
         username: entry.username,
         avatar_url: entry.avatar_url,
         created_at: new Date().toISOString()
