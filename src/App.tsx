@@ -28,6 +28,10 @@ import OnboardingModal from './components/onboarding/OnboardingModal';
 import { useOnboardingStore } from './store/onboardingStore';
 import { useAuthStore } from './store/authStore';
 
+// Battle Result Modal
+import { BattleResultModal } from './components/ui/BattleResultModal';
+import { useBattleResultStore } from './store/battleResultStore';
+
 // Pages
 import HomePage from './pages/HomePage';
 import BattlesPage from './pages/BattlesPage';
@@ -98,6 +102,13 @@ function AppContent() {
   // オンボーディングは AuthProvider で管理されているため、ここでは不要
   const { isAuthModalOpen, authModalMode, closeAuthModal } = useAuthModal();
   
+  // Battle Result Modal
+  const { pendingResult, isModalOpen, closeResultModal } = useBattleResultStore();
+  
+  useEffect(() => {
+    console.log('🎯 [App] BattleResultStore state:', { pendingResult, isModalOpen });
+  }, [pendingResult, isModalOpen]);
+  
   // 言語設定の初期化
   useLanguageInitialization();
 
@@ -141,6 +152,13 @@ function AppContent() {
         onClose={closeAuthModal}
         initialMode={authModalMode}
         setMode={() => {}} // モード変更は不要（Context経由で管理）
+      />
+      
+      {/* Battle Result Modal - Global Level */}
+      <BattleResultModal
+        isOpen={isModalOpen}
+        onClose={closeResultModal}
+        result={pendingResult}
       />
     </Router>
   );

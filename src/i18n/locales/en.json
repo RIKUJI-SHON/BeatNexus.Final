@@ -114,7 +114,22 @@
     "alreadyVoted": "You have already voted in this battle.",
     "loginToVote": "Please login to vote.",
     "participantMessage": "As a participant in this battle, you cannot vote. Watch the voting unfold!",
-    "votes": "votes"
+    "votes": "votes",
+    "format": "Battle Format",
+    "formats": {
+      "main_battle": "Main Battle",
+      "mini_battle": "Mini Battle", 
+      "theme_challenge": "Theme Challenge"
+    },
+    "result": {
+      "victory": "🎉 VICTORY! 🎉",
+      "defeat": "💪 Better Luck Next Time",
+      "against": "Against",
+      "ratingChange": "Rating Change",
+      "currentRank": "Current Rank",
+      "share": "Share Victory",
+      "shareText": "🎵 Just won a beatbox battle on BeatNexus! Rating: {{rating}} | Rank: {{rank}} 🎵"
+    }
   },
   "battleView": {
     "title": "BeatNexus",

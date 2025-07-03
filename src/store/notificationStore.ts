@@ -1,6 +1,94 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { supabase } from '../lib/supabase';
+import { useBattleResultStore } from './battleResultStore';
+import { getCurrentRank } from '../lib/rankUtils';
+
+// Helper function to handle battle result notifications
+const handleBattleResultNotification = async (notificationData: Notification) => {
+  console.log('🎬 [BattleResultModal] handleBattleResultNotification called:', notificationData);
+  
+  if (!notificationData.relatedBattleId) {
+    console.log('❌ [BattleResultModal] No relatedBattleId found');
+    return;
+  }
+
+  try {
+    console.log('🔍 [BattleResultModal] Fetching battle data for ID:', notificationData.relatedBattleId);
+    
+    // バトル情報を取得してモーダルに必要なデータを構築
+    const { data: battleData, error } = await supabase
+      .from('archived_battles')
+      .select(`
+        *,
+        player1_profile:profiles!fk_archived_battles_player1_user_id(username),
+        player2_profile:profiles!fk_archived_battles_player2_user_id(username)
+      `)
+      .eq('original_battle_id', notificationData.relatedBattleId)
+      .single();
+
+    if (error) {
+      console.error('❌ [BattleResultModal] Failed to fetch battle data:', error);
+      return;
+    }
+
+    console.log('📊 [BattleResultModal] Battle data fetched:', battleData);
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      console.log('❌ [BattleResultModal] No authenticated user');
+      return;
+    }
+
+    console.log('👤 [BattleResultModal] Current user ID:', user.id);
+
+    const isPlayer1 = battleData.player1_user_id === user.id;
+    const isPlayer2 = battleData.player2_user_id === user.id;
+    
+    console.log('🤔 [BattleResultModal] Player check:', { isPlayer1, isPlayer2 });
+    
+    if (!isPlayer1 && !isPlayer2) {
+      console.log('❌ [BattleResultModal] User is not a participant in this battle');
+      return;
+    }
+
+    const isWin = battleData.winner_id === user.id;
+    const userRatingChange = isPlayer1 ? battleData.player1_rating_change : battleData.player2_rating_change;
+    const userFinalRating = isPlayer1 ? battleData.player1_final_rating : battleData.player2_final_rating;
+    const opponentUsername = isPlayer1 
+      ? (battleData.player2_profile as any)?.username || 'Unknown'
+      : (battleData.player1_profile as any)?.username || 'Unknown';
+
+    const rankInfo = getCurrentRank(userFinalRating);
+
+    const resultData = {
+      battleId: notificationData.relatedBattleId,
+      isWin,
+      ratingChange: userRatingChange,
+      newRating: userFinalRating,
+      newRank: rankInfo.displayName,
+      opponentUsername,
+      battleFormat: battleData.battle_format,
+    };
+
+    console.log('🎯 [BattleResultModal] Result data prepared:', resultData);
+
+    // BattleResultStoreにデータを設定してモーダルを表示
+    const { showResultModal } = useBattleResultStore.getState();
+    console.log('🎭 [BattleResultModal] Calling showResultModal...');
+    showResultModal(resultData);
+    console.log('✅ [BattleResultModal] showResultModal called successfully');
+
+    // 🆕 モーダル表示後に該当通知を既読（削除）にする
+    if (notificationData.id) {
+      console.log('🗑️ [NotificationStore] Removing battle result notification after modal display');
+      const { removeNotification } = useNotificationStore.getState();
+      removeNotification(notificationData.id);
+    }
+  } catch (error) {
+    console.error('❌ [BattleResultModal] Error handling battle result notification:', error);
+  }
+};
 
 export interface Notification {
   id: string;
@@ -63,6 +151,12 @@ export const useNotificationStore = create<NotificationState>()(
             unreadCount: newUnreadCount,
           };
         });
+
+        // バトル終了通知の場合はモーダルを表示
+        if (notificationData.type === 'battle_win' || notificationData.type === 'battle_lose') {
+          console.log('🔔 [NotificationStore] Battle result notification detected, calling handler');
+          handleBattleResultNotification(newNotification);
+        }
 
         // 同時にデータベースにも保存を試行（エラーは無視）
         get().createNotification(notificationData).catch(error => {
@@ -171,6 +265,19 @@ export const useNotificationStore = create<NotificationState>()(
             loading: false,
             error: null,
           });
+
+          // 🆕 既に存在する未読バトル結果通知があればモーダルを表示
+          const pendingBattleResult = notifications.find(
+            (n) =>
+              !n.isRead &&
+              (n.type === 'battle_win' || n.type === 'battle_lose') &&
+              n.relatedBattleId
+          );
+
+          if (pendingBattleResult) {
+            console.log('🔔 [NotificationStore] Pending battle result found on initial fetch, showing modal');
+            handleBattleResultNotification(pendingBattleResult);
+          }
         } catch (error) {
           console.error('Error in fetchNotifications:', error);
           set({ 

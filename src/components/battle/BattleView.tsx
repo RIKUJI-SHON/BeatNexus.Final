@@ -13,6 +13,7 @@ import { VotingTips } from '../ui/VotingTips';
 import { trackBeatNexusEvents } from '../../utils/analytics';
 import { getCurrentRank } from '../../lib/rankUtils';
 import { supabase } from '../../lib/supabase';
+import { useNotificationStore } from '../../store/notificationStore';
 
 interface BattleViewProps {
   battle: Battle;
@@ -53,6 +54,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
     commentsLoading 
   } = useBattleStore();
   const { user } = useAuthStore();
+  const { addNotification } = useNotificationStore();
   
   // 🔍 厳密な型チェックと参加者判定 - battleStoreの変換後データに合わせて修正
   const player1Id = battle.player1_user_id || (battle as any).contestant_a_id;
@@ -1156,7 +1158,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
         onClose={() => setShowVoteModal(null)}
         onVote={(comment) => handleVote(showVoteModal!, comment)}
         player={showVoteModal || 'A'}
-        playerName={showVoteModal === 'A' ? battle.contestant_a?.username : battle.contestant_b?.username}
+        playerName={showVoteDetails ? (showVoteModal === 'A' ? battle.contestant_a?.username : battle.contestant_b?.username) : battle.contestant_a?.username}
         isLoading={isVoting}
       />
     </div>
