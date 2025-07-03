@@ -333,7 +333,7 @@ const RankingPage: React.FC = () => {
     }
     
     // Past seasons
-    const pastSeasons = seasons.filter(s => s.status === 'completed');
+    const pastSeasons = seasons.filter(s => s.status === 'completed' || s.status === 'ended');
     console.log('[DEBUG] getDropdownOptions: Past seasons count:', pastSeasons.length);
     pastSeasons.forEach(season => {
       options.push({

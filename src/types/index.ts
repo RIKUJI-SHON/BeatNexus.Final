@@ -202,12 +202,15 @@ export interface BattleVote {
 
 export interface BattleComment {
   id: string;
+  post_id: string;
   user_id: string;
-  username: string;
-  avatar_url: string | null;
-  vote: 'A' | 'B';
-  comment: string;
+  content: string;
   created_at: string;
+  updated_at: string;
+  profiles?: {
+    username: string;
+    avatar_url: string | null;
+  };
 }
 
 export interface ArchivedBattleVote {
@@ -326,7 +329,7 @@ export interface Season {
   name: string;
   start_at: string;
   end_at: string;
-  status: 'active' | 'completed' | 'upcoming';
+  status: 'active' | 'completed' | 'upcoming' | 'ended';
   created_at: string;
   updated_at: string;
 }

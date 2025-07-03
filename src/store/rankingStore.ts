@@ -122,23 +122,19 @@ export const useRankingStore = create<RankingState>((set, get) => ({
   fetchSeasons: async () => {
     try {
       console.log('[DEBUG] fetchSeasons: Starting season fetch...');
-      const { data, error } = await supabase
-        .from('seasons')
-        .select('*')
-        .order('start_at', { ascending: false });
+      const { data, error } = await supabase.rpc('get_all_seasons');
 
       console.log('[DEBUG] fetchSeasons: Raw response:', { data, error });
 
       if (error) throw error;
 
-      const currentSeason = data?.find(season => season.status === 'active') || null;
+      const currentSeason = data?.find((season: Season) => season.status === 'active') || null;
       console.log('[DEBUG] fetchSeasons: Current season found:', currentSeason);
       
       set({ 
         seasons: data || [], 
         currentSeason,
         selectedSeasonId: get().selectedSeasonId || currentSeason?.id || null,
-        // 現在のシーズンが存在する場合、デフォルトをcurrent_seasonに変更
         activeRankingType: currentSeason ? 'current_season' : 'all_time',
         activeVoterRankingType: currentSeason ? 'current_season' : 'all_time'
       });
@@ -198,15 +194,24 @@ export const useRankingStore = create<RankingState>((set, get) => ({
   fetchHistoricalSeasonRankings: async (seasonId: string) => {
     set({ historicalLoading: true, historicalError: null });
     try {
-      const { data, error } = await supabase
-        .from('season_rankings')
-        .select('*')
-        .eq('season_id', seasonId)
-        .order('final_rank', { ascending: true });
+      const { data, error } = await supabase.rpc('get_season_rankings_by_id', {
+        p_season_id: seasonId
+      });
 
       if (error) throw error;
 
-      set({ historicalSeasonRankings: data || [] });
+      const historicalRankings = (data || []).map((entry: any) => ({
+        id: `${entry.user_id}-${seasonId}`,
+        season_id: seasonId,
+        user_id: entry.user_id,
+        final_rank: entry.rank,
+        final_season_points: entry.points,
+        username: entry.username,
+        avatar_url: entry.avatar_url,
+        created_at: new Date().toISOString()
+      }));
+
+      set({ historicalSeasonRankings: historicalRankings });
     } catch (error) {
       set({ historicalError: error instanceof Error ? error.message : 'Failed to fetch historical season rankings' });
     } finally {
@@ -217,15 +222,24 @@ export const useRankingStore = create<RankingState>((set, get) => ({
   fetchHistoricalSeasonVoterRankings: async (seasonId: string) => {
     set({ historicalVoterLoading: true, historicalVoterError: null });
     try {
-      const { data, error } = await supabase
-        .from('season_voter_rankings')
-        .select('*')
-        .eq('season_id', seasonId)
-        .order('final_rank', { ascending: true });
+      const { data, error } = await supabase.rpc('get_season_voter_rankings_by_id', {
+        p_season_id: seasonId
+      });
 
       if (error) throw error;
 
-      set({ historicalSeasonVoterRankings: data || [] });
+      const historicalVoterRankings = (data || []).map((entry: any) => ({
+        id: `${entry.user_id}-${seasonId}`,
+        season_id: seasonId,
+        user_id: entry.user_id,
+        final_rank: entry.rank,
+        final_votes: entry.votes,
+        username: entry.username,
+        avatar_url: entry.avatar_url,
+        created_at: new Date().toISOString()
+      }));
+
+      set({ historicalSeasonVoterRankings: historicalVoterRankings });
     } catch (error) {
       set({ historicalVoterError: error instanceof Error ? error.message : 'Failed to fetch historical season voter rankings' });
     } finally {
