@@ -125,17 +125,18 @@ const RankingPage: React.FC = () => {
     if (activeTab === 'player') {
       const rankingType = activeRankingType;
       if (rankingType === 'current_season') {
-        if (selectedSeasonId === currentSeason?.id) {
+        if (selectedSeasonId === currentSeason?.id || !selectedSeasonId) {
           return seasonRankings;
         } else {
-          // 過去のシーズンの場合は変換が必要
-          return historicalSeasonRankings.map((entry, index) => ({
-            ...entry,
-            season_points: entry.final_season_points,
-            rating: 0, // 履歴には含まれないため
+          return historicalSeasonRankings.map(entry => ({
+            user_id: entry.user_id,
+            username: entry.username,
+            avatar_url: entry.avatar_url,
+            season_points: entry.points,
+            position: entry.rank,
+            rating: 0, // 履歴データには通算レーティングは含まれないためダミーを設定
             rank_name: 'Historical',
             rank_color: 'gray',
-            position: entry.final_rank
           }));
         }
       } else {
@@ -144,19 +145,20 @@ const RankingPage: React.FC = () => {
     } else {
       const voterRankingType = activeVoterRankingType;
       if (voterRankingType === 'current_season') {
-        if (selectedSeasonId === currentSeason?.id) {
+        if (selectedSeasonId === currentSeason?.id || !selectedSeasonId) {
           return seasonVoterRankings;
         } else {
-          // 過去のシーズンの場合は変換が必要
-          return historicalSeasonVoterRankings.map((entry, index) => ({
-            ...entry,
-            vote_count: entry.final_season_vote_points,
-            rating: 0,
+          return historicalSeasonVoterRankings.map(entry => ({
+            user_id: entry.user_id,
+            username: entry.username,
+            avatar_url: entry.avatar_url,
+            vote_count: entry.votes,
+            position: entry.rank,
+            rating: 0, // 履歴データには通算レーティングは含まれないためダミーを設定
             rank_name: 'Historical',
             rank_color: 'gray',
-            created_at: entry.created_at,
-            updated_at: entry.created_at,
-            position: entry.final_rank
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
           }));
         }
       } else {

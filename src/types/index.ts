@@ -359,27 +359,33 @@ export interface SeasonVoterRankingEntry {
 }
 
 export interface HistoricalSeasonRanking {
-  id: string;
   season_id: string;
   user_id: string;
   username: string;
   avatar_url: string | null;
-  final_season_points: number;
-  final_rank: number;
-  created_at: string;
+  points: number;
+  rank: number;
 }
 
 export interface HistoricalSeasonVoterRanking {
-  id: string;
   season_id: string;
   user_id: string;
   username: string;
   avatar_url: string | null;
-  final_season_vote_points: number;
-  final_rank: number;
-  created_at: string;
+  votes: number;
+  rank: number;
 }
 
 // ランキングタブの種類を定義
 export type RankingType = 'current_season' | 'all_time';
 export type VoterRankingType = 'current_season' | 'all_time';
+
+// 過去のシーズンの投票者ランキングのエントリを表す型
+export interface SeasonVoterRanking {
+  rank: number;
+  user_id: string;
+  username: string;
+  avatar_url: string | null;
+  votes: number;
+  season_id: string;
+}

@@ -228,18 +228,7 @@ export const useRankingStore = create<RankingState>((set, get) => ({
 
       if (error) throw error;
 
-      const historicalVoterRankings = (data || []).map((entry: any) => ({
-        id: `${entry.user_id}-${seasonId}`,
-        season_id: seasonId,
-        user_id: entry.user_id,
-        final_rank: entry.rank,
-        final_votes: entry.votes,
-        username: entry.username,
-        avatar_url: entry.avatar_url,
-        created_at: new Date().toISOString()
-      }));
-
-      set({ historicalSeasonVoterRankings: historicalVoterRankings });
+      set({ historicalSeasonVoterRankings: data || [] });
     } catch (error) {
       set({ historicalVoterError: error instanceof Error ? error.message : 'Failed to fetch historical season voter rankings' });
     } finally {
