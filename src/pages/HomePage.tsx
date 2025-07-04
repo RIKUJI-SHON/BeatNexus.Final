@@ -367,7 +367,7 @@ const HomePage: React.FC = () => {
             準備はできた？ <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400">バトルを始めよう</span>！
           </h2>
           <p className="text-lg text-gray-300 mb-10 max-w-2xl mx-auto">
-            今すぐ参加して、世界中のビートボクサーと競い合い、ランキングの頂点を目指そう。
+            今すぐ参加して世界中のビートボクサーと競い合い、ランキングの頂点を目指そう
           </p>
           <Button
             variant="primary"

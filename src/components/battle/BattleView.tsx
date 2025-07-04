@@ -838,39 +838,41 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                                   {/* Unified View - Show vote counters for all users, voting buttons only for non-participants */}
                   <div className="flex items-center justify-center gap-4 md:gap-12">
                     
-                    {/* Player A Vote Counter - Always shown */}
-                    <div className="flex flex-col items-center">
-                      <div className={`bg-gray-800 rounded-xl p-2 md:p-4 border shadow-lg transition-all duration-500 relative ${
-                        hasVoted === 'A' 
-                          ? 'border-green-400/60 shadow-green-500/30 scale-110' 
-                          : 'border-cyan-500/30 shadow-lg'
-                      }`}>
-                        <div className={`text-xs font-bold mb-1 text-center transition-colors duration-300 ${
-                          hasVoted === 'A' ? 'text-green-300' : 'text-cyan-300'
+                    {/* Player A Vote Counter - Shown only after vote or participant/archived */}
+                    {showVoteDetails && (
+                      <div className="flex flex-col items-center">
+                        <div className={`bg-gray-800 rounded-xl p-2 md:p-4 border shadow-lg transition-all duration-500 relative ${
+                          hasVoted === 'A' 
+                            ? 'border-green-400/60 shadow-green-500/30 scale-110' 
+                            : 'border-cyan-500/30 shadow-lg'
                         }`}>
-                          {hasVoted === 'A' ? '✅ YOUR VOTE' : 'PLAYER A'}
-                        </div>
-                        <div className="text-center">
-                          <div className={`text-xl md:text-3xl font-bold transition-all duration-500 ease-out transform ${
-                            hasVoted === 'A' 
-                              ? 'text-green-300 animate-pulse' 
-                              : 'text-cyan-300'
+                          <div className={`text-xs font-bold mb-1 text-center transition-colors duration-300 ${
+                            hasVoted === 'A' ? 'text-green-300' : 'text-cyan-300'
                           }`}>
-                            {showVoteDetails ? votesA : '--'}
+                            {hasVoted === 'A' ? '✅ YOUR VOTE' : 'PLAYER A'}
                           </div>
-                          <div className={`text-xs mt-1 transition-colors duration-300 ${
-                            hasVoted === 'A' ? 'text-green-400' : 'text-cyan-400'
-                          }`}>
-                            VOTES
+                          <div className="text-center">
+                            <div className={`text-xl md:text-3xl font-bold transition-all duration-500 ease-out transform ${
+                              hasVoted === 'A' 
+                                ? 'text-green-300 animate-pulse' 
+                                : 'text-cyan-300'
+                            }`}>
+                              {showVoteDetails ? votesA : '--'}
+                            </div>
+                            <div className={`text-xs mt-1 transition-colors duration-300 ${
+                              hasVoted === 'A' ? 'text-green-400' : 'text-cyan-400'
+                            }`}>
+                              VOTES
+                            </div>
                           </div>
+                          {hasVoted === 'A' && (
+                            <div className="absolute -top-2 -right-2 w-4 h-4 md:w-6 md:h-6 bg-green-500 rounded-full flex items-center justify-center shadow-lg animate-bounce">
+                              <span className="text-white text-xs font-bold">✓</span>
+                            </div>
+                          )}
                         </div>
-                        {hasVoted === 'A' && (
-                          <div className="absolute -top-2 -right-2 w-4 h-4 md:w-6 md:h-6 bg-green-500 rounded-full flex items-center justify-center shadow-lg animate-bounce">
-                            <span className="text-white text-xs font-bold">✓</span>
-                          </div>
-                        )}
                       </div>
-                    </div>
+                    )}
                     
                     {/* Player A Button - Only show for non-participants */}
                     {!isUserParticipant && (
@@ -919,8 +921,8 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                     )}
 
                     {/* Central Total Votes Counter or Divider */}
-                    <div className="flex flex-col items-center">
-                      {!showVoteDetails ? (
+                    {!showVoteDetails ? (
+                      <div className="flex flex-col items-center">
                         <div className="bg-gray-800 rounded-xl p-2 md:p-4 border border-purple-500/30 shadow-lg transition-all duration-500">
                           <div className="text-xs font-bold mb-1 text-center text-purple-300">
                             TOTAL
@@ -934,14 +936,14 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                             </div>
                           </div>
                         </div>
-                      ) : (
-                        <>
-                          <div className="w-px h-8 bg-gradient-to-b from-transparent via-gray-500 to-transparent"></div>
-                          <div className="w-3 h-3 rounded-full bg-gradient-to-r from-cyan-500 to-pink-500 animate-pulse shadow-md my-1"></div>
-                          <div className="w-px h-8 bg-gradient-to-b from-transparent via-gray-500 to-transparent"></div>
-                        </>
-                      )}
-                    </div>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="w-px h-8 bg-gradient-to-b from-transparent via-gray-500 to-transparent"></div>
+                        <div className="w-3 h-3 rounded-full bg-gradient-to-r from-cyan-500 to-pink-500 animate-pulse shadow-md my-1"></div>
+                        <div className="w-px h-8 bg-gradient-to-b from-transparent via-gray-500 to-transparent"></div>
+                      </>
+                    )}
 
                     {/* Player B Button - Only show for non-participants */}
                     {!isUserParticipant && (
@@ -989,39 +991,41 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                       </div>
                     )}
 
-                    {/* Player B Vote Counter - Always shown */}
-                    <div className="flex flex-col items-center">
-                      <div className={`bg-gray-800 rounded-xl p-2 md:p-4 border shadow-lg transition-all duration-500 relative ${
-                        hasVoted === 'B' 
-                          ? 'border-green-400/60 shadow-green-500/30 scale-110' 
-                          : 'border-pink-500/30 shadow-lg'
-                      }`}>
-                        <div className={`text-xs font-bold mb-1 text-center transition-colors duration-300 ${
-                          hasVoted === 'B' ? 'text-green-300' : 'text-pink-300'
+                    {/* Player B Vote Counter - Shown only after vote or participant/archived */}
+                    {showVoteDetails && (
+                      <div className="flex flex-col items-center">
+                        <div className={`bg-gray-800 rounded-xl p-2 md:p-4 border shadow-lg transition-all duration-500 relative ${
+                          hasVoted === 'B' 
+                            ? 'border-green-400/60 shadow-green-500/30 scale-110' 
+                            : 'border-pink-500/30 shadow-lg'
                         }`}>
-                          {hasVoted === 'B' ? '✅ YOUR VOTE' : 'PLAYER B'}
-                        </div>
-                        <div className="text-center">
-                          <div className={`text-xl md:text-3xl font-bold transition-all duration-500 ease-out transform ${
-                            hasVoted === 'B' 
-                              ? 'text-green-300 animate-pulse' 
-                              : 'text-pink-300'
+                          <div className={`text-xs font-bold mb-1 text-center transition-colors duration-300 ${
+                            hasVoted === 'B' ? 'text-green-300' : 'text-pink-300'
                           }`}>
-                            {showVoteDetails ? votesB : '--'}
+                            {hasVoted === 'B' ? '✅ YOUR VOTE' : 'PLAYER B'}
                           </div>
-                          <div className={`text-xs mt-1 transition-colors duration-300 ${
-                            hasVoted === 'B' ? 'text-green-400' : 'text-pink-400'
-                          }`}>
-                            VOTES
+                          <div className="text-center">
+                            <div className={`text-xl md:text-3xl font-bold transition-all duration-500 ease-out transform ${
+                              hasVoted === 'B' 
+                                ? 'text-green-300 animate-pulse' 
+                                : 'text-pink-300'
+                            }`}>
+                              {showVoteDetails ? votesB : '--'}
+                            </div>
+                            <div className={`text-xs mt-1 transition-colors duration-300 ${
+                              hasVoted === 'B' ? 'text-green-400' : 'text-pink-400'
+                            }`}>
+                              VOTES
+                            </div>
                           </div>
+                          {hasVoted === 'B' && (
+                            <div className="absolute -top-2 -right-2 w-4 h-4 md:w-6 md:h-6 bg-green-500 rounded-full flex items-center justify-center shadow-lg animate-bounce">
+                              <span className="text-white text-xs font-bold">✓</span>
+                            </div>
+                          )}
                         </div>
-                        {hasVoted === 'B' && (
-                          <div className="absolute -top-2 -right-2 w-4 h-4 md:w-6 md:h-6 bg-green-500 rounded-full flex items-center justify-center shadow-lg animate-bounce">
-                            <span className="text-white text-xs font-bold">✓</span>
-                          </div>
-                        )}
                       </div>
-                    </div>
+                    )}
 
                   </div>
 

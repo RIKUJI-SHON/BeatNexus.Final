@@ -41,7 +41,7 @@ import PostPage from './pages/PostPage';
 import ProfilePage from './pages/ProfilePage';
 import RankingPage from './pages/RankingPage';
 import RatingTestPage from './pages/RatingTestPage';
-import CommunityPage from './pages/CommunityPage';
+import CommunityComingSoonPage from './pages/CommunityComingSoonPage';
 import MyBattlesPage from './pages/MyBattlesPage';
 import SubscriptionPage from './pages/SubscriptionPage';
 import SettingsPage from './pages/SettingsPage';
@@ -79,7 +79,7 @@ function RouterContent() {
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/ranking" element={<RankingPage />} />
             <Route path="/rating-test" element={<RatingTestPage />} />
-            <Route path="/community" element={<CommunityPage />} />
+            <Route path="/community" element={<CommunityComingSoonPage />} />
             <Route path="/community/:id" element={<CommunityDetailPage />} />
             <Route path="/subscription" element={<SubscriptionPage />} />
             <Route path="/settings" element={<SettingsPage />} />

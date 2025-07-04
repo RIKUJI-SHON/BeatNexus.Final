@@ -211,6 +211,10 @@ export interface BattleComment {
     username: string;
     avatar_url: string | null;
   };
+  username?: string;
+  avatar_url?: string | null;
+  vote?: 'A' | 'B';
+  comment?: string | null;
 }
 
 export interface ArchivedBattleVote {
