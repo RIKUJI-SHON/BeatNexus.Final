@@ -49,6 +49,7 @@ import TournamentPage from './pages/TournamentPage';
 import FAQPage from './pages/FAQPage';
 import NotificationTestPage from './pages/NotificationTestPage';
 import CommunityDetailPage from './pages/CommunityDetailPage';
+import BattleResultTestPage from './pages/BattleResultTestPage';
 
 // CSS for animations
 import './tailwind.extensions.css';
@@ -86,6 +87,7 @@ function RouterContent() {
             <Route path="/tournament" element={<TournamentPage />} />
             <Route path="/faq" element={<FAQPage />} />
             <Route path="/notifications/test" element={<NotificationTestPage />} />
+            <Route path="/result-test" element={<BattleResultTestPage />} />
           </Routes>
         </main>
         <Footer />

@@ -128,7 +128,8 @@
       "ratingChange": "Rating Change",
       "currentRank": "Current Rank",
       "share": "Share Victory",
-      "shareText": "🎵 Just won a beatbox battle on BeatNexus! Rating: {{rating}} | Rank: {{rank}} 🎵"
+      "shareText": "🎵 Just won a beatbox battle on BeatNexus! Rating: {{rating}} | Rank: {{rank}} 🎵",
+      "draw": "🤝 DRAW 🤝"
     }
   },
   "battleView": {

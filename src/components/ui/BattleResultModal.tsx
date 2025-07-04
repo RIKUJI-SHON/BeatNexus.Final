@@ -40,6 +40,7 @@ export const BattleResultModal: React.FC<BattleResultModalProps> = ({
     return null;
   }
 
+  const isDraw = !result.isWin && result.ratingChange === 0;
   const isPositiveChange = result.ratingChange > 0;
   const rankInfo = getCurrentRank(result.newRating);
 
@@ -72,6 +73,10 @@ export const BattleResultModal: React.FC<BattleResultModalProps> = ({
               <div className="w-20 h-20 mx-auto bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center text-4xl animate-bounce">
                 🏆
               </div>
+            ) : isDraw ? (
+              <div className="w-20 h-20 mx-auto bg-gradient-to-r from-blue-400 to-cyan-500 rounded-full flex items-center justify-center text-4xl animate-bounce">
+                🤝
+              </div>
             ) : (
               <div className="w-20 h-20 mx-auto bg-gradient-to-r from-gray-600 to-gray-700 rounded-full flex items-center justify-center text-4xl">
                 😔
@@ -83,9 +88,15 @@ export const BattleResultModal: React.FC<BattleResultModalProps> = ({
           <h2 className={`text-3xl font-bold mb-2 ${
             result.isWin 
               ? 'text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500' 
-              : 'text-gray-400'
+              : isDraw
+                ? 'text-blue-400'
+                : 'text-gray-400'
           }`}>
-            {result.isWin ? t('battle.result.victory') : t('battle.result.defeat')}
+            {result.isWin 
+              ? t('battle.result.victory') 
+              : isDraw 
+                ? t('battle.result.draw') 
+                : t('battle.result.defeat')}
           </h2>
 
           <p className="text-gray-400 mb-6">
