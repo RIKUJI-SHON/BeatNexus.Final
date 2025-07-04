@@ -21,7 +21,7 @@ interface BattleViewProps {
 }
 
 export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = false }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [hasVoted, setHasVoted] = useState<'A' | 'B' | null>(null);
   const [votesA, setVotesA] = useState(battle.votes_a);
   const [votesB, setVotesB] = useState(battle.votes_b);
@@ -270,7 +270,56 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
   const playerColorB = '#EF4444'; // Red for Player B
   const gradientBg = 'from-blue-500/20 to-red-500/20';
 
+  const handleShareBattle = () => {
+    const player1Name = battle.contestant_a?.username || 'Player 1';
+    const player2Name = battle.contestant_b?.username || 'Player 2';
 
+    const isParticipant = user?.id === battle.player1_user_id || user?.id === battle.player2_user_id;
+
+    const isJa = i18n.language.startsWith('ja');
+
+    let shareText = '';
+
+    if (isParticipant) {
+      // Participant templates (fixed)
+      const opponentUsername = user?.id === battle.player1_user_id ? player2Name : player1Name;
+      shareText = isJa
+        ? `BeatNexusでバトル中です！🔥\n対戦相手は ${opponentUsername} さん！\n\n最高のパフォーマンスをしたので、ぜひ見て応援（投票）お願いします！💪\n\n投票はこちらから👇`
+        : `I'm in a battle on BeatNexus! 🥊\nFacing off against the incredible ${opponentUsername}.\n\nGave it my all on this one. Check it out and drop a vote if you're feelin' my performance! 🙏\n\nWatch & Vote here 👇`;
+    } else {
+      // Spectator templates (two variants each lang)
+      if (isJa) {
+        const templates = [
+          `【🔥BATTLE ALERT🔥】\n${player1Name} 🆚 ${player2Name}\n\nBeatNexusで超ハイレベルなビートボックスバトルが勃発！\n勝敗はあなたの投票で決まる！今すぐジャッジに参加しよう！\n\n🎤 観戦＆投票はこちら👇`,
+          `君の一票が勝敗を分ける。\n${player1Name} vs ${player2Name}、究極のビートボックス対決！🔥\n\nどっちのフロウが、スキルが、より心を揺さぶる？\nあなたの耳でジャッジしてください！\n\n🎧 投票ページへ👇`
+        ];
+        shareText = templates[Math.floor(Math.random() * templates.length)];
+      } else {
+        const templates = [
+          `🔥 EPIC BATTLE ALERT 🔥\n${player1Name} 🆚 ${player2Name} are throwing down on BeatNexus!\n\nWho takes the win? YOU decide! This is a must-watch for any beatbox fan.\n\n🎤 Cast your vote now! 👇`,
+          `Your vote is the final say. 🎧\n${player1Name} vs ${player2Name} in an insane clash on BeatNexus.\n\nWho's got the better flow, tech, and musicality?\nBe the judge and make your voice heard!\n\nJudge the battle now 👇`
+        ];
+        shareText = templates[Math.floor(Math.random() * templates.length)];
+      }
+    }
+
+    const url = `${window.location.origin}/battle/${battle.id}`;
+    const tags = "#BeatNexus #ビートボックス #Beatbox";
+    const taggedTextBase = `${shareText}\n\n${tags}`;
+
+    // X(Twitter) counts any URL as 23 characters. Reserve that + 1 space.
+    const MAX_TEXT_LEN = 280 - 24; // 23 for URL + 1 space
+
+    let taggedText = taggedTextBase;
+    if (taggedText.length > MAX_TEXT_LEN) {
+      const excess = taggedText.length - MAX_TEXT_LEN;
+      const newShare = shareText.slice(0, Math.max(0, shareText.length - excess - 1)).trimEnd() + '…';
+      taggedText = `${newShare}\n\n${tags}`;
+    }
+
+    const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(taggedText)}&url=${encodeURIComponent(url)}`;
+    window.open(twitterUrl, '_blank');
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-950 to-gray-900 relative overflow-hidden">
@@ -459,7 +508,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
               {/* VS Separator */}
               <div className="flex items-center justify-center lg:px-6">
                 <div className="flex flex-col items-center gap-4">
-                  <VSIcon className="w-12 h-12 md:w-16 md:h-16" />
+                  <VSIcon className="w-20 h-20 md:w-24 md:h-24" />
                 </div>
               </div>
 
@@ -836,42 +885,42 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
               <div className="relative bg-gray-800 rounded-xl p-6 border border-gray-600">
                 
                                   {/* Unified View - Show vote counters for all users, voting buttons only for non-participants */}
-                  <div className="flex items-center justify-center gap-4 md:gap-12">
+                  <div className="flex items-center justify-center gap-4 md:gap-8">
                     
                     {/* Player A Vote Counter - Shown only after vote or participant/archived */}
                     {showVoteDetails && (
-                      <div className="flex flex-col items-center">
-                        <div className={`bg-gray-800 rounded-xl p-2 md:p-4 border shadow-lg transition-all duration-500 relative ${
-                          hasVoted === 'A' 
-                            ? 'border-green-400/60 shadow-green-500/30 scale-110' 
-                            : 'border-cyan-500/30 shadow-lg'
+                    <div className="flex flex-col items-center">
+                        <div className={`bg-gray-800 rounded-xl p-2 md:p-4 border shadow-lg transition-all duration-500 relative w-16 md:w-20 flex flex-col items-center ${
+                        hasVoted === 'A' 
+                            ? 'border-green-400/60 shadow-green-500/30 ring-2 ring-green-400' 
+                          : 'border-cyan-500/30 shadow-lg'
+                      }`}>
+                        <div className={`text-xs font-bold mb-1 text-center transition-colors duration-300 ${
+                          hasVoted === 'A' ? 'text-green-300' : 'text-cyan-300'
                         }`}>
-                          <div className={`text-xs font-bold mb-1 text-center transition-colors duration-300 ${
-                            hasVoted === 'A' ? 'text-green-300' : 'text-cyan-300'
-                          }`}>
-                            {hasVoted === 'A' ? '✅ YOUR VOTE' : 'PLAYER A'}
-                          </div>
-                          <div className="text-center">
-                            <div className={`text-xl md:text-3xl font-bold transition-all duration-500 ease-out transform ${
-                              hasVoted === 'A' 
-                                ? 'text-green-300 animate-pulse' 
-                                : 'text-cyan-300'
-                            }`}>
-                              {showVoteDetails ? votesA : '--'}
-                            </div>
-                            <div className={`text-xs mt-1 transition-colors duration-300 ${
-                              hasVoted === 'A' ? 'text-green-400' : 'text-cyan-400'
-                            }`}>
-                              VOTES
-                            </div>
-                          </div>
-                          {hasVoted === 'A' && (
-                            <div className="absolute -top-2 -right-2 w-4 h-4 md:w-6 md:h-6 bg-green-500 rounded-full flex items-center justify-center shadow-lg animate-bounce">
-                              <span className="text-white text-xs font-bold">✓</span>
-                            </div>
-                          )}
+                            PLAYER A
                         </div>
+                        <div className="text-center">
+                          <div className={`text-xl md:text-3xl font-bold transition-all duration-500 ease-out transform ${
+                            hasVoted === 'A' 
+                              ? 'text-green-300 animate-pulse' 
+                              : 'text-cyan-300'
+                          }`}>
+                            {showVoteDetails ? votesA : '--'}
+                          </div>
+                          <div className={`text-xs mt-1 transition-colors duration-300 ${
+                            hasVoted === 'A' ? 'text-green-400' : 'text-cyan-400'
+                          }`}>
+                            VOTES
+                          </div>
+                        </div>
+                        {hasVoted === 'A' && (
+                          <div className="absolute -top-2 -right-2 w-4 h-4 md:w-6 md:h-6 bg-green-500 rounded-full flex items-center justify-center shadow-lg animate-bounce">
+                            <span className="text-white text-xs font-bold">✓</span>
+                          </div>
+                        )}
                       </div>
+                    </div>
                     )}
                     
                     {/* Player A Button - Only show for non-participants */}
@@ -921,8 +970,8 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                     )}
 
                     {/* Central Total Votes Counter or Divider */}
-                    {!showVoteDetails ? (
-                      <div className="flex flex-col items-center">
+                    {!hasVoted && !isUserParticipant ? (
+                    <div className="flex flex-col items-center">
                         <div className="bg-gray-800 rounded-xl p-2 md:p-4 border border-purple-500/30 shadow-lg transition-all duration-500">
                           <div className="text-xs font-bold mb-1 text-center text-purple-300">
                             TOTAL
@@ -934,16 +983,12 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                             <div className="text-xs mt-1 text-purple-400">
                               VOTES
                             </div>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ) : (
-                      <>
-                        <div className="w-px h-8 bg-gradient-to-b from-transparent via-gray-500 to-transparent"></div>
-                        <div className="w-3 h-3 rounded-full bg-gradient-to-r from-cyan-500 to-pink-500 animate-pulse shadow-md my-1"></div>
-                        <div className="w-px h-8 bg-gradient-to-b from-transparent via-gray-500 to-transparent"></div>
-                      </>
-                    )}
+                      ) : (
+                      <div className="w-px h-12 bg-gradient-to-b from-transparent via-gray-600/60 to-transparent"></div>
+                      )}
 
                     {/* Player B Button - Only show for non-participants */}
                     {!isUserParticipant && (
@@ -993,42 +1038,50 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
 
                     {/* Player B Vote Counter - Shown only after vote or participant/archived */}
                     {showVoteDetails && (
-                      <div className="flex flex-col items-center">
-                        <div className={`bg-gray-800 rounded-xl p-2 md:p-4 border shadow-lg transition-all duration-500 relative ${
-                          hasVoted === 'B' 
-                            ? 'border-green-400/60 shadow-green-500/30 scale-110' 
-                            : 'border-pink-500/30 shadow-lg'
+                    <div className="flex flex-col items-center">
+                        <div className={`bg-gray-800 rounded-xl p-2 md:p-4 border shadow-lg transition-all duration-500 relative w-16 md:w-20 flex flex-col items-center ${
+                        hasVoted === 'B' 
+                            ? 'border-green-400/60 shadow-green-500/30 ring-2 ring-green-400' 
+                          : 'border-pink-500/30 shadow-lg'
+                      }`}>
+                        <div className={`text-xs font-bold mb-1 text-center transition-colors duration-300 ${
+                          hasVoted === 'B' ? 'text-green-300' : 'text-pink-300'
                         }`}>
-                          <div className={`text-xs font-bold mb-1 text-center transition-colors duration-300 ${
-                            hasVoted === 'B' ? 'text-green-300' : 'text-pink-300'
-                          }`}>
-                            {hasVoted === 'B' ? '✅ YOUR VOTE' : 'PLAYER B'}
-                          </div>
-                          <div className="text-center">
-                            <div className={`text-xl md:text-3xl font-bold transition-all duration-500 ease-out transform ${
-                              hasVoted === 'B' 
-                                ? 'text-green-300 animate-pulse' 
-                                : 'text-pink-300'
-                            }`}>
-                              {showVoteDetails ? votesB : '--'}
-                            </div>
-                            <div className={`text-xs mt-1 transition-colors duration-300 ${
-                              hasVoted === 'B' ? 'text-green-400' : 'text-pink-400'
-                            }`}>
-                              VOTES
-                            </div>
-                          </div>
-                          {hasVoted === 'B' && (
-                            <div className="absolute -top-2 -right-2 w-4 h-4 md:w-6 md:h-6 bg-green-500 rounded-full flex items-center justify-center shadow-lg animate-bounce">
-                              <span className="text-white text-xs font-bold">✓</span>
-                            </div>
-                          )}
+                            PLAYER B
                         </div>
+                        <div className="text-center">
+                          <div className={`text-xl md:text-3xl font-bold transition-all duration-500 ease-out transform ${
+                            hasVoted === 'B' 
+                              ? 'text-green-300 animate-pulse' 
+                              : 'text-pink-300'
+                          }`}>
+                            {showVoteDetails ? votesB : '--'}
+                          </div>
+                          <div className={`text-xs mt-1 transition-colors duration-300 ${
+                            hasVoted === 'B' ? 'text-green-400' : 'text-pink-400'
+                          }`}>
+                            VOTES
+                          </div>
+                        </div>
+                        {hasVoted === 'B' && (
+                          <div className="absolute -top-2 -right-2 w-4 h-4 md:w-6 md:h-6 bg-green-500 rounded-full flex items-center justify-center shadow-lg animate-bounce">
+                            <span className="text-white text-xs font-bold">✓</span>
+                          </div>
+                        )}
                       </div>
+                    </div>
                     )}
 
                   </div>
 
+                  {/* (share button moved) */}
+
+              </div>
+
+              {/* Bottom Share Button */}
+              <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-cyan-600 to-purple-600 px-4 py-1.5 rounded-full border border-purple-400 flex items-center gap-2 shadow-md cursor-pointer select-none hover:scale-105 transition-transform z-50" onClick={handleShareBattle}>
+                <Share2 className="h-4 w-4 text-white" />
+                <span className="text-xs font-semibold text-white">SHARE</span>
               </div>
 
               {/* Bottom Ventilation Grilles */}
@@ -1054,7 +1107,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
         </div>
 
         {/* Community Reactions */}
-        <div className="bg-gray-900 rounded-2xl border border-gray-700/50 p-8 relative">
+        <div className="bg-gray-900 rounded-2xl border border-gray-700/50 p-8 relative mt-16 md:mt-20">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center">
               <MessageCircle className="h-5 w-5 text-gray-300" />

@@ -2,7 +2,116 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { supabase } from '../lib/supabase';
 import { useBattleResultStore } from './battleResultStore';
+import { useBattleMatchedStore } from './battleMatchedStore';
 import { getCurrentRank } from '../lib/rankUtils';
+import { BattleMatchedData } from '../components/ui/BattleMatchedModal';
+
+// Helper function to handle battle matched notifications
+const handleBattleMatchedNotification = async (notificationData: Notification) => {
+  console.log('⚡ [BattleMatchedModal] handleBattleMatchedNotification called:', notificationData);
+  
+  if (!notificationData.relatedBattleId) {
+    console.log('❌ [BattleMatchedModal] No relatedBattleId found');
+    return;
+  }
+
+  console.log('🔍 [BattleMatchedModal] Starting notification processing for battle:', notificationData.relatedBattleId);
+
+  try {
+    console.log('🔍 [BattleMatchedModal] Fetching battle data for ID:', notificationData.relatedBattleId);
+    
+    // アクティブバトル情報を取得
+    const { data: battleData, error } = await supabase
+      .from('active_battles')
+      .select('*')
+      .eq('id', notificationData.relatedBattleId)
+      .single();
+
+    if (error) {
+      console.error('❌ [BattleMatchedModal] Failed to fetch battle data:', error);
+      return;
+    }
+
+    console.log('📊 [BattleMatchedModal] Battle data fetched:', battleData);
+
+    // プレイヤー情報を別途取得
+    const { data: player1Profile, error: player1Error } = await supabase
+      .from('profiles')
+      .select('username')
+      .eq('id', battleData.player1_user_id)
+      .single();
+
+    const { data: player2Profile, error: player2Error } = await supabase
+      .from('profiles')
+      .select('username')
+      .eq('id', battleData.player2_user_id)
+      .single();
+
+    if (player1Error || player2Error) {
+      // プロフィール取得に失敗した場合でもモーダルは表示する（Unknown 表示）
+      console.warn('⚠️ [BattleMatchedModal] Could not fetch player profiles:', { player1Error, player2Error });
+    }
+
+    console.log('👥 [BattleMatchedModal] Player profiles fetched:', { player1Profile, player2Profile });
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      console.log('❌ [BattleMatchedModal] No authenticated user');
+      return;
+    }
+
+    console.log('👤 [BattleMatchedModal] Current user ID:', user.id);
+
+    const isPlayer1 = battleData.player1_user_id === user.id;
+    const isPlayer2 = battleData.player2_user_id === user.id;
+    
+    console.log('🤔 [BattleMatchedModal] Player check:', { isPlayer1, isPlayer2 });
+    
+    if (!isPlayer1 && !isPlayer2) {
+      console.log('❌ [BattleMatchedModal] User is not a participant in this battle');
+      return;
+    }
+
+    const opponentUsername = isPlayer1 
+      ? player2Profile?.username || 'Unknown'
+      : player1Profile?.username || 'Unknown';
+
+    const matchData: BattleMatchedData = {
+      battleId: notificationData.relatedBattleId,
+      opponentUsername,
+      battleFormat: battleData.battle_format,
+      votingEndsAt: battleData.end_voting_at,
+      matchType: 'immediate' as const, // Edge Functionからの通知は即座マッチング
+    };
+
+    console.log('🎯 [BattleMatchedModal] Match data prepared:', matchData);
+
+    // BattleMatchedStoreにデータを設定してモーダルを表示
+    console.log('🎯 [BattleMatchedModal] About to call showMatchModal with data:', matchData);
+    const { showMatchModal } = useBattleMatchedStore.getState();
+    console.log('⚡ [BattleMatchedModal] Got showMatchModal function from store');
+    
+    showMatchModal(matchData);
+    
+    // ストア状態確認
+    const storeState = useBattleMatchedStore.getState();
+    console.log('✅ [BattleMatchedModal] showMatchModal called successfully, store state:', {
+      isModalOpen: storeState.isModalOpen,
+      hasPendingMatch: !!storeState.pendingMatch,
+      pendingMatchData: storeState.pendingMatch
+    });
+
+    // 🆕 モーダル表示後に該当通知をデータベースから削除
+    if (notificationData.id) {
+      console.log('🗑️ [NotificationStore] Deleting battle matched notification from database after modal display');
+      const { deleteNotification } = useNotificationStore.getState();
+      await deleteNotification(notificationData.id);
+      console.log('✅ [NotificationStore] Battle matched notification deleted from database');
+    }
+  } catch (error) {
+    console.error('❌ [BattleMatchedModal] Error handling battle matched notification:', error);
+  }
+};
 
 // Helper function to handle battle result notifications
 const handleBattleResultNotification = async (notificationData: Notification) => {
@@ -21,8 +130,8 @@ const handleBattleResultNotification = async (notificationData: Notification) =>
       .from('archived_battles')
       .select(`
         *,
-        player1_profile:profiles!fk_archived_battles_player1_user_id(username),
-        player2_profile:profiles!fk_archived_battles_player2_user_id(username)
+        player1_profile:profiles!player1_user_id(username),
+        player2_profile:profiles!player2_user_id(username)
       `)
       .eq('original_battle_id', notificationData.relatedBattleId)
       .single();
@@ -79,11 +188,12 @@ const handleBattleResultNotification = async (notificationData: Notification) =>
     showResultModal(resultData);
     console.log('✅ [BattleResultModal] showResultModal called successfully');
 
-    // 🆕 モーダル表示後に該当通知を既読（削除）にする
+    // 🆕 モーダル表示後に該当通知をデータベースから削除
     if (notificationData.id) {
-      console.log('🗑️ [NotificationStore] Removing battle result notification after modal display');
-      const { removeNotification } = useNotificationStore.getState();
-      removeNotification(notificationData.id);
+      console.log('🗑️ [NotificationStore] Deleting battle result notification from database after modal display');
+      const { deleteNotification } = useNotificationStore.getState();
+      await deleteNotification(notificationData.id);
+      console.log('✅ [NotificationStore] Battle result notification deleted from database');
     }
   } catch (error) {
     console.error('❌ [BattleResultModal] Error handling battle result notification:', error);
@@ -156,6 +266,12 @@ export const useNotificationStore = create<NotificationState>()(
         if (notificationData.type === 'battle_win' || notificationData.type === 'battle_lose') {
           console.log('🔔 [NotificationStore] Battle result notification detected, calling handler');
           handleBattleResultNotification(newNotification);
+        }
+
+        // ✅ バトルマッチング通知の場合はマッチングモーダルを表示
+        if (notificationData.type === 'battle_matched') {
+          console.log('⚡ [NotificationStore] Battle matched notification detected, calling handler');
+          handleBattleMatchedNotification(newNotification);
         }
 
         // 同時にデータベースにも保存を試行（エラーは無視）
@@ -277,6 +393,29 @@ export const useNotificationStore = create<NotificationState>()(
           if (pendingBattleResult) {
             console.log('🔔 [NotificationStore] Pending battle result found on initial fetch, showing modal');
             handleBattleResultNotification(pendingBattleResult);
+          }
+
+          // ✅ 既に存在する未読バトルマッチング通知があればモーダルを表示
+          const pendingBattleMatched = notifications.find(
+            (n) =>
+              !n.isRead &&
+              n.type === 'battle_matched' &&
+              n.relatedBattleId
+          );
+
+          console.log('🔍 [NotificationStore] Battle matched notification search result:', {
+            totalNotifications: notifications.length,
+            unreadNotifications: notifications.filter(n => !n.isRead).length,
+            battleMatchedNotifications: notifications.filter(n => n.type === 'battle_matched').length,
+            foundPending: !!pendingBattleMatched,
+            pendingBattleMatched
+          });
+
+          if (pendingBattleMatched) {
+            console.log('⚡ [NotificationStore] Pending battle matched found on initial fetch, showing modal');
+            await handleBattleMatchedNotification(pendingBattleMatched);
+          } else {
+            console.log('🚫 [NotificationStore] No pending battle matched notifications found');
           }
         } catch (error) {
           console.error('Error in fetchNotifications:', error);

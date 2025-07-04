@@ -130,6 +130,15 @@
       "share": "Share Victory",
       "shareText": "🎵 Just won a beatbox battle on BeatNexus! Rating: {{rating}} | Rank: {{rank}} 🎵",
       "draw": "🤝 DRAW 🤝"
+    },
+    "matched": {
+      "title": "⚡ Battle Match Found! ⚡",
+      "against": "vs",
+      "votingPeriod": "5-day voting period",
+      "encouragement": "Your battle has started! Let the community vote on your performance.",
+      "viewBattle": "View Battle",
+      "share": "Share on Twitter",
+      "shareText": "My battle against {{opponent}} in {{format}} has started! Come vote!"
     }
   },
   "battleView": {

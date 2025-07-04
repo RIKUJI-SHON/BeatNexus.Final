@@ -32,6 +32,10 @@ import { useAuthStore } from './store/authStore';
 import { BattleResultModal } from './components/ui/BattleResultModal';
 import { useBattleResultStore } from './store/battleResultStore';
 
+// Battle Matched Modal
+import { BattleMatchedModal } from './components/ui/BattleMatchedModal';
+import { useBattleMatchedStore } from './store/battleMatchedStore';
+
 // Pages
 import HomePage from './pages/HomePage';
 import BattlesPage from './pages/BattlesPage';
@@ -107,9 +111,20 @@ function AppContent() {
   // Battle Result Modal
   const { pendingResult, isModalOpen, closeResultModal } = useBattleResultStore();
   
+  // Battle Matched Modal
+  const { pendingMatch, isModalOpen: isMatchModalOpen, closeMatchModal } = useBattleMatchedStore();
+  
   useEffect(() => {
     console.log('🎯 [App] BattleResultStore state:', { pendingResult, isModalOpen });
   }, [pendingResult, isModalOpen]);
+  
+  useEffect(() => {
+    console.log('⚡ [App] BattleMatchedStore state change detected:', { 
+      isMatchModalOpen, 
+      hasPendingMatch: !!pendingMatch,
+      pendingMatchData: pendingMatch 
+    });
+  }, [isMatchModalOpen, pendingMatch]);
   
   // 言語設定の初期化
   useLanguageInitialization();
@@ -120,17 +135,25 @@ function AppContent() {
     
     // バトルのリアルタイム更新は廃止しました（UX改善のため）
     
-    // 通知のリアルタイム更新を購読
-    const unsubscribeNotifications = subscribeToNotifications();
-    
-    // 初期の通知データを取得
-    fetchNotifications();
+    // ユーザーがログインしている場合のみ通知関連の処理を実行
+    if (user) {
+      console.log('🔄 [App] User authenticated, starting notification system for user:', user.id);
+      
+      // 通知のリアルタイム更新を購読
+      const unsubscribeNotifications = subscribeToNotifications();
+      
+      // 初期の通知データを取得
+      fetchNotifications();
 
-    // クリーンアップ
-    return () => {
-      unsubscribeNotifications();
-    };
-  }, [subscribeToNotifications, fetchNotifications]);
+      // クリーンアップ
+      return () => {
+        console.log('🧹 [App] Cleaning up notification subscription');
+        unsubscribeNotifications();
+      };
+    } else {
+      console.log('🚫 [App] No authenticated user, skipping notification system');
+    }
+  }, [user, subscribeToNotifications, fetchNotifications]);
 
   // 注意: オンボーディング表示は AuthProvider で新規アカウント作成時のみトリガーされる
   // ここでは手動でのオンボーディング表示制御はしない
@@ -161,6 +184,13 @@ function AppContent() {
         isOpen={isModalOpen}
         onClose={closeResultModal}
         result={pendingResult}
+      />
+      
+      {/* Battle Matched Modal - Global Level */}
+      <BattleMatchedModal
+        isOpen={isMatchModalOpen}
+        onClose={closeMatchModal}
+        matchData={pendingMatch}
       />
     </Router>
   );

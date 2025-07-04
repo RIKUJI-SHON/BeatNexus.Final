@@ -343,7 +343,7 @@ const BattleReplayPage: React.FC = () => {
                 className="truncate max-w-[40vw] text-2xl sm:text-3xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-white to-pink-400 text-right"
                 title={battle.contestant_a?.username || 'Player A'}
               >
-                {battle.contestant_a?.username || 'Player A'}
+              {battle.contestant_a?.username || 'Player A'}
               </span>
 
               {/* VS Label (fixed width, no shrink) */}
@@ -358,7 +358,7 @@ const BattleReplayPage: React.FC = () => {
                 className="truncate max-w-[40vw] text-2xl sm:text-3xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-white to-pink-400"
                 title={battle.contestant_b?.username || 'Player B'}
               >
-                {battle.contestant_b?.username || 'Player B'}
+              {battle.contestant_b?.username || 'Player B'}
               </span>
             </div>
           </div>
@@ -551,7 +551,7 @@ const BattleReplayPage: React.FC = () => {
                       </div>
                     )}
                   </div>
-
+                    
                   {/* Player B Name - Mobile (Below Video) */}
                   <div className="flex items-center gap-3 mt-4 lg:hidden justify-end">
                     <div className="flex flex-col items-end">
@@ -562,25 +562,25 @@ const BattleReplayPage: React.FC = () => {
                         {playerRatings.playerB.loading ? '...' : playerRatings.playerB.rating}
                       </div>
                     </div>
-                    <div
-                      className="w-10 h-10 rounded-full p-1 flex-shrink-0"
-                      style={{ background: `linear-gradient(135deg, ${playerColorB}, ${playerColorB}80)` }}
-                    >
-                      <img
-                        src={battle.contestant_b?.avatar_url || getDefaultAvatarUrl(battle.player2_user_id)}
-                        alt={battle.contestant_b?.username}
-                        className="w-full h-full rounded-full border border-gray-900 object-cover"
-                      />
-                    </div>
-                  </div>
-
-                  {isBWinner && (
-                    <div className="absolute top-4 right-4">
-                      <div className="bg-gradient-to-r from-yellow-500 to-amber-600 rounded-full p-2 shadow-lg animate-pulse">
-                        <Crown className="h-5 w-5 text-white" />
+                        <div 
+                          className="w-10 h-10 rounded-full p-1 flex-shrink-0"
+                          style={{ background: `linear-gradient(135deg, ${playerColorB}, ${playerColorB}80)` }}
+                        >
+                          <img
+                            src={battle.contestant_b?.avatar_url || getDefaultAvatarUrl(battle.player2_user_id)}
+                            alt={battle.contestant_b?.username}
+                            className="w-full h-full rounded-full border border-gray-900 object-cover"
+                          />
                       </div>
                     </div>
-                  )}
+
+                    {isBWinner && (
+                      <div className="absolute top-4 right-4">
+                        <div className="bg-gradient-to-r from-yellow-500 to-amber-600 rounded-full p-2 shadow-lg animate-pulse">
+                          <Crown className="h-5 w-5 text-white" />
+                        </div>
+                      </div>
+                    )}
                 </div>
               </div>
               

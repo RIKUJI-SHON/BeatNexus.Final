@@ -139,9 +139,18 @@
       "against": "対戦相手",
       "ratingChange": "レーティング変化",
       "currentRank": "現在のランク",
-      "share": "勝利をシェア",
-      "shareText": "🎵 BeatNexusでビートボクシングバトルに勝利！レーティング: {{rating}} | ランク: {{rank}} 🎵",
+      "share": "シェア",
+      "shareText": "🎵 BeatNexusでビートボックスバトルに勝利！レーティング: {{rating}} | ランク: {{rank}} 🎵",
       "draw": "🤝 引き分け 🤝"
+    },
+    "matched": {
+      "title": "⚡ バトルマッチングが完了！ ⚡",
+      "against": "対戦相手",
+      "votingPeriod": "投票期間は5日間",
+      "encouragement": "バトルが開始されました！コミュニティにあなたのパフォーマンスを投票してもらいましょう。",
+      "viewBattle": "バトルを見る",
+      "share": "Twitterでシェア",
+      "shareText": "{{opponent}}さんとの{{format}}バトルが開始されました！投票にご参加ください！"
     }
   },
   "battleView": {

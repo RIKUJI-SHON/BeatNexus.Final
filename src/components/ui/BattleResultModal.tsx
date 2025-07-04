@@ -5,6 +5,7 @@ import { Button } from './Button';
 import { RankBadge } from '../profile/RankBadge';
 import { useBattleResultStore, BattleResult } from '../../store/battleResultStore';
 import { getCurrentRank } from '../../lib/rankUtils';
+import { Share2 } from 'lucide-react';
 
 interface BattleResultModalProps {
   isOpen: boolean;
@@ -124,37 +125,36 @@ export const BattleResultModal: React.FC<BattleResultModalProps> = ({
             </div>
           </div>
 
-          {/* Battle Format */}
-          <p className="text-gray-500 text-sm mb-6">
-            {t('battle.format')}: {t(`battle.formats.${result.battleFormat.toLowerCase()}`)}
-          </p>
-
-          {/* Action Buttons */}
-          <div className="flex space-x-3 justify-center">
-            <Button
-              onClick={onClose}
-              variant="secondary"
-              className="px-6"
-            >
-              {t('common.close')}
-            </Button>
-            
-            {result.isWin && (
-              <Button
+          {/* Share Button Only */}
+          {result.isWin && (
+            <div className="flex justify-center mb-4">
+              <button
+                className="button"
                 onClick={() => {
-                                   const text = t('battle.result.shareText', {
-                   rating: result.newRating,
-                   rank: rankInfo.displayName
-                 });
-                  const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(window.location.origin)}`;
+                  const text = t('battle.result.shareText', {
+                    rating: result.newRating,
+                    rank: rankInfo.displayName
+                  });
+                  const tags = "#BeatNexus #ビートボックス #Beatbox";
+                  const taggedBase = `${text}\n\n${tags}`;
+
+                  const MAX_TEXT_LEN = 280 - 24; // Reserve for URL
+                  let taggedText = taggedBase;
+                  if (taggedText.length > MAX_TEXT_LEN) {
+                    const excess = taggedText.length - MAX_TEXT_LEN;
+                    const newText = text.slice(0, Math.max(0, text.length - excess - 1)).trimEnd() + '…';
+                    taggedText = `${newText}\n\n${tags}`;
+                  }
+
+                  const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(taggedText)}&url=${encodeURIComponent(window.location.origin)}`;
                   window.open(url, '_blank');
                 }}
-                className="px-6 bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600"
               >
-                {t('battle.result.share')} 🐦
-              </Button>
-            )}
-          </div>
+                <Share2 className="icon" />
+                {t('battle.result.share')}
+              </button>
+            </div>
+          )}
         </div>
       </Modal>
 
@@ -184,6 +184,43 @@ export const BattleResultModal: React.FC<BattleResultModalProps> = ({
             transform: translateY(100vh) rotate(720deg);
             opacity: 0;
           }
+        }
+
+        /* Custom Button Styles */
+        .button {
+          cursor: pointer;
+          padding: 1em;
+          font-size: 1em;
+          width: 7em;
+          aspect-ratio: 1/0.25;
+          color: white;
+          background: #212121;
+          background-size: cover;
+          background-blend-mode: overlay;
+          border-radius: 0.5em;
+          outline: 0.1em solid #353535;
+          border: 0;
+          box-shadow: 0 0 1em 1em rgba(0, 0, 0, 0.1);
+          transition: all 0.3s ease-in-out;
+          position: relative;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.5em;
+        }
+
+        .button:hover {
+          transform: scale(1.1);
+          box-shadow: 0 0 1em 0.45em rgba(0, 0, 0, 0.1);
+          background: radial-gradient(circle at bottom, rgba(50, 100, 180, 0.5) 10%, #212121 70%);
+          outline: 0;
+        }
+
+        .icon {
+          width: 1em;
+          height: 1em;
+          stroke: white;
+          fill: white;
         }
       `}</style>
     </>
