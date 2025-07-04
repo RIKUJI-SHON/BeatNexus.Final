@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { Button } from '../components/ui/Button';
 import { useBattleResultStore } from '../store/battleResultStore';
+import { useBattleMatchedStore } from '../store/battleMatchedStore';
 
 const BattleResultTestPage: React.FC = () => {
   const { showResultModal } = useBattleResultStore();
+  const { showMatchModal } = useBattleMatchedStore();
 
   const handleShowVictory = () => {
     showResultModal({
@@ -41,6 +43,16 @@ const BattleResultTestPage: React.FC = () => {
     });
   };
 
+  const handleShowMatch = () => {
+    showMatchModal({
+      battleId: 'test-battle-004',
+      opponentUsername: 'OpponentM',
+      battleFormat: 'MAIN_BATTLE',
+      votingEndsAt: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(), // 5 days later
+      matchType: 'immediate',
+    });
+  };
+
   return (
     <div className="min-h-screen bg-gray-950 flex flex-col items-center justify-center gap-6 p-6">
       <h1 className="text-3xl font-bold text-white mb-8">Battle Result Modal Test</h1>
@@ -56,6 +68,10 @@ const BattleResultTestPage: React.FC = () => {
 
         <Button onClick={handleShowDefeat} className="bg-red-600 hover:bg-red-700 px-8 py-3 font-semibold">
           敗北モーダル
+        </Button>
+
+        <Button onClick={handleShowMatch} className="bg-purple-600 hover:bg-purple-700 px-8 py-3 font-semibold">
+          マッチメイクモーダル
         </Button>
       </div>
     </div>

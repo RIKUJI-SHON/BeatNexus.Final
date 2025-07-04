@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Modal } from './Modal';
 import { Button } from './Button';
 import { Share2, Zap, Clock } from 'lucide-react';
+import i18n from '../../i18n';
 
 export interface BattleMatchedData {
   battleId: string;
@@ -131,16 +132,30 @@ export const BattleMatchedModal: React.FC<BattleMatchedModalProps> = ({
             <button
               className="battle-share-button"
               onClick={() => {
-                const text = t('battle.matched.shareText', {
-                  opponent: matchData.opponentUsername,
-                  format: t(`battle.formats.${matchData.battleFormat}`)
-                });
-                const tags = "#BeatNexus #ビートボックス #Beatbox";
-                const battleUrl = `${window.location.origin}/battle/${matchData.battleId}`;
-                const shareText = `${text}\n\n${battleUrl}\n\n${tags}`;
+                // --- Generate share text identical to BattleView participant templates ---
+                const opponentUsername = matchData.opponentUsername || 'Opponent';
+                const isJa = i18n.language.startsWith('ja');
 
-                const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`;
-                window.open(url, '_blank');
+                const shareText = isJa
+                  ? `BeatNexusでバトル中です！🔥\n対戦相手は ${opponentUsername} さん！\n\n最高のパフォーマンスをしたので、ぜひ見て応援（投票）お願いします！💪\n\n投票はこちらから👇`
+                  : `I'm in a battle on BeatNexus! 🥊\nFacing off against the incredible ${opponentUsername}.\n\nGave it my all on this one. Check it out and drop a vote if you're feelin' my performance! 🙏\n\nWatch & Vote here 👇`;
+
+                const url = `${window.location.origin}/battle/${matchData.battleId}`;
+                const tags = "#BeatNexus #ビートボックス #Beatbox";
+                const taggedTextBase = `${shareText}\n\n${tags}`;
+
+                // X(Twitter) counts any URL as 23 characters. Reserve that + 1 space.
+                const MAX_TEXT_LEN = 280 - 24; // 23 for URL + 1 space
+
+                let taggedText = taggedTextBase;
+                if (taggedText.length > MAX_TEXT_LEN) {
+                  const excess = taggedText.length - MAX_TEXT_LEN;
+                  const newShare = shareText.slice(0, Math.max(0, shareText.length - excess - 1)).trimEnd() + '…';
+                  taggedText = `${newShare}\n\n${tags}`;
+                }
+
+                const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(taggedText)}&url=${encodeURIComponent(url)}`;
+                window.open(twitterUrl, '_blank');
               }}
             >
               <Share2 className="icon" />
