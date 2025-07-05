@@ -26,7 +26,7 @@ export const FeatureSection: React.FC = () => {
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-gray-900 mb-4">How BeatNexus Works</h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Your next step into the beatboxing world. Create battles, get feedback, improve your skills.
+            Your next step into the beatbox world. Create battles, get feedback, improve your skills.
           </p>
         </div>
         
@@ -46,7 +46,7 @@ export const FeatureSection: React.FC = () => {
           <FeatureCard
             icon={<Award className="h-6 w-6" />}
             title="Build Your Profile"
-            description="Climb the ranks, earn badges, and build your reputation in the beatboxing community."
+            description="Climb the ranks, earn badges, and build your reputation in the beatbox community."
           />
           
           <FeatureCard

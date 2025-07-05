@@ -1,7 +1,7 @@
 {
   "name": "BeatNexus - Beatbox Battle Community",
   "short_name": "BeatNexus", 
-  "description": "ビートボクシング愛好者向けの競技プラットフォーム",
+  "description": "ビートボクサーのための競技プラットフォーム",
   "start_url": "/?utm_source=pwa",
   "display": "standalone",
   "background_color": "#0f172a",

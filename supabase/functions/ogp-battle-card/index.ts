@@ -1,6 +1,7 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { render } from "./resvg_runtime.js";
 
 // CORS ヘッダー（必要ならオリジン制限）
 const corsHeaders = {
@@ -11,7 +12,7 @@ const corsHeaders = {
 // 環境変数
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-const SITE_BASE_URL = Deno.env.get("PUBLIC_SITE_URL") ?? "https://beatnexus.vercel.app";
+const SITE_BASE_URL = "https://beat-nexus-heatbeat-test.vercel.app";
 
 if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
   console.error("Missing Supabase env vars");
@@ -26,6 +27,8 @@ interface Player {
   avatar_url: string | null;
   username: string | null;
 }
+
+// resvg_wasm は実行時に動的 import される（resvg_runtime.js 内）
 
 async function fetchPlayers(battleId: string) {
   const admin = createClient(SUPABASE_URL!, SUPABASE_SERVICE_ROLE_KEY!);
@@ -94,7 +97,7 @@ function buildSvg(p1Url: string, p2Url: string) {
 }
 
 serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response("ok");
+  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
   const serviceRole = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
@@ -104,6 +107,7 @@ serve(async (req) => {
 
   const { searchParams } = new URL(req.url);
   const battleId = searchParams.get("battle_id");
+  const format = (searchParams.get("format") ?? "png").toLowerCase();
 
   const client = createClient(supabaseUrl, serviceRole);
 
@@ -116,5 +120,25 @@ serve(async (req) => {
   if (!players) return new Response("not found", { status: 404 });
 
   const svg = buildSvg(players.p1, players.p2);
-  return new Response(svg, { headers: { "Content-Type": "image/svg+xml" } });
+
+  if (format === "svg") {
+    return new Response(svg, {
+      headers: { "Content-Type": "image/svg+xml", ...corsHeaders },
+    });
+  }
+
+  // PNG 変換
+  try {
+    // resvg_wasm は実行時に動的 import される（resvg_runtime.js 内）
+    const pngData = await render(svg, { width: 1200 });
+    return new Response(pngData, {
+      headers: { "Content-Type": "image/png", ...corsHeaders },
+    });
+  } catch (e) {
+    console.error("PNG conversion failed", e);
+    // フォールバックとして SVG を返す
+    return new Response(svg, {
+      headers: { "Content-Type": "image/svg+xml", ...corsHeaders },
+    });
+  }
 }); 

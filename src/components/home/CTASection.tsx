@@ -26,7 +26,7 @@ export const CTASection: React.FC = () => {
     <section className="py-16 bg-gradient-to-r from-blue-900 to-purple-900 text-white">
       <div className="container mx-auto px-4">
         <div className="max-w-3xl mx-auto text-center">
-          <h2 className="text-3xl font-bold mb-6">Ready to Showcase Your Beatboxing Skills?</h2>
+          <h2 className="text-3xl font-bold mb-6">Ready to Showcase Your Beatbox Skills?</h2>
           <p className="text-xl text-blue-100 mb-8">
             Join thousands of beatboxers from around the world. Create battles, receive feedback, and improve your skills.
           </p>

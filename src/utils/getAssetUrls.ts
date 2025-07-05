@@ -18,7 +18,7 @@ export const generateManifest = () => {
   return {
     name: "BeatNexus - Beatbox Battle Community",
     short_name: "BeatNexus",
-    description: "ビートボクシング愛好者向けの競技プラットフォーム。動画投稿、自動マッチング、コミュニティ投票でバトルを楽しもう！",
+    description: "ビートボックサーのための競技プラットフォーム。動画投稿、自動マッチング、コミュニティ投票でバトルを楽しもう！",
     start_url: "/",
     display: "standalone",
     background_color: "#0f172a",

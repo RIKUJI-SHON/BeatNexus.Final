@@ -20,10 +20,10 @@ export const HeroBanner: React.FC = () => {
         <div className="flex flex-col md:flex-row items-center">
           <div className="md:w-1/2 mb-10 md:mb-0">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight mb-4">
-              Next Level <span className="text-blue-300">Beatboxing</span> Community
+              Next Level <span className="text-blue-300">Beatbox</span> Community
             </h1>
             <p className="text-xl text-blue-100 mb-8 max-w-lg">
-              Battle, learn, and grow with the world's most vibrant beatboxing platform. Join battles, get votes, climb the ranks!
+              Battle, learn, and grow with the world's most vibrant beatbox platform. Join battles, get votes, climb the ranks!
             </p>
             <div className="flex flex-wrap gap-4">
               <Button 
