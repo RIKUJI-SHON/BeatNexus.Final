@@ -14,6 +14,7 @@ import { useAuthStore } from '../store/authStore';
 import { Badge } from '../components/ui/Badge';
 import { VSIcon } from '../components/ui/VSIcon';
 import { trackBeatNexusEvents } from '../utils/analytics';
+import { Helmet } from 'react-helmet-async';
 
 // カラーパレット（BattleViewと統一）
 const colorPairs = [
@@ -40,6 +41,10 @@ const BattleReplayPage: React.FC = () => {
     playerA: { rating: 1200, loading: true },
     playerB: { rating: 1200, loading: true },
   });
+
+  const ogImageUrl = `${import.meta.env.VITE_PUBLIC_URL || window.location.origin}/functions/v1/ogp-battle-card?battle_id=${id}`;
+  const pageTitle = 'BeatNexus Battle Replay';
+  const description = 'アーカイブバトルを観戦しよう！';
 
   useEffect(() => {
     if (!id) {
@@ -136,78 +141,102 @@ const BattleReplayPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-950 to-gray-900 relative overflow-hidden">
-        {/* Epic Background Effects */}
-        <div className="absolute inset-0 overflow-hidden">
-          {/* Animated Lightning Effects */}
-          <div className="absolute top-0 left-1/4 w-1 h-32 bg-gradient-to-b from-cyan-400/50 to-transparent animate-pulse transform rotate-12"></div>
-          <div className="absolute top-20 right-1/4 w-1 h-24 bg-gradient-to-b from-pink-400/50 to-transparent animate-pulse transform -rotate-12 delay-500"></div>
+      <>
+        <Helmet>
+          <title>{pageTitle}</title>
+          <meta property="og:title" content={pageTitle} />
+          <meta property="og:description" content={description} />
+          <meta property="og:image" content={ogImageUrl} />
+          <meta property="twitter:card" content="summary_large_image" />
+          <meta property="twitter:title" content={pageTitle} />
+          <meta property="twitter:description" content={description} />
+          <meta property="twitter:image" content={ogImageUrl} />
+        </Helmet>
+        <div className="min-h-screen bg-gradient-to-br from-gray-950 to-gray-900 relative overflow-hidden">
+          {/* Epic Background Effects */}
+          <div className="absolute inset-0 overflow-hidden">
+            {/* Animated Lightning Effects */}
+            <div className="absolute top-0 left-1/4 w-1 h-32 bg-gradient-to-b from-cyan-400/50 to-transparent animate-pulse transform rotate-12"></div>
+            <div className="absolute top-20 right-1/4 w-1 h-24 bg-gradient-to-b from-pink-400/50 to-transparent animate-pulse transform -rotate-12 delay-500"></div>
+            
+            {/* Glowing Orbs */}
+            <div className="absolute top-1/4 left-10 w-20 h-20 bg-blue-500/20 rounded-full blur-xl animate-pulse"></div>
+            <div className="absolute bottom-1/4 right-10 w-16 h-16 bg-pink-500/20 rounded-full blur-xl animate-pulse delay-700"></div>
+          </div>
           
-          {/* Glowing Orbs */}
-          <div className="absolute top-1/4 left-10 w-20 h-20 bg-blue-500/20 rounded-full blur-xl animate-pulse"></div>
-          <div className="absolute bottom-1/4 right-10 w-16 h-16 bg-pink-500/20 rounded-full blur-xl animate-pulse delay-700"></div>
-        </div>
-        
-        <div className="min-h-screen flex items-center justify-center relative z-10">
-          <div className="text-center">
-            <div className="relative mb-8">
-              <div className="animate-spin w-16 h-16 border-4 border-cyan-500 border-t-transparent rounded-full mx-auto"></div>
-              <div className="absolute inset-0 animate-ping w-16 h-16 border-4 border-cyan-400/30 rounded-full mx-auto"></div>
+          <div className="min-h-screen flex items-center justify-center relative z-10">
+            <div className="text-center">
+              <div className="relative mb-8">
+                <div className="animate-spin w-16 h-16 border-4 border-cyan-500 border-t-transparent rounded-full mx-auto"></div>
+                <div className="absolute inset-0 animate-ping w-16 h-16 border-4 border-cyan-400/30 rounded-full mx-auto"></div>
+              </div>
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent mb-2">
+                {t('battleView.loading')}
+              </h1>
+              <div className="w-32 h-1 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full mx-auto animate-pulse"></div>
             </div>
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent mb-2">
-              {t('battleView.loading')}
-            </h1>
-            <div className="w-32 h-1 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full mx-auto animate-pulse"></div>
           </div>
         </div>
-      </div>
+      </>
     );
   }
 
   if (error || !battle) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-950 to-gray-900 relative overflow-hidden">
-        {/* Epic Background Effects */}
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute top-20 left-10 w-72 h-72 bg-red-500/5 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-20 right-10 w-96 h-96 bg-orange-500/5 rounded-full blur-3xl"></div>
-        </div>
-        
-        <div className="min-h-screen flex items-center justify-center relative z-10">
-          <div className="text-center max-w-md mx-auto p-6">
-            <div className="relative mb-6">
-              <AlertTriangle className="h-20 w-20 text-red-400 mx-auto" />
-              <div className="absolute inset-0 h-20 w-20 mx-auto animate-ping">
-                <AlertTriangle className="h-20 w-20 text-red-400/30" />
+      <>
+        <Helmet>
+          <title>{pageTitle}</title>
+          <meta property="og:title" content={pageTitle} />
+          <meta property="og:description" content={description} />
+          <meta property="og:image" content={ogImageUrl} />
+          <meta property="twitter:card" content="summary_large_image" />
+          <meta property="twitter:title" content={pageTitle} />
+          <meta property="twitter:description" content={description} />
+          <meta property="twitter:image" content={ogImageUrl} />
+        </Helmet>
+        <div className="min-h-screen bg-gradient-to-br from-gray-950 to-gray-900 relative overflow-hidden">
+          {/* Epic Background Effects */}
+          <div className="absolute inset-0 overflow-hidden">
+            <div className="absolute top-20 left-10 w-72 h-72 bg-red-500/5 rounded-full blur-3xl"></div>
+            <div className="absolute bottom-20 right-10 w-96 h-96 bg-orange-500/5 rounded-full blur-3xl"></div>
+          </div>
+          
+          <div className="min-h-screen flex items-center justify-center relative z-10">
+            <div className="text-center max-w-md mx-auto p-6">
+              <div className="relative mb-6">
+                <AlertTriangle className="h-20 w-20 text-red-400 mx-auto" />
+                <div className="absolute inset-0 h-20 w-20 mx-auto animate-ping">
+                  <AlertTriangle className="h-20 w-20 text-red-400/30" />
+                </div>
               </div>
-            </div>
-            
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-red-400 to-orange-500 bg-clip-text text-transparent mb-4">
-              {t('battleReplay.notFound.title')}
-            </h1>
-            <p className="text-gray-400 mb-8 leading-relaxed">
-              {error || t('battleReplay.notFound.description')}
-            </p>
-            
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button 
-                variant="outline" 
-                onClick={handleBack}
-                className="border-gray-600 hover:border-gray-500 hover:bg-gray-800/50"
-              >
-                {t('battleReplay.backButton')}
-              </Button>
-              <Button 
-                variant="primary" 
-                onClick={() => navigate('/my-battles')}
-                className="bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-500 hover:to-purple-500"
-              >
-                {t('battleReplay.notFound.myBattlesButton')}
-              </Button>
+              
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-red-400 to-orange-500 bg-clip-text text-transparent mb-4">
+                {t('battleReplay.notFound.title')}
+              </h1>
+              <p className="text-gray-400 mb-8 leading-relaxed">
+                {error || t('battleReplay.notFound.description')}
+              </p>
+              
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Button 
+                  variant="outline" 
+                  onClick={handleBack}
+                  className="border-gray-600 hover:border-gray-500 hover:bg-gray-800/50"
+                >
+                  {t('battleReplay.backButton')}
+                </Button>
+                <Button 
+                  variant="primary" 
+                  onClick={() => navigate('/my-battles')}
+                  className="bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-500 hover:to-purple-500"
+                >
+                  {t('battleReplay.notFound.myBattlesButton')}
+                </Button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      </>
     );
   }
 
@@ -286,333 +315,345 @@ const BattleReplayPage: React.FC = () => {
   const player2VideoStatus = getVideoStatus(battle.player2_video_url);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-950 to-gray-900 relative overflow-hidden">
-      
-      {/* Epic Background Effects */}
-      <div className="absolute inset-0 overflow-hidden">
-        {/* Animated Lightning Effects */}
-        <div className="absolute top-0 left-1/4 w-1 h-32 bg-gradient-to-b from-cyan-400/50 to-transparent animate-pulse transform rotate-12"></div>
-        <div className="absolute top-20 right-1/4 w-1 h-24 bg-gradient-to-b from-pink-400/50 to-transparent animate-pulse transform -rotate-12 delay-500"></div>
+    <>
+      <Helmet>
+        <title>{pageTitle}</title>
+        <meta property="og:title" content={pageTitle} />
+        <meta property="og:description" content={description} />
+        <meta property="og:image" content={ogImageUrl} />
+        <meta property="twitter:card" content="summary_large_image" />
+        <meta property="twitter:title" content={pageTitle} />
+        <meta property="twitter:description" content={description} />
+        <meta property="twitter:image" content={ogImageUrl} />
+      </Helmet>
+      <div className="min-h-screen bg-gradient-to-br from-gray-950 to-gray-900 relative overflow-hidden">
         
-        {/* Glowing Orbs */}
-        <div className="absolute top-1/4 left-10 w-20 h-20 bg-blue-500/20 rounded-full blur-xl animate-pulse"></div>
-        <div className="absolute bottom-1/4 right-10 w-16 h-16 bg-pink-500/20 rounded-full blur-xl animate-pulse delay-700"></div>
-      </div>
-
-      <div className="relative container mx-auto px-4 py-8 max-w-7xl">
-        
-        {/* Header */}
-        <div className="flex items-center gap-4 mb-8">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleBack}
-            leftIcon={<ArrowLeft className="h-4 w-4" />}
-            className="text-gray-400 hover:text-white hover:bg-gray-800/50 transition-all duration-300"
-          >
-            {t('battleReplay.backButton')}
-          </Button>
+        {/* Epic Background Effects */}
+        <div className="absolute inset-0 overflow-hidden">
+          {/* Animated Lightning Effects */}
+          <div className="absolute top-0 left-1/4 w-1 h-32 bg-gradient-to-b from-cyan-400/50 to-transparent animate-pulse transform rotate-12"></div>
+          <div className="absolute top-20 right-1/4 w-1 h-24 bg-gradient-to-b from-pink-400/50 to-transparent animate-pulse transform -rotate-12 delay-500"></div>
           
-          <div className="flex-1">
-            <h1 className="text-3xl md:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-white to-pink-400 mb-3 drop-shadow-lg">
-              {t('battleReplay.title')}
-            </h1>
-            <div className="flex flex-wrap items-center gap-4">
-              <div className={cn("px-4 py-2 rounded-xl text-sm font-medium flex items-center gap-2 backdrop-blur-sm", resultBadge.className)}>
-                {resultBadge.icon}
-                {resultBadge.text}
+          {/* Glowing Orbs */}
+          <div className="absolute top-1/4 left-10 w-20 h-20 bg-blue-500/20 rounded-full blur-xl animate-pulse"></div>
+          <div className="absolute bottom-1/4 right-10 w-16 h-16 bg-pink-500/20 rounded-full blur-xl animate-pulse delay-700"></div>
+        </div>
+
+        <div className="relative container mx-auto px-4 py-8 max-w-7xl">
+          
+          {/* Header */}
+          <div className="flex items-center gap-4 mb-8">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleBack}
+              leftIcon={<ArrowLeft className="h-4 w-4" />}
+              className="text-gray-400 hover:text-white hover:bg-gray-800/50 transition-all duration-300"
+            >
+              {t('battleReplay.backButton')}
+            </Button>
+            
+            <div className="flex-1">
+              <h1 className="text-3xl md:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-white to-pink-400 mb-3 drop-shadow-lg">
+                {t('battleReplay.title')}
+              </h1>
+              <div className="flex flex-wrap items-center gap-4">
+                <div className={cn("px-4 py-2 rounded-xl text-sm font-medium flex items-center gap-2 backdrop-blur-sm", resultBadge.className)}>
+                  {resultBadge.icon}
+                  {resultBadge.text}
+                </div>
+                
+                <span className="text-gray-400 text-sm flex items-center gap-2 px-3 py-2 bg-gray-800/50 rounded-lg backdrop-blur-sm">
+                  <Calendar className="h-4 w-4" />
+                  {format(new Date(battle.archived_at), 'yyyy/MM/dd HH:mm', { locale: currentLocale })}
+                </span>
               </div>
-              
-              <span className="text-gray-400 text-sm flex items-center gap-2 px-3 py-2 bg-gray-800/50 rounded-lg backdrop-blur-sm">
-                <Calendar className="h-4 w-4" />
-                {format(new Date(battle.archived_at), 'yyyy/MM/dd HH:mm', { locale: currentLocale })}
-              </span>
             </div>
           </div>
-        </div>
 
-        {/* Battle Title & Info Header */}
-        <div className="text-center mb-8 relative">
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent h-px top-1/2"></div>
-          
-          {/* Main Battle Title with Player Names (Responsive) */}
-          <div className="mb-6">
-            <div className="flex items-center justify-center gap-2 md:gap-4 overflow-hidden">
-              {/* Player A Username */}
-              <span
-                className="truncate max-w-[40vw] text-2xl sm:text-3xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-white to-pink-400 text-right"
-                title={battle.contestant_a?.username || 'Player A'}
-              >
-              {battle.contestant_a?.username || 'Player A'}
-              </span>
+          {/* Battle Title & Info Header */}
+          <div className="text-center mb-8 relative">
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent h-px top-1/2"></div>
+            
+            {/* Main Battle Title with Player Names (Responsive) */}
+            <div className="mb-6">
+              <div className="flex items-center justify-center gap-2 md:gap-4 overflow-hidden">
+                {/* Player A Username */}
+                <span
+                  className="truncate max-w-[40vw] text-2xl sm:text-3xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-white to-pink-400 text-right"
+                  title={battle.contestant_a?.username || 'Player A'}
+                >
+                {battle.contestant_a?.username || 'Player A'}
+                </span>
 
-              {/* VS Label (fixed width, no shrink) */}
-              <span
-                className="flex-shrink-0 mx-1 sm:mx-2 text-gray-400 text-2xl sm:text-3xl md:text-5xl font-black"
-              >
-                VS
-              </span>
+                {/* VS Label (fixed width, no shrink) */}
+                <span
+                  className="flex-shrink-0 mx-1 sm:mx-2 text-gray-400 text-2xl sm:text-3xl md:text-5xl font-black"
+                >
+                  VS
+                </span>
 
-              {/* Player B Username */}
-              <span
-                className="truncate max-w-[40vw] text-2xl sm:text-3xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-white to-pink-400"
-                title={battle.contestant_b?.username || 'Player B'}
-              >
-              {battle.contestant_b?.username || 'Player B'}
-              </span>
-            </div>
-          </div>
-          
-          {/* Battle Stats */}
-          <div className="flex items-center justify-center gap-6 text-gray-300">
-            <div className="flex items-center gap-2 bg-gray-800/50 px-4 py-2 rounded-full backdrop-blur-sm">
-              <Users className="h-4 w-4 text-pink-400" />
-              <span className="font-medium">{totalVotes} {t('battle.votes')}</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Battle Result Overview */}
-        <div className="battle-card mb-8">
-          <div className="battle-card__content relative overflow-hidden">
-            {/* Background Pattern */}
-            <div className="absolute inset-0 opacity-5">
-              <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white/10 to-transparent transform rotate-45"></div>
+                {/* Player B Username */}
+                <span
+                  className="truncate max-w-[40vw] text-2xl sm:text-3xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-white to-pink-400"
+                  title={battle.contestant_b?.username || 'Player B'}
+                >
+                {battle.contestant_b?.username || 'Player B'}
+                </span>
+              </div>
             </div>
             
-            <div className="relative p-8">
-              {/* Battle Arena */}
-              <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto_1fr] gap-6 items-center mb-8">
-                {/* Player A Section */}
-                <div className="relative">
-                  {/* Player A Name - Mobile */}
-                  <div className="flex items-center gap-3 mb-4 lg:hidden">
-                    <div
-                      className="w-10 h-10 rounded-full p-1 flex-shrink-0"
-                      style={{ background: `linear-gradient(135deg, ${playerColorA}, ${playerColorA}80)` }}
-                    >
-                      <img
-                        src={battle.contestant_a?.avatar_url || getDefaultAvatarUrl(battle.player1_user_id)}
-                        alt={battle.contestant_a?.username}
-                        className="w-full h-full rounded-full border border-gray-900 object-cover"
-                      />
-                    </div>
-                    <div className="flex flex-col">
-                      <div className="text-white font-bold text-xl truncate max-w-[70vw]" title={battle.contestant_a?.username || 'Player A'}>
-                        {battle.contestant_a?.username || 'Player A'}
-                      </div>
-                      <div className="text-sm text-gray-300">
-                        {playerRatings.playerA.loading ? '...' : playerRatings.playerA.rating}
-                      </div>
-                    </div>
-                  </div>
+            {/* Battle Stats */}
+            <div className="flex items-center justify-center gap-6 text-gray-300">
+              <div className="flex items-center gap-2 bg-gray-800/50 px-4 py-2 rounded-full backdrop-blur-sm">
+                <Users className="h-4 w-4 text-pink-400" />
+                <span className="font-medium">{totalVotes} {t('battle.votes')}</span>
+              </div>
+            </div>
+          </div>
 
-                  {/* Player A Name - Desktop Layout */}
-                  <div className="hidden lg:flex items-center gap-3 mb-4">
-                    <div
-                      className="w-10 h-10 rounded-full p-1 flex-shrink-0"
-                      style={{ background: `linear-gradient(135deg, ${playerColorA}, ${playerColorA}80)` }}
-                    >
-                      <img
-                        src={battle.contestant_a?.avatar_url || getDefaultAvatarUrl(battle.player1_user_id)}
-                        alt={battle.contestant_a?.username}
-                        className="w-full h-full rounded-full border border-gray-900 object-cover"
-                      />
-                    </div>
-                    <div className="flex flex-col">
-                      <div
-                        className="text-white font-bold text-xl truncate max-w-[140px] md:max-w-[180px]"
-                        title={battle.contestant_a?.username || 'Player A'}
-                      >
-                        {battle.contestant_a?.username || 'Player A'}
-                      </div>
-                      <div className="text-sm text-gray-300">
-                        {playerRatings.playerA.loading ? '...' : playerRatings.playerA.rating}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Player A Video Preview */}
-                  <div className="aspect-video bg-black rounded-xl overflow-hidden relative shadow-2xl border-2" style={{ borderColor: playerColorA }}>
-                    {player1VideoStatus.available && player1VideoStatus.videoUrl ? (
-                      <video
-                        src={player1VideoStatus.videoUrl}
-                        className="w-full h-full object-contain"
-                        controls
-                        preload="metadata"
-                        onError={(e) => {
-                          console.error('Player A video error:', e);
-                          e.currentTarget.style.display = 'none';
-                          const errorDiv = e.currentTarget.nextElementSibling as HTMLElement;
-                          if (errorDiv) errorDiv.style.display = 'flex';
-                        }}
-                      >
-                        <source src={player1VideoStatus.videoUrl} type="video/webm" />
-                        <source src={player1VideoStatus.videoUrl} type="video/mp4" />
-                        {t('battleReplay.videoNotSupported')}
-                      </video>
-                    ) : null}
-                    
-                    {!player1VideoStatus.available || !player1VideoStatus.videoUrl ? (
-                      <div className="w-full h-full flex flex-col items-center justify-center text-gray-400 bg-gradient-to-br from-gray-800 to-gray-900">
-                        <ArchiveX className="h-16 w-16 mb-3 opacity-50" />
-                        <p className="text-sm text-center px-4">
-                          {t('battleReplay.videoNotAvailable.title')}
-                        </p>
-                      </div>
-                    ) : (
-                      <div className="w-full h-full flex flex-col items-center justify-center text-gray-400 bg-gradient-to-br from-gray-800 to-gray-900" style={{ display: 'none' }}>
-                        <AlertTriangle className="h-16 w-16 mb-3 opacity-50" />
-                        <p className="text-sm text-center px-4">
-                          {t('battleReplay.videoError')}
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* VS Separator */}
-                <div className="flex items-center justify-center lg:px-6">
-                  <div className="flex flex-col items-center gap-4">
-                    <VSIcon className="w-12 h-12 md:w-16 md:h-16" />
-                    <div className="text-center bg-gray-800/50 px-4 py-2 rounded-xl backdrop-blur-sm border border-gray-600/30">
-                      <div className="flex items-center gap-2 text-gray-400 mb-1">
-                        <Users className="h-4 w-4" />
-                        <span className="text-sm font-medium">Final Votes</span>
-                      </div>
-                      <div className="text-2xl font-bold text-white">
-                        {totalVotes}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Player B Section */}
-                <div className="relative">
-                  {/* Player B Name - Desktop Layout (Above Video) */}
-                  <div className="hidden lg:flex items-center gap-3 mb-4 lg:justify-end">
-                    <div className="flex flex-col lg:items-end">
-                      <div
-                        className="text-white font-bold text-xl truncate max-w-[140px] md:max-w-[180px]"
-                        title={battle.contestant_b?.username || 'Player B'}
-                      >
-                        {battle.contestant_b?.username || 'Player B'}
-                      </div>
-                      <div className="text-sm text-gray-300 lg:text-right">
-                        {playerRatings.playerB.loading ? '...' : playerRatings.playerB.rating}
-                      </div>
-                    </div>
-                    <div
-                      className="w-10 h-10 rounded-full p-1 flex-shrink-0"
-                      style={{ background: `linear-gradient(135deg, ${playerColorB}, ${playerColorB}80)` }}
-                    >
-                      <img
-                        src={battle.contestant_b?.avatar_url || getDefaultAvatarUrl(battle.player2_user_id)}
-                        alt={battle.contestant_b?.username}
-                        className="w-full h-full rounded-full border border-gray-900 object-cover"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Player B Video Preview */}
-                  <div className="aspect-video bg-black rounded-xl overflow-hidden relative shadow-2xl border-2" style={{ borderColor: playerColorB }}>
-                    {player2VideoStatus.available && player2VideoStatus.videoUrl ? (
-                      <video
-                        src={player2VideoStatus.videoUrl}
-                        className="w-full h-full object-contain"
-                        controls
-                        preload="metadata"
-                        onError={(e) => {
-                          console.error('Player B video error:', e);
-                          e.currentTarget.style.display = 'none';
-                          const errorDiv = e.currentTarget.nextElementSibling as HTMLElement;
-                          if (errorDiv) errorDiv.style.display = 'flex';
-                        }}
-                      >
-                        <source src={player2VideoStatus.videoUrl} type="video/webm" />
-                        <source src={player2VideoStatus.videoUrl} type="video/mp4" />
-                        {t('battleReplay.videoNotSupported')}
-                      </video>
-                    ) : null}
-                    
-                    {!player2VideoStatus.available || !player2VideoStatus.videoUrl ? (
-                      <div className="w-full h-full flex flex-col items-center justify-center text-gray-400 bg-gradient-to-br from-gray-800 to-gray-900">
-                        <ArchiveX className="h-16 w-16 mb-3 opacity-50" />
-                        <p className="text-sm text-center px-4">
-                          {t('battleReplay.videoNotAvailable.title')}
-                        </p>
-                      </div>
-                    ) : (
-                      <div className="w-full h-full flex flex-col items-center justify-center text-gray-400 bg-gradient-to-br from-gray-800 to-gray-900" style={{ display: 'none' }}>
-                        <AlertTriangle className="h-16 w-16 mb-3 opacity-50" />
-                        <p className="text-sm text-center px-4">
-                          {t('battleReplay.videoError')}
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                    
-                  {/* Player B Name - Mobile (Below Video) */}
-                  <div className="flex items-center gap-3 mt-4 lg:hidden justify-end">
-                    <div className="flex flex-col items-end">
-                      <div className="text-white font-bold text-xl truncate max-w-[70vw]" title={battle.contestant_b?.username || 'Player B'}>
-                        {battle.contestant_b?.username || 'Player B'}
-                      </div>
-                      <div className="text-sm text-gray-300">
-                        {playerRatings.playerB.loading ? '...' : playerRatings.playerB.rating}
-                      </div>
-                    </div>
-                        <div 
-                          className="w-10 h-10 rounded-full p-1 flex-shrink-0"
-                          style={{ background: `linear-gradient(135deg, ${playerColorB}, ${playerColorB}80)` }}
-                        >
-                          <img
-                            src={battle.contestant_b?.avatar_url || getDefaultAvatarUrl(battle.player2_user_id)}
-                            alt={battle.contestant_b?.username}
-                            className="w-full h-full rounded-full border border-gray-900 object-cover"
-                          />
-                      </div>
-                    </div>
-
-                    {isBWinner && (
-                      <div className="absolute top-4 right-4">
-                        <div className="bg-gradient-to-r from-yellow-500 to-amber-600 rounded-full p-2 shadow-lg animate-pulse">
-                          <Crown className="h-5 w-5 text-white" />
-                        </div>
-                      </div>
-                    )}
-                </div>
+          {/* Battle Result Overview */}
+          <div className="battle-card mb-8">
+            <div className="battle-card__content relative overflow-hidden">
+              {/* Background Pattern */}
+              <div className="absolute inset-0 opacity-5">
+                <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white/10 to-transparent transform rotate-45"></div>
               </div>
               
-              {/* Vote Distribution Bar */}
-              <div className="max-w-2xl mx-auto">
-                <div className="h-4 bg-gray-800 rounded-full overflow-hidden shadow-inner border border-gray-700">
-                  <div className="h-full flex">
-                    <div 
-                      className="transition-all duration-1000 ease-out relative"
-                      style={{ 
-                        width: `${percentageA}%`, 
-                        background: `linear-gradient(90deg, ${playerColorA}, ${playerColorA}80)` 
-                      }}
-                    >
-                      {percentageA > 15 && (
-                        <div className="absolute right-2 top-1/2 transform -translate-y-1/2 text-white text-xs font-bold">
-                          {battle.final_votes_a}
+              <div className="relative p-8">
+                {/* Battle Arena */}
+                <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto_1fr] gap-6 items-center mb-8">
+                  {/* Player A Section */}
+                  <div className="relative">
+                    {/* Player A Name - Mobile */}
+                    <div className="flex items-center gap-3 mb-4 lg:hidden">
+                      <div
+                        className="w-10 h-10 rounded-full p-1 flex-shrink-0"
+                        style={{ background: `linear-gradient(135deg, ${playerColorA}, ${playerColorA}80)` }}
+                      >
+                        <img
+                          src={battle.contestant_a?.avatar_url || getDefaultAvatarUrl(battle.player1_user_id)}
+                          alt={battle.contestant_a?.username}
+                          className="w-full h-full rounded-full border border-gray-900 object-cover"
+                        />
+                      </div>
+                      <div className="flex flex-col">
+                        <div className="text-white font-bold text-xl truncate max-w-[70vw]" title={battle.contestant_a?.username || 'Player A'}>
+                          {battle.contestant_a?.username || 'Player A'}
+                        </div>
+                        <div className="text-sm text-gray-300">
+                          {playerRatings.playerA.loading ? '...' : playerRatings.playerA.rating}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Player A Name - Desktop Layout */}
+                    <div className="hidden lg:flex items-center gap-3 mb-4">
+                      <div
+                        className="w-10 h-10 rounded-full p-1 flex-shrink-0"
+                        style={{ background: `linear-gradient(135deg, ${playerColorA}, ${playerColorA}80)` }}
+                      >
+                        <img
+                          src={battle.contestant_a?.avatar_url || getDefaultAvatarUrl(battle.player1_user_id)}
+                          alt={battle.contestant_a?.username}
+                          className="w-full h-full rounded-full border border-gray-900 object-cover"
+                        />
+                      </div>
+                      <div className="flex flex-col">
+                        <div
+                          className="text-white font-bold text-xl truncate max-w-[140px] md:max-w-[180px]"
+                          title={battle.contestant_a?.username || 'Player A'}
+                        >
+                          {battle.contestant_a?.username || 'Player A'}
+                        </div>
+                        <div className="text-sm text-gray-300">
+                          {playerRatings.playerA.loading ? '...' : playerRatings.playerA.rating}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Player A Video Preview */}
+                    <div className="aspect-video bg-black rounded-xl overflow-hidden relative shadow-2xl border-2" style={{ borderColor: playerColorA }}>
+                      {player1VideoStatus.available && player1VideoStatus.videoUrl ? (
+                        <video
+                          src={player1VideoStatus.videoUrl}
+                          className="w-full h-full object-contain"
+                          controls
+                          preload="metadata"
+                          onError={(e) => {
+                            console.error('Player A video error:', e);
+                            e.currentTarget.style.display = 'none';
+                            const errorDiv = e.currentTarget.nextElementSibling as HTMLElement;
+                            if (errorDiv) errorDiv.style.display = 'flex';
+                          }}
+                        >
+                          <source src={player1VideoStatus.videoUrl} type="video/webm" />
+                          <source src={player1VideoStatus.videoUrl} type="video/mp4" />
+                          {t('battleReplay.videoNotSupported')}
+                        </video>
+                      ) : null}
+                      
+                      {!player1VideoStatus.available || !player1VideoStatus.videoUrl ? (
+                        <div className="w-full h-full flex flex-col items-center justify-center text-gray-400 bg-gradient-to-br from-gray-800 to-gray-900">
+                          <ArchiveX className="h-16 w-16 mb-3 opacity-50" />
+                          <p className="text-sm text-center px-4">
+                            {t('battleReplay.videoNotAvailable.title')}
+                          </p>
+                        </div>
+                      ) : (
+                        <div className="w-full h-full flex flex-col items-center justify-center text-gray-400 bg-gradient-to-br from-gray-800 to-gray-900" style={{ display: 'none' }}>
+                          <AlertTriangle className="h-16 w-16 mb-3 opacity-50" />
+                          <p className="text-sm text-center px-4">
+                            {t('battleReplay.videoError')}
+                          </p>
                         </div>
                       )}
                     </div>
-                    <div 
-                      className="transition-all duration-1000 ease-out relative"
-                      style={{ 
-                        width: `${percentageB}%`, 
-                        background: `linear-gradient(90deg, ${playerColorB}80, ${playerColorB})` 
-                      }}
-                    >
-                      {percentageB > 15 && (
-                        <div className="absolute left-2 top-1/2 transform -translate-y-1/2 text-white text-xs font-bold">
-                          {battle.final_votes_b}
+                  </div>
+
+                  {/* VS Separator */}
+                  <div className="flex items-center justify-center lg:px-6">
+                    <div className="flex flex-col items-center gap-4">
+                      <VSIcon className="w-12 h-12 md:w-16 md:h-16" />
+                      <div className="text-center bg-gray-800/50 px-4 py-2 rounded-xl backdrop-blur-sm border border-gray-600/30">
+                        <div className="flex items-center gap-2 text-gray-400 mb-1">
+                          <Users className="h-4 w-4" />
+                          <span className="text-sm font-medium">Final Votes</span>
+                        </div>
+                        <div className="text-2xl font-bold text-white">
+                          {totalVotes}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Player B Section */}
+                  <div className="relative">
+                    {/* Player B Name - Desktop Layout (Above Video) */}
+                    <div className="hidden lg:flex items-center gap-3 mb-4 lg:justify-end">
+                      <div className="flex flex-col lg:items-end">
+                        <div
+                          className="text-white font-bold text-xl truncate max-w-[140px] md:max-w-[180px]"
+                          title={battle.contestant_b?.username || 'Player B'}
+                        >
+                          {battle.contestant_b?.username || 'Player B'}
+                        </div>
+                        <div className="text-sm text-gray-300 lg:text-right">
+                          {playerRatings.playerB.loading ? '...' : playerRatings.playerB.rating}
+                        </div>
+                      </div>
+                      <div
+                        className="w-10 h-10 rounded-full p-1 flex-shrink-0"
+                        style={{ background: `linear-gradient(135deg, ${playerColorB}, ${playerColorB}80)` }}
+                      >
+                        <img
+                          src={battle.contestant_b?.avatar_url || getDefaultAvatarUrl(battle.player2_user_id)}
+                          alt={battle.contestant_b?.username}
+                          className="w-full h-full rounded-full border border-gray-900 object-cover"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Player B Video Preview */}
+                    <div className="aspect-video bg-black rounded-xl overflow-hidden relative shadow-2xl border-2" style={{ borderColor: playerColorB }}>
+                      {player2VideoStatus.available && player2VideoStatus.videoUrl ? (
+                        <video
+                          src={player2VideoStatus.videoUrl}
+                          className="w-full h-full object-contain"
+                          controls
+                          preload="metadata"
+                          onError={(e) => {
+                            console.error('Player B video error:', e);
+                            e.currentTarget.style.display = 'none';
+                            const errorDiv = e.currentTarget.nextElementSibling as HTMLElement;
+                            if (errorDiv) errorDiv.style.display = 'flex';
+                          }}
+                        >
+                          <source src={player2VideoStatus.videoUrl} type="video/webm" />
+                          <source src={player2VideoStatus.videoUrl} type="video/mp4" />
+                          {t('battleReplay.videoNotSupported')}
+                        </video>
+                      ) : null}
+                      
+                      {!player2VideoStatus.available || !player2VideoStatus.videoUrl ? (
+                        <div className="w-full h-full flex flex-col items-center justify-center text-gray-400 bg-gradient-to-br from-gray-800 to-gray-900">
+                          <ArchiveX className="h-16 w-16 mb-3 opacity-50" />
+                          <p className="text-sm text-center px-4">
+                            {t('battleReplay.videoNotAvailable.title')}
+                          </p>
+                        </div>
+                      ) : (
+                        <div className="w-full h-full flex flex-col items-center justify-center text-gray-400 bg-gradient-to-br from-gray-800 to-gray-900" style={{ display: 'none' }}>
+                          <AlertTriangle className="h-16 w-16 mb-3 opacity-50" />
+                          <p className="text-sm text-center px-4">
+                            {t('battleReplay.videoError')}
+                          </p>
                         </div>
                       )}
+                    </div>
+                      
+                    {/* Player B Name - Mobile (Below Video) */}
+                    <div className="flex items-center gap-3 mt-4 lg:hidden justify-end">
+                      <div className="flex flex-col items-end">
+                        <div className="text-white font-bold text-xl truncate max-w-[70vw]" title={battle.contestant_b?.username || 'Player B'}>
+                          {battle.contestant_b?.username || 'Player B'}
+                        </div>
+                        <div className="text-sm text-gray-300">
+                          {playerRatings.playerB.loading ? '...' : playerRatings.playerB.rating}
+                        </div>
+                      </div>
+                          <div 
+                            className="w-10 h-10 rounded-full p-1 flex-shrink-0"
+                            style={{ background: `linear-gradient(135deg, ${playerColorB}, ${playerColorB}80)` }}
+                          >
+                            <img
+                              src={battle.contestant_b?.avatar_url || getDefaultAvatarUrl(battle.player2_user_id)}
+                              alt={battle.contestant_b?.username}
+                              className="w-full h-full rounded-full border border-gray-900 object-cover"
+                            />
+                          </div>
+                        </div>
+
+                        {isBWinner && (
+                          <div className="absolute top-4 right-4">
+                            <div className="bg-gradient-to-r from-yellow-500 to-amber-600 rounded-full p-2 shadow-lg animate-pulse">
+                              <Crown className="h-5 w-5 text-white" />
+                            </div>
+                          </div>
+                        )}
+                  </div>
+                </div>
+                
+                {/* Vote Distribution Bar */}
+                <div className="max-w-2xl mx-auto">
+                  <div className="h-4 bg-gray-800 rounded-full overflow-hidden shadow-inner border border-gray-700">
+                    <div className="h-full flex">
+                      <div 
+                        className="transition-all duration-1000 ease-out relative"
+                        style={{ 
+                          width: `${percentageA}%`, 
+                          background: `linear-gradient(90deg, ${playerColorA}, ${playerColorA}80)` 
+                        }}
+                      >
+                        {percentageA > 15 && (
+                          <div className="absolute right-2 top-1/2 transform -translate-y-1/2 text-white text-xs font-bold">
+                            {battle.final_votes_a}
+                          </div>
+                        )}
+                      </div>
+                      <div 
+                        className="transition-all duration-1000 ease-out relative"
+                        style={{ 
+                          width: `${percentageB}%`, 
+                          background: `linear-gradient(90deg, ${playerColorB}80, ${playerColorB})` 
+                        }}
+                      >
+                        {percentageB > 15 && (
+                          <div className="absolute left-2 top-1/2 transform -translate-y-1/2 text-white text-xs font-bold">
+                            {battle.final_votes_b}
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -687,7 +728,7 @@ const BattleReplayPage: React.FC = () => {
           )}
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

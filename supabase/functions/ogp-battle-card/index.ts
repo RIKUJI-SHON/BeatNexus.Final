@@ -38,12 +38,22 @@ async function fetchPlayers(battleId: string) {
     .maybeSingle();
 
   if (!data) {
-    const res = await admin
+    // まず archived_battles.id
+    let res = await admin
       .from("archived_battles")
       .select("player1_user_id, player2_user_id")
       .eq("id", battleId)
       .maybeSingle();
-    data = res.data as any;
+    data = res.data;
+    if (!data) {
+      // 次に original_battle_id で試す
+      res = await admin
+        .from("archived_battles")
+        .select("player1_user_id, player2_user_id")
+        .eq("original_battle_id", battleId)
+        .maybeSingle();
+      data = res.data;
+    }
   }
 
   if (!data) return null;
