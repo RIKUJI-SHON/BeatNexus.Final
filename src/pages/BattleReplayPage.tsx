@@ -42,7 +42,7 @@ const BattleReplayPage: React.FC = () => {
     playerB: { rating: 1200, loading: true },
   });
 
-  const ogImageUrl = `${import.meta.env.VITE_PUBLIC_URL || window.location.origin}/functions/v1/ogp-battle-card?battle_id=${id}`;
+  const ogImageUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ogp-battle-card?battle_id=${id}`;
   const pageTitle = 'BeatNexus Battle Replay';
   const description = 'アーカイブバトルを観戦しよう！';
 

@@ -17,7 +17,7 @@ const BattleViewPage: React.FC = () => {
   
   const battle = battles.find(b => b.id === id);
   
-  const imageUrl = `${import.meta.env.VITE_PUBLIC_URL || window.location.origin}/functions/v1/ogp-battle-card?battle_id=${id}`;
+  const imageUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ogp-battle-card?battle_id=${id}`;
   const pageTitle = battle ? `BeatNexus Battle` : 'BeatNexus Battle';
   const description = 'あなたの一票で勝敗が決まります！BeatNexusで投票しよう。';
   
