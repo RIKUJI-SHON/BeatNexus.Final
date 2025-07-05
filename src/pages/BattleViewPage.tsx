@@ -17,7 +17,7 @@ const BattleViewPage: React.FC = () => {
   
   const battle = battles.find(b => b.id === id);
   
-  const imageUrl = '/images/hero-background.png';
+  const imageUrl = 'https://beat-nexus-heatbeat-test.vercel.app/images/hero-background.png';
   const pageTitle = battle ? 
     `${battle.contestant_a?.username || 'Player 1'} vs ${battle.contestant_b?.username || 'Player 2'} - BeatNexus Battle` : 
     'BeatNexus Battle';
