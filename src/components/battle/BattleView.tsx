@@ -303,7 +303,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
       }
     }
 
-    const url = `${window.location.origin}/battle/${battle.id}`;
+    const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ogp-page?battle_id=${battle.id}`;
     const tags = "#BeatNexus #ビートボックス #Beatbox";
     const taggedTextBase = `${shareText}\n\n${tags}`;
 

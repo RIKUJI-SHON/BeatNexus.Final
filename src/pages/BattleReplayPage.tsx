@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Crown, Users, Calendar, ShieldCheck, ShieldX, Swords, TrendingUp, TrendingDown, Minus, Play, AlertTriangle, ArchiveX, Trophy, Star, MessageSquare, Clock, Timer, Volume2 } from 'lucide-react';
+import { ArrowLeft, Crown, Users, Calendar, ShieldCheck, ShieldX, Swords, TrendingUp, TrendingDown, Minus, Play, AlertTriangle, ArchiveX, Trophy, Star, MessageSquare, Clock, Volume2 } from 'lucide-react';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { ArchivedBattle, BattleComment } from '../types';
@@ -13,6 +13,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '../store/authStore';
 import { Badge } from '../components/ui/Badge';
 import { VSIcon } from '../components/ui/VSIcon';
+import { ShareBattleButton } from '../components/ui/ShareBattleButton';
 import { trackBeatNexusEvents } from '../utils/analytics';
 import { Helmet } from 'react-helmet-async';
 
@@ -406,9 +407,19 @@ const BattleReplayPage: React.FC = () => {
             {/* Battle Stats */}
             <div className="flex items-center justify-center gap-6 text-gray-300">
               <div className="flex items-center gap-2 bg-gray-800/50 px-4 py-2 rounded-full backdrop-blur-sm">
-                <Users className="h-4 w-4 text-pink-400" />
-                <span className="font-medium">{totalVotes} {t('battle.votes')}</span>
+                <Users className="h-4 w-4 text-green-400" />
+                <span className="font-medium">{battle.final_votes_a + battle.final_votes_b} votes</span>
               </div>
+            </div>
+            {/* Share Button */}
+            <div className="mt-4 flex justify-center">
+              <ShareBattleButton
+                battleId={battle.original_battle_id}
+                player1Name={battle.contestant_a?.username || 'Player 1'}
+                player2Name={battle.contestant_b?.username || 'Player 2'}
+                player1UserId={battle.player1_user_id}
+                player2UserId={battle.player2_user_id}
+              />
             </div>
           </div>
 
