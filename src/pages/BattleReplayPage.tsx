@@ -43,7 +43,7 @@ const BattleReplayPage: React.FC = () => {
     playerB: { rating: 1200, loading: true },
   });
 
-  const ogImageUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ogp-battle-card?battle_id=${id}`;
+  const ogImageUrl = '/images/hero-background.png';
   const pageTitle = battle ? 
     `${battle.contestant_a?.username || 'Player 1'} vs ${battle.contestant_b?.username || 'Player 2'} - Battle Replay | BeatNexus` : 
     'Battle Replay | BeatNexus';
