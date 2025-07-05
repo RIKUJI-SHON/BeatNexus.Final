@@ -319,3 +319,6 @@ s3_secret_key = "env(S3_SECRET_KEY)"
 [functions.ogp-battle-card]
 verify_jwt = false
 static_files = ["./supabase/functions/ogp-battle-card/*.wasm"]
+
+[functions.ogp-page]
+verify_jwt = false
