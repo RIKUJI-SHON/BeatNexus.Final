@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { HelmetProvider } from 'react-helmet-async';
 
 // Layouts
 import { Header } from './components/layout/Header';
@@ -200,7 +201,9 @@ function App() {
   return (
     <AuthProvider>
       <I18nextProvider i18n={i18n}>
-        <AppContent />
+        <HelmetProvider>
+          <AppContent />
+        </HelmetProvider>
       </I18nextProvider>
     </AuthProvider>
   );

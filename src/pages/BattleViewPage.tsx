@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useBattleStore } from '../store/battleStore';
 import { BattleView } from '../components/battle/BattleView';
+import { Helmet } from 'react-helmet-async';
 
 const BattleViewPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -15,6 +16,10 @@ const BattleViewPage: React.FC = () => {
   }, [fetchBattles, battles.length]);
   
   const battle = battles.find(b => b.id === id);
+  
+  const imageUrl = `${import.meta.env.VITE_PUBLIC_URL || window.location.origin}/functions/v1/ogp-battle-card?battle_id=${id}`;
+  const pageTitle = battle ? `BeatNexus Battle` : 'BeatNexus Battle';
+  const description = 'あなたの一票で勝敗が決まります！BeatNexusで投票しよう。';
   
   // ローディング状態
   if (loading) {
@@ -72,9 +77,21 @@ const BattleViewPage: React.FC = () => {
   }
   
   return (
-    <div className="min-h-screen bg-gray-950">
-      <BattleView battle={battle!} isArchived={false} />
-    </div>
+    <>
+      <Helmet>
+        <title>{pageTitle}</title>
+        <meta property="og:title" content={pageTitle} />
+        <meta property="og:description" content={description} />
+        <meta property="og:image" content={imageUrl} />
+        <meta property="twitter:card" content="summary_large_image" />
+        <meta property="twitter:title" content={pageTitle} />
+        <meta property="twitter:description" content={description} />
+        <meta property="twitter:image" content={imageUrl} />
+      </Helmet>
+      <div className="min-h-screen bg-gray-950">
+        <BattleView battle={battle!} isArchived={false} />
+      </div>
+    </>
   );
 };
 
