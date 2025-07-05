@@ -44,8 +44,12 @@ const BattleReplayPage: React.FC = () => {
   });
 
   const ogImageUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ogp-battle-card?battle_id=${id}`;
-  const pageTitle = 'BeatNexus Battle Replay';
-  const description = 'アーカイブバトルを観戦しよう！';
+  const pageTitle = battle ? 
+    `${battle.contestant_a?.username || 'Player 1'} vs ${battle.contestant_b?.username || 'Player 2'} - Battle Replay | BeatNexus` : 
+    'Battle Replay | BeatNexus';
+  const description = battle ?
+    `Watch the epic beatbox battle replay between ${battle.contestant_a?.username || 'Player 1'} and ${battle.contestant_b?.username || 'Player 2'}! Final result: ${battle.final_votes_a} vs ${battle.final_votes_b} votes.` :
+    'Watch epic beatbox battle replays on BeatNexus.';
 
   useEffect(() => {
     if (!id) {

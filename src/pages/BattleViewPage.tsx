@@ -18,8 +18,12 @@ const BattleViewPage: React.FC = () => {
   const battle = battles.find(b => b.id === id);
   
   const imageUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ogp-battle-card?battle_id=${id}`;
-  const pageTitle = battle ? `BeatNexus Battle` : 'BeatNexus Battle';
-  const description = 'あなたの一票で勝敗が決まります！BeatNexusで投票しよう。';
+  const pageTitle = battle ? 
+    `${battle.contestant_a?.username || 'Player 1'} vs ${battle.contestant_b?.username || 'Player 2'} - BeatNexus Battle` : 
+    'BeatNexus Battle';
+  const description = battle ?
+    `Watch the epic beatbox battle between ${battle.contestant_a?.username || 'Player 1'} and ${battle.contestant_b?.username || 'Player 2'}! Vote for your favorite performer on BeatNexus.` :
+    'Watch epic beatbox battles and vote for your favorite performers on BeatNexus.';
   
   // ローディング状態
   if (loading) {

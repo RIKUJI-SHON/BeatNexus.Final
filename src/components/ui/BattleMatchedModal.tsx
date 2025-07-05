@@ -148,7 +148,7 @@ export const BattleMatchedModal: React.FC<BattleMatchedModalProps> = ({
                       ? `BeatNexusでバトル中です！🔥\n対戦相手は ${opponentUsername} さん！\n\n最高のパフォーマンスをしたので、ぜひ見て応援（投票）お願いします！💪\n\n投票はこちらから👇`
                       : `I'm in a battle on BeatNexus! 🥊\nFacing off against the incredible ${opponentUsername}.\n\nGave it my all on this one. Check it out and drop a vote if you're feelin' my performance! 🙏\n\nWatch & Vote here 👇`;
 
-                    const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ogp-page?battle_id=${matchData.battleId}`;
+                    const url = `${window.location.origin}/battle/${matchData.battleId}`;
                     const tags = "#BeatNexus #ビートボックス #Beatbox";
                     const taggedTextBase = `${shareText}\n\n${tags}`;
 

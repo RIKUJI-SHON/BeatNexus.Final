@@ -50,7 +50,7 @@ export const ShareBattleButton: React.FC<ShareBattleButtonProps> = ({
       shareText = arr[Math.floor(Math.random() * arr.length)];
     }
 
-    const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ogp-page?battle_id=${battleId}`;
+    const url = `${window.location.origin}/battle-replay/${battleId}`;
     const tags = '#BeatNexus #ビートボックス #Beatbox';
     const taggedTextBase = `${shareText}\n\n${tags}`;
     const MAX_TEXT_LEN = 280 - 24; // URL 23 + space
