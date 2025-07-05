@@ -6,21 +6,23 @@ import { useTranslation } from 'react-i18next';
 interface RankProgressBarProps {
   rankProgress: RankProgress;
   currentRating: number;
+  showCurrentBadge?: boolean;
 }
 
 export const RankProgressBar: React.FC<RankProgressBarProps> = ({ 
   rankProgress, 
-  currentRating 
+  currentRating, 
+  showCurrentBadge = true 
 }) => {
   const { t } = useTranslation();
   
   return (
     <div className="bg-gray-800/50 rounded-xl p-4 sm:p-6 border border-gray-700">
       {/* ヘッダー: 現在のランクと次のランク */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-6 mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 sm:gap-6 mb-6">
         {/* 現在のランク情報 */}
         <div className="flex items-center gap-3 sm:gap-4">
-          <RankBadge rank={rankProgress.currentRank} size="lg" />
+          {showCurrentBadge && <RankBadge rank={rankProgress.currentRank} size="lg" />}
           <div className="min-w-0 flex-1">
             <div className="text-lg sm:text-xl font-bold text-white truncate">
               {rankProgress.currentRank.displayName}
@@ -33,8 +35,8 @@ export const RankProgressBar: React.FC<RankProgressBarProps> = ({
         
         {/* 次のランク情報 */}
         {rankProgress.nextRank && (
-          <div className="text-left sm:text-right bg-gray-700/30 rounded-lg p-3 sm:bg-transparent sm:p-0">
-            <div className="text-gray-400 text-xs sm:text-sm mb-1">
+          <div className="flex flex-col items-start sm:items-end">
+            <div className="text-gray-400 text-xs sm:text-sm">
               {t('profilePage.rank.nextRank')}
             </div>
             <div className="text-base sm:text-lg font-semibold text-white">

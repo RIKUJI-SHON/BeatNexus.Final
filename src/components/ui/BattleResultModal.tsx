@@ -2,9 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Modal } from './Modal';
 import { Button } from './Button';
-import { RankBadge } from '../profile/RankBadge';
+import { RankProgressBar } from '../profile/RankProgressBar';
 import { useBattleResultStore, BattleResult } from '../../store/battleResultStore';
-import { getCurrentRank } from '../../lib/rankUtils';
+import { calculateRankProgress } from '../../lib/rankUtils';
 import { Share2 } from 'lucide-react';
 
 interface BattleResultModalProps {
@@ -43,7 +43,8 @@ export const BattleResultModal: React.FC<BattleResultModalProps> = ({
 
   const isDraw = !result.isWin && result.ratingChange === 0;
   const isPositiveChange = result.ratingChange > 0;
-  const rankInfo = getCurrentRank(result.newRating);
+  const rankProgress = calculateRankProgress(result.newRating);
+  const currentRankDisplay = rankProgress.currentRank.displayName;
 
   return (
     <>
@@ -66,95 +67,132 @@ export const BattleResultModal: React.FC<BattleResultModalProps> = ({
         </div>
       )}
 
-      <Modal isOpen={isOpen} onClose={onClose}>
-        <div className="p-6 text-center">
-          {/* Result Icon */}
-          <div className="mb-6">
-            {result.isWin ? (
-              <div className="w-20 h-20 mx-auto bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center text-4xl animate-bounce">
-                🏆
+      <Modal isOpen={isOpen} onClose={onClose} plain>
+        <div className="flex justify-center">
+          <div className="onboarding-card relative w-[340px] md:w-96 max-h-[90vh] overflow-y-auto">
+            <button
+              onClick={onClose}
+              className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors p-1 rounded-full hover:bg-gray-700 z-10"
+            >
+              ✕
+            </button>
+            <div className="onboarding-content text-center px-4 py-6">
+              {/* Result Icon */}
+              <div className="mb-6">
+                {result.isWin ? (
+                  <div className="w-24 h-24 mx-auto flex items-center justify-center">
+                    <img src="/images/win.png" alt="Win" className="w-24 h-24 object-contain" />
+                  </div>
+                ) : isDraw ? (
+                  <div className="w-24 h-24 mx-auto flex items-center justify-center">
+                    <img src="/images/even.png" alt="Draw" className="w-24 h-24 object-contain" />
+                  </div>
+                ) : (
+                  <div className="w-24 h-24 mx-auto flex items-center justify-center">
+                    <img src="/images/lose.png" alt="Lose" className="w-24 h-24 object-contain" />
+                  </div>
+                )}
               </div>
-            ) : isDraw ? (
-              <div className="w-20 h-20 mx-auto bg-gradient-to-r from-blue-400 to-cyan-500 rounded-full flex items-center justify-center text-4xl animate-bounce">
-                🤝
-              </div>
-            ) : (
-              <div className="w-20 h-20 mx-auto bg-gradient-to-r from-gray-600 to-gray-700 rounded-full flex items-center justify-center text-4xl">
-                😔
-              </div>
-            )}
-          </div>
 
-          {/* Battle Result Title */}
-          <h2 className={`text-3xl font-bold mb-2 ${
-            result.isWin 
-              ? 'text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500' 
-              : isDraw
-                ? 'text-blue-400'
-                : 'text-gray-400'
-          }`}>
-            {result.isWin 
-              ? t('battle.result.victory') 
-              : isDraw 
-                ? t('battle.result.draw') 
-                : t('battle.result.defeat')}
-          </h2>
-
-          <p className="text-gray-400 mb-6">
-            {t('battle.result.against')} <span className="text-white font-semibold">{result.opponentUsername}</span>
-          </p>
-
-          {/* Rating Change */}
-          <div className="bg-gray-800 rounded-lg p-4 mb-6">
-            <p className="text-gray-400 text-sm mb-2">{t('battle.result.ratingChange')}</p>
-            <div className="flex items-center justify-center space-x-2">
-              <span className="text-2xl font-bold text-white">{result.newRating}</span>
-              <span className={`text-lg font-semibold ${
-                isPositiveChange ? 'text-green-400' : 'text-red-400'
+              {/* Battle Result Title */}
+              <h2 className={`text-2xl font-bold mb-2 ${
+                result.isWin 
+                  ? 'text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500' 
+                  : isDraw
+                    ? 'text-blue-400'
+                    : 'text-gray-400'
               }`}>
-                ({isPositiveChange ? '+' : ''}{result.ratingChange})
-              </span>
+                {result.isWin 
+                  ? t('battle.result.victory') 
+                  : isDraw 
+                    ? t('battle.result.draw') 
+                    : t('battle.result.defeat')}
+              </h2>
+
+              <p className="text-gray-400 mb-6">
+                {t('battle.result.against')} <span className="text-white font-semibold">{result.opponentUsername}</span>
+              </p>
+
+              {/* Rating Change & Current Rank */}
+              <div className="bg-gray-800 rounded-lg p-3 mb-5 space-y-3 text-sm">
+                <div>
+                  <p className="text-gray-400 text-sm mb-2">{t('battle.result.ratingChange')}</p>
+                  <div className="flex items-center justify-center space-x-2">
+                    <span className="text-xl font-bold text-white">{result.newRating}</span>
+                    <span className={`text-lg font-semibold ${
+                      isPositiveChange ? 'text-green-400' : 'text-red-400'
+                    }`}>
+                      ({isPositiveChange ? '+' : ''}{result.ratingChange})
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Rank Progress Bar */}
+              <div className="mb-5">
+                <RankProgressBar 
+                  rankProgress={rankProgress}
+                  currentRating={result.newRating}
+                  showCurrentBadge={false}
+                />
+              </div>
+
+              {/* Share & Archive Buttons (Win) */}
+              {result.isWin && (
+                <div className="flex justify-center gap-3 mb-4">
+                  <button
+                    className="button"
+                    onClick={() => {
+                      const text = t('battle.result.shareText', {
+                        rating: result.newRating,
+                        rank: currentRankDisplay,
+                        opponent: result.opponentUsername
+                      });
+                      const tags = "#BeatNexus #ビートボックス #Beatbox";
+                      const taggedBase = `${text}\n\n${tags}`;
+
+                      const MAX_TEXT_LEN = 280 - 24; // Reserve for URL
+                      let taggedText = taggedBase;
+                      if (taggedText.length > MAX_TEXT_LEN) {
+                        const excess = taggedText.length - MAX_TEXT_LEN;
+                        const newText = text.slice(0, Math.max(0, text.length - excess - 1)).trimEnd() + '…';
+                        taggedText = `${newText}\n\n${tags}`;
+                      }
+
+                      const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(taggedText)}&url=${encodeURIComponent(window.location.origin)}`;
+                      window.open(url, '_blank');
+                    }}
+                  >
+                    <Share2 className="icon" />
+                    {t('battle.result.share')}
+                  </button>
+
+                  <button
+                    className="button bg-gradient-to-r from-purple-500 to-cyan-500 hover:from-purple-600 hover:to-cyan-600"
+                    onClick={() => {
+                      window.location.href = `/battle-replay/${result.battleId}`;
+                    }}
+                  >
+                    {t('battle.result.viewArchive')}
+                  </button>
+                </div>
+              )}
+
+              {/* Archive Button for Draw/Defeat */}
+              {!result.isWin && (
+                <div className="flex justify-center mt-4">
+                  <button
+                    className="button bg-gradient-to-r from-purple-500 to-cyan-500 hover:from-purple-600 hover:to-cyan-600"
+                    onClick={() => {
+                      window.location.href = `/battle-replay/${result.battleId}`;
+                    }}
+                  >
+                    {t('battle.result.viewArchive')}
+                  </button>
+                </div>
+              )}
             </div>
           </div>
-
-          {/* New Rank Badge */}
-          <div className="mb-6">
-            <p className="text-gray-400 text-sm mb-3">{t('battle.result.currentRank')}</p>
-            <div className="flex justify-center">
-              <RankBadge rank={rankInfo} />
-            </div>
-          </div>
-
-          {/* Share Button Only */}
-          {result.isWin && (
-            <div className="flex justify-center mb-4">
-              <button
-                className="button"
-                onClick={() => {
-                  const text = t('battle.result.shareText', {
-                    rating: result.newRating,
-                    rank: rankInfo.displayName
-                  });
-                  const tags = "#BeatNexus #ビートボックス #Beatbox";
-                  const taggedBase = `${text}\n\n${tags}`;
-
-                  const MAX_TEXT_LEN = 280 - 24; // Reserve for URL
-                  let taggedText = taggedBase;
-                  if (taggedText.length > MAX_TEXT_LEN) {
-                    const excess = taggedText.length - MAX_TEXT_LEN;
-                    const newText = text.slice(0, Math.max(0, text.length - excess - 1)).trimEnd() + '…';
-                    taggedText = `${newText}\n\n${tags}`;
-                  }
-
-                  const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(taggedText)}&url=${encodeURIComponent(window.location.origin)}`;
-                  window.open(url, '_blank');
-                }}
-              >
-                <Share2 className="icon" />
-                {t('battle.result.share')}
-              </button>
-            </div>
-          )}
         </div>
       </Modal>
 

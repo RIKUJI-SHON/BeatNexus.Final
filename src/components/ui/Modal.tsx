@@ -10,6 +10,7 @@ interface ModalProps {
   size?: 'sm' | 'md' | 'lg' | 'xl';
   topLayer?: boolean; // 最上層表示オプション
   backgroundOpacity?: 'light' | 'normal' | 'heavy'; // 背景透明度オプション
+  plain?: boolean; // カード装飾なし
 }
 
 export const Modal: React.FC<ModalProps> = ({
@@ -20,6 +21,7 @@ export const Modal: React.FC<ModalProps> = ({
   size = 'md',
   topLayer = false,
   backgroundOpacity = 'normal',
+  plain = false,
 }) => {
   if (!isOpen) return null;
 
@@ -45,19 +47,21 @@ export const Modal: React.FC<ModalProps> = ({
       onClick={onClose} // Overlay click to close
     >
       <div 
-        className={`bg-gray-900 rounded-lg shadow-2xl p-6 relative transform transition-all duration-300 ease-in-out w-full ${sizeClasses[size]}`}
+        className={`relative transform transition-all duration-300 ease-in-out w-full ${sizeClasses[size]} ${plain ? '' : 'bg-gray-900 rounded-lg shadow-2xl p-6'}`}
         onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside modal
       >
-        <button 
-          onClick={onClose} 
-          className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors p-1 rounded-full hover:bg-gray-700"
-        >
-          <X className="h-5 w-5" />
-        </button>
+        {!plain && (
+          <button 
+            onClick={onClose} 
+            className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors p-1 rounded-full hover:bg-gray-700"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        )}
         {title && (
           <h2 className="text-xl font-semibold text-white mb-4 pr-8">{title}</h2>
         )}
-        <div className="text-gray-300">
+        <div className={plain ? '' : 'text-gray-300'}>
           {children}
         </div>
       </div>
