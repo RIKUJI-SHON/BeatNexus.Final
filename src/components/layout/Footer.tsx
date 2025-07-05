@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Mic, Instagram, Twitter, Youtube, Facebook, Mail } from 'lucide-react';
+import { Instagram, Twitter, Youtube, Facebook, Mail } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useOnboardingStore } from '../../store/onboardingStore';
 
@@ -14,7 +14,7 @@ export const Footer: React.FC = () => {
           {/* Logo and description */}
           <div className="col-span-1 md:col-span-1">
             <div className="flex items-center space-x-2 mb-4">
-              <Mic className="h-8 w-8 text-blue-400" />
+              <img src="/images/ICON.png" alt="BeatNexus Icon" className="h-8 w-8" />
               <span className="font-bold text-xl tracking-tight">BeatNexus</span>
             </div>
             <p className="text-gray-400 mb-4">

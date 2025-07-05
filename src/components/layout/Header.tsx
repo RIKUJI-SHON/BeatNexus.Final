@@ -187,6 +187,7 @@ export const Header: React.FC = () => {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
+            <img src="/images/ICON.png" alt="BeatNexus Icon" className="h-8 w-8" />
             <span className="font-bold text-xl tracking-tight">BeatNexus</span>
           </Link>
 
