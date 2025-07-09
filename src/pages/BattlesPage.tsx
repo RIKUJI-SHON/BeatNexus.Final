@@ -309,12 +309,12 @@ const BattlesPage: React.FC = () => {
         </section>
 
         <div className={`grid grid-cols-1 gap-6 ${user ? 'lg:grid-cols-5' : 'lg:grid-cols-4'}`}>
-          {/* Left Sidebar - ログインユーザーのみ表示 */}
+          {/* Left Sidebar - 空のスペースを保持 */}
           {user && (
           <aside className="lg:col-span-1 space-y-6 sticky-sidebar">
-              {/* Submission Cooldown Component - モバイル版では非表示、デスクトップのみ表示 */}
+              {/* 空のスペース - 将来の機能拡張用 */}
               <div className="w-full hidden lg:block">
-            <MonthlyLimitCard />
+                {/* スペースを保持 */}
               </div>
           </aside>
           )}
@@ -403,9 +403,7 @@ const BattlesPage: React.FC = () => {
                     {paginatedArchivedBattles.map(battle => (
                       <ArchivedBattleCard 
                         key={battle.id} 
-                        battle={battle} 
-                        userId={user?.id || ''} 
-                        onWatchReplay={(b) => navigate(`/battle-replay/${b.id}`)}
+                        battle={battle}
                       />
                     ))}
                     
@@ -435,7 +433,7 @@ const BattlesPage: React.FC = () => {
           </div>
 
           {/* Right Sidebar */}
-          <aside className="lg:col-span-1 space-y-6 sticky-sidebar">
+          <aside className="lg:col-span-1 space-y-6 sticky-sidebar-extended">
             
             {/* Top Rankings with Tabs */}
             <TabbedRanking 
@@ -443,6 +441,12 @@ const BattlesPage: React.FC = () => {
               showViewAllButton={true}
             />
 
+            {/* Monthly Limit Card - ランキングの下に配置 */}
+            {user && (
+              <div className="w-full hidden lg:block">
+                <MonthlyLimitCard />
+              </div>
+            )}
 
           </aside>
         </div>

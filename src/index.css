@@ -111,8 +111,30 @@ aside {
   overflow-y: auto !important;
 }
 
+/* 拡張版サイドバー - より多くのコンテンツに対応 */
+.sticky-sidebar-extended {
+  position: -webkit-sticky !important;
+  position: sticky !important;
+  top: 1rem !important;
+  z-index: 10 !important;
+  /* 最大高さ制限を大幅に拡張 */
+  max-height: calc(200vh) !important;
+  min-height: calc(100vh - 1rem) !important;
+  overflow-y: visible !important;
+  /* スクロールを完全に無効化 */
+  overflow: visible !important;
+}
+
+/* スクロールバー関連のスタイルは不要（overflow: visible のため） */
+
 @media (max-width: 1024px) {
   .sticky-sidebar {
+    position: static !important;
+    max-height: none !important;
+    overflow-y: visible !important;
+  }
+  
+  .sticky-sidebar-extended {
     position: static !important;
     max-height: none !important;
     overflow-y: visible !important;

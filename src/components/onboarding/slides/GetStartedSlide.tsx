@@ -1,7 +1,5 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Camera, Eye } from 'lucide-react';
-import { Button3D } from '../../ui/Button3D';
 
 interface GetStartedSlideProps {}
 
@@ -25,26 +23,14 @@ const GetStartedSlide: React.FC<GetStartedSlideProps> = () => {
           </h2>
         </div>
 
-
-
-        {/* アクション */}
-        <div className="space-y-5 mb-8">
-          <div className="flex items-center gap-4 p-4 bg-cyan-500/10 rounded-xl border border-cyan-500/30 hover:bg-cyan-500/20 transition-colors">
-            <div className="p-2 bg-cyan-500/20 rounded-lg">
-              <Camera className="w-6 h-6 text-cyan-400" />
-            </div>
-            <span className="text-base text-gray-300 font-medium">{t('onboarding.slide4.action1')}</span>
-          </div>
-          
-          <div className="flex items-center gap-4 p-4 bg-purple-500/10 rounded-xl border border-purple-500/30 hover:bg-purple-500/20 transition-colors">
-            <div className="p-2 bg-purple-500/20 rounded-lg">
-              <Eye className="w-6 h-6 text-purple-400" />
-            </div>
-            <span className="text-base text-gray-300 font-medium">{t('onboarding.slide4.action2')}</span>
-          </div>
+        {/* Slide4.png画像表示 */}
+        <div className="flex justify-center items-center mb-8">
+          <img 
+            src="/images/onboarding/Slide4.png" 
+            alt="Get Started Guide"
+            className="max-w-full max-h-64 object-contain rounded-lg shadow-lg"
+          />
         </div>
-
-
       </div>
     </div>
   );

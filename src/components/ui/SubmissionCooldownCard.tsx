@@ -114,12 +114,12 @@ export const MonthlyLimitCard: React.FC = () => {
 
   return (
     <div className="glowing-card w-full mx-auto">
-      <div className="glowing-card__content p-4 sm:p-6 lg:p-3 text-center">
+      <div className="glowing-card__content p-3 text-center">
         {/* Header */}
-        <div className="text-center mb-4">
-          <div className="flex items-center justify-center gap-2 mb-2">
-            <Calendar className="h-5 w-5 text-cyan-400" />
-            <h2 className="text-lg font-bold text-cyan-400">
+        <div className="text-center mb-3">
+          <div className="flex items-center justify-center gap-2 mb-1">
+            <Calendar className="h-4 w-4 text-cyan-400" />
+            <h2 className="text-base font-bold text-cyan-400">
               {t('monthlyLimit.title')}
             </h2>
           </div>
@@ -128,12 +128,12 @@ export const MonthlyLimitCard: React.FC = () => {
         {monthlyData && (
           <>
             {/* 残り投稿可能回数を表示 */}
-            <div className="mb-4">
-              <div className="text-center mb-3">
+            <div className="mb-3">
+              <div className="text-center mb-2">
                 <div className="text-xs text-gray-400 mb-1">
                   {t('monthlyLimit.remainingPosts')}
                 </div>
-                <div className="text-3xl font-bold text-white mb-1">
+                <div className="text-2xl font-bold text-white mb-1">
                   {monthlyData.remaining === Infinity ? t('monthlyLimit.testMode.unlimited') : monthlyData.remaining}
                 </div>
               </div>
@@ -155,9 +155,9 @@ export const MonthlyLimitCard: React.FC = () => {
             </div>
 
             {/* リセット日 */}
-            <div className="mb-4 p-3 sm:p-4 bg-gray-800/50 rounded-lg">
-              <div className="flex items-center justify-center gap-2 text-sm">
-                <RefreshCw className="h-4 w-4 text-gray-400" />
+            <div className="mb-3 p-2 bg-gray-800/50 rounded-lg">
+              <div className="flex items-center justify-center gap-2 text-xs">
+                <RefreshCw className="h-3 w-3 text-gray-400" />
                 <span className="text-gray-400">{t('monthlyLimit.resetLabel')}</span>
                 <span className="font-medium text-white">{monthlyData.reset_date}</span>
               </div>
@@ -166,7 +166,7 @@ export const MonthlyLimitCard: React.FC = () => {
         )}
 
         {/* 説明 */}
-        <div className="mt-4 pt-3 border-t border-gray-700/50">
+        <div className="mt-3 pt-2 border-t border-gray-700/50">
           <p className="text-xs text-gray-400 text-center">
             {t('monthlyLimit.testMode.simpleMessage')}
           </p>

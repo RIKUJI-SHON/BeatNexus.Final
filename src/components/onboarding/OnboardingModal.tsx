@@ -221,7 +221,7 @@ const OnboardingModal: React.FC = () => {
               variant="primary"
               className="px-6 py-2"
             >
-              {currentSlide === 4 ? t('onboarding.getStarted') : `${t('common.next')} ❯`}
+              {currentSlide === 5 ? t('onboarding.getStarted') : `${t('common.next')} ❯`}
             </Button3D>
           </div>
         </div>
