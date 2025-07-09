@@ -823,7 +823,7 @@
     },
     "upload": {
       "dropHere": "Drop your video here",
-      "orBrowse": "or click to browse files (MP4, WebM, MOV | Max 75MB)",
+      "orBrowse": "or click to browse files (MP4, WebM, MOV | Max 120MB)",
       "selectVideo": "Select Video"
     },
     "guidelines": {
@@ -834,7 +834,7 @@
       },
       "videoLengthSize": {
         "title": "Video Length & Size",
-        "description": "【IMPORTANT】Main battles MUST be 60 to 120 seconds - this is a strict rule. Videos outside this range cannot be submitted. Keep file size under 75MB for best performance."
+        "description": "【IMPORTANT】Main battles MUST be 60 to 120 seconds - this is a strict rule. Videos outside this range cannot be submitted. We now support up to 120MB for high-quality, high-fidelity submissions."
       },
       "facePolicy": {
         "title": "Face Policy",
@@ -872,7 +872,8 @@
       "complete": "Complete",
       "analyzing_video": "Analyzing video...",
       "recording": "Recording...",
-      "remaining": "Remaining ~{{seconds}}s"
+      "remaining": "Remaining ~{{seconds}}s",
+      "checkingMemory": "Checking memory usage..."
     },
     "errors": {
       "problemOccurred": "Problem occurred",
@@ -882,7 +883,7 @@
       "recordingFailed": "Error occurred during recording",
       "processingError": "Processing error",
       "videoProcessingFailed": "Failed to process video file",
-      "fileTooBig": "File size exceeds limit. Current: {{current}}MB (Limit: 75MB)",
+      "fileTooBig": "File size exceeds limit. Current: {{current}}MB (Limit: 120MB)",
       "compressionFailed": "Automatic compression failed. Please try 'Fast Compression' or 'Simple Method'.",
       "fastCompressionFailed": "Fast compression failed. Please try 'Simple Method' for manual handling.",
       "fileSizeStillLarge": "Compressed file size: {{size}}MB. Further compression needed.",
@@ -897,7 +898,10 @@
       "themeTooShort": "Theme Challenge video is too short ({{duration}}s). Please upload a video of {{required}} seconds.\n\n💡 Tip: Record a longer performance.",
       "themeTooLong": "Theme Challenge video is too long ({{duration}}s). Please upload a video of {{required}} seconds.\n\n💡 Tip: Use a video editing app to shorten it.",
       "changeBattleFormat": "Change Battle Format",
-      "selectDifferentVideo": "Select Different Video"
+      "selectDifferentVideo": "Select Different Video",
+      "fileTooLargeForProcessing": "File size ({{size}}MB) is too large for processing. Please use files under 500MB.",
+      "compressionTimeout": "Compression process timed out. Please reduce file size and try again.",
+      "compressionFinalizationFailed": "Failed to create compressed file"
     },
     "compression": {
       "autoAvailable": "Automatic quality adjustment is available",
@@ -911,7 +915,7 @@
       "bitrateAdjustment": "Bitrate adjustment",
       "audioQualityMaintained": "High audio quality maintained (128kbps)",
       "fileSizeTooLarge": "File size is too large",
-      "currentFileSize": "Current file size: {{size}}MB (Limit: 75MB)",
+      "currentFileSize": "Current file size: {{size}}MB (Limit: 120MB)",
       "recommendedSolutions": "Recommended solutions:",
       "retakeVideo": "Retake video",
       "recommended": "Recommended",
@@ -1391,11 +1395,11 @@
       },
       "videoFormats": {
         "question": "What video formats are supported?",
-        "answer": "We support MP4, WebM, and MOV formats. File size must be under 75MB. For the best experience, we recommend recording with clear audio quality."
+        "answer": "We support MP4, WebM, and MOV formats. File size must be under 120MB. For the best beatboxing experience, we recommend recording with high video quality and crystal-clear audio."
       },
       "uploadFailed": {
         "question": "My video upload is failing",
-        "answer": "Check that your file size is under 75MB and format is MP4, WebM, or MOV. Also verify your internet connection and try refreshing your browser."
+        "answer": "Check that your file size is under 120MB and format is MP4, WebM, or MOV. Also verify your internet connection and try refreshing your browser."
       },
       "mobile": {
         "question": "Can I use BeatNexus on mobile?",

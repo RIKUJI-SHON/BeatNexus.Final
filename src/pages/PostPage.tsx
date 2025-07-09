@@ -9,12 +9,59 @@ import { useTranslation } from 'react-i18next';
 import { useSubmissionCooldown } from '../hooks/useSubmissionCooldown';
 import { trackBeatNexusEvents } from '../utils/analytics';
 
-// Maximum file size in bytes (75MB - より現実的な制限)
-const MAX_FILE_SIZE = 75 * 1024 * 1024;
+// Maximum file size in bytes (120MB - 高画質対応)
+const MAX_FILE_SIZE = 120 * 1024 * 1024;
+
+// 🆕 メモリ制限による処理可能サイズ（500MB以上は危険）
+const SAFE_PROCESSING_SIZE = 500 * 1024 * 1024;
+
+// 🆕 段階的な圧縮設定（高画質・高音質対応）
+const getCompressionSettings = (fileSizeMB: number) => {
+  if (fileSizeMB > 1000) {
+    // 1GB以上: 強めの圧縮（それでも音質は保持）
+    return {
+      videoBitsPerSecond: 1500000, // 1.5Mbps - 画質向上
+      audioBitsPerSecond: 192000,  // 192kbps - 高音質維持
+      frameRate: 24,               // 24fps - スムーズな動き
+      targetRatio: 0.12            // 12%まで圧縮（緩和）
+    };
+  } else if (fileSizeMB > 500) {
+    // 500MB-1GB: 中程度の圧縮
+    return {
+      videoBitsPerSecond: 2000000, // 2Mbps - さらに画質向上
+      audioBitsPerSecond: 256000,  // 256kbps - 高音質
+      frameRate: 30,               // 30fps - より滑らか
+      targetRatio: 0.20            // 20%まで圧縮
+    };
+  } else if (fileSizeMB > 200) {
+    // 200-500MB: 軽い圧縮
+    return {
+      videoBitsPerSecond: 2500000, // 2.5Mbps - 高画質
+      audioBitsPerSecond: 320000,  // 320kbps - 非常に高音質
+      frameRate: 30,               // 30fps
+      targetRatio: 0.35            // 35%まで圧縮（大幅緩和）
+    };
+  } else {
+    // 200MB以下: 最軽量圧縮
+    return {
+      videoBitsPerSecond: 3000000, // 3Mbps - 最高画質
+      audioBitsPerSecond: 320000,  // 320kbps - 最高音質維持
+      frameRate: 30,               // 30fps
+      targetRatio: 0.8             // 80%まで圧縮（ほぼ元サイズ）
+    };
+  }
+};
 
 // Function to get video duration
 const getVideoDuration = (file: File): Promise<number> => {
   return new Promise((resolve, reject) => {
+    // 🆕 メモリ制限チェック
+    const fileSizeMB = file.size / 1024 / 1024;
+    if (file.size > SAFE_PROCESSING_SIZE) {
+      reject(new Error(`ファイルサイズが大きすぎます（${fileSizeMB.toFixed(1)}MB）。500MB以下のファイルをお使いください。`));
+      return;
+    }
+
     const video = document.createElement('video');
     video.preload = 'metadata';
     
@@ -83,11 +130,27 @@ const getDurationErrorMessage = (duration: number, format: string, t: (key: stri
 // Function to compress video with audio preservation (direct re-encoding)
 const compressVideoAuto = (
   file: File, 
-  targetSizeMB: number = 70,
+  targetSizeMB: number = 120,
   onProgress?: (progress: number, stage: string) => void,
   t?: (key: string, params?: any) => string
 ): Promise<File> => {
   return new Promise((resolve, reject) => {
+    const fileSizeMB = file.size / 1024 / 1024;
+    
+    // 🆕 メモリ安全性チェック
+    if (file.size > SAFE_PROCESSING_SIZE) {
+      reject(new Error(
+        t ? t('postPage.errors.fileTooLargeForProcessing', { size: fileSizeMB.toFixed(1) }) 
+          : `ファイルサイズ（${fileSizeMB.toFixed(1)}MB）が大きすぎて処理できません。500MB以下のファイルをお使いください。`
+      ));
+      return;
+    }
+
+    onProgress?.(5, t ? t('postPage.processing.checkingMemory') : 'Checking memory...');
+    
+    // 🆕 段階的圧縮設定の適用
+    const compressionSettings = getCompressionSettings(fileSizeMB);
+    
     onProgress?.(10, t ? t('postPage.processing.loadingVideo') : 'Loading video...');
     
     // より簡単で確実な方法：動画ファイルを直接MediaRecorderで再エンコード
@@ -96,6 +159,15 @@ const compressVideoAuto = (
     video.controls = false;
     video.playsInline = true;
     
+    // 🆕 タイムアウト設定（10分）
+    const timeoutId = setTimeout(() => {
+      video.removeAttribute('src');
+      reject(new Error(
+        t ? t('postPage.errors.compressionTimeout') 
+          : '圧縮処理がタイムアウトしました。ファイルサイズを小さくしてから再試行してください。'
+      ));
+    }, 10 * 60 * 1000); // 10分
+    
     video.onloadedmetadata = () => {
       try {
         const duration = video.duration;
@@ -103,17 +175,21 @@ const compressVideoAuto = (
         
         onProgress?.(30, t ? t('postPage.processing.calculatingCompression') : 'Calculating compression settings...');
         
-        const compressionRatio = Math.min(targetSizeMB / originalSizeMB, 0.8);
+        // 🆕 改善された圧縮率計算
+        const targetRatio = Math.min(targetSizeMB / originalSizeMB, compressionSettings.targetRatio);
         
-        onProgress?.(40, t ? t('postPage.compression.compressionRatio', { ratio: Math.round(compressionRatio * 100) }) : `Compression ratio: ${Math.round(compressionRatio * 100)}%`);
+        onProgress?.(40, t ? t('postPage.compression.compressionRatio', { ratio: Math.round(targetRatio * 100) }) : `Compression ratio: ${Math.round(targetRatio * 100)}%`);
         
-        // 音声対応のMIMEタイプを確認
+        // 🎵 音声品質優先のMIMEタイプを確認（ビートボックス用高音質設定）
         let mimeType = 'video/webm';
-        if (MediaRecorder.isTypeSupported('video/webm;codecs=vp8,opus')) {
-          mimeType = 'video/webm;codecs=vp8,opus';
-        } else if (MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus')) {
+        if (MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus')) {
+          // VP9 + Opus: 最高品質の組み合わせ（音質重視）
           mimeType = 'video/webm;codecs=vp9,opus';
+        } else if (MediaRecorder.isTypeSupported('video/webm;codecs=vp8,opus')) {
+          // VP8 + Opus: 高音質確保
+          mimeType = 'video/webm;codecs=vp8,opus';
         } else if (MediaRecorder.isTypeSupported('video/webm')) {
+          // フォールバック
           mimeType = 'video/webm';
         }
         
@@ -122,45 +198,73 @@ const compressVideoAuto = (
         // HTMLVideoElementから直接ストリームを取得（音声付き）
         const videoElement = video as HTMLVideoElement & { captureStream?: (frameRate?: number) => MediaStream };
         if (!videoElement.captureStream) {
+          clearTimeout(timeoutId);
           throw new Error(t ? t('postPage.errors.unsupportedBrowser') : 'This feature is not supported in your browser');
         }
         
-        const stream = videoElement.captureStream(15); // 15fps - 高速化のため
+        // 🆕 フレームレートを動的に調整
+        const stream = videoElement.captureStream(compressionSettings.frameRate);
         
         onProgress?.(60, t ? t('postPage.processing.preparingStream') : 'Preparing stream...');
         
         const chunks: BlobPart[] = [];
-        // 注意: videoエレメントがmutedでも、captureStream()は元の音声トラックを取得します
-        // そのため、圧縮中にスピーカーから音が出ることなく、音声付きの動画を生成できます
+        // 🆕 改善された MediaRecorder 設定
         const mediaRecorder = new MediaRecorder(stream, {
           mimeType: mimeType,
-          videoBitsPerSecond: Math.floor(1500000 * compressionRatio), // 1.5Mbps * 圧縮率
-          audioBitsPerSecond: 128000 // 高音質を維持
+          videoBitsPerSecond: compressionSettings.videoBitsPerSecond,
+          audioBitsPerSecond: compressionSettings.audioBitsPerSecond
         });
         
         onProgress?.(70, t ? t('postPage.processing.startingRecording') : 'Starting recording...');
         
+        // 🆕 チャンクサイズ制限でメモリ使用量をコントロール
+        let totalChunkSize = 0;
+        const MAX_CHUNK_SIZE = 100 * 1024 * 1024; // 100MB制限
+        
         mediaRecorder.ondataavailable = (event) => {
           if (event.data.size > 0) {
+            totalChunkSize += event.data.size;
+            
+            // メモリ制限チェック
+            if (totalChunkSize > MAX_CHUNK_SIZE && chunks.length > 50) {
+              console.warn('Chunk size limit reached, finalizing...');
+              mediaRecorder.stop();
+              return;
+            }
+            
             chunks.push(event.data);
           }
         };
         
         mediaRecorder.onstop = () => {
+          clearTimeout(timeoutId);
           onProgress?.(95, t ? t('postPage.compression.finalizing') : 'Finalizing...');
-          const compressedBlob = new Blob(chunks, { type: mimeType });
-          const baseName = file.name.replace(/\.[^/.]+$/, '');
-          const extension = 'webm';
-          const compressedFile = new File(
-            [compressedBlob], 
-            `${baseName}_compressed.${extension}`, 
-            { type: mimeType }
-          );
-          onProgress?.(100, t ? t('postPage.processing.complete') : 'Complete');
-          resolve(compressedFile);
+          
+          try {
+            const compressedBlob = new Blob(chunks, { type: mimeType });
+            const baseName = file.name.replace(/\.[^/.]+$/, '');
+            const extension = 'webm';
+            const compressedFile = new File(
+              [compressedBlob], 
+              `${baseName}_compressed.${extension}`, 
+              { type: mimeType }
+            );
+            
+            // 🆕 圧縮結果の検証
+            const finalSizeMB = compressedFile.size / 1024 / 1024;
+            console.log(`Compression completed: ${originalSizeMB.toFixed(1)}MB → ${finalSizeMB.toFixed(1)}MB (${Math.round((finalSizeMB/originalSizeMB)*100)}%)`);
+            
+            onProgress?.(100, t ? t('postPage.processing.complete') : 'Complete');
+            resolve(compressedFile);
+          } catch (error) {
+            console.error('Error creating compressed file:', error);
+            reject(new Error(t ? t('postPage.errors.compressionFinalizationFailed') : '圧縮ファイルの作成に失敗しました'));
+          }
         };
         
-        mediaRecorder.onerror = () => {
+        mediaRecorder.onerror = (event) => {
+          clearTimeout(timeoutId);
+          console.error('MediaRecorder error:', event);
           reject(new Error(t ? t('postPage.errors.recordingFailed') : 'Error occurred during recording'));
         };
         
@@ -183,32 +287,43 @@ const compressVideoAuto = (
           mediaRecorder.stop();
         };
         
-        // 録画開始
-        mediaRecorder.start();
+        // 🆕 定期的なチャンク出力でメモリ使用量を抑制
+        mediaRecorder.start(5000); // 5秒ごとにチャンクを出力
         
         // 動画再生開始（音声付きで録画される）
         video.currentTime = 0;
         const playPromise = video.play();
         
         if (playPromise !== undefined) {
-          playPromise.catch(() => {
+          playPromise.catch((playError) => {
+            clearTimeout(timeoutId);
+            console.error('Video play error:', playError);
             // 自動再生が失敗した場合の対処
             reject(new Error(t ? t('postPage.errors.playbackFailed') : 'Failed to play video. Please check your browser settings.'));
           });
         }
         
       } catch (error) {
+        clearTimeout(timeoutId);
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
         reject(new Error(t ? t('postPage.errors.processingError') + `: ${errorMessage}` : `Processing error: ${errorMessage}`));
       }
     };
     
-    video.onerror = () => {
+    video.onerror = (event) => {
+      clearTimeout(timeoutId);
+      console.error('Video loading error:', event);
       reject(new Error(t ? t('postPage.errors.videoLoadFailed') : 'Failed to load video file'));
     };
     
-    video.src = URL.createObjectURL(file);
-    video.load();
+    try {
+      video.src = URL.createObjectURL(file);
+      video.load();
+    } catch (error) {
+      clearTimeout(timeoutId);
+      console.error('Error setting video source:', error);
+      reject(new Error(t ? t('postPage.errors.videoLoadFailed') : 'Failed to load video file'));
+    }
   });
 };
 
@@ -216,24 +331,52 @@ const compressVideoAuto = (
 const getCompressionSuggestions = (fileSize: number) => {
   const sizeMB = fileSize / 1024 / 1024;
   
-  if (sizeMB > 150) {
+  if (sizeMB > 1000) {
+    // 1GB以上: 極めて危険
     return {
-      level: 'high',
-      message: 'File size is very large. Please change your phone settings to "Full HD (1080p)" or lower and re-record.',
+      level: 'critical',
+      message: '⚠️ ファイルサイズが極めて大きいです（{{size}}GB）。このサイズでは処理できません。',
       suggestions: [
-        'Change recording setting from "4K" to "Full HD"',
-        'Shorten video length (within 60-90 seconds)',
-        'Change quality setting to "Standard"'
+        '【推奨】スマホ設定を「HD (720p)」以下に変更して撮り直し',
+        '動画の長さを60-90秒以内に短縮',
+        '動画編集アプリで大幅に圧縮',
+        '別のデバイスで録画を検討'
       ]
     };
-  } else if (sizeMB > 75) {
+  } else if (sizeMB > 500) {
+    // 500MB-1GB: 危険
+    return {
+      level: 'high',
+      message: '⚠️ ファイルサイズが非常に大きいです（{{size}}MB）。自動圧縮は試せますが、失敗する可能性があります。',
+      suggestions: [
+        '【推奨】スマホ設定を「フルHD (1080p)」以下に変更して撮り直し',
+        '動画の長さを短縮（60-90秒程度）',
+        '品質設定を「標準」に変更',
+        '自動圧縮を試してみる（処理に時間がかかる場合があります）'
+      ]
+    };
+  } else if (sizeMB > 150) {
+    // 150-500MB: 要注意
+    return {
+      level: 'medium-high',
+      message: 'ファイルサイズが大きめです（{{size}}MB）。自動圧縮を推奨します。',
+      suggestions: [
+        '自動圧縮機能を使用（推奨）',
+        'スマホ設定で「4K」を「フルHD」に変更',
+        '動画の長さを短縮（60-90秒程度）',
+        '品質設定を「標準」に変更'
+      ]
+    };
+  } else if (sizeMB > 120) {
+    // 120-150MB: 軽度の制限超過
     return {
       level: 'medium', 
-      message: 'File size exceeds the limit. Please reduce the file size using the following methods.',
+      message: 'ファイルサイズが制限を超えています（{{size}}MB）。以下の方法で削減してください。',
       suggestions: [
-        'Shorten video length',
-        'Lower video quality settings on your phone',
-        'Re-export with lower quality using video editing apps'
+        '自動圧縮機能を使用（推奨）',
+        '動画の長さを短縮',
+        'スマホの動画品質設定を下げる',
+        '動画編集アプリで品質を下げて再出力'
       ]
     };
   }
@@ -455,7 +598,7 @@ const PostPage: React.FC = () => {
       setError(null);
       
       try {
-        const compressedFile = await compressVideoAuto(videoFile, 70, (progress, stage) => {
+        const compressedFile = await compressVideoAuto(videoFile, 120, (progress, stage) => {
           setProcessingProgress(progress);
           setProcessingStage(stage);
         }, t);
