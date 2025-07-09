@@ -39,9 +39,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
     playerB: { rating: 1200, loading: true }
   });
   
-  // 🆕 広告視聴機能のステート
-  const [hasWatchedAd, setHasWatchedAd] = useState(false);
-  const [isWatchingAd, setIsWatchingAd] = useState(false);
+
   
   // Stores
   const { 
@@ -197,20 +195,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
     }
   };
 
-  // 🆕 広告視聴ハンドラー
-  const handleWatchAd = async () => {
-    setIsWatchingAd(true);
-    try {
-      // 2秒間の疑似広告視聴時間
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      setHasWatchedAd(true);
-      // トーストメッセージなどで成功を知らせる場合はここに追加
-    } catch (error) {
-      console.error('❌ Ad watching failed:', error);
-    } finally {
-      setIsWatchingAd(false);
-    }
-  };
+
 
   // Format timestamp for comments
   const formatTimestamp = (timestamp: string) => {
@@ -1121,45 +1106,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
           </div>
 
           {/* Comments List */}
-          <div className={`${!hasWatchedAd ? 'relative' : ''}`}>
-            {/* 🆕 オーバーレイ（広告未視聴時） */}
-            {!hasWatchedAd && (
-              <div className="absolute inset-0 bg-black/60 backdrop-blur-sm rounded-xl z-10 flex flex-col items-center justify-center">
-                <div className="text-center p-6 bg-gray-800/90 rounded-2xl border border-gray-600/50 max-w-sm mx-auto">
-                  <div className="w-16 h-16 bg-gradient-to-r from-cyan-500 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Play className="h-8 w-8 text-white" />
-                  </div>
-                  <h4 className="text-xl font-bold text-white mb-2">
-                    {t('battleView.watchAdToViewComments')}
-                  </h4>
-                  <p className="text-gray-300 text-sm mb-6">
-                    {t('battleView.commentsLocked')}
-                  </p>
-                  
-                  <button
-                    onClick={handleWatchAd}
-                    disabled={isWatchingAd}
-                    className={`px-6 py-3 rounded-xl font-bold text-white transition-all duration-300 transform hover:scale-105 ${
-                      isWatchingAd 
-                        ? 'bg-gray-600 cursor-not-allowed' 
-                        : 'bg-gradient-to-r from-cyan-500 to-pink-500 hover:shadow-lg hover:shadow-cyan-500/25'
-                    }`}
-                  >
-                    {isWatchingAd ? (
-                      <div className="flex items-center gap-2">
-                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                        {t('battleView.viewingAd')}
-                      </div>
-                    ) : (
-                      t('battleView.watchAdButton')
-                    )}
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* コメントコンテンツ（ぼかし効果付き） */}
-            <div className={!hasWatchedAd ? 'blur-sm pointer-events-none' : ''}>
+          <div>
               {isLoadingComments ? (
                 <div className="flex items-center justify-center py-8">
                   <div className="w-6 h-6 border-2 border-cyan-500 border-t-transparent rounded-full animate-spin"></div>
@@ -1204,7 +1151,6 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                   <p className="text-gray-400">{t('battleView.noComments')}</p>
                 </div>
               )}
-            </div>
           </div>
         </div>
       </div>

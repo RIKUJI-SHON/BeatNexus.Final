@@ -37,13 +37,13 @@ const handleBattleMatchedNotification = async (notificationData: Notification) =
     // プレイヤー情報を別途取得
     const { data: player1Profile, error: player1Error } = await supabase
       .from('profiles')
-      .select('username')
+      .select('username, avatar_url')
       .eq('id', battleData.player1_user_id)
       .single();
 
     const { data: player2Profile, error: player2Error } = await supabase
       .from('profiles')
-      .select('username')
+      .select('username, avatar_url')
       .eq('id', battleData.player2_user_id)
       .single();
 
@@ -75,10 +75,15 @@ const handleBattleMatchedNotification = async (notificationData: Notification) =
     const opponentUsername = isPlayer1 
       ? player2Profile?.username || 'Unknown'
       : player1Profile?.username || 'Unknown';
+      
+    const opponentAvatarUrl = isPlayer1 
+      ? player2Profile?.avatar_url || null
+      : player1Profile?.avatar_url || null;
 
     const matchData: BattleMatchedData = {
       battleId: notificationData.relatedBattleId,
       opponentUsername,
+      opponentAvatarUrl,
       battleFormat: battleData.battle_format,
       votingEndsAt: battleData.end_voting_at,
       matchType: 'immediate' as const, // Edge Functionからの通知は即座マッチング

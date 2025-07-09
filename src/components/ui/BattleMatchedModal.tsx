@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Modal } from './Modal';
-import { Button } from './Button';
-import { Share2, Zap, Clock } from 'lucide-react';
+import { Avatar } from './Avatar';
+import { Share2 } from 'lucide-react';
 import i18n from '../../i18n';
 
 export interface BattleMatchedData {
   battleId: string;
   opponentUsername: string;
+  opponentAvatarUrl?: string;
   battleFormat: string;
   votingEndsAt: string;
   matchType: 'immediate' | 'progressive';
@@ -90,8 +91,12 @@ export const BattleMatchedModal: React.FC<BattleMatchedModalProps> = ({
             <div className="onboarding-content text-center px-4 py-6 text-sm">
               {/* Match Icon */}
               <div className="mb-6">
-                <div className="w-20 h-20 mx-auto bg-gradient-to-r from-blue-400 to-cyan-500 rounded-full flex items-center justify-center text-4xl animate-pulse">
-                  ⚡
+                <div className="w-20 h-20 mx-auto flex items-center justify-center">
+                  <img 
+                    src="/images/VS.png" 
+                    alt="VS"
+                    className="w-full h-full object-contain"
+                  />
                 </div>
               </div>
 
@@ -100,22 +105,20 @@ export const BattleMatchedModal: React.FC<BattleMatchedModalProps> = ({
                 {t('battle.matched.title')}
               </h2>
 
-              <p className="text-gray-400 mb-6">
+              {/* Opponent Avatar */}
+              <div className="mb-3 flex justify-center">
+                <Avatar
+                  src={matchData.opponentAvatarUrl || '/images/Profile.png'}
+                  alt={matchData.opponentUsername}
+                  size="xl"
+                  className="border-4 border-gradient"
+                />
+              </div>
+
+              {/* Opponent Name */}
+              <p className="text-gray-400 mb-6 text-center">
                 {t('battle.matched.against')} <span className="text-white font-semibold">{matchData.opponentUsername}</span>
               </p>
-
-              {/* Battle Info */}
-              <div className="bg-gray-800 rounded-lg p-3 mb-5 space-y-3 text-sm">
-                <div className="flex items-center justify-center space-x-2">
-                  <Zap className="w-5 h-5 text-yellow-400" />
-                  <span className="text-white font-semibold">{t(`battle.formats.${matchData.battleFormat}`)}</span>
-                </div>
-                
-                <div className="flex items-center justify-center space-x-2">
-                  <Clock className="w-5 h-5 text-blue-400" />
-                  <span className="text-gray-400">{t('battle.matched.votingPeriod')}</span>
-                </div>
-              </div>
 
               {/* Call to Action */}
               <div className="mb-6">
@@ -123,16 +126,19 @@ export const BattleMatchedModal: React.FC<BattleMatchedModalProps> = ({
                   {t('battle.matched.encouragement')}
                 </p>
                 
-                <Button
-                  variant="primary"
-                  size="lg"
-                  onClick={() => {
-                    window.location.href = `/battle/${matchData.battleId}`;
-                  }}
-                  className="w-full"
-                >
-                  {t('battle.matched.viewBattle')}
-                </Button>
+                <div className="flex justify-center">
+                  <div className="vote-button-container">
+                    <button
+                      onClick={() => {
+                        window.location.href = `/battle/${matchData.battleId}`;
+                      }}
+                      className="vote-space-button"
+                    >
+                      <span>{t('battle.matched.viewBattle')}</span>
+                      <div className="bright-particles"></div>
+                    </button>
+                  </div>
+                </div>
               </div>
 
               {/* Share Button */}
@@ -234,6 +240,12 @@ export const BattleMatchedModal: React.FC<BattleMatchedModalProps> = ({
         .battle-share-button .icon {
           width: 1.2em;
           height: 1.2em;
+        }
+
+        /* Gradient Border for Avatar */
+        .border-gradient {
+          border: 4px solid;
+          border-image: linear-gradient(135deg, #3b82f6, #8b5cf6, #06b6d4) 1;
         }
       `}</style>
     </>

@@ -17,14 +17,10 @@ import { ShareBattleButton } from '../components/ui/ShareBattleButton';
 import { trackBeatNexusEvents } from '../utils/analytics';
 import { Helmet } from 'react-helmet-async';
 
-// カラーパレット（BattleViewと統一）
-const colorPairs = [
-  { a: '#06b6d4', b: '#ec4899', bg: 'from-cyan-500/20 to-pink-500/20' },
-  { a: '#10b981', b: '#f59e0b', bg: 'from-emerald-500/20 to-amber-500/20' },
-  { a: '#8b5cf6', b: '#ef4444', bg: 'from-violet-500/20 to-red-500/20' },
-  { a: '#06b6d4', b: '#8b5cf6', bg: 'from-cyan-500/20 to-violet-500/20' },
-  { a: '#f59e0b', b: '#ec4899', bg: 'from-amber-500/20 to-pink-500/20' }
-];
+// 固定色設定（BattleViewと統一）
+const playerColorA = '#3B82F6'; // Blue for Player A
+const playerColorB = '#EF4444'; // Red for Player B
+const gradientBg = 'from-blue-500/20 to-red-500/20';
 
 const BattleReplayPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -250,9 +246,8 @@ const BattleReplayPage: React.FC = () => {
   const isParticipant = user && (battle.player1_user_id === user.id || battle.player2_user_id === user.id);
   const currentLocale = i18n.language === 'ja' ? ja : enUS;
   
-  // カラーテーマ選択（BattleViewと統一）
-  const colorPairIndex = parseInt(battle.id.replace(/\D/g, '')) % colorPairs.length;
-  const { a: playerColorA, b: playerColorB, bg: gradientBg } = colorPairs[colorPairIndex];
+  // 固定色テーマ（BattleViewと統一）
+  // playerColorA, playerColorB, gradientBgは上で定義済み
   
   const totalVotes = battle.final_votes_a + battle.final_votes_b;
   const percentageA = totalVotes > 0 ? (battle.final_votes_a / totalVotes) * 100 : 50;
@@ -677,8 +672,120 @@ const BattleReplayPage: React.FC = () => {
           </div>
         </div>
 
+        {/* Voting Console Machine - Archive View (Read-only) */}
+        <div className="relative mt-8 md:mt-10">
+          <div className="flex justify-center">
+            <div className="relative">
+              
+              {/* Main Console Base - Styled like BattleView */}
+              <div className="relative bg-gray-900 rounded-2xl px-8 py-6 border-3 border-gray-600 shadow-xl max-w-2xl">
+                
+                {/* Console Surface */}
+                <div className="relative bg-gray-800 rounded-xl p-6 border border-gray-600">
+                  
+                  {/* Vote Results Display */}
+                  <div className="flex items-center justify-center gap-4 md:gap-8">
+                    
+                    {/* Player A Vote Counter */}
+                    <div className="flex flex-col items-center">
+                      <div className={`bg-gray-800 rounded-xl p-2 md:p-4 border shadow-lg transition-all duration-500 relative w-16 md:w-20 flex flex-col items-center ${
+                        isAWinner 
+                          ? 'border-green-400/60 shadow-green-500/30 ring-2 ring-green-400' 
+                          : 'border-blue-500/30 shadow-lg'
+                      }`}>
+                        <div className={`text-xs font-bold mb-1 text-center transition-colors duration-300 ${
+                          isAWinner ? 'text-green-300' : 'text-blue-300'
+                        }`}>
+                          PLAYER A
+                        </div>
+                        <div className="text-center">
+                          <div className={`text-xl md:text-3xl font-bold transition-all duration-500 ease-out transform ${
+                            isAWinner 
+                              ? 'text-green-300' 
+                              : 'text-blue-300'
+                          }`}>
+                            {battle.final_votes_a}
+                          </div>
+                          <div className={`text-xs mt-1 transition-colors duration-300 ${
+                            isAWinner ? 'text-green-400' : 'text-blue-400'
+                          }`}>
+                            VOTES
+                          </div>
+                        </div>
+                        {isAWinner && (
+                          <div className="absolute -top-2 -right-2 w-4 h-4 md:w-6 md:h-6 bg-green-500 rounded-full flex items-center justify-center shadow-lg">
+                            <Crown className="h-2 w-2 md:h-3 md:w-3 text-white" />
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    
+                    {/* Central Divider */}
+                    <div className="w-px h-12 bg-gradient-to-b from-transparent via-gray-600/60 to-transparent"></div>
+
+                    {/* Player B Vote Counter */}
+                    <div className="flex flex-col items-center">
+                      <div className={`bg-gray-800 rounded-xl p-2 md:p-4 border shadow-lg transition-all duration-500 relative w-16 md:w-20 flex flex-col items-center ${
+                        isBWinner 
+                          ? 'border-green-400/60 shadow-green-500/30 ring-2 ring-green-400' 
+                          : 'border-red-500/30 shadow-lg'
+                      }`}>
+                        <div className={`text-xs font-bold mb-1 text-center transition-colors duration-300 ${
+                          isBWinner ? 'text-green-300' : 'text-red-300'
+                        }`}>
+                          PLAYER B
+                        </div>
+                        <div className="text-center">
+                          <div className={`text-xl md:text-3xl font-bold transition-all duration-500 ease-out transform ${
+                            isBWinner 
+                              ? 'text-green-300' 
+                              : 'text-red-300'
+                          }`}>
+                            {battle.final_votes_b}
+                          </div>
+                          <div className={`text-xs mt-1 transition-colors duration-300 ${
+                            isBWinner ? 'text-green-400' : 'text-red-400'
+                          }`}>
+                            VOTES
+                          </div>
+                        </div>
+                        {isBWinner && (
+                          <div className="absolute -top-2 -right-2 w-4 h-4 md:w-6 md:h-6 bg-green-500 rounded-full flex items-center justify-center shadow-lg">
+                            <Crown className="h-2 w-2 md:h-3 md:w-3 text-white" />
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                  </div>
+
+                </div>
+
+                {/* Bottom Ventilation Grilles */}
+                <div className="absolute -bottom-2 left-6 right-6 h-3 bg-gradient-to-r from-transparent via-gray-600 to-transparent opacity-50">
+                  <div className="flex justify-center items-center h-full gap-0.5">
+                    {Array.from({length: 8}).map((_, i) => (
+                      <div key={i} className="w-0.5 h-2 bg-gray-500 rounded-full"></div>
+                    ))}
+                  </div>
+                </div>
+
+              </div>
+
+              {/* Side Power Indicators - Compact */}
+              <div className="absolute -left-4 top-1/2 -translate-y-1/2 w-4 h-16 bg-gradient-to-b from-gray-600 to-gray-700 rounded-l-full border border-gray-500 shadow-lg">
+                <div className="w-full h-full bg-gradient-to-r from-blue-500/20 to-transparent rounded-l-full"></div>
+              </div>
+              <div className="absolute -right-4 top-1/2 -translate-y-1/2 w-4 h-16 bg-gradient-to-b from-gray-600 to-gray-700 rounded-r-full border border-gray-500 shadow-lg">
+                <div className="w-full h-full bg-gradient-to-l from-red-500/20 to-transparent rounded-r-full"></div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
         {/* Community Reactions */}
-        <div className="bg-gray-900 rounded-2xl border border-gray-700/50 p-8">
+        <div className="bg-gray-900 rounded-2xl border border-gray-700/50 p-8 mt-8">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center">
               <MessageSquare className="h-5 w-5 text-gray-300" />
@@ -713,7 +820,7 @@ const BattleReplayPage: React.FC = () => {
                       className="w-10 h-10 rounded-full border-2 border-gray-600"
                     />
                     <div className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center ${
-                      comment.vote === 'A' ? 'bg-gradient-to-r from-cyan-500 to-cyan-400' : 'bg-gradient-to-r from-pink-500 to-pink-400'
+                      comment.vote === 'A' ? 'bg-gradient-to-r from-blue-500 to-blue-400' : 'bg-gradient-to-r from-red-500 to-red-400'
                     }`}>
                       <span className="text-white font-bold text-xs">{comment.vote}</span>
                     </div>
@@ -723,7 +830,7 @@ const BattleReplayPage: React.FC = () => {
                     <div className="flex items-center gap-2 mb-1">
                       <span className="font-semibold text-white">{comment.username}</span>
                       <span className={`text-xs px-2 py-1 rounded-full ${
-                        comment.vote === 'A' ? 'bg-cyan-500/20 text-cyan-300' : 'bg-pink-500/20 text-pink-300'
+                        comment.vote === 'A' ? 'bg-blue-500/20 text-blue-300' : 'bg-red-500/20 text-red-300'
                       }`}>
                         Player {comment.vote}に投票
                       </span>

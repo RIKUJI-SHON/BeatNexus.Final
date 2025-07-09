@@ -139,13 +139,13 @@
       "against": "対戦相手",
       "ratingChange": "レーティング変化",
       "currentRank": "現在のランク",
-      "share": "勝利をシェア",
-      "viewArchive": "アーカイブを見る",
+      "share": "シェア",
+      "viewArchive": "アーカイブ",
       "shareText": "🎵 BeatNexusで{{opponent}}さんとのバトルに勝利しました！ レート: {{rating}} | ランク: {{rank}} 🎵",
       "draw": "🤝 引き分け 🤝"
     },
     "matched": {
-      "title": "⚡ バトルマッチングが完了！ ⚡",
+      "title": " バトルマッチングが完了！ ",
       "against": "対戦相手",
       "votingPeriod": "投票期間は5日間",
       "encouragement": "バトルが開始されました！コミュニティにあなたのパフォーマンスを投票してもらいましょう。",
@@ -213,13 +213,7 @@
     "tipsNote": "これらの項目を参考に、より良い判断を行いましょう",
     "notSet": "未設定",
     "totalScores": "合計点数",
-    "unsetItems": "{{count}}項目が未設定です",
-    "watchAdToViewComments": "広告を視聴してコメントを見る",
-    "commentsLocked": "コメントがロックされています",
-    "watchAdButton": "広告を視聴",
-    "viewingAd": "広告を視聴中...",
-    "commentsUnlocked": "コメントが表示されました！",
-    "adWatchingFeature": "広告視聴機能"
+    "unsetItems": "{{count}}項目が未設定です"
   },
   "battleCard": {
     "votingEndsIn": "残り{{days}}日 {{hours}}時間",
@@ -1319,7 +1313,9 @@
       "description": "このアカウントの動画は削除されているため、再生できません。バトル履歴とレーティング変動は記録されています。"
     },
     "videoNotSupported": "お使いのブラウザは動画の再生に対応していません。",
-    "videoError": "動画の読み込みに失敗しました"
+    "videoError": "動画の読み込みに失敗しました",
+    "finalResults": "最終結果",
+    "archived": "アーカイブ済み"
   },
   "pagination": {
     "previous": "前へ",

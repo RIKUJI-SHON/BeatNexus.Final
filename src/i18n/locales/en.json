@@ -133,7 +133,7 @@
       "draw": "🤝 DRAW 🤝"
     },
     "matched": {
-      "title": "⚡ Battle Match Found! ⚡",
+      "title": " Battle Match Found! ",
       "against": "vs",
       "votingPeriod": "5-day voting period",
       "encouragement": "Your battle has started! Let the community vote on your performance.",
@@ -197,13 +197,7 @@
     "tipsNote": "Use these criteria as reference for better judgment",
     "notSet": "Not Set",
     "totalScores": "Total Scores",
-    "unsetItems": "{{count}} items not set",
-    "watchAdToViewComments": "Watch Ad to View Comments",
-    "commentsLocked": "Comments are locked",
-    "watchAdButton": "Watch Ad",
-    "viewingAd": "Watching Ad...",
-    "commentsUnlocked": "Comments unlocked!",
-    "adWatchingFeature": "Ad Watching Feature"
+    "unsetItems": "{{count}} items not set"
   },
   "battleCard": {
     "votingEndsIn": "{{days}}d {{hours}}h left",
@@ -1534,7 +1528,9 @@
       "description": "This account's video has been deleted and cannot be played. Battle history and rating changes are still recorded."
     },
     "videoNotSupported": "Your browser does not support video playback.",
-    "videoError": "Failed to load video"
+    "videoError": "Failed to load video",
+    "finalResults": "Final Results",
+    "archived": "Archived"
   },
   "pagination": {
     "previous": "Previous",
