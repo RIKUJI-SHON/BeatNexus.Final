@@ -21,6 +21,7 @@ import { getRankColorClasses } from '../utils/rankUtils';
 import { useOnboardingStore } from '../store/onboardingStore';
 import { MonthlyLimitCard } from '../components/ui/SubmissionCooldownCard';
 import { TabbedRanking } from '../components/ui/TabbedRanking';
+import NewsSidebar from '../components/ui/NewsSidebar';
 
 const BattlesPage: React.FC = () => {
   const { t } = useTranslation();
@@ -308,16 +309,11 @@ const BattlesPage: React.FC = () => {
           </div>
         </section>
 
-        <div className={`grid grid-cols-1 gap-6 ${user ? 'lg:grid-cols-5' : 'lg:grid-cols-4'}`}>
-          {/* Left Sidebar - 空のスペースを保持 */}
-          {user && (
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
+          {/* Left Sidebar - ニュース */}
           <aside className="lg:col-span-1 space-y-6 sticky-sidebar">
-              {/* 空のスペース - 将来の機能拡張用 */}
-              <div className="w-full hidden lg:block">
-                {/* スペースを保持 */}
-              </div>
+              <NewsSidebar />
           </aside>
-          )}
 
           {/* Main Content */}
           <div className={user ? 'lg:col-span-3' : 'lg:col-span-3'}>
