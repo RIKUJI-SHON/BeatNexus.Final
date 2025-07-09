@@ -840,9 +840,17 @@ const PostPage: React.FC = () => {
               <h1 className="text-3xl sm:text-4xl font-extrabold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-cyan-500 to-purple-500">
                 {t('postPage.title')}
               </h1>
-              <p className="text-gray-400 text-center">
-                {t('postPage.subtitle')}
-              </p>
+              <div className="text-center">
+                <p className="text-gray-400 mb-3">
+                  {t('postPage.subtitle')}
+                </p>
+                <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-full border border-purple-400/40">
+                  <Video className="h-4 w-4 text-purple-300" />
+                  <span className="text-purple-100 font-semibold text-sm">
+                    {t('postPage.timeLimitEmphasis')}
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -989,12 +997,23 @@ const PostPage: React.FC = () => {
                         {t('postPage.guidelines.audioQuality.description')}
                       </p>
                     </div>
-                    <div className="bg-gray-800/30 backdrop-blur-sm rounded-xl p-4 border border-gray-700/50 hover:border-purple-500/30 transition-colors">
-                      <Video className="h-5 w-5 text-purple-400 mb-2" />
-                      <h4 className="font-medium text-white mb-1 text-sm sm:text-base">{t('postPage.guidelines.videoLengthSize.title')}</h4>
-                      <p className="text-xs sm:text-sm text-gray-400">
-                        {t('postPage.guidelines.videoLengthSize.description')}
-                      </p>
+                    <div className="bg-gradient-to-br from-purple-500/20 to-pink-500/20 backdrop-blur-sm rounded-xl p-5 border-2 border-purple-400/60 hover:border-purple-400/80 transition-all duration-300 shadow-lg shadow-purple-500/20 relative overflow-hidden">
+                      {/* 強調用の背景効果 */}
+                      <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-l from-purple-400/30 to-transparent rounded-bl-full"></div>
+                      <div className="absolute bottom-0 left-0 w-12 h-12 bg-gradient-to-r from-pink-400/30 to-transparent rounded-tr-full"></div>
+                      
+                      <div className="relative z-10">
+                        <div className="flex items-center gap-2 mb-3">
+                          <Video className="h-6 w-6 text-purple-300" />
+                          <span className="px-2 py-1 bg-purple-500/40 text-purple-100 text-xs font-bold rounded-full">重要</span>
+                        </div>
+                        <h4 className="font-bold text-white mb-2 text-base sm:text-lg">{t('postPage.guidelines.videoLengthSize.title')}</h4>
+                        <div className="bg-gray-900/60 rounded-lg p-3 border border-purple-400/30">
+                          <p className="text-sm sm:text-base text-purple-100 font-medium leading-relaxed">
+                            {t('postPage.guidelines.videoLengthSize.description')}
+                          </p>
+                        </div>
+                      </div>
                     </div>
                     <div className="bg-gray-800/30 backdrop-blur-sm rounded-xl p-4 border border-gray-700/50 hover:border-yellow-500/30 transition-colors">
                       <AlertCircle className="h-5 w-5 text-yellow-400 mb-2" />

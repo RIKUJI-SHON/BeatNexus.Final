@@ -807,11 +807,12 @@
   },
   "postPage": {
     "title": "Submit Your Battle Video",
-    "subtitle": "Show off your skills and challenge the community (Submit videos 1-2 minutes long)",
+    "subtitle": "Show off your skills and challenge the community",
+    "timeLimitEmphasis": "🔥 Videos MUST be 1-2 minutes (60-120 seconds) long 🔥",
     "backButton": "Back",
     "selectFormat": {
       "label": "Select Battle Format",
-      "mainBattle": "Main Battle 【REQUIRED】60 to 120 seconds",
+              "mainBattle": "🔥 Main Battle 【REQUIRED】60 to 120 seconds (1-2 minutes) 🔥",
       "miniBattle": "Mini Battle (30-59 seconds)",
       "themeChallenge": "Skill/Theme Challenge"
     },
@@ -827,8 +828,8 @@
         "description": "Clear audio is crucial. Use an external mic if possible."
       },
       "videoLengthSize": {
-        "title": "Video Length & Size",
-        "description": "【IMPORTANT】Main battles MUST be 60 to 120 seconds - this is a strict rule. Videos outside this range cannot be submitted. We now support up to 120MB for high-quality, high-fidelity submissions."
+        "title": "🔥 Video Length & Size【IMPORTANT】",
+        "description": "⚠️【STRICT RULE】Main battles MUST be 60 to 120 seconds (1-2 minutes) - this is mandatory!\n\n✅ Videos outside this range cannot be submitted\n✅ Up to 120MB supported for high-quality, high-fidelity submissions\n✅ Follow the time limit and showcase your amazing performance"
       },
       "facePolicy": {
         "title": "Face Policy",
