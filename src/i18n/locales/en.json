@@ -896,10 +896,11 @@
       "themeTooLong": "Theme Challenge video is too long ({{duration}}s). Please upload a video of {{required}} seconds.\n\n💡 Tip: Use a video editing app to shorten it.",
       "changeBattleFormat": "Change Battle Format",
       "selectDifferentVideo": "Select Different Video",
-      "fileTooLargeForProcessing": "File size ({{size}}MB) is too large for processing. Please use files under 500MB.",
+      "fileTooLargeForProcessing": "File size ({{size}}MB) is too large for processing. Please use files under 2GB.",
       "compressionTimeout": "Compression process timed out. Please reduce file size and try again.",
       "compressionFinalizationFailed": "Failed to create compressed file",
-      "compressionAbnormallySmall": "Compression resulted in abnormally small file. There may be an issue with the original video."
+      "compressionAbnormallySmall": "Compression resulted in abnormally small file. There may be an issue with the original video.",
+      "tooManyPreviewAttempts": "Preview loading failed multiple times. File size may be too large."
     },
     "compression": {
       "autoAvailable": "Automatic quality adjustment is available",

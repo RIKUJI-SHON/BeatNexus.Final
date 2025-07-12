@@ -950,10 +950,11 @@
       "themeTooLong": "テーマチャレンジの動画が長すぎます（{{duration}}秒）。{{required}}秒の動画を投稿してください。\n\n💡 ヒント: 動画編集アプリで短くしてください。",
       "changeBattleFormat": "バトル形式を変更",
       "selectDifferentVideo": "別の動画を選択",
-      "fileTooLargeForProcessing": "ファイルサイズ（{{size}}MB）が大きすぎて処理できません。500MB以下のファイルをお使いください。",
+      "fileTooLargeForProcessing": "ファイルサイズ（{{size}}MB）が大きすぎて処理できません。2GB以下のファイルをお使いください。",
       "compressionTimeout": "圧縮処理がタイムアウトしました。ファイルサイズを小さくしてから再試行してください。",
       "compressionFinalizationFailed": "圧縮ファイルの作成に失敗しました",
-      "compressionAbnormallySmall": "圧縮結果が異常に小さくなりました。元の動画に問題がある可能性があります。"
+      "compressionAbnormallySmall": "圧縮結果が異常に小さくなりました。元の動画に問題がある可能性があります。",
+      "tooManyPreviewAttempts": "プレビューの読み込みに複数回失敗しました。ファイルサイズが大きすぎる可能性があります。"
     },
     "compression": {
       "autoAvailable": "自動画質調整が利用可能です",
