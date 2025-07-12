@@ -809,6 +809,7 @@
     "title": "Submit Your Battle Video",
     "subtitle": "Show off your skills and challenge the community",
     "timeLimitEmphasis": "🔥 Videos MUST be 1-2 minutes (60-120 seconds) long 🔥",
+    "videoQualityWarning": "Please keep video quality moderate (avoid 4K recording)",
     "backButton": "Back",
     "selectFormat": {
       "label": "Select Battle Format",
@@ -829,7 +830,7 @@
       },
       "videoLengthSize": {
         "title": "🔥 Video Length & Size【IMPORTANT】",
-        "description": "⚠️【STRICT RULE】Main battles MUST be 60 to 120 seconds (1-2 minutes) - this is mandatory!\n\n✅ Videos outside this range cannot be submitted\n✅ Up to 120MB supported for high-quality, high-fidelity submissions\n✅ Follow the time limit and showcase your amazing performance"
+        "description": "⚠️【STRICT RULE】Main battles MUST be 60 to 120 seconds (1-2 minutes) - this is mandatory!\n\n✅ Videos outside this range cannot be submitted\n✅ Up to 120MB supported for high-quality, high-fidelity submissions\n✅ Follow the time limit and showcase your amazing performance\n\n🎯【IMPORTANT】Avoid 4K or ultra-high-quality recording\n・File sizes become too large and difficult to compress\n・Recommend 1080p (Full HD) or lower recording\n・Prioritize audio quality over video quality"
       },
       "facePolicy": {
         "title": "Face Policy",
@@ -868,7 +869,8 @@
       "analyzing_video": "Analyzing video...",
       "recording": "Recording...",
       "remaining": "Remaining ~{{seconds}}s",
-      "checkingMemory": "Checking memory usage..."
+      "checkingMemory": "Checking memory usage...",
+      "noCompressionNeeded": "No compression needed - file size is optimal"
     },
     "errors": {
       "problemOccurred": "Problem occurred",
@@ -896,7 +898,8 @@
       "selectDifferentVideo": "Select Different Video",
       "fileTooLargeForProcessing": "File size ({{size}}MB) is too large for processing. Please use files under 500MB.",
       "compressionTimeout": "Compression process timed out. Please reduce file size and try again.",
-      "compressionFinalizationFailed": "Failed to create compressed file"
+      "compressionFinalizationFailed": "Failed to create compressed file",
+      "compressionAbnormallySmall": "Compression resulted in abnormally small file. There may be an issue with the original video."
     },
     "compression": {
       "autoAvailable": "Automatic quality adjustment is available",
@@ -921,7 +924,8 @@
       "compressionStarting": "Starting compression...",
       "finalizing": "Final processing...",
       "autoCompress": "Auto Compress",
-      "optimizeSize": "Optimize Size"
+      "optimizeSize": "Optimize Size",
+      "targetSize": "Target: {{target}}MB (from {{original}}MB) - {{strategy}}"
     },
     "submissionGuidelines": {
       "title": "Video Submission Guidelines",
@@ -1570,9 +1574,10 @@
     },
     "slide2": {
       "title": "How to Battle",
-      "step1": "Post Video",
+      "step1": "Video Upload",
+      "step1Details": "Upload 1-2 minute videos\nStandard to high quality (avoid 4K)",
       "step2": "Auto Matching", 
-      "step3": "Vote to Decide",
+      "step3": "Vote to Decide Winner",
       "period": "Voting Period: 5 days",
       "cta": "Next"
     },

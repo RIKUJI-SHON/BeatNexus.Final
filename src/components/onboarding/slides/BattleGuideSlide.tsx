@@ -29,12 +29,18 @@ const BattleGuideSlide: React.FC<BattleGuideSlideProps> = () => {
 
         {/* ステップ */}
         <div className="space-y-4 mb-8">
-          <div className="flex items-center gap-3 text-base">
-            <div className="p-2 bg-cyan-500/20 rounded-lg">
-              <Play className="w-5 h-5 text-cyan-400" />
+          <div className="bg-cyan-500/10 border border-cyan-500/30 rounded-lg p-3">
+            <div className="flex items-center gap-3 text-base mb-2">
+              <div className="p-2 bg-cyan-500/20 rounded-lg">
+                <Play className="w-5 h-5 text-cyan-400" />
+              </div>
+              <span className="text-gray-300 font-medium">{t('onboarding.slide2.step1')}</span>
             </div>
-            <span className="text-gray-300 font-medium">{t('onboarding.slide2.step1')}</span>
+            <div className="ml-12 text-sm text-cyan-200 whitespace-pre-line">
+              {t('onboarding.slide2.step1Details')}
+            </div>
           </div>
+          
           <div className="flex items-center gap-3 text-base">
             <div className="p-2 bg-purple-500/20 rounded-lg">
               <Users className="w-5 h-5 text-purple-400" />

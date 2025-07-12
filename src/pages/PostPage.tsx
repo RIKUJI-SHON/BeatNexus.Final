@@ -15,62 +15,108 @@ const MAX_FILE_SIZE = 120 * 1024 * 1024;
 // 🆕 メモリ制限による処理可能サイズ（500MB以上は危険）
 const SAFE_PROCESSING_SIZE = 500 * 1024 * 1024;
 
-// 🆕 段階的な圧縮設定（高画質・高音質対応）
-const getCompressionSettings = (fileSizeMB: number) => {
-  if (fileSizeMB > 1000) {
-    // 1GB以上: 強めの圧縮（それでも音質は保持）
+// 🆕 改善された圧縮設定：目標サイズベースの動的調整
+const getCompressionSettings = (fileSizeMB: number, targetSizeMB: number = 40) => {
+  // 🎯 目標サイズ: 30-50MBの中央値である40MBを基準とする
+  const TARGET_SIZE_MB = Math.max(30, Math.min(50, targetSizeMB));
+  
+  // 🎵 音質は常に高品質を維持（ビートボックス用）
+  const AUDIO_BITRATE = 256000; // 256kbps固定（高音質）
+  
+  // 📊 ファイルサイズに応じた戦略
+  if (fileSizeMB <= TARGET_SIZE_MB) {
+    // 既に目標サイズ以下の場合：圧縮しない（品質劣化を避ける）
     return {
-      videoBitsPerSecond: 1500000, // 1.5Mbps - 画質向上
-      audioBitsPerSecond: 192000,  // 192kbps - 高音質維持
-      frameRate: 24,               // 24fps - スムーズな動き
-      targetRatio: 0.12            // 12%まで圧縮（緩和）
-    };
-  } else if (fileSizeMB > 500) {
-    // 500MB-1GB: 中程度の圧縮
-    return {
-      videoBitsPerSecond: 2000000, // 2Mbps - さらに画質向上
-      audioBitsPerSecond: 256000,  // 256kbps - 高音質
-      frameRate: 30,               // 30fps - より滑らか
-      targetRatio: 0.20            // 20%まで圧縮
-    };
-  } else if (fileSizeMB > 200) {
-    // 200-500MB: 軽い圧縮
-    return {
-      videoBitsPerSecond: 2500000, // 2.5Mbps - 高画質
-      audioBitsPerSecond: 320000,  // 320kbps - 非常に高音質
-      frameRate: 30,               // 30fps
-      targetRatio: 0.35            // 35%まで圧縮（大幅緩和）
-    };
-  } else {
-    // 200MB以下: 最軽量圧縮
-    return {
-      videoBitsPerSecond: 3000000, // 3Mbps - 最高画質
-      audioBitsPerSecond: 320000,  // 320kbps - 最高音質維持
-      frameRate: 30,               // 30fps
-      targetRatio: 0.8             // 80%まで圧縮（ほぼ元サイズ）
+      videoBitsPerSecond: 5000000, // 5Mbps - 高品質維持
+      audioBitsPerSecond: AUDIO_BITRATE,
+      frameRate: 30,
+      shouldCompress: false, // 圧縮不要フラグ
+      targetSizeMB: fileSizeMB, // 元サイズを維持
+      strategy: 'no-compression'
     };
   }
+  
+  // 🎯 目標サイズに基づいて動的にビットレートを計算
+  // 計算式: 目標サイズ(MB) = (動画時間(秒) × 総ビットレート(bps)) / 8 / 1024 / 1024
+  // 仮定: 平均動画時間90秒、音声ビットレート256kbps
+  const AVERAGE_DURATION = 90; // 秒
+  const AUDIO_SIZE_MB = (AVERAGE_DURATION * AUDIO_BITRATE) / 8 / 1024 / 1024;
+  const AVAILABLE_VIDEO_SIZE_MB = TARGET_SIZE_MB - AUDIO_SIZE_MB;
+  const CALCULATED_VIDEO_BITRATE = (AVAILABLE_VIDEO_SIZE_MB * 8 * 1024 * 1024) / AVERAGE_DURATION;
+  
+  // 📈 ビットレートの範囲制限（品質とサイズのバランス）
+  const MIN_VIDEO_BITRATE = 800000;  // 0.8Mbps - 最低品質保証
+  const MAX_VIDEO_BITRATE = 4000000; // 4Mbps - 最高品質上限
+  
+  const videoBitrate = Math.max(MIN_VIDEO_BITRATE, Math.min(MAX_VIDEO_BITRATE, CALCULATED_VIDEO_BITRATE));
+  
+  // 🎮 ファイルサイズに応じた追加調整
+  let frameRate = 30;
+  let strategy = 'balanced';
+  
+  if (fileSizeMB > 500) {
+    // 500MB以上: フレームレートも下げて確実に圧縮
+    frameRate = 24;
+    strategy = 'aggressive';
+  } else if (fileSizeMB > 300) {
+    // 300-500MB: 中程度の圧縮（フレームレート調整）
+    frameRate = 25;
+    strategy = 'heavy';
+  } else if (fileSizeMB > 200) {
+    // 200-300MB: 標準的な圧縮
+    frameRate = 30;
+    strategy = 'standard';
+  } else {
+    // 50-200MB: 軽い圧縮
+    frameRate = 30;
+    strategy = 'light';
+  }
+  
+  return {
+    videoBitsPerSecond: Math.round(videoBitrate),
+    audioBitsPerSecond: AUDIO_BITRATE,
+    frameRate: frameRate,
+    shouldCompress: true,
+    targetSizeMB: TARGET_SIZE_MB,
+    strategy: strategy
+  };
 };
 
 // Function to get video duration
 const getVideoDuration = (file: File): Promise<number> => {
   return new Promise((resolve, reject) => {
-    // 🆕 メモリ制限チェック
     const fileSizeMB = file.size / 1024 / 1024;
-    if (file.size > SAFE_PROCESSING_SIZE) {
-      reject(new Error(`ファイルサイズが大きすぎます（${fileSizeMB.toFixed(1)}MB）。500MB以下のファイルをお使いください。`));
+    
+    // 🔧 プレビュー用の緩和されたメモリ制限チェック
+    // プレビュー表示は重要なので、1GB以下は許可する
+    if (file.size > 1024 * 1024 * 1024) { // 1GB制限
+      reject(new Error(`ファイルサイズが大きすぎます（${fileSizeMB.toFixed(1)}MB）。1GB以下のファイルをお使いください。`));
       return;
     }
 
     const video = document.createElement('video');
-    video.preload = 'metadata';
+    video.preload = 'metadata'; // メタデータのみ読み込み（メモリ効率的）
+    video.muted = true; // 音声を無効化（メモリ節約）
+    
+    // 🎯 大きなファイル用のタイムアウト設定
+    const timeoutId = setTimeout(() => {
+      video.removeAttribute('src');
+      window.URL.revokeObjectURL(video.src);
+      reject(new Error('動画の読み込みがタイムアウトしました。ファイルが大きすぎる可能性があります。'));
+    }, 30000); // 30秒タイムアウト
     
     video.onloadedmetadata = () => {
+      clearTimeout(timeoutId);
       window.URL.revokeObjectURL(video.src);
+      
+      // 🔍 動画の基本情報をログ出力（デバッグ用）
+      console.log(`Video loaded: ${fileSizeMB.toFixed(1)}MB, ${video.duration.toFixed(1)}s, ${video.videoWidth}x${video.videoHeight}`);
+      
       resolve(video.duration);
     };
     
     video.onerror = (event) => {
+      clearTimeout(timeoutId);
       console.error('Video loading error:', event);
       window.URL.revokeObjectURL(video.src);
       reject(new Error('動画ファイルの読み込みに失敗しました'));
@@ -79,6 +125,7 @@ const getVideoDuration = (file: File): Promise<number> => {
     try {
       video.src = URL.createObjectURL(file);
     } catch (error) {
+      clearTimeout(timeoutId);
       console.error('Error creating object URL:', error);
       reject(new Error('動画ファイルの処理に失敗しました'));
     }
@@ -130,7 +177,7 @@ const getDurationErrorMessage = (duration: number, format: string, t: (key: stri
 // Function to compress video with audio preservation (direct re-encoding)
 const compressVideoAuto = (
   file: File, 
-  targetSizeMB: number = 120,
+  targetSizeMB: number = 40, // 🎯 デフォルトを40MBに変更
   onProgress?: (progress: number, stage: string) => void,
   t?: (key: string, params?: any) => string
 ): Promise<File> => {
@@ -148,25 +195,38 @@ const compressVideoAuto = (
 
     onProgress?.(5, t ? t('postPage.processing.checkingMemory') : 'Checking memory...');
     
-    // 🆕 段階的圧縮設定の適用
-    const compressionSettings = getCompressionSettings(fileSizeMB);
+    // 🆕 改善された圧縮設定の適用
+    const compressionSettings = getCompressionSettings(fileSizeMB, targetSizeMB);
+    
+    // 🎯 圧縮が不要な場合は元ファイルをそのまま返す
+    if (!compressionSettings.shouldCompress) {
+      onProgress?.(100, t ? t('postPage.processing.noCompressionNeeded') : 'No compression needed - file size is optimal');
+      
+      // 元ファイルをそのまま返す（名前だけ変更）
+      const baseName = file.name.replace(/\.[^/.]+$/, '');
+      const extension = file.name.split('.').pop() || 'mp4';
+      const optimizedFile = new File([file], `${baseName}_optimized.${extension}`, { type: file.type });
+      
+      setTimeout(() => resolve(optimizedFile), 500); // UIの整合性のため少し待つ
+      return;
+    }
     
     onProgress?.(10, t ? t('postPage.processing.loadingVideo') : 'Loading video...');
     
     // より簡単で確実な方法：動画ファイルを直接MediaRecorderで再エンコード
     const video = document.createElement('video');
-    video.muted = true; // 圧縮中の音声再生を防ぐ（録画には影響しない）
+    video.muted = true;
     video.controls = false;
     video.playsInline = true;
     
-    // 🆕 タイムアウト設定（10分）
+    // 🆕 タイムアウト設定（15分に延長）
     const timeoutId = setTimeout(() => {
       video.removeAttribute('src');
       reject(new Error(
         t ? t('postPage.errors.compressionTimeout') 
           : '圧縮処理がタイムアウトしました。ファイルサイズを小さくしてから再試行してください。'
       ));
-    }, 10 * 60 * 1000); // 10分
+    }, 15 * 60 * 1000); // 15分に延長
     
     video.onloadedmetadata = () => {
       try {
@@ -175,10 +235,33 @@ const compressVideoAuto = (
         
         onProgress?.(30, t ? t('postPage.processing.calculatingCompression') : 'Calculating compression settings...');
         
-        // 🆕 改善された圧縮率計算
-        const targetRatio = Math.min(targetSizeMB / originalSizeMB, compressionSettings.targetRatio);
+        // 🎯 目標サイズベースの圧縮設定
+        const targetSizeMB = compressionSettings.targetSizeMB;
+        const compressionRatio = Math.round((targetSizeMB / originalSizeMB) * 100);
         
-        onProgress?.(40, t ? t('postPage.compression.compressionRatio', { ratio: Math.round(targetRatio * 100) }) : `Compression ratio: ${Math.round(targetRatio * 100)}%`);
+        // 🔧 実際の動画時間に基づく精密なビットレート計算
+        const AUDIO_BITRATE = compressionSettings.audioBitsPerSecond;
+        const AUDIO_SIZE_MB = (duration * AUDIO_BITRATE) / 8 / 1024 / 1024;
+        const AVAILABLE_VIDEO_SIZE_MB = targetSizeMB - AUDIO_SIZE_MB;
+        const PRECISE_VIDEO_BITRATE = Math.max(
+          600000, // 最低600kbps
+          Math.min(
+            5000000, // 最高5Mbps
+            (AVAILABLE_VIDEO_SIZE_MB * 8 * 1024 * 1024) / duration
+          )
+        );
+        
+        // 🎯 精密な設定を適用
+        const finalSettings = {
+          ...compressionSettings,
+          videoBitsPerSecond: Math.round(PRECISE_VIDEO_BITRATE)
+        };
+        
+        onProgress?.(40, t ? t('postPage.compression.targetSize', { 
+          target: targetSizeMB.toFixed(1), 
+          original: originalSizeMB.toFixed(1),
+          strategy: compressionSettings.strategy 
+        }) : `Target: ${targetSizeMB.toFixed(1)}MB (from ${originalSizeMB.toFixed(1)}MB) - ${compressionSettings.strategy}`);
         
         // 🎵 音声品質優先のMIMEタイプを確認（ビートボックス用高音質設定）
         let mimeType = 'video/webm';
@@ -203,7 +286,7 @@ const compressVideoAuto = (
         }
         
         // 🆕 フレームレートを動的に調整
-        const stream = videoElement.captureStream(compressionSettings.frameRate);
+        const stream = videoElement.captureStream(finalSettings.frameRate);
         
         onProgress?.(60, t ? t('postPage.processing.preparingStream') : 'Preparing stream...');
         
@@ -211,28 +294,30 @@ const compressVideoAuto = (
         // 🆕 改善された MediaRecorder 設定
         const mediaRecorder = new MediaRecorder(stream, {
           mimeType: mimeType,
-          videoBitsPerSecond: compressionSettings.videoBitsPerSecond,
-          audioBitsPerSecond: compressionSettings.audioBitsPerSecond
+          videoBitsPerSecond: finalSettings.videoBitsPerSecond,
+          audioBitsPerSecond: finalSettings.audioBitsPerSecond
         });
         
         onProgress?.(70, t ? t('postPage.processing.startingRecording') : 'Starting recording...');
         
-        // 🆕 チャンクサイズ制限でメモリ使用量をコントロール
+        // 🔧 大きなファイル用のメモリ管理改善
         let totalChunkSize = 0;
-        const MAX_CHUNK_SIZE = 100 * 1024 * 1024; // 100MB制限
+        let isFinalizingEarly = false;
+        
+        // 🎯 動的なチャンクサイズ制限（ファイルサイズに応じて調整）
+        const MAX_CHUNK_SIZE = fileSizeMB > 300 ? 200 * 1024 * 1024 : 150 * 1024 * 1024; // 300MB以上は200MB制限
         
         mediaRecorder.ondataavailable = (event) => {
           if (event.data.size > 0) {
             totalChunkSize += event.data.size;
-            
-            // メモリ制限チェック
-            if (totalChunkSize > MAX_CHUNK_SIZE && chunks.length > 50) {
-              console.warn('Chunk size limit reached, finalizing...');
-              mediaRecorder.stop();
-              return;
-            }
-            
             chunks.push(event.data);
+            
+            // 🚨 重要: メモリ制限に達しても動画を完了させる
+            if (totalChunkSize > MAX_CHUNK_SIZE && !isFinalizingEarly) {
+              console.warn(`Large file processing: ${totalChunkSize / 1024 / 1024}MB chunks collected, continuing...`);
+              isFinalizingEarly = true;
+              // 動画を停止せずに続行（メモリ警告のみ）
+            }
           }
         };
         
@@ -253,6 +338,14 @@ const compressVideoAuto = (
             // 🆕 圧縮結果の検証
             const finalSizeMB = compressedFile.size / 1024 / 1024;
             console.log(`Compression completed: ${originalSizeMB.toFixed(1)}MB → ${finalSizeMB.toFixed(1)}MB (${Math.round((finalSizeMB/originalSizeMB)*100)}%)`);
+            
+            // 🎯 最終サイズチェック
+            if (finalSizeMB < 1) {
+              // 1MB未満の場合は異常として処理
+              console.error('Compression resulted in suspiciously small file:', finalSizeMB);
+              reject(new Error(t ? t('postPage.errors.compressionAbnormallySmall') : '圧縮結果が異常に小さくなりました。元の動画に問題がある可能性があります。'));
+              return;
+            }
             
             onProgress?.(100, t ? t('postPage.processing.complete') : 'Complete');
             resolve(compressedFile);
@@ -287,8 +380,9 @@ const compressVideoAuto = (
           mediaRecorder.stop();
         };
         
-        // 🆕 定期的なチャンク出力でメモリ使用量を抑制
-        mediaRecorder.start(5000); // 5秒ごとにチャンクを出力
+        // 🆕 大きなファイル用の最適化されたチャンク出力
+        const chunkInterval = fileSizeMB > 300 ? 10000 : 5000; // 300MB以上は10秒間隔
+        mediaRecorder.start(chunkInterval);
         
         // 動画再生開始（音声付きで録画される）
         video.currentTime = 0;
@@ -355,28 +449,40 @@ const getCompressionSuggestions = (fileSize: number) => {
         '自動圧縮を試してみる（処理に時間がかかる場合があります）'
       ]
     };
-  } else if (sizeMB > 150) {
-    // 150-500MB: 要注意
+  } else if (sizeMB > 120) {
+    // 120MB以上: 自動圧縮推奨
     return {
       level: 'medium-high',
-      message: 'ファイルサイズが大きめです（{{size}}MB）。自動圧縮を推奨します。',
+      message: 'ファイルサイズが大きめです（{{size}}MB）。自動圧縮で30-50MBに最適化します。',
       suggestions: [
-        '自動圧縮機能を使用（推奨）',
-        'スマホ設定で「4K」を「フルHD」に変更',
-        '動画の長さを短縮（60-90秒程度）',
-        '品質設定を「標準」に変更'
+        '🎯 自動圧縮機能を使用（30-50MBに最適化）',
+        '🎵 音質はそのまま、画質のみ調整されます',
+        '⚡ 処理時間：約1-3分程度',
+        '✨ 品質とサイズの最適なバランスを実現'
       ]
     };
-  } else if (sizeMB > 120) {
-    // 120-150MB: 軽度の制限超過
+  } else if (sizeMB > 50) {
+    // 50-120MB: 軽度の最適化
     return {
       level: 'medium', 
-      message: 'ファイルサイズが制限を超えています（{{size}}MB）。以下の方法で削減してください。',
+      message: 'ファイルサイズは許容範囲内です（{{size}}MB）。さらに最適化することも可能です。',
       suggestions: [
-        '自動圧縮機能を使用（推奨）',
-        '動画の長さを短縮',
-        'スマホの動画品質設定を下げる',
-        '動画編集アプリで品質を下げて再出力'
+        '🎯 自動圧縮で30-50MBに最適化（推奨）',
+        '📱 アップロード時間の短縮',
+        '💾 ストレージ容量の節約',
+        '⏭️ そのまま投稿することも可能'
+      ]
+    };
+  } else if (sizeMB > 30) {
+    // 30-50MB: 最適サイズ
+    return {
+      level: 'optimal',
+      message: '✅ ファイルサイズが最適です（{{size}}MB）。そのまま投稿できます。',
+      suggestions: [
+        '🎯 現在のサイズが理想的な範囲内です',
+        '🎵 音質と画質のバランスが良好',
+        '⚡ 高速アップロード可能',
+        '✨ 圧縮は不要です'
       ]
     };
   }
@@ -385,22 +491,25 @@ const getCompressionSuggestions = (fileSize: number) => {
 };
 
 const PostPage: React.FC = () => {
-  const [videoFile, setVideoFile] = useState<File | null>(null);
+  const [showCompressionOption, setShowCompressionOption] = useState(false);
+  const [showAutoCompression, setShowAutoCompression] = useState(false);
+  const [videoDuration, setVideoDuration] = useState<number | null>(null);
   const [videoPreviewUrl, setVideoPreviewUrl] = useState<string | null>(null);
-  const [isDragging, setIsDragging] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
+  const [videoFile, setVideoFile] = useState<File | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [processingProgress, setProcessingProgress] = useState(0);
-  const [processingStage, setProcessingStage] = useState<string>('');
+  const [processingStage, setProcessingStage] = useState('');
+  const [isDragging, setIsDragging] = useState(false);
+  const [isVideoLoading, setIsVideoLoading] = useState(false);
+  const [videoLoadingProgress, setVideoLoadingProgress] = useState(0);
+  const [isVideoReady, setIsVideoReady] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [step, setStep] = useState<'upload' | 'preview' | 'success'>('upload');
   const battleFormat = 'MAIN_BATTLE'; // Fixed to MAIN_BATTLE
   const [acceptedGuidelines, setAcceptedGuidelines] = useState(false);
   const [acceptedFacePolicy, setAcceptedFacePolicy] = useState(false);
   const [acceptedContent, setAcceptedContent] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [showCompressionOption, setShowCompressionOption] = useState(false);
-  const [videoDuration, setVideoDuration] = useState<number | null>(null);
-  const [showAutoCompression, setShowAutoCompression] = useState(false);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
@@ -472,9 +581,46 @@ const PostPage: React.FC = () => {
         setProcessingProgress(80);
         setProcessingStage(t('postPage.processing.preparingPreview'));
         setVideoFile(file);
-        const url = URL.createObjectURL(file);
-        setVideoPreviewUrl(url);
-        setStep('preview');
+        
+        // 🔧 動画読み込み状態をリセット
+        setIsVideoLoading(false);
+        setVideoLoadingProgress(0);
+        setIsVideoReady(false);
+        
+        // 🎯 動画ファイル形式の確認
+        const fileType = file.type;
+        const fileName = file.name.toLowerCase();
+        console.log('Video file info:', {
+          type: fileType,
+          name: fileName,
+          size: (file.size / 1024 / 1024).toFixed(1) + 'MB'
+        });
+        
+        // 問題のある形式の警告
+        if (fileType.includes('quicktime') || fileName.endsWith('.mov') || 
+            fileType.includes('x-msvideo') || fileName.endsWith('.avi')) {
+          console.warn('Potentially problematic video format detected:', fileType);
+        }
+        
+        // 🔧 大きなファイル用の最適化されたプレビューURL作成
+        try {
+          const url = URL.createObjectURL(file);
+          setVideoPreviewUrl(url);
+          setStep('preview');
+          
+          // 🎯 大きなファイルの場合は警告を表示
+          const fileSizeMB = file.size / 1024 / 1024;
+          if (fileSizeMB > 300) {
+            console.warn(`Large file preview: ${fileSizeMB.toFixed(1)}MB - Preview may take time to load`);
+          }
+        } catch (error) {
+          console.error('Error creating preview URL:', error);
+          setError('プレビューの作成に失敗しました。ファイルサイズが大きすぎる可能性があります。');
+          setIsProcessing(false);
+          setProcessingProgress(0);
+          setProcessingStage('');
+          return;
+        }
         
         // ファイルサイズをチェック
         setProcessingProgress(100);
@@ -546,9 +692,46 @@ const PostPage: React.FC = () => {
         setProcessingProgress(80);
         setProcessingStage(t('postPage.processing.preparingPreview'));
         setVideoFile(file);
-        const url = URL.createObjectURL(file);
-        setVideoPreviewUrl(url);
-        setStep('preview');
+        
+        // 🔧 動画読み込み状態をリセット
+        setIsVideoLoading(false);
+        setVideoLoadingProgress(0);
+        setIsVideoReady(false);
+        
+        // 🎯 動画ファイル形式の確認
+        const fileType = file.type;
+        const fileName = file.name.toLowerCase();
+        console.log('Video file info:', {
+          type: fileType,
+          name: fileName,
+          size: (file.size / 1024 / 1024).toFixed(1) + 'MB'
+        });
+        
+        // 問題のある形式の警告
+        if (fileType.includes('quicktime') || fileName.endsWith('.mov') || 
+            fileType.includes('x-msvideo') || fileName.endsWith('.avi')) {
+          console.warn('Potentially problematic video format detected:', fileType);
+        }
+        
+        // 🔧 大きなファイル用の最適化されたプレビューURL作成
+        try {
+          const url = URL.createObjectURL(file);
+          setVideoPreviewUrl(url);
+          setStep('preview');
+          
+          // 🎯 大きなファイルの場合は警告を表示
+          const fileSizeMB = file.size / 1024 / 1024;
+          if (fileSizeMB > 300) {
+            console.warn(`Large file preview: ${fileSizeMB.toFixed(1)}MB - Preview may take time to load`);
+          }
+        } catch (error) {
+          console.error('Error creating preview URL:', error);
+          setError('プレビューの作成に失敗しました。ファイルサイズが大きすぎる可能性があります。');
+          setIsProcessing(false);
+          setProcessingProgress(0);
+          setProcessingStage('');
+          return;
+        }
         
         // ファイルサイズをチェック
         setProcessingProgress(100);
@@ -598,7 +781,7 @@ const PostPage: React.FC = () => {
       setError(null);
       
       try {
-        const compressedFile = await compressVideoAuto(videoFile, 120, (progress, stage) => {
+        const compressedFile = await compressVideoAuto(videoFile, 40, (progress, stage) => {
           setProcessingProgress(progress);
           setProcessingStage(stage);
         }, t);
@@ -811,6 +994,11 @@ const PostPage: React.FC = () => {
     setIsProcessing(false);
     setProcessingProgress(0);
     setProcessingStage('');
+    
+    // 🔧 動画読み込み状態をリセット
+    setIsVideoLoading(false);
+    setVideoLoadingProgress(0);
+    setIsVideoReady(false);
   };
   
   const triggerFileInput = () => {
@@ -848,6 +1036,12 @@ const PostPage: React.FC = () => {
                   <Video className="h-4 w-4 text-purple-300" />
                   <span className="text-purple-100 font-semibold text-sm">
                     {t('postPage.timeLimitEmphasis')}
+                  </span>
+                </div>
+                <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-orange-500/20 to-yellow-500/20 rounded-full border border-orange-400/40 mt-2">
+                  <Video className="h-4 w-4 text-orange-300" />
+                  <span className="text-orange-100 font-semibold text-sm">
+                    {t('postPage.videoQualityWarning')}
                   </span>
                 </div>
               </div>
@@ -1059,7 +1253,240 @@ const PostPage: React.FC = () => {
                       src={videoPreviewUrl}
                       className="w-full h-full object-contain"
                       controls
-                    />
+                      preload="metadata"
+                      playsInline
+                      muted={false}
+                      crossOrigin="anonymous"
+                      poster="" // 空のposterでブラウザのデフォルト動作を防ぐ
+                      style={{
+                        backgroundColor: '#000000',
+                        minHeight: '200px' // 最小高さを確保
+                      }}
+                      onError={(e) => {
+                        console.error('Preview video error:', e);
+                        const target = e.target as HTMLVideoElement;
+                        console.error('Video error details:', {
+                          error: target.error,
+                          networkState: target.networkState,
+                          readyState: target.readyState,
+                          currentSrc: target.currentSrc,
+                          videoWidth: target.videoWidth,
+                          videoHeight: target.videoHeight
+                        });
+                        const fileSizeMB = (videoFile?.size || 0) / 1024 / 1024;
+                        if (fileSizeMB > 500) {
+                          setError(`大きなファイル（${fileSizeMB.toFixed(1)}MB）のプレビューに失敗しました。動画は正常ですが、圧縮処理を推奨します。`);
+                        } else {
+                          setError('プレビューの表示に失敗しました。動画ファイルに問題がある可能性があります。');
+                        }
+                      }}
+                      onLoadStart={() => {
+                        console.log('Preview loading started for file:', videoFile?.name);
+                        setIsVideoLoading(true);
+                        setIsVideoReady(false);
+                        setVideoLoadingProgress(0);
+                      }}
+                      onLoadedMetadata={(e) => {
+                        const target = e.target as HTMLVideoElement;
+                        const fileSizeMB = (videoFile?.size || 0) / 1024 / 1024;
+                        console.log(`Preview loaded successfully: ${fileSizeMB.toFixed(1)}MB`);
+                        console.log('Video metadata:', {
+                          duration: target.duration,
+                          videoWidth: target.videoWidth,
+                          videoHeight: target.videoHeight,
+                          readyState: target.readyState,
+                          networkState: target.networkState
+                        });
+                        
+                        // 🔧 動画解像度が0の場合の対処
+                        if (target.videoWidth === 0 || target.videoHeight === 0) {
+                          console.warn('Video dimensions are 0 - attempting to fix...');
+                          setError(`動画の解像度情報を取得できませんでした。ファイルの映像部分に問題がある可能性があります。\n\n対処法：\n1. 動画を別の形式（MP4）で保存し直してください\n2. 動画編集ソフトで再エンコードしてください\n3. ファイルサイズを小さくしてください`);
+                          
+                          // それでも強制的に表示を試みる
+                          setTimeout(() => {
+                            target.style.width = '100%';
+                            target.style.height = '100%';
+                            target.currentTime = 1; // 1秒の位置に移動
+                            target.play().then(() => {
+                              target.pause();
+                              target.currentTime = 0.1;
+                            }).catch(e => {
+                              console.error('Failed to play video:', e);
+                            });
+                          }, 1000);
+                        }
+                        
+                        setVideoLoadingProgress(50);
+                        
+                        // 🎯 大きなファイルの場合、最初のフレームを強制的に読み込む
+                        if (fileSizeMB > 100) {
+                          console.log('Large file detected, seeking to first frame...');
+                          target.currentTime = 0.1; // 0.1秒の位置にシーク
+                        }
+                      }}
+                      onCanPlay={() => {
+                        console.log('Video can start playing');
+                        setVideoLoadingProgress(80);
+                      }}
+                      onCanPlayThrough={(e) => {
+                        console.log('Video can play through without buffering');
+                        setVideoLoadingProgress(100);
+                        setIsVideoLoading(false);
+                        setIsVideoReady(true);
+                        
+                        // 🔧 大きなファイルの場合、強制的に再描画を試行
+                        const target = e.target as HTMLVideoElement;
+                        const fileSizeMB = (videoFile?.size || 0) / 1024 / 1024;
+                        if (fileSizeMB > 300) {
+                          console.log('Forcing video refresh for large file...');
+                          setTimeout(() => {
+                            target.style.display = 'none';
+                            target.offsetHeight; // 強制リフロー
+                            target.style.display = 'block';
+                            
+                            // さらに確実にするため、少し時間を置いてもう一度
+                            setTimeout(() => {
+                              target.currentTime = 0.1;
+                              target.load(); // 動画を再読み込み
+                            }, 100);
+                          }, 500);
+                        }
+                      }}
+                      onLoadedData={(e) => {
+                        console.log('First frame loaded and ready for display');
+                        setVideoLoadingProgress(70);
+                        
+                        // 🔧 最初のフレーム読み込み後の強制描画
+                        const target = e.target as HTMLVideoElement;
+                        const fileSizeMB = (videoFile?.size || 0) / 1024 / 1024;
+                        if (fileSizeMB > 300) {
+                          console.log('Attempting to force first frame display...');
+                          setTimeout(() => {
+                            target.currentTime = 0;
+                            target.pause();
+                            target.currentTime = 0.1;
+                          }, 200);
+                        }
+                      }}
+                      onPlay={() => {
+                        console.log('Video started playing');
+                      }}
+                      onSeeked={() => {
+                        console.log('Video seek operation completed');
+                      }}
+                      onTimeUpdate={(e) => {
+                        const target = e.target as HTMLVideoElement;
+                        if (target.currentTime > 0) {
+                          console.log('Video is playing at time:', target.currentTime);
+                        }
+                      }}
+                      onWaiting={() => {
+                        console.log('Video is waiting for data');
+                      }}
+                      onStalled={() => {
+                        console.log('Video download has stalled');
+                      }}
+                      onProgress={(e) => {
+                        const target = e.target as HTMLVideoElement;
+                        if (target.buffered.length > 0) {
+                          const bufferedEnd = target.buffered.end(target.buffered.length - 1);
+                          const duration = target.duration;
+                          if (duration > 0) {
+                            const percent = (bufferedEnd / duration) * 100;
+                            console.log(`Video buffered: ${percent.toFixed(1)}%`);
+                          }
+                        }
+                      }}
+                    >
+                      <source src={videoPreviewUrl} type="video/webm" />
+                      <source src={videoPreviewUrl} type="video/mp4" />
+                      <source src={videoPreviewUrl} type="video/mov" />
+                      お使いのブラウザは動画再生をサポートしていません。
+                    </video>
+                    
+                    {/* 🎯 大きなファイル用の追加情報表示 */}
+                    {videoFile && (videoFile.size / 1024 / 1024) > 300 && (
+                      <div className="absolute bottom-2 left-2 bg-black/70 text-white px-2 py-1 rounded text-xs">
+                        大きなファイル: プレビュー読み込み中...
+                      </div>
+                    )}
+                    
+                    {/* 🎯 動画読み込み状態の表示 */}
+                    {isVideoLoading && (
+                      <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                        <div className="bg-black/80 text-white p-4 rounded-lg text-center">
+                          <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
+                          <div className="text-sm mb-2">動画読み込み中...</div>
+                          <div className="w-32 bg-gray-700 rounded-full h-2 mb-1">
+                            <div 
+                              className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                              style={{ width: `${videoLoadingProgress}%` }}
+                            ></div>
+                          </div>
+                          <div className="text-xs text-gray-300">{videoLoadingProgress}%</div>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* 🎯 動画読み込み失敗時の表示 */}
+                    {!isVideoLoading && !isVideoReady && videoPreviewUrl && (
+                      <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                        <div className="bg-black/80 text-white p-4 rounded-lg text-center">
+                          <div className="text-yellow-400 mb-2">⚠️</div>
+                          <div className="text-sm mb-2">プレビュー読み込み中...</div>
+                          <div className="text-xs text-gray-300">
+                            大きなファイルの場合、時間がかかる場合があります
+                          </div>
+                          <button 
+                            onClick={() => {
+                              console.log('Manual refresh triggered');
+                              const video = document.querySelector('video') as HTMLVideoElement;
+                              if (video) {
+                                video.load();
+                                video.currentTime = 0.1;
+                              }
+                            }}
+                            className="mt-2 px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded"
+                          >
+                            手動更新
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* 🎯 デバッグ情報表示（開発用） */}
+                    {videoFile && (videoFile.size / 1024 / 1024) > 300 && (
+                      <div className="absolute top-2 left-2 bg-black/70 text-white px-2 py-1 rounded text-xs">
+                        <div>Size: {(videoFile.size / 1024 / 1024).toFixed(1)}MB</div>
+                        <div>Type: {videoFile.type}</div>
+                        <div>Loading: {isVideoLoading ? 'Yes' : 'No'}</div>
+                        <div>Ready: {isVideoReady ? 'Yes' : 'No'}</div>
+                        <div>Progress: {videoLoadingProgress}%</div>
+                        <div>Duration: {videoDuration?.toFixed(1)}s</div>
+                        <button 
+                          onClick={() => {
+                            const video = document.querySelector('video') as HTMLVideoElement;
+                            if (video) {
+                              console.log('Current video state:', {
+                                videoWidth: video.videoWidth,
+                                videoHeight: video.videoHeight,
+                                currentTime: video.currentTime,
+                                duration: video.duration,
+                                readyState: video.readyState,
+                                networkState: video.networkState,
+                                paused: video.paused,
+                                ended: video.ended
+                              });
+                            }
+                          }}
+                          className="mt-1 px-2 py-1 bg-green-600 hover:bg-green-700 text-white text-xs rounded"
+                        >
+                          診断
+                        </button>
+                      </div>
+                    )}
+                    
                     <button
                       type="button"
                       onClick={handleRemoveVideo}

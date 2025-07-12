@@ -863,6 +863,7 @@
     "title": "バトル動画を投稿",
     "subtitle": "あなたのスキルを披露して、コミュニティに挑戦しましょう",
     "timeLimitEmphasis": " 動画は必ず1分～2分で投稿してください ",
+    "videoQualityWarning": "動画の画質はなるべく下げて撮影してください（4K撮影は避けてください）",
     "backButton": "戻る",
     "selectFormat": {
       "label": "バトル形式を選択",
@@ -883,7 +884,7 @@
       },
       "videoLengthSize": {
         "title": " 動画の長さとサイズ ",
-        "description": "⚠️【絶対ルール】メインバトルは 1分～2分 が必須条件です！\n\n✅ この時間内でないと投稿できません\n✅ 高画質・高音質での投稿のために、ファイルサイズは120MB以下\n✅ 時間制限を守って素晴らしいパフォーマンスを披露してください"
+        "description": "⚠️【絶対ルール】メインバトルは 1分～2分 が必須条件です！\n\n✅ この時間内でないと投稿できません\n✅ 高画質・高音質での投稿のために、ファイルサイズは120MB以下\n✅ 時間制限を守って素晴らしいパフォーマンスを披露してください\n\n🎯【重要】4K動画や超高画質での撮影は避けてください\n・ファイルサイズが大きくなりすぎて圧縮が困難になります\n・1080p（フルHD）以下での撮影を推奨します\n・音質を重視し、画質は標準～高画質程度に設定してください"
       },
       "facePolicy": {
         "title": "顔出しポリシー",
@@ -922,7 +923,8 @@
       "analyzing_video": "動画を解析中...",
       "recording": "録画中...",
       "remaining": "残り約{{seconds}}秒",
-      "checkingMemory": "メモリ使用量をチェック中..."
+      "checkingMemory": "メモリ使用量をチェック中...",
+      "noCompressionNeeded": "圧縮不要 - ファイルサイズが最適です"
     },
     "errors": {
       "problemOccurred": "問題が発生しました",
@@ -950,7 +952,8 @@
       "selectDifferentVideo": "別の動画を選択",
       "fileTooLargeForProcessing": "ファイルサイズ（{{size}}MB）が大きすぎて処理できません。500MB以下のファイルをお使いください。",
       "compressionTimeout": "圧縮処理がタイムアウトしました。ファイルサイズを小さくしてから再試行してください。",
-      "compressionFinalizationFailed": "圧縮ファイルの作成に失敗しました"
+      "compressionFinalizationFailed": "圧縮ファイルの作成に失敗しました",
+      "compressionAbnormallySmall": "圧縮結果が異常に小さくなりました。元の動画に問題がある可能性があります。"
     },
     "compression": {
       "autoAvailable": "自動画質調整が利用可能です",
@@ -975,7 +978,8 @@
       "compressionStarting": "圧縮を開始中...",
       "finalizing": "最終処理中...",
       "autoCompress": "自動圧縮",
-      "optimizeSize": "サイズを最適化"
+      "optimizeSize": "サイズを最適化",
+      "targetSize": "目標: {{target}}MB ({{original}}MBから) - {{strategy}}"
     },
     "submissionGuidelines": {
       "title": "動画投稿ガイドライン",
@@ -1356,6 +1360,7 @@
     "slide2": {
       "title": "バトル方法",
       "step1": "動画投稿",
+      "step1Details": "1分～2分の動画を投稿\n画質は標準～高画質で（4K避ける）",
       "step2": "自動マッチング", 
       "step3": "投票で勝敗決定",
       "period": "投票期間：5日間",
