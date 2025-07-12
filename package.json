@@ -12,6 +12,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@ffmpeg/ffmpeg": "^0.12.15",
+    "@ffmpeg/util": "^0.12.2",
     "@heroicons/react": "^2.2.0",
     "@radix-ui/react-tabs": "^1.1.12",
     "@stagewise/toolbar-react": "^0.1.2",

@@ -44,7 +44,7 @@ export default defineConfig({
     // })
   ],
   optimizeDeps: {
-    exclude: ['lucide-react'],
+    exclude: ['lucide-react', '@ffmpeg/ffmpeg', '@ffmpeg/util'],
     include: ['void-elements', 'html-parse-stringify'],
     esbuildOptions: {
       // CommonJSパッケージのサポート強化
@@ -101,7 +101,16 @@ export default defineConfig({
   server: {
     port: 3000,
     open: true,
-    host: 'localhost'
+    host: 'localhost',
+    // HTTPS設定を追加（FFmpeg.wasm対応）
+    https: process.env.NODE_ENV === 'development' ? false : undefined,
+    headers: {
+      // FFmpeg.wasmに必要なヘッダー
+      'Cross-Origin-Embedder-Policy': 'require-corp',
+      'Cross-Origin-Opener-Policy': 'same-origin',
+      // 追加のセキュリティヘッダー
+      'Cross-Origin-Resource-Policy': 'cross-origin'
+    }
   },
   publicDir: 'public'
 });
