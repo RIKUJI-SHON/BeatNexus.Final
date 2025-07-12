@@ -42,27 +42,51 @@ const getCompressionSettings = (fileSizeMB: number, actualDuration: number, targ
   const AVAILABLE_VIDEO_SIZE_MB = TARGET_SIZE_MB - AUDIO_SIZE_MB;
   const CALCULATED_VIDEO_BITRATE = (AVAILABLE_VIDEO_SIZE_MB * 8 * 1024 * 1024) / ACTUAL_DURATION;
   
+  // 🔧 1GB+ファイル用の特別な調整
+  let adjustedTargetSize = TARGET_SIZE_MB;
+  if (fileSizeMB > 1024) {
+    // 1GB以上のファイルは目標サイズを少し上げて品質を確保
+    adjustedTargetSize = Math.min(50, TARGET_SIZE_MB + 5); // 最大50MBまで
+    const adjustedAudioSize = (ACTUAL_DURATION * AUDIO_BITRATE) / 8 / 1024 / 1024;
+    const adjustedAvailableVideoSize = adjustedTargetSize - adjustedAudioSize;
+    const adjustedCalculatedBitrate = (adjustedAvailableVideoSize * 8 * 1024 * 1024) / ACTUAL_DURATION;
+    
+    // 調整後のビットレートを使用
+    const finalBitrate = Math.max(2500000, Math.min(4000000, adjustedCalculatedBitrate)); // 2.5-4.0Mbps
+    
+    return {
+      videoBitsPerSecond: Math.round(finalBitrate),
+      audioBitsPerSecond: AUDIO_BITRATE,
+      frameRate: 25,
+      shouldCompress: true,
+      targetSizeMB: adjustedTargetSize,
+      strategy: 'maximum-quality',
+      actualDuration: ACTUAL_DURATION
+    };
+  }
+  
   // 📈 ビットレートの範囲制限（品質とサイズのバランス）
-  const MIN_VIDEO_BITRATE = 600000;  // 0.6Mbps - 最低品質保証（1GB+対応）
-  const MAX_VIDEO_BITRATE = 3500000; // 3.5Mbps - 最高品質上限（安定性重視）
+  // 🔧 1GB+ファイル対応: 最低ビットレートを大幅に引き上げ
+  const MIN_VIDEO_BITRATE = 2000000;  // 2.0Mbps - 1GB+ファイル用最低品質保証
+  const MAX_VIDEO_BITRATE = 4000000; // 4.0Mbps - 最高品質上限（安定性重視）
   
   const videoBitrate = Math.max(MIN_VIDEO_BITRATE, Math.min(MAX_VIDEO_BITRATE, CALCULATED_VIDEO_BITRATE));
   
-  // 🎮 ファイルサイズに応じた追加調整（1GB+対応）
+  // 🎮 ファイルサイズに応じた追加調整（1GB+対応・フレームレート調整を緩和）
   let frameRate = 30;
   let strategy = 'balanced';
   
   if (fileSizeMB > 1024) {
-    // 1GB以上: 最大圧縮（フレームレート大幅削減）
-    frameRate = 20;
+    // 1GB以上: 適度な圧縮（フレームレート軽微削減）
+    frameRate = 25; // 20→25に変更（過度な圧縮を防止）
     strategy = 'maximum';
   } else if (fileSizeMB > 500) {
     // 500MB-1GB: 積極的圧縮（フレームレート削減）
-    frameRate = 24;
+    frameRate = 26; // 24→26に変更
     strategy = 'aggressive';
   } else if (fileSizeMB > 300) {
     // 300-500MB: 中程度の圧縮（フレームレート調整）
-    frameRate = 25;
+    frameRate = 28; // 25→28に変更
     strategy = 'heavy';
   } else if (fileSizeMB > 200) {
     // 200-300MB: 標準的な圧縮
@@ -71,10 +95,10 @@ const getCompressionSettings = (fileSizeMB: number, actualDuration: number, targ
   } else {
     // 50-200MB: 軽い圧縮
     frameRate = 30;
-    strategy: 'light';
+    strategy = 'light';
   }
   
-  return {
+  const finalSettings = {
     videoBitsPerSecond: Math.round(videoBitrate),
     audioBitsPerSecond: AUDIO_BITRATE, // 🎵 256kbps固定を保証
     frameRate: frameRate,
@@ -83,6 +107,23 @@ const getCompressionSettings = (fileSizeMB: number, actualDuration: number, targ
     strategy: strategy,
     actualDuration: ACTUAL_DURATION // 🆕 実際の動画時間を記録
   };
+  
+  // 🔍 デバッグ用ログ（1GB以上のファイルの場合）
+  if (fileSizeMB > 1024) {
+    console.log('🔧 1GB+ファイル圧縮設定:', {
+      originalSize: `${fileSizeMB.toFixed(1)}MB`,
+      targetSize: `${TARGET_SIZE_MB}MB`,
+      duration: `${ACTUAL_DURATION}s`,
+      videoBitrate: `${(videoBitrate / 1000000).toFixed(1)}Mbps`,
+      audioBitrate: `${(AUDIO_BITRATE / 1000).toFixed(0)}kbps`,
+      frameRate: `${frameRate}fps`,
+      strategy: strategy,
+      calculatedBitrate: `${(CALCULATED_VIDEO_BITRATE / 1000000).toFixed(1)}Mbps`,
+      finalBitrate: `${(videoBitrate / 1000000).toFixed(1)}Mbps`
+    });
+  }
+  
+  return finalSettings;
 };
 
 // Function to get video duration
@@ -1317,90 +1358,7 @@ const PostPage: React.FC = () => {
                       </div>
                     )}
                     
-                    {/* 🎯 動画読み込み状態の表示 */}
-                    {isVideoLoading && (
-                      <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                        <div className="bg-black/80 text-white p-4 rounded-lg text-center">
-                          <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
-                          <div className="text-sm mb-2">動画読み込み中...</div>
-                          <div className="w-32 bg-gray-700 rounded-full h-2 mb-1">
-                            <div 
-                              className="bg-blue-500 h-2 rounded-full transition-all duration-300"
-                              style={{ width: `${videoLoadingProgress}%` }}
-                            ></div>
-                          </div>
-                          <div className="text-xs text-gray-300">{videoLoadingProgress}%</div>
-                        </div>
-                      </div>
-                    )}
-                    
-                    {/* 🎯 動画読み込み失敗時の表示 */}
-                    {!isVideoLoading && !isVideoReady && videoPreviewUrl && (
-                      <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                        <div className="bg-black/80 text-white p-4 rounded-lg text-center">
-                          <div className="text-yellow-400 mb-2">⚠️</div>
-                          <div className="text-sm mb-2">プレビュー読み込み中...</div>
-                          <div className="text-xs text-gray-300">
-                            大きなファイルの場合、時間がかかる場合があります
-                          </div>
-                          <button 
-                            onClick={() => {
-                              console.log('Manual refresh triggered');
-                              
-                              // 🔧 プレビュー状態をリセット
-                              setIsPreviewInitialized(false);
-                              setPreviewLoadAttempts(0);
-                              setIsVideoLoading(true);
-                              setVideoLoadingProgress(0);
-                              setIsVideoReady(false);
-                              
-                              const video = document.querySelector('video') as HTMLVideoElement;
-                              if (video) {
-                                video.load();
-                                setTimeout(() => {
-                                  video.currentTime = 0.1;
-                                }, 500);
-                              }
-                            }}
-                            className="mt-2 px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded"
-                          >
-                            手動更新
-                          </button>
-                        </div>
-                      </div>
-                    )}
-                    
-                    {/* 🎯 デバッグ情報表示（開発用） */}
-                    {videoFile && (videoFile.size / 1024 / 1024) > 300 && (
-                      <div className="absolute top-2 left-2 bg-black/70 text-white px-2 py-1 rounded text-xs">
-                        <div>Size: {(videoFile.size / 1024 / 1024).toFixed(1)}MB</div>
-                        <div>Type: {videoFile.type}</div>
-                        <div>Loading: {isVideoLoading ? 'Yes' : 'No'}</div>
-                        <div>Ready: {isVideoReady ? 'Yes' : 'No'}</div>
-                        <div>Progress: {videoLoadingProgress}%</div>
-                        <div>Duration: {videoDuration?.toFixed(1)}s</div>
-                        <button 
-                          onClick={() => {
-                            const video = document.querySelector('video') as HTMLVideoElement;
-                            if (video) {
-                              console.log('Current video state:', {
-                                videoWidth: video.videoWidth,
-                                videoHeight: video.videoHeight,
-                                currentTime: video.currentTime,
-                                duration: video.duration,
-                                readyState: video.readyState,
-                                networkState: video.networkState,
-                                paused: video.paused,
-                                ended: video.ended
-                              });
-                            }
-                          }}
-                          className="mt-1 px-2 py-1 bg-green-600 hover:bg-green-700 text-white text-xs rounded"
-                        >
-                          診断
-                        </button>
-                      </div>
-                    )}
+
                     
                     <button
                       type="button"
