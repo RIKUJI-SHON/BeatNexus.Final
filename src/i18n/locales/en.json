@@ -879,9 +879,9 @@
     "ffmpeg": {
       "loading": "Initializing Video Processor",
       "preparing": "Preparing compression engine, please wait...",
-      "initializing": "Initializing FFmpeg...",
+      "initializing": "Preparing...",
       "initializingDescription": "Please wait while we prepare the video compression engine.",
-      "initializationError": "FFmpeg Initialization Error"
+      "initializationError": "Initialization Error"
     },
     "processing": {
       "title": "Processing video...",

@@ -874,9 +874,9 @@
     "ffmpeg": {
       "loading": "動画処理エンジンを初期化中",
       "preparing": "圧縮エンジンを準備中です。お待ちください...",
-      "initializing": "FFmpegを初期化中...",
+      "initializing": "準備中...",
       "initializingDescription": "動画圧縮エンジンを準備中です。しばらくお待ちください。",
-      "initializationError": "FFmpeg初期化エラー"
+      "initializationError": "初期化エラー"
     },
     "upload": {
       "title": "動画をアップロード",

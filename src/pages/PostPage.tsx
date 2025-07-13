@@ -500,18 +500,7 @@ const PostPage: React.FC = () => {
                   </div>
                 )}
 
-                {/* FFmpeg初期化中 */}
-                {!isFFmpegLoaded && !ffmpegError && (
-                  <div className="mb-6 bg-blue-500/10 border border-blue-500/30 rounded-xl p-4 backdrop-blur-sm">
-                    <div className="flex items-center gap-2 mb-3">
-                      <div className="w-5 h-5 border-2 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
-                      <h3 className="font-medium text-white">{t('postPage.ffmpeg.initializing')}</h3>
-                    </div>
-                    <p className="text-sm text-blue-200">
-                      {t('postPage.ffmpeg.initializingDescription')}
-                    </p>
-                  </div>
-                )}
+
 
                 {error && (
                   <div className="mb-6 bg-red-500/10 border border-red-500/30 rounded-xl p-4 backdrop-blur-sm">
@@ -539,41 +528,10 @@ const PostPage: React.FC = () => {
                   </div>
                 )}
 
-                {isProcessing && (
-                  <div className="mb-6 bg-blue-500/10 border border-blue-500/30 rounded-xl p-4 backdrop-blur-sm">
-                    <div className="flex items-center gap-2 mb-3">
-                      <div className="w-5 h-5 border-2 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
-                      <h3 className="font-medium text-white">{t('postPage.processing.title')}</h3>
-                    </div>
-                    
-                    <div className="space-y-3">
-                      <div className="flex justify-between text-sm">
-                        <span className="text-gray-300">{stage}</span>
-                        <span className="text-blue-400 font-medium">{Math.round(progress)}%</span>
-                      </div>
-                      
-                      <div className="w-full bg-gray-700 rounded-full h-3 overflow-hidden">
-                        <div 
-                          className="h-full bg-gradient-to-r from-blue-500 to-cyan-500 transition-all duration-300 ease-out relative"
-                          style={{ width: `${progress}%` }}
-                        >
-                          <div className="absolute inset-0 bg-white/20 animate-pulse"></div>
-                        </div>
-                      </div>
-                      
-                      <p className="text-sm text-gray-400">
-                        {progress < 30 
-                          ? t('postPage.processing.analyzing')
-                          : progress < 90 
-                          ? t('postPage.processing.optimizing')
-                          : t('postPage.processing.finalizing')}
-                      </p>
-                    </div>
-                  </div>
-                )}
+
 
                 <div 
-                  className={`border-2 border-dashed rounded-xl transition-all duration-300 ${
+                  className={`border-2 border-dashed rounded-xl transition-all duration-300 relative ${
                     isDragging 
                       ? 'border-cyan-400 bg-cyan-500/10 scale-105' 
                       : 'border-gray-700 hover:border-cyan-500/50 hover:bg-gray-800/30'
@@ -590,6 +548,21 @@ const PostPage: React.FC = () => {
                     onChange={handleFileChange}
                     disabled={!canSubmit || !isFFmpegLoaded}
                   />
+                  
+                  {/* FFmpeg準備中のオーバーレイ */}
+                  {!isFFmpegLoaded && !ffmpegError && (
+                    <div className="absolute inset-0 bg-gray-900/90 backdrop-blur-sm rounded-xl flex items-center justify-center z-10">
+                      <div className="text-center">
+                        <div className="w-8 h-8 sm:w-10 sm:h-10 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
+                        <h3 className="text-base sm:text-lg font-medium text-white mb-1">
+                          {t('postPage.ffmpeg.initializing')}
+                        </h3>
+                        <p className="text-xs sm:text-sm text-gray-400">
+                          {t('postPage.ffmpeg.initializingDescription')}
+                        </p>
+                      </div>
+                    </div>
+                  )}
                   
                   <div className="p-6 sm:p-8 text-center">
                     <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-gray-800 to-gray-700 flex items-center justify-center shadow-lg border border-gray-600">
