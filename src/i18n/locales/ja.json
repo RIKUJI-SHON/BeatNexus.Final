@@ -871,10 +871,49 @@
       "miniBattle": "ミニバトル (30-59秒)",
       "themeChallenge": "スキル/テーマチャレンジ"
     },
+    "ffmpeg": {
+      "loading": "動画処理エンジンを初期化中",
+      "preparing": "圧縮エンジンを準備中です。お待ちください...",
+      "initializing": "FFmpegを初期化中...",
+      "initializingDescription": "動画圧縮エンジンを準備中です。しばらくお待ちください。",
+      "initializationError": "FFmpeg初期化エラー"
+    },
     "upload": {
+      "title": "動画をアップロード",
+      "dragDrop": "動画をここにドラッグ&ドロップ",
+      "supportedFormats": "対応形式：MP4、WebM、MOV",
+      "selectFile": "ファイルを選択",
+      "uploading": "アップロード中",
+      "submit": "バトルプールに投稿",
       "dropHere": "動画をここにドロップ",
       "orBrowse": "またはクリックしてファイルを選択 (MP4, WebM, MOV)",
       "selectVideo": "動画を選択"
+    },
+    "preview": {
+      "title": "動画プレビュー",
+      "duration": "再生時間",
+      "size": "ファイルサイズ"
+    },
+    "format": {
+      "mainBattle": "メインバトル"
+    },
+    "guidelines": {
+      "title": "ガイドライン",
+      "content": "動画投稿ガイドラインを読み、同意します",
+      "face": "顔出しは任意で、口元の表示を推奨することを理解しています",
+      "appropriate": "これは私自身のパフォーマンスであり、禁止されたコンテンツを含まないことを確認します"
+    },
+    "cooldown": {
+      "title": "投稿制限中",
+      "message": "次回投稿可能まで：{{time}}"
+    },
+    "compression": {
+      "title": "ファイルサイズ最適化",
+      "description": "動画ファイルが推奨サイズより大きいです。自動的に圧縮しますか？",
+      "compress": "動画を圧縮",
+      "retry": "動画を撮り直す",
+      "compressing": "圧縮中",
+      "success": "圧縮が正常に完了しました！"
     },
     "guidelines": {
       "title": "動画ガイドライン",
@@ -884,7 +923,7 @@
       },
       "videoLengthSize": {
         "title": " 動画の長さとサイズ ",
-        "description": "⚠️【絶対ルール】メインバトルは 1分～2分 が必須条件です！\n\n✅ この時間内でないと投稿できません\n✅ 高画質・高音質での投稿のために、ファイルサイズは120MB以下\n✅ 時間制限を守って素晴らしいパフォーマンスを披露してください\n\n🎯【重要】4K動画や超高画質での撮影は避けてください\n・ファイルサイズが大きくなりすぎて圧縮が困難になります\n・1080p（フルHD）以下での撮影を推奨します\n・音質を重視し、画質は標準～高画質程度に設定してください"
+        "description": "⚠️【絶対ルール】メインバトルは 1分～2分 が必須条件です！\n\n✅ この時間内でないと投稿できません\n✅ 時間制限を守って素晴らしいパフォーマンスを披露してください\n\n🎯【重要】4K動画や超高画質での撮影は避けてください\n・ファイルサイズが大きくなりすぎて圧縮が困難になります\n・1080p（フルHD）以下での撮影を推奨します\n・音質を重視し、画質は標準～高画質程度に設定してください"
       },
       "facePolicy": {
         "title": "顔出しポリシー",
@@ -924,7 +963,9 @@
       "recording": "録画中...",
       "remaining": "残り約{{seconds}}秒",
       "checkingMemory": "メモリ使用量をチェック中...",
-      "noCompressionNeeded": "圧縮不要 - ファイルサイズが最適です"
+      "noCompressionNeeded": "圧縮不要 - ファイルサイズが最適です",
+      "processingVideo": "動画を処理中...",
+      "compressionComplete": "圧縮が完了しました。プレビューが更新されました。"
     },
     "errors": {
       "problemOccurred": "問題が発生しました",
@@ -934,7 +975,7 @@
       "recordingFailed": "録画中にエラーが発生しました",
       "processingError": "処理エラー",
       "videoProcessingFailed": "動画ファイルの処理に失敗しました",
-      "fileTooBig": "ファイルサイズが制限を超えています。現在: {{current}}MB（制限: 120MB）",
+      "fileTooBig": "ファイルサイズが制限を超えています。現在: {{current}}MB（制限: 200MB）",
       "compressionFailed": "自動圧縮に失敗しました。「高速圧縮」または「簡単な方法」をお試しください。",
       "fastCompressionFailed": "高速圧縮に失敗しました。「簡単な方法」で手動対応をお試しください。",
       "fileSizeStillLarge": "圧縮後のファイルサイズ: {{size}}MB。さらに圧縮が必要です。",
@@ -954,7 +995,13 @@
       "compressionTimeout": "圧縮処理がタイムアウトしました。ファイルサイズを小さくしてから再試行してください。",
       "compressionFinalizationFailed": "圧縮ファイルの作成に失敗しました",
       "compressionAbnormallySmall": "圧縮結果が異常に小さくなりました。元の動画に問題がある可能性があります。",
-      "tooManyPreviewAttempts": "プレビューの読み込みに複数回失敗しました。ファイルサイズが大きすぎる可能性があります。"
+      "tooManyPreviewAttempts": "プレビューの読み込みに複数回失敗しました。ファイルサイズが大きすぎる可能性があります。",
+      "compressionInsufficientReduction": "圧縮が不十分でした。ファイルがまだ大きすぎます。",
+      "acceptPolicies": "すべてのポリシーとガイドラインに同意してください。",
+      "uploadFailed": "アップロードに失敗しました。再度お試しください。",
+      "invalidFileType": "無効なファイル形式です。動画ファイルを選択してください。",
+      "tooShort": "動画が短すぎます（{{current}}秒）。最小：{{min}}秒",
+      "tooLong": "動画が長すぎます（{{current}}秒）。最大：{{max}}秒"
     },
     "compression": {
       "autoAvailable": "自動画質調整が利用可能です",
@@ -968,7 +1015,7 @@
       "bitrateAdjustment": "ビットレートの調整",
       "audioQualityMaintained": "音質は高品質を維持（128kbps）",
       "fileSizeTooLarge": "ファイルサイズが大きすぎます",
-      "currentFileSize": "現在のファイルサイズ: {{size}}MB (制限: 120MB)",
+      "currentFileSize": "現在のファイルサイズ: {{size}}MB (制限: 200MB)",
       "recommendedSolutions": "推奨される解決方法:",
       "retakeVideo": "動画を撮り直す",
       "recommended": "推奨",
@@ -1005,8 +1052,12 @@
       "timeRemaining": "投稿まで {{time}}"
     },
     "success": {
-      "title": "動画の投稿が完了しました！",
-      "description": "動画がアップロードされ、まもなく他のビートボクサーとマッチングされます。バトルが開始されたら通知いたします。"
+      "title": "動画投稿が完了しました！",
+      "description": "動画がアップロードされ、まもなく他のビートボクサーとマッチングされます。バトルが開始されたら通知でお知らせします。"
+    },
+    "importantNotice": {
+      "videoDuration": "動画は必ず1分～2分で投稿してください",
+      "videoQuality": "動画の画質はなるべく下げて撮影してください（4K撮影は避けてください）"
     }
   },
   "comingSoon": {
@@ -1180,11 +1231,11 @@
       },
       "videoFormats": {
         "question": "対応している動画形式は何ですか？",
-        "answer": "MP4、WebM、MOVの形式に対応しています。ファイルサイズは120MB以下に制限されています。ビートボックスに最適な高画質・高音質での録画をお勧めします。"
+        "answer": "MP4、WebM、MOVの形式に対応しています。ファイルサイズは200MB以下に制限されています。ビートボックスに最適な高画質・高音質での録画をお勧めします。"
       },
       "uploadFailed": {
         "question": "動画のアップロードが失敗します",
-        "answer": "ファイルサイズ（120MB以下）と形式（MP4、WebM、MOV）を確認してください。インターネット接続も確認し、ブラウザを再読み込みしてお試しください。"
+        "answer": "ファイルサイズ（200MB以下）と形式（MP4、WebM、MOV）を確認してください。インターネット接続も確認し、ブラウザを再読み込みしてお試しください。"
       },
       "mobile": {
         "question": "スマートフォンでも使えますか？",

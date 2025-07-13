@@ -44,7 +44,7 @@ export default defineConfig({
     // })
   ],
   optimizeDeps: {
-    exclude: ['lucide-react'],
+    exclude: ['lucide-react', '@ffmpeg/ffmpeg', '@ffmpeg/util'],
     include: ['void-elements', 'html-parse-stringify'],
     esbuildOptions: {
       // CommonJSパッケージのサポート強化
@@ -101,7 +101,11 @@ export default defineConfig({
   server: {
     port: 3000,
     open: true,
-    host: 'localhost'
+    host: 'localhost',
+    headers: {
+      'Cross-Origin-Opener-Policy': 'same-origin',
+      'Cross-Origin-Embedder-Policy': 'require-corp',
+    },
   },
   publicDir: 'public'
 });

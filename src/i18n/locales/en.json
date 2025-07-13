@@ -818,9 +818,33 @@
       "themeChallenge": "Skill/Theme Challenge"
     },
     "upload": {
-      "dropHere": "Drop your video here",
-      "orBrowse": "or click to browse files (MP4, WebM, MOV | Max 120MB)",
+      "title": "Upload Video",
+      "dragDrop": "Drag and drop your video here",
+      "supportedFormats": "Supported formats: MP4, WebM, MOV",
+      "selectFile": "Select File",
+      "uploading": "Uploading",
+      "submit": "Submit to Battle Pool",
+      "dropHere": "Drop video here",
+      "orBrowse": "or click to select file (MP4, WebM, MOV)",
       "selectVideo": "Select Video"
+    },
+    "preview": {
+      "title": "Video Preview",
+      "duration": "Duration",
+      "size": "Size"
+    },
+    "format": {
+      "mainBattle": "Main Battle"
+    },
+    "guidelines": {
+      "title": "Guidelines",
+      "content": "I have read and agree to the Video Submission Guidelines",
+      "face": "I understand that showing my face is optional, and showing my mouth area is recommended",
+      "appropriate": "I confirm this is my own performance and does not contain prohibited content"
+    },
+    "cooldown": {
+      "title": "Submission Cooldown",
+      "message": "Next submission available in: {{time}}"
     },
     "guidelines": {
       "title": "Video Guidelines",
@@ -830,7 +854,7 @@
       },
       "videoLengthSize": {
         "title": "🔥 Video Length & Size【IMPORTANT】",
-        "description": "⚠️【STRICT RULE】Main battles MUST be 60 to 120 seconds (1-2 minutes) - this is mandatory!\n\n✅ Videos outside this range cannot be submitted\n✅ Up to 120MB supported for high-quality, high-fidelity submissions\n✅ Follow the time limit and showcase your amazing performance\n\n🎯【IMPORTANT】Avoid 4K or ultra-high-quality recording\n・File sizes become too large and difficult to compress\n・Recommend 1080p (Full HD) or lower recording\n・Prioritize audio quality over video quality"
+        "description": "⚠️【STRICT RULE】Main battles MUST be 60 to 120 seconds (1-2 minutes) - this is mandatory!\n\n✅ Videos outside this range cannot be submitted\n✅ Follow the time limit and showcase your amazing performance\n\n🎯【IMPORTANT】Avoid 4K or ultra-high-quality recording\n・File sizes become too large and difficult to compress\n・Recommend 1080p (Full HD) or lower recording\n・Prioritize audio quality over video quality"
       },
       "facePolicy": {
         "title": "Face Policy",
@@ -852,6 +876,13 @@
     "preview": {
       "title": "Video Preview"
     },
+    "ffmpeg": {
+      "loading": "Initializing Video Processor",
+      "preparing": "Preparing compression engine, please wait...",
+      "initializing": "Initializing FFmpeg...",
+      "initializingDescription": "Please wait while we prepare the video compression engine.",
+      "initializationError": "FFmpeg Initialization Error"
+    },
     "processing": {
       "title": "Processing video...",
       "analyzing": "Analyzing video and checking settings...",
@@ -870,7 +901,9 @@
       "recording": "Recording...",
       "remaining": "Remaining ~{{seconds}}s",
       "checkingMemory": "Checking memory usage...",
-      "noCompressionNeeded": "No compression needed - file size is optimal"
+      "noCompressionNeeded": "No compression needed - file size is optimal",
+      "processingVideo": "Processing video...",
+      "compressionComplete": "Compression completed. Preview has been updated."
     },
     "errors": {
       "problemOccurred": "Problem occurred",
@@ -880,7 +913,7 @@
       "recordingFailed": "Error occurred during recording",
       "processingError": "Processing error",
       "videoProcessingFailed": "Failed to process video file",
-      "fileTooBig": "File size exceeds limit. Current: {{current}}MB (Limit: 120MB)",
+      "fileTooBig": "File size exceeds limit. Current: {{current}}MB (Limit: 200MB)",
       "compressionFailed": "Automatic compression failed. Please try 'Fast Compression' or 'Simple Method'.",
       "fastCompressionFailed": "Fast compression failed. Please try 'Simple Method' for manual handling.",
       "fileSizeStillLarge": "Compressed file size: {{size}}MB. Further compression needed.",
@@ -900,7 +933,13 @@
       "compressionTimeout": "Compression process timed out. Please reduce file size and try again.",
       "compressionFinalizationFailed": "Failed to create compressed file",
       "compressionAbnormallySmall": "Compression resulted in abnormally small file. There may be an issue with the original video.",
-      "tooManyPreviewAttempts": "Preview loading failed multiple times. File size may be too large."
+      "tooManyPreviewAttempts": "Preview loading failed multiple times. File size may be too large.",
+      "compressionInsufficientReduction": "Compression was insufficient. File is still too large.",
+      "acceptPolicies": "Please accept all policies and guidelines.",
+      "uploadFailed": "Upload failed. Please try again.",
+      "invalidFileType": "Invalid file type. Please select a video file.",
+      "tooShort": "Video is too short ({{current}}s). Minimum: {{min}}s",
+      "tooLong": "Video is too long ({{current}}s). Maximum: {{max}}s"
     },
     "compression": {
       "autoAvailable": "Automatic quality adjustment is available",
@@ -914,7 +953,7 @@
       "bitrateAdjustment": "Bitrate adjustment",
       "audioQualityMaintained": "High audio quality maintained (128kbps)",
       "fileSizeTooLarge": "File size is too large",
-      "currentFileSize": "Current file size: {{size}}MB (Limit: 120MB)",
+      "currentFileSize": "Current file size: {{size}}MB (Limit: 200MB)",
       "recommendedSolutions": "Recommended solutions:",
       "retakeVideo": "Retake video",
       "recommended": "Recommended",
@@ -953,6 +992,10 @@
     "success": {
       "title": "Video Submitted Successfully!",
       "description": "Your video has been uploaded and will be matched with another beatboxer soon. We'll notify you when your battle goes live."
+    },
+    "importantNotice": {
+      "videoDuration": "Videos must be 1-2 minutes long",
+      "videoQuality": "Please lower video quality when recording (avoid 4K recording)"
     }
   },
   "toasts": {
@@ -1395,11 +1438,11 @@
       },
       "videoFormats": {
         "question": "What video formats are supported?",
-        "answer": "We support MP4, WebM, and MOV formats. File size must be under 120MB. For the best beatboxing experience, we recommend recording with high video quality and crystal-clear audio."
+        "answer": "We support MP4, WebM, and MOV formats. File size must be under 200MB. For the best beatboxing experience, we recommend recording with high video quality and crystal-clear audio."
       },
       "uploadFailed": {
         "question": "My video upload is failing",
-        "answer": "Check that your file size is under 120MB and format is MP4, WebM, or MOV. Also verify your internet connection and try refreshing your browser."
+        "answer": "Check that your file size is under 200MB and format is MP4, WebM, or MOV. Also verify your internet connection and try refreshing your browser."
       },
       "mobile": {
         "question": "Can I use BeatNexus on mobile?",
