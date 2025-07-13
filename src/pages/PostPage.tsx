@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { useSubmissionCooldown } from '../hooks/useSubmissionCooldown';
 import { useVideoProcessor } from '../hooks/useVideoProcessor';
 import { trackBeatNexusEvents } from '../utils/analytics';
+import SubmissionModal from '../components/ui/SubmissionModal';
 
 // Maximum file size in bytes (200MB)
 const MAX_FILE_SIZE = 200 * 1024 * 1024;
@@ -109,6 +110,13 @@ const PostPage: React.FC = () => {
   // FFmpegのエラー状態を管理
   const [ffmpegError, setFfmpegError] = useState<string | null>(null);
   const [stage, setStage] = useState<string>('');
+  
+  // 投稿モーダルの状態
+  const [isSubmissionModalOpen, setIsSubmissionModalOpen] = useState(false);
+  const [submissionProgress, setSubmissionProgress] = useState(0);
+  const [submissionStage, setSubmissionStage] = useState<string>('');
+  const [submissionError, setSubmissionError] = useState<string | null>(null);
+  const [isSubmissionProcessing, setIsSubmissionProcessing] = useState(false);
 
   // Redirect if not authenticated
   if (!user) {
@@ -146,13 +154,9 @@ const PostPage: React.FC = () => {
     setFfmpegError(null);
     
     try {
-      setStage(t('postPage.processing.analyzing_video'));
-      
       // 動画の長さを取得
       const duration = await getVideoDuration(file);
       setVideoDuration(duration);
-      
-      setStage(t('postPage.processing.checkingDuration'));
       
       // 動画の長さをチェック
       const isValidLength = isValidDuration(duration, battleFormat);
@@ -163,61 +167,15 @@ const PostPage: React.FC = () => {
         return;
       }
       
-      setStage(t('postPage.processing.preparingPreview'));
-      
-      // まずプレビューを表示（圧縮前）
+      // プレビューを表示（圧縮は投稿時に行う）
       setVideoFile(file);
       const initialUrl = URL.createObjectURL(file);
       setVideoPreviewUrl(initialUrl);
       setStep('preview');
       
-      // ファイルサイズをチェックして、必要に応じて自動圧縮
-      const compressionThreshold = 200 * 1024 * 1024; // 200MB
-      
-      if (file.size > compressionThreshold) {
-        setStage(t('postPage.processing.processingVideo'));
-        
-        // 動画処理を実行
-        const processedResult = await processVideo(file);
-        
-        // Blobの場合はFileに変換
-        let processedFile: File;
-        if (processedResult instanceof File) {
-          processedFile = processedResult;
-        } else {
-          // BlobをFileに変換
-          const fileName = file.name.replace(/\.[^/.]+$/, '') + '_processed.mp4';
-          processedFile = new File([processedResult], fileName, { type: 'video/mp4' });
-        }
-        
-        // 圧縮後のプレビューに更新
-        setVideoFile(processedFile);
-        // 古いURLを解放
-        URL.revokeObjectURL(initialUrl);
-        const compressedUrl = URL.createObjectURL(processedFile);
-        setVideoPreviewUrl(compressedUrl);
-        
-        // ファイルサイズの最終チェック
-        if (processedFile.size > MAX_FILE_SIZE) {
-          setError(t('postPage.errors.fileTooBig', { current: (processedFile.size / 1024 / 1024).toFixed(1) }));
-        }
-      } else {
-        // 圧縮不要の場合、最終サイズチェックのみ
-        if (file.size > MAX_FILE_SIZE) {
-          setError(t('postPage.errors.fileTooBig', { current: (file.size / 1024 / 1024).toFixed(1) }));
-        }
-      }
-      
-      setStage(t('postPage.processing.complete'));
     } catch (err) {
       console.error('Video processing error:', err);
-      if (err instanceof Error && err.message.includes('FFmpeg')) {
-        setFfmpegError(err.message);
-      } else {
-        setError(err instanceof Error ? err.message : t('postPage.errors.videoProcessingFailed'));
-      }
-    } finally {
-      setStage('');
+      setError(err instanceof Error ? err.message : t('postPage.errors.videoProcessingFailed'));
     }
   };
   
@@ -252,42 +210,100 @@ const PostPage: React.FC = () => {
       return;
     }
     
-    // Double-check file size before upload
-    if (videoFile.size > MAX_FILE_SIZE) {
-      setError(t('postPage.errors.uploadTooLarge', { size: (videoFile.size / 1024 / 1024).toFixed(1) }));
-      return;
-    }
+    // モーダルを開いて投稿処理を開始
+    setIsSubmissionModalOpen(true);
+    setSubmissionProgress(0);
+    setSubmissionError(null);
+    setIsSubmissionProcessing(true);
     
-    // Double-check video duration before upload
-    if (videoDuration !== null && !isValidDuration(videoDuration, battleFormat)) {
-      setError(getDurationErrorMessage(videoDuration, battleFormat, t));
-      return;
-    }
-    
-    setIsUploading(true);
-    setError(null);
+    await performSubmission();
+  };
+
+  const performSubmission = async () => {
+    if (!videoFile || !acceptedGuidelines || !acceptedFacePolicy || !acceptedContent) return;
     
     try {
+      setSubmissionStage(t('submissionModal.checking'));
+      setSubmissionProgress(5);
+      
+      // Double-check video duration before upload
+      if (videoDuration !== null && !isValidDuration(videoDuration, battleFormat)) {
+        setSubmissionError(getDurationErrorMessage(videoDuration, battleFormat, t));
+        setIsSubmissionProcessing(false);
+        return;
+      }
+      
+      let finalVideoFile = videoFile;
+      
+      // ファイルサイズをチェックして、必要に応じて圧縮
+      const compressionThreshold = 200 * 1024 * 1024; // 200MB
+      
+      if (videoFile.size > compressionThreshold) {
+        setSubmissionStage(t('submissionModal.compressing'));
+        setSubmissionProgress(10);
+        
+        try {
+          // 動画処理を実行
+          const processedResult = await processVideo(videoFile);
+          
+          // Blobの場合はFileに変換
+          if (processedResult instanceof File) {
+            finalVideoFile = processedResult;
+          } else {
+            // BlobをFileに変換
+            const fileName = videoFile.name.replace(/\.[^/.]+$/, '') + '_processed.mp4';
+            finalVideoFile = new File([processedResult], fileName, { type: 'video/mp4' });
+          }
+          
+          // 圧縮後のファイルサイズチェック
+          if (finalVideoFile.size > MAX_FILE_SIZE) {
+            setSubmissionError(t('postPage.errors.fileTooBig', { current: (finalVideoFile.size / 1024 / 1024).toFixed(1) }));
+            setIsSubmissionProcessing(false);
+            return;
+          }
+          
+          setSubmissionProgress(50);
+        } catch (compressionError) {
+          console.error('Compression error:', compressionError);
+          setSubmissionError(compressionError instanceof Error ? compressionError.message : t('postPage.errors.videoProcessingFailed'));
+          setIsSubmissionProcessing(false);
+          return;
+        }
+      } else {
+        // 圧縮不要の場合、最終サイズチェックのみ
+        if (videoFile.size > MAX_FILE_SIZE) {
+          setSubmissionError(t('postPage.errors.fileTooBig', { current: (videoFile.size / 1024 / 1024).toFixed(1) }));
+          setIsSubmissionProcessing(false);
+          return;
+        }
+        setSubmissionProgress(50);
+      }
+      
+      setSubmissionStage(t('submissionModal.uploading'));
+      setSubmissionProgress(60);
       // Upload video to storage
-      const fileExt = videoFile.name.split('.').pop();
+      const fileExt = finalVideoFile.name.split('.').pop();
       const fileName = `${crypto.randomUUID()}.${fileExt}`;
       const filePath = `${user.id}/${fileName}`;
       
       console.log('📤 Uploading video:', {
         filePath,
-        fileSize: videoFile.size,
-        fileType: videoFile.type,
-        fileName: videoFile.name
+        fileSize: finalVideoFile.size,
+        fileType: finalVideoFile.type,
+        fileName: finalVideoFile.name
       });
       
       const { error: uploadError } = await supabase.storage
         .from('videos')
-        .upload(filePath, videoFile);
+        .upload(filePath, finalVideoFile);
       
       if (uploadError) {
         console.error('❌ Upload error:', uploadError);
         throw new Error(`動画のアップロードに失敗しました: ${uploadError.message}`);
       }
+
+      setSubmissionStage(t('submissionModal.creating'));
+      setSubmissionProgress(75);
 
       // Get video URL
       const { data: { publicUrl } } = supabase.storage
@@ -318,6 +334,9 @@ const PostPage: React.FC = () => {
       }
 
       const submissionId = submissionResult.submission_id;
+
+      setSubmissionStage(t('submissionModal.matching'));
+      setSubmissionProgress(90);
 
       // Call the webhook to trigger matchmaking
       console.log('Calling matchmaking webhook...');
@@ -387,11 +406,20 @@ const PostPage: React.FC = () => {
       // Track video submission event
       trackBeatNexusEvents.videoSubmit(battleFormat);
 
-      setStep('success');
+      setSubmissionStage(t('submissionModal.completed'));
+      setSubmissionProgress(100);
+      setIsSubmissionProcessing(false);
+      
+      // 少し待ってから成功画面に遷移
+      setTimeout(() => {
+        setStep('success');
+        setIsSubmissionModalOpen(false);
+      }, 1500);
+      
     } catch (err) {
-      setError(err instanceof Error ? err.message : '投稿に失敗しました');
-    } finally {
-      setIsUploading(false);
+      console.error('Submission error:', err);
+      setSubmissionError(err instanceof Error ? err.message : '投稿に失敗しました');
+      setIsSubmissionProcessing(false);
     }
   };
   
@@ -854,6 +882,23 @@ const PostPage: React.FC = () => {
         </Card>
 
       </div>
+      
+      {/* 投稿処理モーダル */}
+      <SubmissionModal
+        isOpen={isSubmissionModalOpen}
+        onClose={() => setIsSubmissionModalOpen(false)}
+        videoFile={videoFile}
+        videoPreviewUrl={videoPreviewUrl}
+        stage={submissionStage}
+        progress={submissionProgress}
+        isProcessing={isSubmissionProcessing}
+        error={submissionError}
+        onCancel={() => {
+          setIsSubmissionModalOpen(false);
+          setIsSubmissionProcessing(false);
+          setSubmissionError(null);
+        }}
+      />
     </div>
   );
 };

@@ -35,6 +35,27 @@
     "settings": "Settings",
     "logout": "Logout"
   },
+  "submissionModal": {
+    "title": "Submitting Video",
+    "videoPreview": "Video Preview",
+    "processing": "Processing...",
+    "progress": "Progress",
+    "estimatedRemaining": "Estimated time remaining",
+    "estimatedTime": {
+      "seconds": "About {{seconds}} seconds",
+      "minutes": "About {{minutes}}m {{seconds}}s",
+      "almostDone": "Almost done"
+    },
+    "error": "An error occurred",
+    "completed": "Submission completed",
+    "cancel": "Cancel",
+    "close": "Close",
+    "checking": "Checking video...",
+    "compressing": "Compressing video...",
+    "uploading": "Uploading video...",
+    "creating": "Creating submission...",
+    "matching": "Finding opponent..."
+  },
   "subscription": {
     "title": "Choose Your Plan",
     "subtitle": "Select the perfect plan to support your beatbox journey",

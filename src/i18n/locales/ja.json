@@ -47,6 +47,27 @@
     "settings": "設定",
     "logout": "ログアウト"
   },
+  "submissionModal": {
+    "title": "動画を投稿中",
+    "videoPreview": "動画プレビュー",
+    "processing": "処理中...",
+    "progress": "進捗",
+    "estimatedRemaining": "推定残り時間",
+    "estimatedTime": {
+      "seconds": "約{{seconds}}秒",
+      "minutes": "約{{minutes}}分{{seconds}}秒",
+      "almostDone": "もうすぐ完了"
+    },
+    "error": "エラーが発生しました",
+    "completed": "投稿が完了しました",
+    "cancel": "キャンセル",
+    "close": "閉じる",
+    "checking": "動画の確認中...",
+    "compressing": "動画を圧縮中...",
+    "uploading": "動画をアップロード中...",
+    "creating": "投稿を作成中...",
+    "matching": "対戦相手を探しています..."
+  },
   "subscription": {
     "title": "プランを選択",
     "subtitle": "あなたのビートボックスの旅をサポートする最適なプランをお選びください",
