@@ -13,6 +13,7 @@ import { VotingTips } from '../ui/VotingTips';
 import { trackBeatNexusEvents } from '../../utils/analytics';
 import { getCurrentRank } from '../../lib/rankUtils';
 import { supabase } from '../../lib/supabase';
+import { getDefaultAvatarUrl } from '../../utils';
 import { useNotificationStore } from '../../store/notificationStore';
 
 interface BattleViewProps {
@@ -246,8 +247,6 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
   const isBLeading = votesB > votesA;
   const isDraw = votesA === votesB;
   
-  const getDefaultAvatarUrl = (seed: string) => `https://api.dicebear.com/7.x/avataaars/svg?seed=${seed}`;
-
   // 色の固定化のため、colorPairs配列は不要になりました
 
   // 固定色: プレイヤーAを青、プレイヤーBを赤  
@@ -387,7 +386,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                     style={{ background: `linear-gradient(135deg, ${playerColorA}, ${playerColorA}80)` }}
                   >
                     <img
-                      src={battle.contestant_a?.avatar_url || getDefaultAvatarUrl(battle.player1_user_id)}
+                      src={battle.contestant_a?.avatar_url || getDefaultAvatarUrl()}
                       alt={battle.contestant_a?.username}
                       className="w-full h-full rounded-full border border-gray-900 object-cover"
                     />

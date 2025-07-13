@@ -3,6 +3,7 @@ import { Camera, Upload, Loader, X } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { supabase } from '../../lib/supabase';
 import { useAuthStore } from '../../store/authStore';
+import { getDefaultAvatarUrl } from '../../utils';
 
 interface AvatarUploadProps {
   currentAvatarUrl?: string;
@@ -125,9 +126,7 @@ export const AvatarUpload: React.FC<AvatarUploadProps> = ({
     }
   };
 
-  const getDefaultAvatarUrl = (seed?: string) => `https://api.dicebear.com/7.x/avataaars/svg?seed=${seed || 'defaultSeed'}`;
-
-  const displayUrl = previewUrl || currentAvatarUrl || getDefaultAvatarUrl(userId);
+  const displayUrl = previewUrl || currentAvatarUrl || getDefaultAvatarUrl();
 
   return (
     <div className={`relative ${className}`}>

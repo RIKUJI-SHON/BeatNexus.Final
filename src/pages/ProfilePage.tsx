@@ -35,6 +35,7 @@ import { format } from 'date-fns';
 import { ja, enUS } from 'date-fns/locale';
 import { calculateRankProgress } from '../lib/rankUtils';
 import { trackBeatNexusEvents } from '../utils/analytics';
+import { getDefaultAvatarUrl } from '../utils';
 
 interface Post {
   id: string;
@@ -372,8 +373,6 @@ const ProfilePage: React.FC = () => {
     userArchivedBattles: userArchivedBattles.map(b => ({ id: b.id, players: [b.player1_user_id, b.player2_user_id], winner: b.winner_id }))
   });
   
-  const getDefaultAvatarUrl = (seed?: string) => `https://api.dicebear.com/7.x/avataaars/svg?seed=${seed || 'defaultSeed'}`;
-
   if (profileLoading) {
     return (
       <div className="min-h-screen bg-gray-950 flex items-center justify-center">
@@ -437,7 +436,7 @@ const ProfilePage: React.FC = () => {
                 />
               ) : (
                 <img 
-                  src={userProfile.avatar_url || getDefaultAvatarUrl(userProfile.username)} 
+                  src={userProfile.avatar_url || getDefaultAvatarUrl()} 
                   alt={userProfile.username} 
                   className="w-40 h-40 rounded-full border-4 border-gray-800 shadow-lg object-cover"
                 />

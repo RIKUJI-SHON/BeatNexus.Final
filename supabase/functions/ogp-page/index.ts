@@ -46,8 +46,8 @@ async function fetchPlayers(battleId: string) {
     admin.from("profiles").select("avatar_url").eq("id", data.player2_user_id).single(),
   ]);
   return {
-    p1: p1.data?.avatar_url ?? `${SITE_BASE_URL}/images/Profile.png`,
-    p2: p2.data?.avatar_url ?? `${SITE_BASE_URL}/images/Profile.png`,
+    p1: p1.data?.avatar_url ?? `${SITE_BASE_URL}/images/FI.png`,
+    p2: p2.data?.avatar_url ?? `${SITE_BASE_URL}/images/FI.png`,
     isArchived
   };
 }

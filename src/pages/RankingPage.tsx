@@ -5,6 +5,7 @@ import { Card } from '../components/ui/Card';
 import { useRankingStore } from '../store/rankingStore';
 import { useTranslation } from 'react-i18next';
 import { trackBeatNexusEvents } from '../utils/analytics';
+import { getDefaultAvatarUrl } from '../utils';
 import { VoterRankingEntry, SeasonRankingEntry, SeasonVoterRankingEntry, RankingType, VoterRankingType } from '../types';
 
 type TabType = 'player' | 'voter';
@@ -763,7 +764,7 @@ const RankingPage: React.FC = () => {
                         {/* ユーザー情報 */}
                         <div className="col-span-6 flex items-center gap-3 min-w-0">
                           <img
-                            src={entry.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${entry.user_id}`}
+                            src={entry.avatar_url || getDefaultAvatarUrl()}
                             alt={entry.username}
                             className={`w-8 h-8 rounded-full object-cover border border-gray-600 transition-colors ${
                               activeTab === 'player' 

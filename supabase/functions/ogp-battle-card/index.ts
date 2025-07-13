@@ -18,7 +18,7 @@ if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
   console.error("Missing Supabase env vars");
 }
 
-const DEFAULT_AVATAR = `${SITE_BASE_URL}/images/Profile.png`;
+const DEFAULT_AVATAR = `${SITE_BASE_URL}/images/FI.png`;
 const HERO_BG = `${SITE_BASE_URL}/images/hero-background.png`;
 const VS_LOGO = `${SITE_BASE_URL}/images/VS.png`;
 

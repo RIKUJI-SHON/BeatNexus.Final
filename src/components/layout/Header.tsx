@@ -10,6 +10,7 @@ import { useAuthStore } from '../../store/authStore';
 import { useAuthModal } from '../auth/AuthProvider';
 import { useNotificationStore, type Notification } from '../../store/notificationStore';
 import { supabase } from '../../lib/supabase';
+import { getDefaultAvatarUrl } from '../../utils';
 
 interface UserProfile {
   id: string;
@@ -109,9 +110,7 @@ export const Header: React.FC = () => {
     openAuthModal(mode);
   };
 
-  const getDefaultAvatarUrl = (seed?: string) => `https://api.dicebear.com/7.x/avataaars/svg?seed=${seed || 'defaultSeed'}`;
-
-  const avatarUrl = userProfile?.avatar_url || user?.user_metadata?.avatar_url || getDefaultAvatarUrl(user?.id);
+  const avatarUrl = userProfile?.avatar_url || user?.user_metadata?.avatar_url || getDefaultAvatarUrl();
 
   // 通知処理用の関数
   const handleNotificationClick = (notification: Notification) => {

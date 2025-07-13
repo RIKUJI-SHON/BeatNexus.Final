@@ -5,6 +5,7 @@ import { BattleComment } from '../../types';
 import { useBattleStore } from '../../store/battleStore';
 import { format } from 'date-fns';
 import { ja, enUS } from 'date-fns/locale';
+import { getDefaultAvatarUrl } from '../../utils';
 
 interface BattleCommentsModalProps {
   isOpen: boolean;
@@ -35,7 +36,6 @@ export const BattleCommentsModal: React.FC<BattleCommentsModalProps> = ({
 
   if (!isOpen) return null;
 
-  const getDefaultAvatarUrl = (seed: string) => `https://api.dicebear.com/7.x/avataaars/svg?seed=${seed}`;
   const currentLocale = i18n.language === 'ja' ? ja : enUS;
 
   return (
@@ -79,7 +79,7 @@ export const BattleCommentsModal: React.FC<BattleCommentsModalProps> = ({
                 <div key={comment.id} className="flex items-start gap-4 p-4 bg-gray-800 rounded-xl border border-gray-700/50">
                   <div className="relative">
                     <img
-                      src={comment.avatar_url || getDefaultAvatarUrl(comment.user_id)}
+                      src={comment.avatar_url || getDefaultAvatarUrl()}
                       alt={comment.username}
                       className="w-10 h-10 rounded-full border-2 border-gray-600 object-cover"
                     />

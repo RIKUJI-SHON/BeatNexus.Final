@@ -12,6 +12,7 @@ import { ja, enUS } from 'date-fns/locale';
 import { cn } from '../../lib/utils';
 import { getCurrentRank } from '../../lib/rankUtils';
 import { supabase } from '../../lib/supabase';
+import { getDefaultAvatarUrl } from '../../utils';
 
 interface SimpleBattleCardProps {
   battle: Battle;
@@ -130,8 +131,6 @@ export const SimpleBattleCard: React.FC<SimpleBattleCardProps> = ({ battle }) =>
     setIsCommentsModalOpen(true);
   };
 
-  const getDefaultAvatarUrl = (seed: string) => `https://api.dicebear.com/7.x/avataaars/svg?seed=${seed}`;
-
   return (
     <>
       <div onClick={handleCardClick} className="group cursor-pointer">
@@ -157,7 +156,7 @@ export const SimpleBattleCard: React.FC<SimpleBattleCardProps> = ({ battle }) =>
                       <Crown className="absolute -top-4 -right-4 h-8 w-8 text-yellow-400 transform rotate-12" />
                     )}
                     <div className="w-24 h-24 md:w-28 md:h-28 rounded-full p-1 shadow-lg transition-all duration-300 group-hover:scale-105 group-hover:shadow-blue-500/20" style={{ background: `linear-gradient(135deg, ${colorA}, ${colorA}80)` }}>
-                      <img src={battle.contestant_a?.avatar_url || getDefaultAvatarUrl(battle.player1_user_id)} alt={battle.contestant_a?.username || t('battleCard.contestantA')} className="w-full h-full rounded-full object-cover border-2 border-gray-900"/>
+                      <img src={battle.contestant_a?.avatar_url || getDefaultAvatarUrl()} alt={battle.contestant_a?.username || t('battleCard.contestantA')} className="w-full h-full rounded-full object-cover border-2 border-gray-900"/>
                     </div>
                   </div>
                   <h3 
@@ -213,7 +212,7 @@ export const SimpleBattleCard: React.FC<SimpleBattleCardProps> = ({ battle }) =>
                       <Crown className="absolute -top-4 -right-4 h-8 w-8 text-yellow-400 transform rotate-12" />
                     )}
                     <div className="w-24 h-24 md:w-28 md:h-28 rounded-full p-1 shadow-lg transition-all duration-300 group-hover:scale-105 group-hover:shadow-red-500/20" style={{ background: `linear-gradient(135deg, ${colorB}, ${colorB}80)` }}>
-                      <img src={battle.contestant_b?.avatar_url || getDefaultAvatarUrl(battle.player2_user_id)} alt={battle.contestant_b?.username || t('battleCard.contestantB')} className="w-full h-full rounded-full object-cover border-2 border-gray-900"/>
+                      <img src={battle.contestant_b?.avatar_url || getDefaultAvatarUrl()} alt={battle.contestant_b?.username || t('battleCard.contestantB')} className="w-full h-full rounded-full object-cover border-2 border-gray-900"/>
                     </div>
                   </div>
                   <h3 

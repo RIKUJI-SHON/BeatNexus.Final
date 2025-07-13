@@ -12,6 +12,7 @@ import { cn } from '../../lib/utils';
 import { VoteButton } from '../ui/VoteButton';
 import { getCurrentRank } from '../../lib/rankUtils';
 import { supabase } from '../../lib/supabase';
+import { getDefaultAvatarUrl } from '../../utils';
 
 interface SpecialBattleCardProps {
   battle: Battle;
@@ -133,8 +134,6 @@ export const SpecialBattleCard: React.FC<SpecialBattleCardProps> = ({ battle }) 
     setIsCommentsModalOpen(true);
   };
 
-  const getDefaultAvatarUrl = (seed: string) => `https://api.dicebear.com/7.x/avataaars/svg?seed=${seed}`;
-
   const PlayerDisplay = ({ 
     player, 
     votes, 
@@ -164,7 +163,7 @@ export const SpecialBattleCard: React.FC<SpecialBattleCardProps> = ({ battle }) 
           <Crown className="absolute -top-5 -right-5 h-10 w-10 text-yellow-400 transform rotate-12 animate-pulse" style={{ filter: 'drop-shadow(0 0 10px #facc15)' }}/>
         )}
         <div className="w-24 h-24 md:w-28 md:h-28 rounded-full p-1 shadow-lg transition-all duration-300 group-hover:scale-105" style={{ background: `linear-gradient(135deg, ${color}, ${color}80)` }}>
-          <img src={player?.avatar_url || getDefaultAvatarUrl(userId)} alt={player?.username || t(defaultNameKey)} className="w-full h-full rounded-full object-cover border-2 border-gray-900"/>
+          <img src={player?.avatar_url || getDefaultAvatarUrl()} alt={player?.username || t(defaultNameKey)} className="w-full h-full rounded-full object-cover border-2 border-gray-900"/>
         </div>
       </div>
       <h3 

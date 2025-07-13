@@ -4,6 +4,7 @@ import { useAuthStore } from '../../../store/authStore';
 import { AvatarUpload } from '../../profile/AvatarUpload';
 import { User, CheckCircle } from 'lucide-react';
 import { supabase } from '../../../lib/supabase';
+import { getDefaultAvatarUrl } from '../../../utils';
 
 interface UserProfile {
   id: string;

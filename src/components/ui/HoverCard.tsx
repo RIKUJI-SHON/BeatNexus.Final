@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { ExternalLink, User, Settings, LogOut, Crown } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import { useTranslation } from 'react-i18next';
+import { getDefaultAvatarUrl } from '../../utils';
 
 interface UserProfile {
   id: string;
@@ -38,10 +39,8 @@ export const HoverCard: React.FC<HoverCardProps> = ({ children, className, userP
     }
   };
 
-  const getDefaultAvatarUrl = (seed?: string) => `https://api.dicebear.com/7.x/avataaars/svg?seed=${seed || 'defaultSeed'}`;
-
   const displayName = userProfile?.username || user?.user_metadata?.username || user?.email || 'User';
-  const avatarUrl = userProfile?.avatar_url || user?.user_metadata?.avatar_url || getDefaultAvatarUrl(user?.id);
+  const avatarUrl = userProfile?.avatar_url || user?.user_metadata?.avatar_url || getDefaultAvatarUrl();
 
   return (
     <div className="group relative">

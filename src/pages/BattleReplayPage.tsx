@@ -15,6 +15,7 @@ import { Badge } from '../components/ui/Badge';
 import { VSIcon } from '../components/ui/VSIcon';
 import { ShareBattleButton } from '../components/ui/ShareBattleButton';
 import { trackBeatNexusEvents } from '../utils/analytics';
+import { getDefaultAvatarUrl } from '../utils';
 import { Helmet } from 'react-helmet-async';
 
 // 固定色設定（BattleViewと統一）
@@ -293,8 +294,6 @@ const BattleReplayPage: React.FC = () => {
 
   const resultBadge = getResultBadge();
 
-  const getDefaultAvatarUrl = (seed: string) => `https://api.dicebear.com/7.x/avataaars/svg?seed=${seed}`;
-
   // 動画が利用可能かどうかを判定
   const getVideoStatus = (videoUrl: string | null | undefined) => {
     if (!videoUrl) {
@@ -442,7 +441,7 @@ const BattleReplayPage: React.FC = () => {
                         style={{ background: `linear-gradient(135deg, ${playerColorA}, ${playerColorA}80)` }}
                       >
                         <img
-                          src={battle.contestant_a?.avatar_url || getDefaultAvatarUrl(battle.player1_user_id)}
+                          src={battle.contestant_a?.avatar_url || getDefaultAvatarUrl()}
                           alt={battle.contestant_a?.username}
                           className="w-full h-full rounded-full border border-gray-900 object-cover"
                         />

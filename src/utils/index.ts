@@ -37,3 +37,11 @@ export const calculateVotePercentages = (votesA: number, votesB: number) => {
   
   return { percentA, percentB, totalVotes };
 };
+
+/**
+ * デフォルトアバターのURLを取得
+ * ユーザーがアバターを設定していない場合に使用される
+ */
+export const getDefaultAvatarUrl = (): string => {
+  return '/images/FI.png';
+};
