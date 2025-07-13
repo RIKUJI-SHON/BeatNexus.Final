@@ -140,8 +140,39 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
   const comments = battleComments[battle.id] || [];
   const isLoadingComments = commentsLoading[battle.id] || false;
 
-  // Handle vote with required comment
-  const handleVote = async (player: 'A' | 'B', comment: string) => {
+  // Handle simple vote without comment
+  const handleSimpleVote = async (player: 'A' | 'B') => {
+    if (!user || isUserParticipant || hasVoted) return;
+    
+    setIsVoting(true);
+    try {
+      await voteBattle(battle.id, player);
+      
+      // Track vote event
+      trackBeatNexusEvents.battleVote(battle.id);
+      
+      // Update local state
+      setHasVoted(player);
+      if (player === 'A') {
+        setVotesA(prev => prev + 1);
+      } else {
+        setVotesB(prev => prev + 1);
+      }
+      
+      // Refresh comments to show the new vote
+      await fetchBattleComments(battle.id);
+      
+      // Close modal
+      setShowVoteModal(null);
+    } catch (error) {
+      console.error('❌ Vote failed:', error);
+    } finally {
+      setIsVoting(false);
+    }
+  };
+
+  // Handle vote with comment
+  const handleVoteWithComment = async (player: 'A' | 'B', comment: string) => {
     if (!user || isUserParticipant || hasVoted) return;
     
     setIsVoting(true);
@@ -417,7 +448,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                     style={{ background: `linear-gradient(135deg, ${playerColorA}, ${playerColorA}80)` }}
                   >
                     <img
-                      src={battle.contestant_a?.avatar_url || getDefaultAvatarUrl(battle.player1_user_id)}
+                      src={battle.contestant_a?.avatar_url || getDefaultAvatarUrl()}
                       alt={battle.contestant_a?.username}
                       className="w-full h-full rounded-full border border-gray-900 object-cover"
                     />
@@ -522,7 +553,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                     style={{ background: `linear-gradient(135deg, ${playerColorB}, ${playerColorB}80)` }}
                   >
                     <img
-                      src={battle.contestant_b?.avatar_url || getDefaultAvatarUrl(battle.player2_user_id)}
+                      src={battle.contestant_b?.avatar_url || getDefaultAvatarUrl()}
                       alt={battle.contestant_b?.username}
                       className="w-full h-full rounded-full border border-gray-900 object-cover"
                     />
@@ -600,7 +631,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                     style={{ background: `linear-gradient(135deg, ${playerColorB}, ${playerColorB}80)` }}
                   >
                     <img
-                      src={battle.contestant_b?.avatar_url || getDefaultAvatarUrl(battle.player2_user_id)}
+                      src={battle.contestant_b?.avatar_url || getDefaultAvatarUrl()}
                       alt={battle.contestant_b?.username}
                       className="w-full h-full rounded-full border border-gray-900 object-cover"
                     />
@@ -704,7 +735,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                     <div className="relative">
                       <div className="w-20 h-20 rounded-full p-1 bg-gradient-to-r from-cyan-400 to-blue-600 shadow-lg">
                         <img
-                          src={battle.contestant_a?.avatar_url || getDefaultAvatarUrl(battle.player1_user_id)}
+                          src={battle.contestant_a?.avatar_url || getDefaultAvatarUrl()}
                           alt={battle.contestant_a?.username || 'Contestant A'}
                           className="w-full h-full rounded-full object-cover border-2 border-gray-900"
                         />
@@ -788,7 +819,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                     <div className="relative">
                       <div className="w-20 h-20 rounded-full p-1 bg-gradient-to-r from-pink-400 to-purple-600 shadow-lg">
                         <img
-                          src={battle.contestant_b?.avatar_url || getDefaultAvatarUrl(battle.player2_user_id)}
+                          src={battle.contestant_b?.avatar_url || getDefaultAvatarUrl()}
                           alt={battle.contestant_b?.username || 'Contestant B'}
                           className="w-full h-full rounded-full object-cover border-2 border-gray-900"
                         />
@@ -1154,15 +1185,18 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
         </div>
       </div>
 
-      {/* Vote Comment Modal */}
-      <VoteCommentModal
-        isOpen={!!showVoteModal}
-        onClose={() => setShowVoteModal(null)}
-        onVote={(comment) => handleVote(showVoteModal!, comment)}
-        player={showVoteModal || 'A'}
-        playerName={showVoteDetails ? (showVoteModal === 'A' ? battle.contestant_a?.username : battle.contestant_b?.username) : battle.contestant_a?.username}
-        isLoading={isVoting}
-      />
+      {/* Vote Method Selection Modal */}
+      {showVoteModal && (
+        <VoteCommentModal
+          isOpen={!!showVoteModal}
+          onClose={() => setShowVoteModal(null)}
+          onVote={(comment) => handleVoteWithComment(showVoteModal!, comment)}
+          onSimpleVote={handleSimpleVote}
+          player={showVoteModal || 'A'}
+          playerName={showVoteDetails ? (showVoteModal === 'A' ? battle.contestant_a?.username : battle.contestant_b?.username) : battle.contestant_a?.username}
+          isLoading={isVoting}
+        />
+      )}
     </div>
   );
 };

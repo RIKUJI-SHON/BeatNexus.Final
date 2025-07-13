@@ -357,7 +357,7 @@ export const useBattleStore = create<BattleState>((set, get) => ({
 
       const { data, error } = await supabase.rpc('vote_battle', {
         p_battle_id: battleId,
-        p_vote: vote
+        p_vote: vote as 'A' | 'B'  // 明示的な型キャスト
       });
 
       console.log('📥 RPC Response:', { 

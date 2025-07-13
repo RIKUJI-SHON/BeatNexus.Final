@@ -221,6 +221,10 @@
     "cancelVote": "投票を取り消す",
     "votingGuide": "投票ガイド",
     "evaluationCriteria": "Judge's Scorecard",
+    "selectVoteMethod": "投票方法を選択",
+    "voteForPlayer": "プレイヤー{{player}}に投票",
+    "simpleVote": "投票する",
+    "voteWithComment": "コメント付きで投票",
     "criteria": {
       "technicality": "技術性",
       "technicalityDesc": "複雑なパターンを明瞭かつ正確なタイミングで、途切れないフローとして制御できているか",
@@ -1461,10 +1465,10 @@
   "voteCommentModal": {
     "title": "Vote for {{player}}",
     "subtitle": "{{playerName}}への投票",
-    "description": "コメントは必須です。あなたの感想をシェアしてください。",
-    "commentLabel": "コメント（必須）",
+    "description": "コメントを入力するか、そのまま投票することができます。",
+    "commentLabel": "コメント（任意）",
     "commentPlaceholder": "{{player}}についての感想をシェアしてください...",
-    "commentRequired": "投票にはコメントが必要です",
+    "commentRequired": "コメント付き投票にはコメントが必要です",
     "voteButton": "投票する",
     "voting": "投票中...",
     "characterCount": "{{count}}/500文字",
@@ -1477,7 +1481,11 @@
       "この人天才すぎる🎵",
       "テクニックが完璧すぎる",
       "リズムキープが神レベル"
-    ]
+    ],
+    "commentVote": "コメントして投票",
+    "simpleVote": "投票のみ",
+    "commentVotePoints": "+300VP",
+    "simpleVotePoints": "+100VP"
   },
   "community": {
     "title": "コミュニティ",

@@ -205,6 +205,10 @@
     "cancelVote": "Cancel vote",
     "votingGuide": "Voting Guide",
     "evaluationCriteria": "Judge's Scorecard",
+    "selectVoteMethod": "Select Voting Method",
+    "voteForPlayer": "Vote for Player {{player}}",
+    "simpleVote": "Vote",
+    "voteWithComment": "Vote with Comment",
     "criteria": {
       "technicality": "Technicality",
       "technicalityDesc": "Can complex patterns be controlled as clear, accurate timing and uninterrupted flow?",
@@ -1668,10 +1672,10 @@
   "voteCommentModal": {
     "title": "Vote for {{player}}",
     "subtitle": "Vote for {{playerName}}",
-    "description": "Comments are required. Please share your thoughts.",
-    "commentLabel": "Comment (Required)",
+    "description": "You can add a comment or vote directly.",
+    "commentLabel": "Comment (Optional)",
     "commentPlaceholder": "Share your thoughts about {{player}}...",
-    "commentRequired": "A comment is required to vote",
+    "commentRequired": "A comment is required for comment voting",
     "voteButton": "Vote",
     "voting": "Voting...",
     "characterCount": "{{count}}/500 characters",
@@ -1684,7 +1688,11 @@
       "This person is a genius🎵",
       "The technique is absolutely perfect",
       "Rhythm control is godlike"
-    ]
+    ],
+    "commentVote": "Vote with Comment",
+    "simpleVote": "Vote Only",
+    "commentVotePoints": "+300VP",
+    "simpleVotePoints": "+100VP"
   },
   "community": {
     "title": "Communities",

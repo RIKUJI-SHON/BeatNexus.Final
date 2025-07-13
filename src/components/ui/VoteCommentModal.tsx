@@ -6,6 +6,7 @@ interface VoteCommentModalProps {
   isOpen: boolean;
   onClose: () => void;
   onVote: (comment: string) => void;
+  onSimpleVote: (player: 'A' | 'B') => void;
   player: 'A' | 'B';
   playerName?: string;
   isLoading?: boolean;
@@ -15,6 +16,7 @@ export const VoteCommentModal: React.FC<VoteCommentModalProps> = ({
   isOpen,
   onClose,
   onVote,
+  onSimpleVote,
   player,
   playerName,
   isLoading = false
@@ -23,16 +25,23 @@ export const VoteCommentModal: React.FC<VoteCommentModalProps> = ({
   const [comment, setComment] = useState('');
   const [showError, setShowError] = useState(false);
 
-  const handleVote = () => {
+  const handleCommentVote = () => {
     const trimmedComment = comment.trim();
     
-    // コメントが空の場合はエラーを表示
+    // コメント付き投票の場合はコメントが必須
     if (!trimmedComment) {
       setShowError(true);
       return;
     }
     
     onVote(trimmedComment);
+    setComment('');
+    setShowError(false);
+  };
+
+  const handleSimpleVote = () => {
+    // 普通の投票はコメントなしでもOK
+    onSimpleVote(player);
     setComment('');
     setShowError(false);
   };
@@ -146,24 +155,45 @@ export const VoteCommentModal: React.FC<VoteCommentModalProps> = ({
             </div>
           </div>
 
-          {/* Action Button */}
-          <div className="flex justify-center">
+          {/* Action Buttons */}
+          <div className="flex flex-col gap-3">
+            {/* Comment Vote Button */}
             <button
-              onClick={handleVote}
+              onClick={handleCommentVote}
               disabled={isLoading}
-              className={`cursor-pointer transition-all text-white px-6 py-2 rounded-lg border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px] active:border-b-[2px] active:brightness-90 active:translate-y-[2px] disabled:opacity-50 disabled:cursor-not-allowed ${
+              className={`cursor-pointer transition-all text-white px-6 py-3 rounded-lg border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px] active:border-b-[2px] active:brightness-90 active:translate-y-[2px] disabled:opacity-50 disabled:cursor-not-allowed ${
                 player === 'A' 
                   ? 'bg-cyan-500 border-cyan-600' 
                   : 'bg-pink-500 border-pink-600'
-              } ${isCommentEmpty ? 'opacity-60' : ''}`}
+              }`}
             >
               {isLoading ? (
-                <div className="flex items-center gap-2">
+                <div className="flex items-center justify-center gap-2">
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                   {t('voteCommentModal.voting')}
                 </div>
               ) : (
-                t('voteCommentModal.voteButton')
+                <div className="flex items-center justify-center space-x-2">
+                  <span>💬 {t('voteCommentModal.commentVote')} ({t('voteCommentModal.commentVotePoints')})</span>
+                </div>
+              )}
+            </button>
+
+            {/* Simple Vote Button */}
+            <button
+              onClick={handleSimpleVote}
+              disabled={isLoading}
+              className="cursor-pointer transition-all text-white px-6 py-3 rounded-lg border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px] active:border-b-[2px] active:brightness-90 active:translate-y-[2px] disabled:opacity-50 disabled:cursor-not-allowed bg-gray-600 border-gray-700"
+            >
+              {isLoading ? (
+                <div className="flex items-center justify-center gap-2">
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  {t('voteCommentModal.voting')}
+                </div>
+              ) : (
+                <div className="flex items-center justify-center space-x-2">
+                  <span>👍 {t('voteCommentModal.simpleVote')} ({t('voteCommentModal.simpleVotePoints')})</span>
+                </div>
               )}
             </button>
           </div>
