@@ -27,7 +27,9 @@
     "description": "Description",
     "password": "Password",
     "enterPassword": "Enter password",
-    "noDescription": "No description available"
+    "noDescription": "No description available",
+    "termsOfService": "Terms of Service",
+    "privacyPolicy": "Privacy Policy"
   },
   "hoverCard": {
     "profile": "Profile",
@@ -441,8 +443,11 @@
     "contactMessage": "Have a question or feedback? Reach out to our team!",
     "allRightsReserved": "All rights reserved.",
     "termsOfService": "Terms of Service",
-    "privacyPolicy": "Privacy Policy",
-    "cookiePolicy": "Cookie Policy"
+    "privacyPolicy": "Privacy Policy"
+  },
+  "privacyPolicyPage": {
+    "subtitle": "Please review our policy on how we handle your personal information.",
+    "contactMessage": "For any questions regarding this privacy policy, please contact us."
   },
   "home": {
     "hero": {
@@ -1463,7 +1468,7 @@
       },
       "videoFormats": {
         "question": "What video formats are supported?",
-        "answer": "We support MP4, WebM, and MOV formats. File size must be under 200MB. For the best beatboxing experience, we recommend recording with high video quality and crystal-clear audio."
+        "answer": "We support MP4, WebM, and MOV formats. File size must be under 200MB. For the best beatbox experience, we recommend recording with high video quality and crystal-clear audio."
       },
       "uploadFailed": {
         "question": "My video upload is failing",
@@ -1764,6 +1769,23 @@
     "error": {
       "invalidPhone": "Phone number is required",
       "verificationFailed": "Phone verification failed: {{error}}"
-    }
+    },
+    "signIn": "Sign In",
+    "createAccount": "Create Account",
+    "username": "Username",
+    "usernamePlaceholder": "Choose a username",
+    "email": "Email",
+    "emailPlaceholder": "Enter your email",
+    "password": "Password",
+    "passwordPlaceholder": "Enter your password",
+    "passwordRequirement": "Password must be at least 6 characters long",
+    "rememberMe": "Remember me",
+    "sending": "Sending...",
+    "verifying": "Verifying...",
+    "signingIn": "Signing In...",
+    "creatingAccount": "Creating Account...",
+    "confirmEmailTitle": "Confirm Your Email",
+    "confirmEmailDescription": "We've sent a confirmation link to <strong>{{email}}</strong>. Please check your inbox (and spam folder) to complete your registration.",
+    "gotIt": "Got it!"
   }
 }

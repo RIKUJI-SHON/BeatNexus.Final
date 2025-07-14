@@ -117,9 +117,6 @@ export const Footer: React.FC = () => {
             <Link to="/privacy" className="text-gray-500 hover:text-white text-sm">
               {t('footer.privacyPolicy')}
             </Link>
-            <Link to="/cookies" className="text-gray-500 hover:text-white text-sm">
-              {t('footer.cookiePolicy')}
-            </Link>
           </div>
         </div>
       </div>

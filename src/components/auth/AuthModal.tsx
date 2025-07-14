@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
 import { Button } from '../ui/Button';
 import { Modal } from '../ui/Modal';
-import { useTranslation } from 'react-i18next';
+import { useTranslation, Trans } from 'react-i18next';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -56,7 +56,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     }
 
     if (mode === 'signup' && password.length < 6) {
-      setError('Password must be at least 6 characters long');
+      setError(t('auth.passwordRequirement'));
       setLoading(false);
       return;
     }
@@ -180,7 +180,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 }`}
                 onClick={() => switchMode('login')}
               >
-                Sign In
+                {t('auth.signIn')}
               </button>
               <button
                 className={`flex-1 py-3 text-center font-medium transition-colors ${
@@ -190,7 +190,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 }`}
                 onClick={() => switchMode('signup')}
               >
-                Create Account
+                {t('auth.createAccount')}
               </button>
             </div>
 
@@ -198,7 +198,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               {mode === 'signup' && (
                 <div>
                   <label htmlFor="username" className="block text-sm font-medium text-gray-300 mb-2">
-                    Username
+                    {t('auth.username')}
                   </label>
                   <input
                     type="text"
@@ -206,7 +206,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     className="w-full px-4 py-3 bg-gray-800/50 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition-colors"
-                    placeholder="Choose a username"
+                    placeholder={t('auth.usernamePlaceholder') as string}
                     required
                   />
                 </div>
@@ -214,7 +214,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
-                  Email
+                  {t('auth.email')}
                 </label>
                 <input
                   type="email"
@@ -222,14 +222,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full px-4 py-3 bg-gray-800/50 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition-colors"
-                  placeholder="Enter your email"
+                  placeholder={t('auth.emailPlaceholder') as string}
                   required
                 />
               </div>
 
               <div>
                 <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-2">
-                  Password
+                  {t('auth.password')}
                 </label>
                 <input
                   type="password"
@@ -237,12 +237,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="w-full px-4 py-3 bg-gray-800/50 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition-colors"
-                  placeholder="Enter your password"
+                  placeholder={t('auth.passwordPlaceholder') as string}
                   required
                   minLength={6}
                 />
                 {mode === 'signup' && (
-                  <p className="text-gray-400 text-sm mt-2">Password must be at least 6 characters long</p>
+                  <p className="text-gray-400 text-sm mt-2">{t('auth.passwordRequirement')}</p>
                 )}
               </div>
 
@@ -274,7 +274,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                       disabled={sendingOtp}
                       className="w-full mt-3 transition-all bg-cyan-500 text-white px-6 py-3 rounded-lg border-cyan-600 border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px] active:border-b-[2px] active:brightness-90 active:translate-y-[2px] disabled:opacity-60 disabled:hover:translate-y-0 font-semibold"
                     >
-                      {sendingOtp ? 'Sending...' : t('auth.phoneVerify')}
+                      {sendingOtp ? t('auth.sending') : t('auth.phoneVerify')}
                     </button>
                   )}
 
@@ -294,7 +294,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                         disabled={verifyingOtp}
                         className="w-full transition-all bg-cyan-500 text-white px-6 py-3 rounded-lg border-cyan-600 border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px] active:border-b-[2px] active:brightness-90 active:translate-y-[2px] disabled:opacity-60 disabled:hover:translate-y-0 font-semibold"
                       >
-                        {verifyingOtp ? 'Verifying...' : t('auth.phoneVerifyCodeButton')}
+                        {verifyingOtp ? t('auth.verifying') : t('auth.phoneVerifyCodeButton')}
                       </button>
                     </div>
                   )}
@@ -317,7 +317,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     className="h-4 w-4 rounded border-gray-600 bg-gray-800/50 text-cyan-500 focus:ring-cyan-500"
                   />
                   <label htmlFor="remember-me" className="ml-3 block text-sm text-gray-300">
-                    Remember me
+                    {t('auth.rememberMe')}
                   </label>
                 </div>
               )}
@@ -336,10 +336,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 {loading ? (
                   <div className="flex items-center justify-center">
                     <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                    {mode === 'login' ? 'Signing In...' : 'Creating Account...'}
+                    {mode === 'login' ? t('auth.signingIn') : t('auth.creatingAccount')}
                   </div>
                 ) : (
-                  mode === 'login' ? 'Sign In' : 'Create Account'
+                  mode === 'login' ? t('auth.signIn') : t('auth.createAccount')
                 )}
               </button>
             </form>
@@ -356,13 +356,16 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             onClose();
             navigate('/');
           }}
-          title="Confirm Your Email"
+          title={t('auth.confirmEmailTitle')}
           size="sm"
         >
           <div className="text-center"><MailCheck className="mx-auto h-16 w-16 text-green-500 mb-4" /></div>
           <p className="text-gray-300 text-center mb-6">
-            We've sent a confirmation link to <strong className="text-cyan-400">{email}</strong>. 
-            Please check your inbox (and spam folder) to complete your registration.
+            <Trans
+              i18nKey="auth.confirmEmailDescription"
+              values={{ email }}
+              components={{ strong: <strong className="text-cyan-400" /> }}
+            />
           </p>
           <Button 
             variant="primary" 
@@ -373,7 +376,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             }}
             className="w-full bg-cyan-600 hover:bg-cyan-700"
           >
-            Got it!
+            {t('auth.gotIt')}
           </Button>
         </Modal>
       )}

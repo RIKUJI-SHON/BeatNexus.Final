@@ -39,7 +39,12 @@
     "no": "いいえ",
     "confirm": "確認",
     "delete": "削除",
-    "edit": "編集"
+    "edit": "編集",
+    "termsOfService": "利用規約",
+    "privacyPolicy": "プライバシーポリシー",
+    "allRightsReserved": "All rights reserved.",
+    "contactUs": "お問い合わせ",
+    "contactMessage": "ご質問やご提案はこちらまで。"
   },
   "hoverCard": {
     "profile": "プロフィール",
@@ -442,10 +447,9 @@
     "faq": "よくある質問",
     "contactUs": "お問い合わせ",
     "contactMessage": "ご質問やフィードバックがありますか？私たちのチームにご連絡ください！",
-    "allRightsReserved": "無断複写・転載を禁じます。",
+    "allRightsReserved": "All rights reserved.",
     "termsOfService": "利用規約",
-    "privacyPolicy": "プライバシーポリシー",
-    "cookiePolicy": "クッキーポリシー"
+    "privacyPolicy": "プライバシーポリシー"
   },
   "home": {
     "hero": {
@@ -1557,6 +1561,27 @@
     "error": {
       "invalidPhone": "電話番号を入力してください",
       "verificationFailed": "電話番号認証に失敗しました: {{error}}"
-    }
+    },
+    "signIn": "ログイン",
+    "createAccount": "アカウント作成",
+    "username": "ユーザー名",
+    "usernamePlaceholder": "ユーザー名を入力",
+    "email": "メールアドレス",
+    "emailPlaceholder": "メールアドレスを入力",
+    "password": "パスワード",
+    "passwordPlaceholder": "パスワードを入力",
+    "passwordRequirement": "パスワードは6文字以上である必要があります",
+    "rememberMe": "ログイン状態を保持",
+    "sending": "送信中...",
+    "verifying": "認証中...",
+    "signingIn": "ログイン中...",
+    "creatingAccount": "アカウント作成中...",
+    "confirmEmailTitle": "メールを確認してください",
+    "confirmEmailDescription": "確認リンクを <strong>{{email}}</strong> に送信しました。受信箱（迷惑メールフォルダも）を確認して登録を完了してください。",
+    "gotIt": "了解"
+  },
+  "privacyPolicyPage": {
+    "subtitle": "個人情報の取り扱いに関する方針をご確認ください",
+    "contactMessage": "プライバシーポリシーに関するご質問は、下記までご連絡ください。"
   }
 }

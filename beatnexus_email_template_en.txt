@@ -2,13 +2,13 @@
 
 Welcome to BeatNexus!
 
-Welcome to the world of beatboxing! 🎤
+Welcome to the world of beatbox! 🎤
 
 To complete your account creation, please click the link below to verify your email address:
 
 {{ .ConfirmationURL }}
 
-After verification, you can immediately join beatboxing battles! 🔥
+After verification, you can immediately join beatbox battles! 🔥
 
 If you have any questions, please contact us through the app's support feature.
 

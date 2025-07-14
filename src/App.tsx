@@ -52,6 +52,8 @@ import SubscriptionPage from './pages/SubscriptionPage';
 import SettingsPage from './pages/SettingsPage';
 import TournamentPage from './pages/TournamentPage';
 import FAQPage from './pages/FAQPage';
+import TermsPage from './pages/TermsPage';
+import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import NotificationTestPage from './pages/NotificationTestPage';
 import CommunityDetailPage from './pages/CommunityDetailPage';
 import BattleResultTestPage from './pages/BattleResultTestPage';
@@ -91,6 +93,8 @@ function RouterContent() {
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="/tournament" element={<TournamentPage />} />
             <Route path="/faq" element={<FAQPage />} />
+            <Route path="/terms" element={<TermsPage />} />
+            <Route path="/privacy" element={<PrivacyPolicyPage />} />
             <Route path="/notifications/test" element={<NotificationTestPage />} />
             <Route path="/result-test" element={<BattleResultTestPage />} />
           </Routes>
