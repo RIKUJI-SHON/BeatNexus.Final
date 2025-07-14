@@ -2,7 +2,7 @@ import React from 'react';
 
 const NewsSidebar: React.FC = () => {
   return (
-    <div className="w-full hidden lg:block space-y-4">
+    <div className="w-full space-y-4">
       {/* Latest News title badge */}
       <img
         src="/images/LATEST%20NEWS.png"

@@ -311,7 +311,7 @@ const BattlesPage: React.FC = () => {
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
           {/* Left Sidebar - ニュース */}
-          <aside className="lg:col-span-1 space-y-6 sticky-sidebar">
+          <aside className="lg:col-span-1 space-y-6 sticky-sidebar hidden lg:block">
               <NewsSidebar />
           </aside>
 
@@ -429,7 +429,7 @@ const BattlesPage: React.FC = () => {
           </div>
 
           {/* Right Sidebar */}
-          <aside className="lg:col-span-1 space-y-6 sticky-sidebar-extended">
+          <aside className="lg:col-span-1 space-y-6 sticky-sidebar-extended hidden lg:block">
             
             {/* Top Rankings with Tabs */}
             <TabbedRanking 
@@ -449,9 +449,26 @@ const BattlesPage: React.FC = () => {
 
       </div>
       
+      {/* Mobile Rankings - モバイル版でのみ表示 */}
+      <div className="lg:hidden mt-8 w-full">
+        <div className="w-full px-4 sm:px-6">
+          <TabbedRanking 
+            maxItems={5}
+            showViewAllButton={true}
+          />
+        </div>
+      </div>
+      
+      {/* Mobile News Sidebar - モバイル版でのみ表示 */}
+      <div className="lg:hidden mt-6 w-full">
+        <div className="w-full px-4 sm:px-6">
+          <NewsSidebar />
+        </div>
+      </div>
+      
       {/* Mobile Monthly Limit Card - モバイル版でのみ表示、コンテナの外に配置 */}
       {user && (
-        <div className="lg:hidden mt-8 w-full">
+        <div className="lg:hidden mt-6 w-full">
           <div className="w-full px-4 sm:px-6">
             <MonthlyLimitCard />
           </div>
