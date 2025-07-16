@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Mic, Users, Trophy, LineChart as ChartLine, ArrowRight, Play, Star, Shield, Video, Zap, Crown, Target, Upload, Vote } from 'lucide-react';
+import { Mic, Users, LineChart as ChartLine, ArrowRight, Play, Star, Video, Zap, Crown, Target, Upload, Vote } from 'lucide-react';
 import beatnexusWordmark from '../assets/images/BEATNEXUS-WORDMARK.png';
 import heroBackground from '../assets/images/hero-background.png';
 import step1Upload from '../assets/images/steps/step1-upload.png';
@@ -103,6 +103,28 @@ const HomePage: React.FC = () => {
             <h2 className="text-xl md:text-2xl font-bold text-white mb-3">
               {t('home.hero.subtitle.compete')}<span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400">{t('home.hero.subtitle.climbRanking')}</span>
             </h2>
+
+            {/* Season Information */}
+            <div className="mt-6 mb-4 animate-fade-in-delay-3">
+              <div className="inline-block bg-gradient-to-r from-gray-800/80 to-gray-900/80 backdrop-blur-sm border border-gray-700/50 rounded-xl px-6 py-4 shadow-xl">
+                {/* Season Badge Image */}
+                <div className="mb-3">
+                  <img 
+                    src="/images/ranking-title-badge.png" 
+                    alt="BeatNexus β Season 0"
+                    className="mx-auto max-w-24 sm:max-w-28 h-auto drop-shadow-lg"
+                  />
+                </div>
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-2 text-sm md:text-base text-gray-300">
+                  <span className="font-bold text-cyan-400">{t('home.hero.seasonInfo.earlyAccess')}</span>
+                  <span className="hidden sm:inline">|</span>
+                  <span>{t('home.hero.seasonInfo.earlyAccessLabel')}</span>
+                  <span className="hidden sm:inline">|</span>
+                  <span className="font-bold text-purple-400">{t('home.hero.seasonInfo.publicRelease')}</span>
+                  <span>{t('home.hero.seasonInfo.publicReleaseLabel')}</span>
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* CTA Button - Modern Gradient Border Design */}
@@ -297,54 +319,56 @@ const HomePage: React.FC = () => {
 
         <div className="container mx-auto px-4 relative z-10">
           <div className="text-center mb-20">
-            <div className="inline-flex items-center gap-3 px-6 py-3 bg-gray-800/30 backdrop-blur-sm rounded-2xl border border-gray-700/30 mb-8">
-              <div className="w-2 h-2 bg-gradient-to-r from-cyan-400 to-purple-400 rounded-full animate-pulse"></div>
-              <span className="text-gray-300 font-medium text-sm tracking-wide">{t('home.features.title')}</span>
-              <div className="w-2 h-2 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full animate-pulse" style={{ animationDelay: '0.5s' }}></div>
+            {/* Ranking Title Badge */}
+            <div className="mb-12">
+              <img 
+                src="/images/ranking-title-badge.png" 
+                alt="Ranking Badge"
+                className="mx-auto max-w-xs sm:max-w-sm md:max-w-md h-auto drop-shadow-2xl"
+              />
             </div>
-            
-            <h2 className="text-5xl md:text-6xl font-bold text-white mb-6">
-              {t('home.features.subtitle').split(' ').slice(0, -2).join(' ')} <span className="bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">{t('home.features.subtitle').split(' ').slice(-2).join(' ')}</span>
-            </h2>
-            <div className="w-40 h-1 bg-gradient-to-r from-cyan-500 via-purple-500 to-pink-500 rounded-full mx-auto"></div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            {/* ELO Rating System */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
+            {/* Player Ranking */}
             <Card className="group relative bg-gradient-to-br from-gray-900 via-gray-850 to-gray-950 border border-gray-700/50 shadow-xl hover:shadow-2xl hover:shadow-cyan-500/10 transition-all duration-500 rounded-xl overflow-hidden backdrop-blur-sm p-8">
               <div className="absolute inset-0 opacity-5">
                 <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white/10 to-transparent transform rotate-45 translate-x-full group-hover:translate-x-[-100%] transition-transform duration-1000"></div>
               </div>
               <div className="relative">
-                <div className="w-20 h-20 bg-gradient-to-br from-cyan-500/20 to-blue-500/20 rounded-xl border border-cyan-500/30 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                  <ChartLine className="h-10 w-10 text-cyan-400" />
-                </div>
                 <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-cyan-400 transition-colors">
-                  {t('home.features.eloRating.title')}
+                  {t('home.rankings.playerRanking.title')}
                 </h3>
                 <div className="w-16 h-0.5 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full mb-4"></div>
-                <p className="text-gray-300 leading-relaxed">
-                  {t('home.features.eloRating.description')}
+                <p className="text-gray-300 leading-relaxed mb-6">
+                  {t('home.rankings.playerRanking.description')}
                 </p>
+                {/* Beta Season Reward */}
+                <div className="bg-gradient-to-r from-cyan-500/10 to-blue-500/10 border border-cyan-500/20 rounded-lg p-4 backdrop-blur-sm">
+                  <h4 className="text-cyan-400 font-bold text-sm mb-2">{t('home.rankings.playerRanking.betaReward.title')}</h4>
+                  <p className="text-gray-300 text-sm leading-relaxed">{t('home.rankings.playerRanking.betaReward.description')}</p>
+                </div>
               </div>
             </Card>
 
-            {/* Community Voting */}
+            {/* Voter Ranking */}
             <Card className="group relative bg-gradient-to-br from-gray-900 via-gray-850 to-gray-950 border border-gray-700/50 shadow-xl hover:shadow-2xl hover:shadow-purple-500/10 transition-all duration-500 rounded-xl overflow-hidden backdrop-blur-sm p-8">
               <div className="absolute inset-0 opacity-5">
                 <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white/10 to-transparent transform rotate-45 translate-x-full group-hover:translate-x-[-100%] transition-transform duration-1000"></div>
               </div>
               <div className="relative">
-                <div className="w-20 h-20 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-xl border border-purple-500/30 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                  <Users className="h-10 w-10 text-purple-400" />
-                </div>
                 <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-purple-400 transition-colors">
-                  {t('home.features.voterRanking.title')}
+                  {t('home.rankings.voterRanking.title')}
                 </h3>
                 <div className="w-16 h-0.5 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full mb-4"></div>
-                <p className="text-gray-300 leading-relaxed">
-                  {t('home.features.voterRanking.description')}
+                <p className="text-gray-300 leading-relaxed mb-6">
+                  {t('home.rankings.voterRanking.description')}
                 </p>
+                {/* Beta Season Reward */}
+                <div className="bg-gradient-to-r from-purple-500/10 to-pink-500/10 border border-purple-500/20 rounded-lg p-4 backdrop-blur-sm">
+                  <h4 className="text-purple-400 font-bold text-sm mb-2">{t('home.rankings.voterRanking.betaReward.title')}</h4>
+                  <p className="text-gray-300 text-sm leading-relaxed">{t('home.rankings.voterRanking.betaReward.description')}</p>
+                </div>
               </div>
             </Card>
           </div>

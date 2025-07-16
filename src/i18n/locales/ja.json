@@ -473,6 +473,12 @@
         "startBattle": "バトルを始める",
         "watchBattles": "バトルを観戦 & 投票",
         "joinNow": "今すぐ参加"
+      },
+      "seasonInfo": {
+        "earlyAccess": "8月1日",
+        "earlyAccessLabel": "先行アクセス開始",
+        "publicRelease": "8月8日",
+        "publicReleaseLabel": "完全一般公開"
       }
     },
     "howItWorks": {
@@ -498,16 +504,22 @@
         }
       }
     },
-    "features": {
-      "title": "PLATFORM FEATURES",
-      "subtitle": "パワフルな プラットフォーム機能",
-      "eloRating": {
-        "title": "ELOレーティング",
-        "description": "チェスと同じELOシステムでスキルを正確に評価。バトル形式別のKファクターで公平なランキングを実現。"
+    "rankings": {
+      "playerRanking": {
+        "title": "プレイヤーランキング",
+        "description": "全てのバトルは、あなたのレートを変動させる真剣勝負。勝利を重ね、己の実力を世界に証明しろ。ランキングの頂点に立った者だけが、次のステージへの扉を開く。",
+        "betaReward": {
+          "title": "βシーズン報酬:",
+          "description": "ランキングTOP 8は、Season 1ファイナルトーナメントへのシード出場権を獲得。"
+        }
       },
       "voterRanking": {
         "title": "投票者ランキング",
-        "description": "コミュニティ投票への参加でポイント獲得。投票数ベースの専用ランキングでコミュニティ貢献度を評価。"
+        "description": "勝敗を決めるのは、コミュニティの確かな目。数多のバトルを裁き、その審美眼でプラットフォームに貢献せよ。最も信頼されるジャッジには、特別な名誉が与えられる。",
+        "betaReward": {
+          "title": "βシーズン報酬:",
+          "description": "ランキング上位者は、Season 1ファイナルトーナメントの公式審査員に任命。"
+        }
       }
     },
     "shadows": {

@@ -471,6 +471,12 @@
         "startBattle": "Start Your Battle",
         "watchBattles": "Watch Battles & Vote",
         "joinNow": "Join Now"
+      },
+      "seasonInfo": {
+        "earlyAccess": "August 1st",
+        "earlyAccessLabel": "Early Access Begins",
+        "publicRelease": "August 8th",
+        "publicReleaseLabel": "Full Public Release"
       }
     },
     "howItWorks": {
@@ -496,16 +502,22 @@
         }
       }
     },
-    "features": {
-      "title": "PLATFORM FEATURES",
-      "subtitle": "Powerful Platform Features",
-      "eloRating": {
-        "title": "ELO Rating",
-        "description": "Accurately evaluate skills with the same ELO system as chess. Fair rankings with battle format-specific K-factors."
+    "rankings": {
+      "playerRanking": {
+        "title": "Player Rankings",
+        "description": "Every battle is a serious match that affects your rating. Win battles and prove your skills to the world. Only those who reach the top of the rankings can open the door to the next stage.",
+        "betaReward": {
+          "title": "β Season Rewards:",
+          "description": "Top 8 in rankings earn seeded entry to Season 1 Final Tournament."
+        }
       },
       "voterRanking": {
         "title": "Voter Rankings",
-        "description": "Earn points by participating in community voting. Dedicated rankings based on vote count to evaluate community contribution."
+        "description": "The community's keen eye decides victory. Judge countless battles and contribute to the platform with your aesthetic sense. The most trusted judges receive special honors.",
+        "betaReward": {
+          "title": "β Season Rewards:",
+          "description": "Top voters will be appointed as official judges for Season 1 Final Tournament."
+        }
       }
     },
     "shadows": {
