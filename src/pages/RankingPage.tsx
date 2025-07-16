@@ -700,7 +700,7 @@ const RankingPage: React.FC = () => {
                         
                         {/* ユーザー情報 */}
                         <div className="col-span-6 flex items-center gap-3 min-w-0 py-1">
-                          <div className={`relative w-10 h-10 rounded-full p-0.5 transition-all duration-300 flex-shrink-0 ${ランキングこんｐこんｐ
+                          <div className={`relative w-10 h-10 rounded-full p-0.5 transition-all duration-300 flex-shrink-0 ${
                             activeTab === 'player' 
                               ? 'bg-gradient-to-r from-cyan-500/50 to-blue-500/50 group-hover:from-cyan-400 group-hover:to-blue-400' 
                               : 'bg-gradient-to-r from-purple-500/50 to-pink-500/50 group-hover:from-purple-400 group-hover:to-pink-400'
