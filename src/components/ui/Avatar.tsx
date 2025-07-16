@@ -1,5 +1,6 @@
 import React from 'react';
 import { twMerge } from 'tailwind-merge';
+import { getDefaultAvatarUrl } from '../../utils';
 
 type AvatarSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 type AvatarStatus = 'online' | 'offline' | 'away' | 'busy';
@@ -13,11 +14,11 @@ interface AvatarProps {
 }
 
 const sizeStyles: Record<AvatarSize, string> = {
-  xs: 'w-8 h-8',
-  sm: 'w-10 h-10',
-  md: 'w-12 h-12',
-  lg: 'w-16 h-16',
-  xl: 'w-24 h-24',
+  xs: 'w-10 h-10',    // 32px → 40px に拡大
+  sm: 'w-12 h-12',    // 40px → 48px に拡大
+  md: 'w-16 h-16',    // 48px → 64px に拡大
+  lg: 'w-20 h-20',    // 64px → 80px に拡大
+  xl: 'w-28 h-28',    // 96px → 112px に拡大
 };
 
 const statusStyles: Record<AvatarStatus, string> = {
@@ -44,6 +45,10 @@ export const Avatar: React.FC<AvatarProps> = ({
           sizeStyles[size],
           className
         )}
+        onError={(e) => {
+          const target = e.target as HTMLImageElement;
+          target.src = getDefaultAvatarUrl();
+        }}
       />
       {status && (
         <span 

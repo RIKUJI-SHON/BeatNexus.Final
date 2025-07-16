@@ -102,9 +102,11 @@ export default defineConfig({
     port: 3000,
     open: true,
     host: 'localhost',
+    // Supabase Storage画像の読み込みを可能にするため、COEPヘッダーは設定しない
     headers: {
-      'Cross-Origin-Opener-Policy': 'same-origin',
-      'Cross-Origin-Embedder-Policy': 'require-corp',
+      // PWA機能に必要な場合のみコメントアウトを解除
+      // 'Cross-Origin-Opener-Policy': 'same-origin',
+      // 'Cross-Origin-Embedder-Policy': 'require-corp',
     },
   },
   publicDir: 'public'

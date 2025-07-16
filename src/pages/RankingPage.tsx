@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Trophy, Search, Users, Star, Vote, Calendar, ChevronDown } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Card } from '../components/ui/Card';
+import { TopThreePodium } from '../components/ui/TopThreePodium';
 import { useRankingStore } from '../store/rankingStore';
 import { useTranslation } from 'react-i18next';
 import { trackBeatNexusEvents } from '../utils/analytics';
@@ -259,15 +260,25 @@ const RankingPage: React.FC = () => {
     }
   };
 
-  // 表示用: 数字をアイコンの代わりに表示
+  // 表示用: 数字をアイコンの代わりに表示（リスト用）
   const getPositionDisplay = (position: number) => {
-    const colorMap: Record<number, string> = {
-      1: 'text-yellow-400',
-      2: 'text-gray-300',
-      3: 'text-amber-600'
+    const colorMap: Record<number, { text: string; bg: string; glow: string }> = {
+      1: { text: 'text-yellow-400', bg: 'bg-yellow-500/20', glow: 'drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]' },
+      2: { text: 'text-gray-300', bg: 'bg-gray-400/20', glow: 'drop-shadow-[0_0_6px_rgba(156,163,175,0.5)]' },
+      3: { text: 'text-amber-600', bg: 'bg-amber-600/20', glow: 'drop-shadow-[0_0_6px_rgba(217,119,6,0.5)]' }
     };
+    
+    const config = colorMap[position];
+    if (config) {
+      return (
+        <div className={`flex items-center justify-center w-8 h-8 rounded-full ${config.bg} border border-current ${config.glow}`}>
+          <span className={`text-sm font-extrabold ${config.text} ${config.glow}`}>#{position}</span>
+        </div>
+      );
+    }
+    
     return (
-      <span className={`text-lg md:text-xl font-extrabold ${colorMap[position] || 'text-gray-400'}`}>#{position}</span>
+      <span className="text-lg md:text-xl font-extrabold text-gray-400">#{position}</span>
     );
   };
 
@@ -289,19 +300,7 @@ const RankingPage: React.FC = () => {
     return 'text-gray-500';
   };
 
-  // 🏅 トップ3用バッジ画像
-  const getBadgeImage = (position: number) => {
-    switch (position) {
-      case 1:
-        return { src: '/images/1st-place.png', alt: '1st Place' };
-      case 2:
-        return { src: '/images/2nd-place.png', alt: '2nd Place' };
-      case 3:
-        return { src: '/images/3rd-place.png', alt: '3rd Place' };
-      default:
-        return { src: '', alt: '' };
-    }
-  };
+
 
   // ドロップダウンの選択肢を生成
   const getDropdownOptions = () => {
@@ -630,78 +629,16 @@ const RankingPage: React.FC = () => {
         {/* Content Area */}
         <div className="space-y-6">
 
-          {/* 🏆 Top 3 Highlight Section */}
+          {/* 🏆 Top 3 Podium Section */}
           {!currentLoading && topThree.length === 3 && (
-            <div className="flex justify-center gap-4">
-              {([...topThree].sort((a, b) => {
-                // 並び順: 2位,1位,3位 で真ん中が1位
-                const orderMap: Record<number, number> = {2: 0, 1: 1, 3: 2};
-                return orderMap[a.position] - orderMap[b.position];
-              })).map((entry) => {
-                const isPlayerTab = activeTab === 'player';
-                const avatarSize = 'h-20 w-20'; // 全員同サイズ
-
-                return (
-                  <Link
-                    key={`top-${entry.user_id}`}
-                    to={`/profile/${entry.user_id}`}
-                    className={`relative flex flex-col items-center p-3 w-28 sm:w-32 md:w-40 h-48 sm:h-52 md:h-56 rounded-xl bg-gray-900/60 border backdrop-blur-sm transition-transform hover:-translate-y-1 ${
-                      isPlayerTab ? 'border-cyan-500' : 'border-purple-500'
-                    }`}
-                    style={{
-                      boxShadow: '0 0 10px rgba(0,0,0,0.3)',
-                    }}
-                  >
-                    {/* Avatar */}
-                    <div className={`rounded-full h-14 w-14 sm:h-16 sm:w-16 md:h-20 md:w-20 overflow-hidden border-4 ${isPlayerTab ? 'border-cyan-500' : 'border-purple-500'}`}>
-                      <img
-                        src={
-                          entry.avatar_url ||
-                          `https://api.dicebear.com/7.x/avataaars/svg?seed=${entry.user_id}`
-                        }
-                        alt={entry.username}
-                        className="object-cover w-full h-full"
-                      />
-                    </div>
-
-                    {/* Username */}
-                    <div className="mt-3 text-center">
-                      <div
-                        className={`font-semibold truncate max-w-[120px] ${
-                          isPlayerTab ? 'text-cyan-200' : 'text-purple-200'
-                        }`}
-                      >
-                        {entry.username}
-                      </div>
-                      <div
-                        className={`text-sm font-bold mt-1 ${
-                          isPlayerTab
-                            ? getRatingColor(getRatingOrSeasonPoints(entry))
-                            : getVoteCountColor(getVoteCount(entry))
-                        }`}
-                      >
-                        {isPlayerTab
-                          ? getRatingOrSeasonPoints(entry)
-                          : `${getVoteCount(entry) * 100} VP`
-                        }
-                      </div>
-                    </div>
-
-                    {/* バッジ画像 */}
-                    {(() => {
-                      const badge = getBadgeImage(entry.position);
-                      return badge.src ? (
-                        <img
-                          src={badge.src}
-                          alt={badge.alt}
-                          className="mt-2 h-8 w-8 sm:h-9 sm:w-9 md:h-10 md:w-10 object-contain"
-                        />
-                      ) : null;
-                    })()}
-                  </Link>
-                );
-              })}
-            </div>
+            <TopThreePodium
+              topThree={topThree}
+              activeTab={activeTab}
+              getRatingOrSeasonPoints={getRatingOrSeasonPoints}
+              getVoteCount={getVoteCount}
+              getRatingColor={getRatingColor}
+              getVoteCountColor={getVoteCountColor}
+            />
           )}
 
           {/* ランキングリスト */}
@@ -743,7 +680,7 @@ const RankingPage: React.FC = () => {
                     <Link 
                       key={entry.user_id} 
                       to={`/profile/${entry.user_id}`}
-                      className={`block px-4 py-3 transition-colors group ${
+                      className={`block px-4 py-4 transition-colors group ${
                         activeTab === 'player' 
                           ? 'hover:bg-cyan-500/5' 
                           : 'hover:bg-purple-500/5'
@@ -762,16 +699,24 @@ const RankingPage: React.FC = () => {
                         </div>
                         
                         {/* ユーザー情報 */}
-                        <div className="col-span-6 flex items-center gap-3 min-w-0">
-                          <img
-                            src={entry.avatar_url || getDefaultAvatarUrl()}
-                            alt={entry.username}
-                            className={`w-8 h-8 rounded-full object-cover border border-gray-600 transition-colors ${
-                              activeTab === 'player' 
-                                ? 'group-hover:border-cyan-500/50' 
-                                : 'group-hover:border-purple-500/50'
-                            }`}
-                          />
+                        <div className="col-span-6 flex items-center gap-3 min-w-0 py-1">
+                          <div className={`relative w-10 h-10 rounded-full p-0.5 transition-all duration-300 flex-shrink-0 ${ランキングこんｐこんｐ
+                            activeTab === 'player' 
+                              ? 'bg-gradient-to-r from-cyan-500/50 to-blue-500/50 group-hover:from-cyan-400 group-hover:to-blue-400' 
+                              : 'bg-gradient-to-r from-purple-500/50 to-pink-500/50 group-hover:from-purple-400 group-hover:to-pink-400'
+                          }`}>
+                            <img
+                              src={entry.avatar_url || getDefaultAvatarUrl()}
+                              alt={entry.username}
+                              className="w-full h-full rounded-full object-cover"
+                              onError={(e) => {
+                                const target = e.target as HTMLImageElement;
+                                if (target.src !== getDefaultAvatarUrl()) {
+                                  target.src = getDefaultAvatarUrl();
+                                }
+                              }}
+                            />
+                          </div>
                           <div className="min-w-0 flex-1">
                             <div className={`font-medium text-white text-sm truncate transition-colors ${
                               activeTab === 'player' 

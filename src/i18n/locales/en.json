@@ -802,6 +802,9 @@
       "currentSeasonLabel": "Current Season",
       "completedSeasonLabel": "Completed Season"
     },
+    "topThree": {
+      "title": "TOP 3"
+    },
     "playerDescription": "Beatboxer rankings based on battle performance",
     "voterDescription": "Active community member rankings based on voting participation",
 

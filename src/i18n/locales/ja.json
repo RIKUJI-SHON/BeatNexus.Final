@@ -1126,6 +1126,9 @@
       "currentSeasonLabel": "現在のシーズン",
       "completedSeasonLabel": "完了したシーズン"
     },
+    "topThree": {
+      "title": "TOP 3"
+    },
     "playerDescription": "バトル戦績に基づくビートボクサーランキング",
     "voterDescription": "投票数に基づくアクティブなコミュニティメンバーランキング",
 

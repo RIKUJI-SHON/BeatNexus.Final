@@ -246,56 +246,8 @@ const BattlesPage: React.FC = () => {
             </div>
             
             {/* Enhanced Stats Grid - Hidden on mobile */}
-            <div className="hidden md:grid grid-cols-1 md:grid-cols-3 gap-4 max-w-3xl mx-auto mb-6 animate-fade-in-delay-2">
-              {/* Total Submissions */}
-              <Card className="group relative bg-gradient-to-br from-gray-900 via-gray-850 to-gray-950 border border-gray-700/50 shadow-xl hover:shadow-2xl hover:shadow-cyan-500/10 transition-all duration-500 rounded-xl overflow-hidden backdrop-blur-sm p-4">
-                <div className="absolute inset-0 opacity-5">
-                  <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white/10 to-transparent transform rotate-45 translate-x-full group-hover:translate-x-[-100%] transition-transform duration-1000"></div>
-                </div>
-                <div className="relative text-center">
-                  <div className="w-12 h-12 bg-gradient-to-br from-cyan-500/20 to-blue-500/20 rounded-xl border border-cyan-500/40 flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform duration-300">
-                    <Mic className="h-6 w-6 text-cyan-400" />
-                  </div>
-                  <div className="text-2xl md:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400 mb-1">
-                    {totalSubmissionsCount.toLocaleString()}+
-                  </div>
-                  <div className="text-xs text-gray-400 font-medium">{t('battlesPage.welcome.stats.totalSubmissions')}</div>
-                </div>
-              </Card>
-
-              {/* Community Members */}
-              <Card className="group relative bg-gradient-to-br from-gray-900 via-gray-850 to-gray-950 border border-gray-700/50 shadow-xl hover:shadow-2xl hover:shadow-purple-500/10 transition-all duration-500 rounded-xl overflow-hidden backdrop-blur-sm p-4">
-                <div className="absolute inset-0 opacity-5">
-                  <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white/10 to-transparent transform rotate-45 translate-x-full group-hover:translate-x-[-100%] transition-transform duration-1000"></div>
-                </div>
-                <div className="relative text-center">
-                  <div className="w-12 h-12 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-xl border border-purple-500/40 flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform duration-300">
-                    <Users className="h-6 w-6 text-purple-400" />
-                  </div>
-                  <div className="text-2xl md:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 mb-1">
-                    {communityMembersCount.toLocaleString()}+
-                  </div>
-                  <div className="text-xs text-gray-400 font-medium">{t('battlesPage.welcome.stats.communityMembers')}</div>
-                </div>
-              </Card>
-
-              {/* Votes Cast */}
-              <Card className="group relative bg-gradient-to-br from-gray-900 via-gray-850 to-gray-950 border border-gray-700/50 shadow-xl hover:shadow-2xl hover:shadow-yellow-500/10 transition-all duration-500 rounded-xl overflow-hidden backdrop-blur-sm p-4">
-                <div className="absolute inset-0 opacity-5">
-                  <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white/10 to-transparent transform rotate-45 translate-x-full group-hover:translate-x-[-100%] transition-transform duration-1000"></div>
-                </div>
-                <div className="relative text-center">
-                  <div className="w-12 h-12 bg-gradient-to-br from-yellow-500/20 to-orange-500/20 rounded-xl border border-yellow-500/40 flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform duration-300">
-                    <Play className="h-6 w-6 text-yellow-400" />
-                  </div>
-                  <div className="text-2xl md:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-400 mb-1">
-                    {totalVotesCount.toLocaleString()}+
-                  </div>
-                  <div className="text-xs text-gray-400 font-medium">{t('battlesPage.welcome.stats.votesCast')}</div>
-                </div>
-              </Card>
-            </div>
-
+            {/* 統計カード（投稿動画数・コミュニティメンバー・総投票数）を削除 */}
+            
             {/* Guide Link */}
             <div className="text-xs text-gray-400 animate-fade-in-delay-3">
               {t('battlesPage.welcome.guide.newHere')}{' '}
