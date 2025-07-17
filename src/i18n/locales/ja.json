@@ -1575,7 +1575,9 @@
     "phoneVerified": "電話番号が認証されました！",
     "error": {
       "invalidPhone": "電話番号を入力してください",
-      "verificationFailed": "電話番号認証に失敗しました: {{error}}"
+      "verificationFailed": "電話番号認証に失敗しました: {{error}}",
+      "emailNotPreregistered": "このメールアドレスは登録されていません。招待されたメールアドレスを確認してください。",
+      "preregistrationCheckFailed": "事前登録の確認に失敗しました。しばらく経ってから再度お試しください。"
     },
     "signIn": "ログイン",
     "createAccount": "アカウント作成",
@@ -1593,7 +1595,8 @@
     "creatingAccount": "アカウント作成中...",
     "confirmEmailTitle": "メールを確認してください",
     "confirmEmailDescription": "確認リンクを <strong>{{email}}</strong> に送信しました。受信箱（迷惑メールフォルダも）を確認して登録を完了してください。",
-    "gotIt": "了解"
+    "gotIt": "了解",
+    "country": "国"
   },
   "privacyPolicyPage": {
     "subtitle": "個人情報の取り扱いに関する方針をご確認ください",

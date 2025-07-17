@@ -1783,7 +1783,9 @@
     "phoneVerified": "Phone number verified!",
     "error": {
       "invalidPhone": "Phone number is required",
-      "verificationFailed": "Phone verification failed: {{error}}"
+      "verificationFailed": "Phone verification failed: {{error}}",
+      "emailNotPreregistered": "This email address is not registered. Please check the email address you were invited with.",
+      "preregistrationCheckFailed": "Failed to verify pre-registration. Please try again later."
     },
     "signIn": "Sign In",
     "createAccount": "Create Account",
@@ -1801,6 +1803,7 @@
     "creatingAccount": "Creating Account...",
     "confirmEmailTitle": "Confirm Your Email",
     "confirmEmailDescription": "We've sent a confirmation link to <strong>{{email}}</strong>. Please check your inbox (and spam folder) to complete your registration.",
-    "gotIt": "Got it!"
+    "gotIt": "Got it!",
+    "country": "Country"
   }
 }

@@ -33,6 +33,25 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [showConfirmationEmailModal, setShowConfirmationEmailModal] = useState(false);
+  const [selectedCountry, setSelectedCountry] = useState<{ code: string; dial: string }>({ code: 'JP', dial: '+81' });
+  const countryOptions = [
+    { code: 'JP', name: 'Japan', dial: '+81', flag: '🇯🇵' },
+    { code: 'US', name: 'United States', dial: '+1', flag: '🇺🇸' },
+    { code: 'GB', name: 'United Kingdom', dial: '+44', flag: '🇬🇧' },
+    { code: 'KR', name: 'South Korea', dial: '+82', flag: '🇰🇷' },
+    { code: 'FR', name: 'France', dial: '+33', flag: '🇫🇷' },
+    { code: 'DE', name: 'Germany', dial: '+49', flag: '🇩🇪' },
+    { code: 'CH', name: 'Switzerland', dial: '+41', flag: '🇨🇭' },
+    { code: 'ID', name: 'Indonesia', dial: '+62', flag: '🇮🇩' },
+    { code: 'IL', name: 'Israel', dial: '+972', flag: '🇮🇱' },
+    { code: 'MY', name: 'Malaysia', dial: '+60', flag: '🇲🇾' },
+    { code: 'ZA', name: 'South Africa', dial: '+27', flag: '🇿🇦' },
+    { code: 'TR', name: 'Turkey', dial: '+90', flag: '🇹🇷' },
+    { code: 'BE', name: 'Belgium', dial: '+32', flag: '🇧🇪' },
+    { code: 'AU', name: 'Australia', dial: '+61', flag: '🇦🇺' },
+    { code: 'RU', name: 'Russia', dial: '+7', flag: '🇷🇺' },
+    // ... add more as needed
+  ];
   
   const { signIn, signUp } = useAuthStore();
   const navigate = useNavigate();
@@ -94,10 +113,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
   const handleSendOtp = async () => {
-    let formattedPhone = phoneNumber.trim().replace(/-/g, '');
-    if (formattedPhone.startsWith('0')) {
-      formattedPhone = `+81${formattedPhone.substring(1)}`;
-    }
+    let formattedPhone = phoneNumber.trim().replace(/-/g, '').replace(/\s+/g, '');
+    formattedPhone = `${selectedCountry.dial}${formattedPhone.replace(/^0+/, '')}`;
 
     if (!formattedPhone) {
       setError(t('auth.error.invalidPhone'));
@@ -132,10 +149,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     setVerifyingOtp(true);
     setError(null);
     try {
-      let formattedPhone = phoneNumber.trim().replace(/-/g, '');
-      if (formattedPhone.startsWith('0')) {
-        formattedPhone = `+81${formattedPhone.substring(1)}`;
-      }
+      let formattedPhone = phoneNumber.trim().replace(/-/g, '').replace(/\s+/g, '');
+      formattedPhone = `${selectedCountry.dial}${formattedPhone.replace(/^0+/, '')}`;
 
       const res = await fetch(`${supabaseUrl}/functions/v1/phone-verification`, {
         method: 'POST',
@@ -246,6 +261,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 )}
               </div>
 
+              {/* Country dropdown removed: integrated with phone input */}
+
               {/* Phone Number (Signup only) */}
               {mode === 'signup' && (
                 <>
@@ -253,15 +270,30 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     <label htmlFor="phone" className="block text-sm font-medium text-gray-300 mb-2">
                       {t('auth.phoneNumber')}
                     </label>
-                    <input
-                      type="tel"
-                      id="phone"
-                      value={phoneNumber}
-                      onChange={(e) => setPhoneNumber(e.target.value)}
-                      placeholder="+81 90-1234-5678"
-                      className="w-full px-4 py-3 bg-gray-800/50 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition-colors"
-                      required
-                    />
+                    <div className="flex w-full">
+                      <select
+                        id="country"
+                        value={selectedCountry.code}
+                        onChange={(e) => {
+                          const opt = countryOptions.find((c) => c.code === e.target.value);
+                          if (opt) setSelectedCountry({ code: opt.code, dial: opt.dial });
+                        }}
+                        className="px-3 py-3 bg-gray-800/50 border border-r-0 border-gray-600 rounded-l-lg text-white focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition-colors w-28 truncate"
+                      >
+                        {countryOptions.map((c) => (
+                          <option key={c.code} value={c.code}>{`${c.flag ?? c.code} ${c.dial}`}</option>
+                        ))}
+                      </select>
+                      <input
+                        type="tel"
+                        id="phone"
+                        value={phoneNumber}
+                        onChange={(e) => setPhoneNumber(e.target.value)}
+                        placeholder="000-1234-5678"
+                        className="flex-1 px-4 py-3 bg-gray-800/50 border border-gray-600 rounded-r-lg text-white placeholder-gray-400 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition-colors"
+                        required
+                      />
+                    </div>
                   </div>
                   <p className="text-gray-300 text-sm text-center">
                     {t('auth.phoneRequirement')}

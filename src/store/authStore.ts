@@ -2,12 +2,14 @@ import { create } from 'zustand';
 import { User } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
 import { trackBeatNexusEvents, setUserProperties, clearUserProperties } from '../utils/analytics';
+import i18n from '../i18n';
 
 interface AuthState {
   user: User | null;
   loading: boolean;
   signIn: (email: string, password: string, rememberMe?: boolean) => Promise<void>;
   signUp: (email: string, password: string, username: string) => Promise<{ user: User | null; error: any } | undefined>;
+  validatePreregistration: (email: string) => Promise<boolean>;
   signOut: () => Promise<void>;
   setUser: (user: User | null) => void;
   setUserFromAuth: (user: User | null) => void; // AuthProvider用
@@ -25,7 +27,43 @@ export const useAuthStore = create<AuthState>((set) => ({
     
     // Note: ログインイベントはsetUserで適切に発火される
   },
+  validatePreregistration: async (email: string) => {
+    try {
+      const { data, error } = await supabase.functions.invoke('validate-preregistration', {
+        body: { email: email.toLowerCase().trim() }
+      });
+
+      if (error) {
+        console.error('Preregistration validation error:', error);
+        return false;
+      }
+
+      return data?.isRegistered || false;
+    } catch (error) {
+      console.error('Preregistration validation failed:', error);
+      return false;
+    }
+  },
   signUp: async (email: string, password: string, username: string) => {
+    // Check if email is pre-registered
+    const isPreregistered = await (async () => {
+      try {
+        const { data, error } = await supabase.functions.invoke('validate-preregistration', {
+          body: { email: email.toLowerCase().trim() }
+        });
+        
+        if (error) throw error;
+        return data?.isRegistered || false;
+             } catch (error) {
+         console.error('Pre-registration check failed:', error);
+         throw new Error(i18n.t('auth.error.preregistrationCheckFailed'));
+       }
+     })();
+
+     if (!isPreregistered) {
+       throw new Error(i18n.t('auth.error.emailNotPreregistered'));
+     }
+
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
