@@ -1,67 +1,34 @@
 import React from 'react';
-import { useTranslation } from 'react-i18next';
-import { Play, Users, Trophy, Clock } from 'lucide-react';
-import { Button3D } from '../../ui/Button3D';
 
-interface BattleGuideSlideProps {}
-
-const BattleGuideSlide: React.FC<BattleGuideSlideProps> = () => {
-  const { t } = useTranslation();
-
+const BattleGuideSlide: React.FC = () => {
   return (
     <div className="onboarding-card md:w-96 md:h-[500px] w-[340px] h-[440px]">
       <div className="onboarding-content">
-        {/* タイトル */}
-        <div className="text-center">
-          <div className="mb-3 flex justify-center">
-            <img 
-              src="/images/VS.png" 
-              alt="VS"
-              className="w-12 h-12 object-contain"
-            />
-          </div>
-          <h2 className="text-2xl font-bold text-white mb-6">
-            {t('onboarding.slide2.title')}
+        {/* 上部タイトル */}
+        <div className="text-center mb-6">
+          <h2 className="text-3xl font-bold text-white">
+            戦い方は、驚くほど<br />シンプル。
           </h2>
         </div>
 
-
-
-        {/* ステップ */}
-        <div className="space-y-4 mb-8">
-          <div className="bg-cyan-500/10 border border-cyan-500/30 rounded-lg p-3">
-            <div className="flex items-center gap-3 text-base mb-2">
-              <div className="p-2 bg-cyan-500/20 rounded-lg">
-                <Play className="w-5 h-5 text-cyan-400" />
-              </div>
-              <span className="text-gray-300 font-medium">{t('onboarding.slide2.step1')}</span>
-            </div>
-            <div className="ml-12 text-sm text-cyan-200 whitespace-pre-line">
-              {t('onboarding.slide2.step1Details')}
-            </div>
-          </div>
-          
-          <div className="flex items-center gap-3 text-base">
-            <div className="p-2 bg-purple-500/20 rounded-lg">
-              <Users className="w-5 h-5 text-purple-400" />
-            </div>
-            <span className="text-gray-300 font-medium">{t('onboarding.slide2.step2')}</span>
-          </div>
-          <div className="flex items-center gap-3 text-base">
-            <div className="p-2 bg-yellow-500/20 rounded-lg">
-              <Trophy className="w-5 h-5 text-yellow-400" />
-            </div>
-            <span className="text-gray-300 font-medium">{t('onboarding.slide2.step3')}</span>
-          </div>
-          <div className="flex items-center gap-3 text-base">
-            <div className="p-2 bg-green-500/20 rounded-lg">
-              <Clock className="w-5 h-5 text-green-400" />
-            </div>
-            <span className="text-gray-300 font-medium">{t('onboarding.slide2.period')}</span>
-          </div>
+        {/* 中央動画 */}
+        <div className="flex justify-center mb-6">
+          <video 
+            controls
+            className="w-full max-w-[280px] h-40 object-cover rounded-lg shadow-lg"
+            poster="/images/onboarding/Slide2.png"
+          >
+            <source src="/images/onboarding/Onboarding_video.mp4" type="video/mp4" />
+            お使いのブラウザは動画の再生をサポートしていません。
+          </video>
         </div>
 
-
+        {/* 下部説明 */}
+        <div className="text-center">
+          <p className="text-gray-300 text-sm leading-relaxed">
+            動画を投稿すれば、システムが自動で対戦相手をマッチング。勝敗は、コミュニティの投票によって決まります。
+          </p>
+        </div>
       </div>
     </div>
   );

@@ -8,6 +8,7 @@ import { supabase } from '../lib/supabase';
 import { useTranslation } from 'react-i18next';
 import { useSubmissionCooldown } from '../hooks/useSubmissionCooldown';
 import { useVideoProcessor } from '../hooks/useVideoProcessor';
+import { useSubmissionStatus } from '../hooks/useSubmissionStatus';
 import { trackBeatNexusEvents } from '../utils/analytics';
 import SubmissionModal from '../components/ui/SubmissionModal';
 
@@ -100,6 +101,7 @@ const PostPage: React.FC = () => {
   const { user } = useAuthStore();
   const { t } = useTranslation();
   const { canSubmit, remainingTime, cooldownInfo, isLoading: cooldownLoading, refreshCooldown } = useSubmissionCooldown();
+  const { submissionStatus } = useSubmissionStatus();
   const { 
     processVideo, 
     isLoading: isProcessing, 
@@ -495,16 +497,24 @@ const PostPage: React.FC = () => {
             {step === 'upload' && (
               <>
                 {/* 投稿制限情報カード */}
-                {!canSubmit && cooldownInfo && (
+                {(!canSubmit || (submissionStatus && !submissionStatus.canSubmit)) && (cooldownInfo || submissionStatus) && (
                   <div className="mb-6 bg-orange-500/10 border border-orange-500/30 rounded-lg p-4">
                     <div className="flex items-center gap-2 mb-3">
                       <AlertCircle className="h-5 w-5 text-orange-400" />
-                      <h3 className="font-medium text-white">{t('postPage.cooldown.title', '投稿制限中')}</h3>
+                      <h3 className="font-medium text-white">
+                        {submissionStatus && !submissionStatus.canSubmit 
+                          ? t('postPage.seasonOff.title', 'シーズン外投稿制限')
+                          : t('postPage.cooldown.title', '投稿制限中')
+                        }
+                      </h3>
                     </div>
                     <p className="text-sm text-orange-200 mb-3">
-                      {cooldownInfo.message}
+                      {submissionStatus && !submissionStatus.canSubmit 
+                        ? submissionStatus.message
+                        : cooldownInfo?.message
+                      }
                     </p>
-                    {remainingTime && (
+                    {remainingTime && canSubmit && (
                       <div className="bg-gray-800/50 rounded-lg p-3">
                         <div className="flex items-center justify-between text-sm">
                           <span className="text-gray-300">{t('postPage.cooldown.nextSubmission', '次回投稿可能まで')}</span>
@@ -563,7 +573,7 @@ const PostPage: React.FC = () => {
                     isDragging 
                       ? 'border-cyan-400 bg-cyan-500/10 scale-105' 
                       : 'border-gray-700 hover:border-cyan-500/50 hover:bg-gray-800/30'
-                  } ${!canSubmit || !isFFmpegLoaded ? 'opacity-50 pointer-events-none' : ''}`}
+                  } ${!canSubmit || !isFFmpegLoaded || (submissionStatus && !submissionStatus.canSubmit) ? 'opacity-50 pointer-events-none' : ''}`}
                   onDragOver={handleDragOver}
                   onDragLeave={handleDragLeave}
                   onDrop={handleDrop}
@@ -574,7 +584,7 @@ const PostPage: React.FC = () => {
                     className="hidden" 
                     ref={fileInputRef} 
                     onChange={handleFileChange}
-                    disabled={!canSubmit || !isFFmpegLoaded}
+                    disabled={!canSubmit || !isFFmpegLoaded || (submissionStatus && !submissionStatus.canSubmit)}
                   />
                   
                   {/* FFmpeg準備中のオーバーレイ */}
@@ -605,7 +615,7 @@ const PostPage: React.FC = () => {
                     <Button
                       variant="outline"
                       onClick={triggerFileInput}
-                      disabled={!canSubmit || !isFFmpegLoaded}
+                      disabled={!canSubmit || !isFFmpegLoaded || (submissionStatus && !submissionStatus.canSubmit)}
                       className="border-cyan-500/50 text-cyan-400 hover:bg-cyan-500/10 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {t('postPage.upload.selectVideo')}

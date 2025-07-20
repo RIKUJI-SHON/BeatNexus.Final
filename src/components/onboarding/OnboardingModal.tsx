@@ -5,10 +5,9 @@ import { useOnboardingStore } from '../../store/onboardingStore';
 import { useAuthStore } from '../../store/authStore';
 import { Button3D } from '../ui/Button3D';
 import WelcomeSlide from './slides/WelcomeSlide';
-import ProfileSetupSlide from './slides/ProfileSetupSlide';
-import { BioSetupSlide } from './slides/BioSetupSlide';
 import BattleGuideSlide from './slides/BattleGuideSlide';
 import VotingGuideSlide from './slides/VotingGuideSlide';
+import ProfileSetupSlide from './slides/ProfileSetupSlide';
 import GetStartedSlide from './slides/GetStartedSlide';
 
 const OnboardingModal: React.FC = () => {
@@ -17,7 +16,6 @@ const OnboardingModal: React.FC = () => {
   const {
     isOnboardingModalOpen,
     currentSlide,
-    setOnboardingModalOpen,
     completeOnboarding,
     nextSlide,
     previousSlide,
@@ -56,14 +54,12 @@ const OnboardingModal: React.FC = () => {
       case 0:
         return <WelcomeSlide />;
       case 1:
-        return <ProfileSetupSlide />;
-      case 2:
-        return <BioSetupSlide />;
-      case 3:
         return <BattleGuideSlide />;
-      case 4:
+      case 2:
         return <VotingGuideSlide />;
-      case 5:
+      case 3:
+        return <ProfileSetupSlide />;
+      case 4:
         return <GetStartedSlide />;
       default:
         return <WelcomeSlide />;
@@ -72,7 +68,7 @@ const OnboardingModal: React.FC = () => {
 
   // 次へボタンのハンドラー
   const handleNext = () => {
-    if (currentSlide === 5) {
+    if (currentSlide === 4) {
       handleComplete();
     } else {
       nextSlide();
@@ -103,7 +99,7 @@ const OnboardingModal: React.FC = () => {
         <div className="absolute -top-12 left-0 right-0 flex justify-between items-center">
           {/* プログレスインジケーター */}
           <div className="flex space-x-2">
-            {[0, 1, 2, 3, 4, 5].map((index) => (
+            {[0, 1, 2, 3, 4].map((index) => (
               <button
                 key={index}
                 onClick={() => setCurrentSlide(index)}

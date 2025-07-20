@@ -1,37 +1,29 @@
 import React from 'react';
-import { useTranslation } from 'react-i18next';
 
-interface WelcomeSlideProps {}
-
-const WelcomeSlide: React.FC<WelcomeSlideProps> = () => {
-  const { t } = useTranslation();
-
+const WelcomeSlide: React.FC = () => {
   return (
     <div className="onboarding-card md:w-96 md:h-[500px] w-[340px] h-[440px]">
       <div className="onboarding-content">
-        {/* タイトル */}
-        <div className="text-center">
-          <h2 className="text-3xl font-bold text-white mb-3">
-            {t('onboarding.slide1.title')}
+        {/* 上部タイトル */}
+        <div className="text-center mb-8">
+          <h2 className="text-3xl font-bold text-white">
+            ようこそ、BeatNexusへ。
           </h2>
-          <h3 className="text-2xl font-semibold text-cyan-400 mb-6">
-            {t('onboarding.slide1.subtitle')}
-          </h3>
         </div>
 
-        {/* スクリーンショット画像 */}
-        <div className="flex justify-center mb-6">
+        {/* 中央ロゴ */}
+        <div className="flex justify-center mb-8">
           <img 
-            src="/images/onboarding/Slide1.png" 
-            alt="BeatNexus Platform Screenshot"
-            className="w-full h-40 object-cover rounded-lg shadow-lg"
+            src="/images/BEATNEXUS-WORDMARK.png" 
+            alt="BeatNexus Logo"
+            className="h-16 object-contain"
           />
         </div>
 
-        {/* 説明 */}
-        <div className="text-center mb-8">
-          <p className="text-gray-300 text-sm leading-relaxed whitespace-pre-line">
-            {t('onboarding.slide1.description')}
+        {/* 下部説明 */}
+        <div className="text-center">
+          <p className="text-gray-300 text-sm leading-relaxed">
+            ここは、世界中のビートボクサーが、そのスキルと魂をぶつけ合う、新たな伝説の舞台です。
           </p>
         </div>
       </div>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Trophy, Search, Users, Star, Vote, Calendar, ChevronDown } from 'lucide-react';
+import { Trophy, Search, Users, Calendar, ChevronDown } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Card } from '../components/ui/Card';
 import { TopThreePodium } from '../components/ui/TopThreePodium';
@@ -7,7 +7,7 @@ import { useRankingStore } from '../store/rankingStore';
 import { useTranslation } from 'react-i18next';
 import { trackBeatNexusEvents } from '../utils/analytics';
 import { getDefaultAvatarUrl } from '../utils';
-import { VoterRankingEntry, SeasonRankingEntry, SeasonVoterRankingEntry, RankingType, VoterRankingType } from '../types';
+import { VoterRankingEntry, SeasonRankingEntry, RankingType, VoterRankingType } from '../types';
 
 type TabType = 'player' | 'voter';
 

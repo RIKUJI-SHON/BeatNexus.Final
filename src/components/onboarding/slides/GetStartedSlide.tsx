@@ -1,35 +1,29 @@
 import React from 'react';
-import { useTranslation } from 'react-i18next';
+import { Upload } from 'lucide-react';
 
-interface GetStartedSlideProps {}
-
-const GetStartedSlide: React.FC<GetStartedSlideProps> = () => {
-  const { t } = useTranslation();
-
+const GetStartedSlide: React.FC = () => {
   return (
     <div className="onboarding-card md:w-96 md:h-[500px] w-[340px] h-[440px]">
       <div className="onboarding-content">
-        {/* タイトル */}
-        <div className="text-center">
-          <div className="flex justify-center mb-3">
-            <img 
-              src="/images/VS.png" 
-              alt="VS"
-              className="w-12 h-12 object-contain filter brightness-110"
-            />
-          </div>
-          <h2 className="text-2xl font-bold text-white mb-6">
-            {t('onboarding.slide4.title')}
+        {/* 上部タイトル */}
+        <div className="text-center mb-8">
+          <h2 className="text-3xl font-bold text-white">
+            準備は、整った。
           </h2>
         </div>
 
-        {/* Slide4.png画像表示 */}
-        <div className="flex justify-center items-center mb-8">
-          <img 
-            src="/images/onboarding/Slide4.png" 
-            alt="Get Started Guide"
-            className="max-w-full max-h-64 object-contain rounded-lg shadow-lg"
-          />
+        {/* 中央バトルスタートアイコン */}
+        <div className="flex justify-center mb-8">
+          <div className="bg-gradient-to-br from-cyan-500 to-blue-600 p-6 rounded-full shadow-lg hover:scale-105 transition-transform cursor-pointer">
+            <Upload className="w-12 h-12 text-white" />
+          </div>
+        </div>
+
+        {/* 下部説明 */}
+        <div className="text-center">
+          <p className="text-gray-300 text-lg font-medium">
+            あなたの最初の戦いが、今、始まります。
+          </p>
         </div>
       </div>
     </div>
