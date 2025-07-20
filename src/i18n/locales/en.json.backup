@@ -1667,11 +1667,7 @@
     },
     "slide5": {
       "title": "Ready to begin.",
-      "description": "Your first battle starts now.",
-      "clickToStart": "↑ Click to start battle"
-    },
-    "avatarSetup": {
-      "title": "Set Your Profile Picture"
+      "description": "Your first battle starts now."
     },
     "skipTour": "Skip",
     "previous": "Back",

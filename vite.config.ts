@@ -1,6 +1,5 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import { VitePWA } from 'vite-plugin-pwa';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -48,26 +47,13 @@ export default defineConfig({
     include: ['void-elements', 'html-parse-stringify'],
     esbuildOptions: {
       // CommonJSパッケージのサポート強化
-      target: 'esnext'
+      target: 'esnext',
+      define: {
+        global: 'globalThis'
+      }
     }
-  },
-  esbuild: {
-    // ESBuildでのCommonJS処理を改善
-    target: 'esnext',
-    format: 'esm'
-  },
-  resolve: {
-    alias: {
-      // CommonJSパッケージのデフォルトエクスポート問題を解決
-    }
-  },
-  define: {
-    // CommonJSパッケージの互換性確保
-    'process.env': {},
-    global: 'globalThis'
   },
   build: {
-    // パフォーマンス最適化
     target: 'esnext',
     minify: 'terser',
     terserOptions: {
@@ -79,7 +65,7 @@ export default defineConfig({
     rollupOptions: {
       external: [],
       output: {
-        // チャンク分割でロード時間を改善
+        // チャンク分割を最適化してエラーを回避
         manualChunks: {
           vendor: ['react', 'react-dom'],
           router: ['react-router-dom'],

@@ -11,6 +11,7 @@ interface AvatarUploadProps {
   className?: string;
   isEditing: boolean;
   userId?: string;
+  compact?: boolean; // オンボーディング用のコンパクトモード
 }
 
 export const AvatarUpload: React.FC<AvatarUploadProps> = ({
@@ -18,7 +19,8 @@ export const AvatarUpload: React.FC<AvatarUploadProps> = ({
   onAvatarUpdate,
   className = '',
   isEditing,
-  userId
+  userId,
+  compact = false
 }) => {
   const { user } = useAuthStore();
   const [isUploading, setIsUploading] = useState(false);
@@ -131,7 +133,7 @@ export const AvatarUpload: React.FC<AvatarUploadProps> = ({
   return (
     <div className={`relative ${className}`}>
       <div className="relative group">
-        <div className={`${className.includes('w-40') ? 'w-40 h-40 rounded-full border-4 border-gray-800' : 'w-32 h-32 rounded-lg border-2 border-cyan-500/30'} overflow-hidden shadow-lg`}>
+        <div className={`${className.includes('w-40') ? 'w-40 h-40 rounded-full border-4 border-gray-800' : className.includes('w-24') ? 'w-24 h-24 rounded-lg border-2 border-cyan-500/30' : 'w-32 h-32 rounded-lg border-2 border-cyan-500/30'} overflow-hidden shadow-lg`}>
           <img 
             src={displayUrl}
             alt="プロフィール画像"
@@ -145,9 +147,9 @@ export const AvatarUpload: React.FC<AvatarUploadProps> = ({
             onClick={handleUploadClick}
           >
             {isUploading ? (
-              <Loader className="h-8 w-8 text-white animate-spin" />
+              <Loader className={`${className.includes('w-24') ? 'h-6 w-6' : 'h-8 w-8'} text-white animate-spin`} />
             ) : (
-              !previewUrl && <Camera className="h-8 w-8 text-white" />
+              !previewUrl && <Camera className={`${className.includes('w-24') ? 'h-6 w-6' : 'h-8 w-8'} text-white`} />
             )}
           </div>
         )}
@@ -162,7 +164,7 @@ export const AvatarUpload: React.FC<AvatarUploadProps> = ({
         )}
       </div>
 
-      {isEditing && (
+      {isEditing && !compact && (
         <>
           <input
             ref={fileInputRef}
@@ -185,6 +187,17 @@ export const AvatarUpload: React.FC<AvatarUploadProps> = ({
             </Button>
           </div>
         </>
+      )}
+
+      {isEditing && compact && (
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          onChange={handleFileSelect}
+          className="hidden"
+          disabled={isUploading}
+        />
       )}
 
       {uploadError && (

@@ -1,24 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '../../../store/authStore';
 import { AvatarUpload } from '../../profile/AvatarUpload';
-import { User, CheckCircle } from 'lucide-react';
+import { CheckCircle } from 'lucide-react';
+import { Button3D } from '../../ui/Button3D';
+import { Textarea } from '../../ui/Textarea';
 import { supabase } from '../../../lib/supabase';
-import { getDefaultAvatarUrl } from '../../../utils';
+import { toast } from '../../../store/toastStore';
 
-interface UserProfile {
-  id: string;
-  username: string;
-  avatar_url?: string;
-  bio?: string;
-}
-
-const ProfileSetupSlide: React.FC = () => {
+export default function ProfileSetupSlide() {
   const { t } = useTranslation();
   const { user } = useAuthStore();
-  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [bio, setBio] = useState('');
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [isUpdatingBio, setIsUpdatingBio] = useState(false);
 
   // ユーザープロフィール情報を取得
   useEffect(() => {
@@ -37,8 +33,8 @@ const ProfileSetupSlide: React.FC = () => {
           return;
         }
 
-        setUserProfile(data);
         setAvatarUrl(data?.avatar_url || null);
+        setBio(data?.bio || '');
       } catch (error) {
         console.error('Error fetching user profile:', error);
       }
@@ -50,62 +46,98 @@ const ProfileSetupSlide: React.FC = () => {
   // アバターアップロード完了時のコールバック
   const handleAvatarUpdate = (url: string) => {
     setAvatarUrl(url);
-    // プロフィール情報も更新
-    setUserProfile(prev => prev ? { ...prev, avatar_url: url } : null);
     setSaveSuccess(true);
     
     // 成功表示を2秒後にリセット
     setTimeout(() => setSaveSuccess(false), 2000);
   };
 
+  // バイオ保存
+  const handleSaveBio = async () => {
+    if (!user) return;
+
+    setIsUpdatingBio(true);
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ bio: bio.trim() || null })
+        .eq('id', user.id);
+
+      if (error) throw error;
+
+      setSaveSuccess(true);
+      toast.success('プロフィールを更新しました');
+      
+      // 成功表示を2秒後にリセット
+      setTimeout(() => setSaveSuccess(false), 2000);
+    } catch (error) {
+      console.error('Error updating bio:', error);
+      toast.error('更新に失敗しました');
+    } finally {
+      setIsUpdatingBio(false);
+    }
+  };
+
   return (
-    <div className="onboarding-card md:w-[480px] md:h-[520px] w-[340px] h-[440px]">
-      <div className="onboarding-content flex flex-col h-full">
-        {/* ヘッダー */}
-        <div className="text-center mb-4">
-          <div className="mb-2 flex justify-center">
-            <div className="p-2 bg-gradient-to-br from-cyan-500/20 to-blue-500/20 rounded-full">
-              <User className="w-6 h-6 text-cyan-400" />
-            </div>
-          </div>
-          <h2 className="text-xl font-bold text-white">
-            {t('onboarding.avatarSetup.title')}
+    <div className="onboarding-card md:w-96 md:h-[500px] w-[340px] h-[440px]">
+      <div className="onboarding-content">
+        {/* 上部：タイトル */}
+        <div className="text-center mb-8">
+          <h2 className="text-3xl font-bold text-white">
+            {t('onboarding.slide4.title')}
           </h2>
         </div>
 
-        {/* アバター設定セクション */}
-        <div className="flex-1 flex flex-col justify-center">
-          <div className="text-center">
-            <div className="flex justify-center mb-6">
-              <AvatarUpload 
-                currentAvatarUrl={userProfile?.avatar_url || undefined}
-                onAvatarUpdate={handleAvatarUpdate}
-                isEditing={true}
-                userId={user?.id}
-                className="w-32 h-32"
-              />
-            </div>
-
-            {/* 成功メッセージ */}
-            {saveSuccess && (
-              <div className="flex items-center justify-center gap-2 text-green-400 mb-4">
-                <CheckCircle className="w-5 h-5" />
-                <span className="text-sm">{t('onboarding.avatarSetup.uploadSuccess')}</span>
-              </div>
-            )}
-          </div>
+        {/* 中央：プロフィール写真 */}
+        <div className="flex justify-center mb-8">
+          <AvatarUpload
+            currentAvatarUrl={avatarUrl || undefined}
+            onAvatarUpdate={handleAvatarUpdate}
+            isEditing={true}
+            userId={user?.id}
+            className="w-24 h-24"
+            compact={true}
+          />
         </div>
-
-        {/* アクションエリア */}
-        <div className="text-center">
-          {/* スキップ注記 */}
-          <p className="text-gray-400 text-xs">
-            {t('onboarding.avatarSetup.skipNote')}
-          </p>
+        
+        {saveSuccess && (
+          <div className="flex items-center justify-center gap-1 mb-6">
+            <CheckCircle className="w-3 h-3 text-green-400" />
+            <span className="text-green-400 text-xs">{t('onboarding.slide4.bio.saveSuccess')}</span>
+          </div>
+        )}
+          
+        {/* 自己紹介設定 */}
+        <div className="space-y-2">
+          <div className="text-center">
+            <h3 className="text-white font-medium text-sm">{t('onboarding.slide4.bio.title')}</h3>
+          </div>
+          
+          <Textarea
+            value={bio}
+            onChange={(e) => setBio(e.target.value)}
+            placeholder={t('onboarding.slide4.bio.placeholder')}
+            maxLength={200}
+            rows={2}
+            className="w-full text-sm resize-none"
+          />
+          
+          <div className="flex justify-between items-center">
+            <span className="text-xs text-gray-400">
+              {t('onboarding.slide4.bio.characterCount', { count: bio.length })}
+            </span>
+            
+            <Button3D
+              onClick={handleSaveBio}
+              disabled={isUpdatingBio}
+              variant="primary"
+              className="px-3 py-1 text-xs"
+            >
+              {isUpdatingBio ? t('onboarding.slide4.bio.saving') : t('onboarding.slide4.bio.saveButton')}
+            </Button3D>
+          </div>
         </div>
       </div>
     </div>
   );
-};
-
-export default ProfileSetupSlide; 
+}

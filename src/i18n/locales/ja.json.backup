@@ -590,7 +590,7 @@
       },
       "guide": {
         "newHere": "初めての方はこちら",
-        "checkGuide": "遊び方をチェック"
+        "checkGuide": "ハウツーガイドをチェック"
       }
     },
     "activeBattles": {
@@ -1467,11 +1467,7 @@
     },
     "slide5": {
       "title": "準備は整った。",
-      "description": "あなたの最初の戦いが、今、始まります。",
-      "clickToStart": "↑をクリックしてバトルスタート"
-    },
-    "avatarSetup": {
-      "title": "プロフィール画像を設定"
+      "description": "あなたの最初の戦いが、今、始まります。"
     },
     "skipTour": "スキップ",
     "previous": "戻る",

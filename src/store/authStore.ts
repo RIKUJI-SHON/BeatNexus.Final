@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { User } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
 import { trackBeatNexusEvents, setUserProperties, clearUserProperties } from '../utils/analytics';
+import { detectBrowserLanguage } from '../lib/utils';
 import i18n from '../i18n';
 
 interface AuthState {
@@ -64,12 +65,17 @@ export const useAuthStore = create<AuthState>((set) => ({
        throw new Error(i18n.t('auth.error.emailNotPreregistered'));
      }
 
+    // ブラウザの言語設定を検出
+    const detectedLanguage = detectBrowserLanguage();
+    console.log('SignUp: Detected browser language:', detectedLanguage);
+
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
         data: {
           username,
+          language: detectedLanguage, // ブラウザ言語をメタデータに追加
         },
       },
     });

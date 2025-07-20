@@ -99,25 +99,40 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     try {
       processedUsers.current.add(userKey);
-      const browserLanguage = detectBrowserLanguage();
-      
-      console.log(`Initializing language for new user ${userId} (${eventType}): ${browserLanguage}`);
+      console.log(`Language initialization for new user ${userId} (${eventType}): Language should be set by handle_new_user function`);
 
-      // 新規登録時のみブラウザ言語をデータベースに設定
+      // データベースのhandle_new_user関数で言語設定が処理されるため、
+      // フロントエンド側での追加の言語設定処理は不要
+      // ただし、万が一データベース側で設定されていない場合のフォールバック処理
       if (eventType === 'signup') {
         try {
-          const { error } = await supabase
+          // ユーザーの現在の言語設定を確認
+          const { data, error } = await supabase
             .from('profiles')
-            .update({ language: browserLanguage })
-            .eq('id', userId);
+            .select('language')
+            .eq('id', userId)
+            .single();
 
-          if (error) {
-            console.warn('Failed to set initial language for new user:', error);
+          if (!error && (!data?.language)) {
+            // 言語設定がない場合のみフォールバック
+            const browserLanguage = detectBrowserLanguage();
+            console.log(`Fallback: Setting language to ${browserLanguage} for user ${userId}`);
+            
+            const { error: updateError } = await supabase
+              .from('profiles')
+              .update({ language: browserLanguage })
+              .eq('id', userId);
+
+            if (updateError) {
+              console.warn('Failed to set fallback language for new user:', updateError);
+            } else {
+              console.log('Fallback language set successfully for new user');
+            }
           } else {
-            console.log('Initial language set successfully for new user');
+            console.log(`User ${userId} already has language setting: ${data?.language}`);
           }
         } catch (profileError) {
-          console.warn('Error setting initial language for new user:', profileError);
+          console.warn('Error checking/setting fallback language for new user:', profileError);
         }
       }
 

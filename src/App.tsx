@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 
@@ -19,6 +19,7 @@ import { AuthModal } from './components/auth/AuthModal';
 
 // Language Initialization
 import { useLanguageInitialization } from './hooks/useLanguageInitialization';
+import { useOnboardingInitialization } from './hooks/useOnboardingInitialization';
 
 // Google Analytics
 import { initializeGA } from './utils/analytics';
@@ -26,7 +27,6 @@ import { useAnalytics, usePerformanceTracking } from './hooks/useAnalytics';
 
 // Onboarding
 import OnboardingModal from './components/onboarding/OnboardingModal';
-import { useOnboardingStore } from './store/onboardingStore';
 import { useAuthStore } from './store/authStore';
 
 // Battle Result Modal
@@ -60,7 +60,6 @@ import BattleResultTestPage from './pages/BattleResultTestPage';
 
 // CSS for animations
 import './tailwind.extensions.css';
-import { useBattleStore } from './store/battleStore';
 import { useNotificationStore } from './store/notificationStore';
 import { I18nextProvider } from 'react-i18next';
 import i18n from './i18n';
@@ -133,6 +132,9 @@ function AppContent() {
   
   // 言語設定の初期化
   useLanguageInitialization();
+  
+  // オンボーディング状況の初期化
+  useOnboardingInitialization();
 
   useEffect(() => {
     // Google Analytics初期化
@@ -164,7 +166,7 @@ function AppContent() {
   // ここでは手動でのオンボーディング表示制御はしない
 
   return (
-    <Router>
+    <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <RouterContent />
       
       {/* Toast Notifications */}

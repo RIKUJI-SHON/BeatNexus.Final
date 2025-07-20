@@ -1,13 +1,17 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 const WelcomeSlide: React.FC = () => {
+  const { t } = useTranslation();
+
   return (
     <div className="onboarding-card md:w-96 md:h-[500px] w-[340px] h-[440px]">
       <div className="onboarding-content">
         {/* 上部タイトル */}
         <div className="text-center mb-8">
+          <h3 className="text-lg text-gray-300 mb-2">{t('onboarding.slide1.welcome')}</h3>
           <h2 className="text-3xl font-bold text-white">
-            ようこそ、BeatNexusへ。
+            {t('onboarding.slide1.title')}
           </h2>
         </div>
 
@@ -23,7 +27,7 @@ const WelcomeSlide: React.FC = () => {
         {/* 下部説明 */}
         <div className="text-center">
           <p className="text-gray-300 text-sm leading-relaxed">
-            ここは、世界中のビートボクサーが、そのスキルと魂をぶつけ合う、新たな伝説の舞台です。
+            {t('onboarding.slide1.description')}
           </p>
         </div>
       </div>

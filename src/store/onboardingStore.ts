@@ -40,7 +40,7 @@ export const useOnboardingStore = create<OnboardingState>()(
       
       nextSlide: () => {
         const { currentSlide } = get();
-        if (currentSlide < 5) { // 5スライド目まで対応（0-5で6スライド）
+        if (currentSlide < 4) { // 4スライド目まで対応（0-4で5スライド）
           set({ currentSlide: currentSlide + 1 });
         }
       },

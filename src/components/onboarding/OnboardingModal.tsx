@@ -6,7 +6,8 @@ import { useAuthStore } from '../../store/authStore';
 import { Button3D } from '../ui/Button3D';
 import WelcomeSlide from './slides/WelcomeSlide';
 import BattleGuideSlide from './slides/BattleGuideSlide';
-import VotingGuideSlide from './slides/VotingGuideSlide';
+// 新しいVotingSlideコンポーネントを使用 - Updated 2025-01-27
+import VotingSlideNew from './slides/VotingSlideNew';
 import ProfileSetupSlide from './slides/ProfileSetupSlide';
 import GetStartedSlide from './slides/GetStartedSlide';
 
@@ -50,13 +51,15 @@ const OnboardingModal: React.FC = () => {
 
   // 現在のスライドコンポーネントを取得（ナビゲーション機能なし）
   const getCurrentSlide = () => {
+    console.log('[OnboardingModal] Current slide:', currentSlide); // デバッグ用
     switch (currentSlide) {
       case 0:
         return <WelcomeSlide />;
       case 1:
         return <BattleGuideSlide />;
       case 2:
-        return <VotingGuideSlide />;
+        console.log('[OnboardingModal] Rendering VotingSlideNew');
+        return <VotingSlideNew />;
       case 3:
         return <ProfileSetupSlide />;
       case 4:
@@ -154,7 +157,7 @@ const OnboardingModal: React.FC = () => {
         <div className="w-full flex justify-between items-center mb-3">
           {/* プログレスインジケーター */}
           <div className="flex space-x-2">
-            {[0, 1, 2, 3, 4, 5].map((index) => (
+            {[0, 1, 2, 3, 4].map((index) => (
               <button
                 key={index}
                 onClick={() => setCurrentSlide(index)}

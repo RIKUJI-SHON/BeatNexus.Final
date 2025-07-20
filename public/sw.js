@@ -82,6 +82,15 @@ self.addEventListener('fetch', (event) => {
     return;
   }
   
+  // Vite開発サーバーのnode_modulesやチャンクファイルは処理しない
+  const url = new URL(event.request.url);
+  if (url.pathname.includes('/node_modules/') || 
+      url.pathname.includes('/.vite/') ||
+      url.pathname.includes('/chunk-') ||
+      url.search.includes('v=')) {
+    return;
+  }
+  
   event.respondWith(
     fetch(event.request)
       .then((response) => {
@@ -94,7 +103,8 @@ self.addEventListener('fetch', (event) => {
         }
         return response;
       })
-      .catch(() => {
+      .catch((error) => {
+        console.warn('[SW] Fetch failed:', error);
         // ネットワークエラー時はキャッシュから取得
         return caches.match(event.request)
           .then((cachedResponse) => {
