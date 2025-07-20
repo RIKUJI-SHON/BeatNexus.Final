@@ -1,5 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '../lib/supabase';
+import { generateSubmissionMessage } from '../utils/dateUtils';
 
 export interface SubmissionStatus {
   canSubmit: boolean;
@@ -24,8 +26,9 @@ export const useSubmissionStatus = (): UseSubmissionStatusReturn => {
   const [submissionStatus, setSubmissionStatus] = useState<SubmissionStatus | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { i18n } = useTranslation();
 
-  const fetchSubmissionStatus = async () => {
+  const fetchSubmissionStatus = useCallback(async () => {
     try {
       setIsLoading(true);
       setError(null);
@@ -37,17 +40,8 @@ export const useSubmissionStatus = (): UseSubmissionStatusReturn => {
       }
 
       const generateMessage = (reason: string | null, nextSeasonStartDate: string | null): string => {
-        if (reason === 'SEASON_OFF') {
-          if (nextSeasonStartDate) {
-            const startDate = new Date(nextSeasonStartDate);
-            return `シーズンが終了しています。次のシーズンは ${startDate.toLocaleDateString('ja-JP')} に開始予定です。`;
-          }
-          return 'シーズンが終了しています。次のシーズンの開始をお待ちください。';
-        }
-        if (reason === 'ENDING_SOON') {
-          return 'シーズン終了の5日前のため、新しい動画の投稿はできません。';
-        }
-        return '';
+        const currentLanguage = i18n.language.startsWith('en') ? 'en' : 'ja';
+        return generateSubmissionMessage(reason, nextSeasonStartDate, currentLanguage);
       };
 
       const statusData: SubmissionStatus = {
@@ -65,7 +59,7 @@ export const useSubmissionStatus = (): UseSubmissionStatusReturn => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [i18n.language]);
 
   const refreshStatus = async () => {
     await fetchSubmissionStatus();
@@ -73,7 +67,7 @@ export const useSubmissionStatus = (): UseSubmissionStatusReturn => {
 
   useEffect(() => {
     fetchSubmissionStatus();
-  }, []);
+  }, [fetchSubmissionStatus]);
 
   return {
     submissionStatus,

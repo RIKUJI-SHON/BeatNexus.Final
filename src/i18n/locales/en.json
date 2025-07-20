@@ -892,6 +892,9 @@
       "title": "Submission Cooldown",
       "message": "Next submission available in: {{time}}"
     },
+    "seasonOff": {
+      "title": "Season Off - Submission Restricted"
+    },
     "guidelines": {
       "title": "Video Guidelines",
       "audioQuality": {
