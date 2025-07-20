@@ -63,7 +63,6 @@ const RankingPage: React.FC = () => {
   const [showSeasonDropdown, setShowSeasonDropdown] = useState(false);
 
   useEffect(() => {
-    console.log('[DEBUG] RankingPage: useEffect triggered - fetching initial data');
     // 初期データ取得
     fetchSeasons();
     fetchRankings();
@@ -296,8 +295,8 @@ const RankingPage: React.FC = () => {
     if (voteCount >= 50) return 'text-red-400';
     if (voteCount >= 25) return 'text-green-400';
     if (voteCount >= 10) return 'text-yellow-400';
-    if (voteCount >= 5) return 'text-gray-400';
-    return 'text-gray-500';
+    if (voteCount >= 5) return 'text-blue-400';
+    return 'text-slate-300';
   };
 
 
@@ -305,13 +304,6 @@ const RankingPage: React.FC = () => {
   // ドロップダウンの選択肢を生成
   const getDropdownOptions = () => {
     const options = [];
-    
-    console.log('[DEBUG] getDropdownOptions: Current state:', {
-      currentSeason,
-      seasonsLength: seasons.length,
-      activeRankingType,
-      selectedSeasonId
-    });
     
     // Current Season / All Time options
     options.push({
@@ -322,7 +314,6 @@ const RankingPage: React.FC = () => {
     });
     
     if (currentSeason) {
-      console.log('[DEBUG] getDropdownOptions: Adding current season option:', currentSeason.name);
       options.push({
         type: 'current_season',
         label: `${currentSeason.name} (${t('rankingPage.seasonSelector.currentSeasonLabel')})`,
@@ -330,13 +321,10 @@ const RankingPage: React.FC = () => {
         isSelected: activeRankingType === 'current_season' && selectedSeasonId === currentSeason.id,
         seasonId: currentSeason.id,
       });
-    } else {
-      console.log('[DEBUG] getDropdownOptions: No current season found');
     }
     
     // Past seasons
     const pastSeasons = seasons.filter(s => s.status === 'completed' || s.status === 'ended');
-    console.log('[DEBUG] getDropdownOptions: Past seasons count:', pastSeasons.length);
     pastSeasons.forEach(season => {
       options.push({
         type: 'historical_season',
@@ -347,7 +335,6 @@ const RankingPage: React.FC = () => {
       });
     });
     
-    console.log('[DEBUG] getDropdownOptions: Final options:', options);
     return options;
   };
 
@@ -630,7 +617,7 @@ const RankingPage: React.FC = () => {
         <div className="space-y-6">
 
           {/* 🏆 Top 3 Podium Section */}
-          {!currentLoading && topThree.length === 3 && (
+          {!currentLoading && topThree.length > 0 && (
             <TopThreePodium
               topThree={topThree}
               activeTab={activeTab}
@@ -673,10 +660,16 @@ const RankingPage: React.FC = () => {
               
               {/* リスト */}
               <div className="divide-y divide-gray-700/50">
-                {filteredData.slice(3, 15).map((entry) => {
-                  const isTopThree = entry.position <= 3;
-                  
-                  return (
+                {filteredData.length === 0 ? (
+                  <div className="text-center py-8 text-gray-400">
+                    <p>{t('rankingPage.noData')}</p>
+                  </div>
+                ) : (
+                  <>
+                    {filteredData.slice(3, 15).map((entry) => {
+                      const isTopThree = entry.position <= 3;
+                      
+                      return (
                     <Link 
                       key={entry.user_id} 
                       to={`/profile/${entry.user_id}`}
@@ -745,6 +738,8 @@ const RankingPage: React.FC = () => {
                     </Link>
                   );
                 })}
+                </>
+                )}
               </div>
             </div>
           ) : (

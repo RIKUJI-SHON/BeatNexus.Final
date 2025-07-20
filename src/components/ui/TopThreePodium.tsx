@@ -23,14 +23,27 @@ export const TopThreePodium: React.FC<TopThreePodiumProps> = ({
 }) => {
   const { t } = useTranslation();
 
-  if (topThree.length < 3) return null;
+  if (topThree.length === 0) return null;
 
-  // 表彰台の配置順（2位、1位、3位）
-  const podiumOrder = [
-    topThree.find(entry => entry.position === 2),
-    topThree.find(entry => entry.position === 1),
-    topThree.find(entry => entry.position === 3),
-  ].filter(Boolean);
+  // 表彰台の配置順（利用可能なデータに基づく）
+  const podiumOrder = [];
+  
+  // 2位があれば追加
+  const secondPlace = topThree.find(entry => entry.position === 2);
+  if (secondPlace) podiumOrder.push(secondPlace);
+  
+  // 1位は必ず追加（存在する場合）
+  const firstPlace = topThree.find(entry => entry.position === 1);
+  if (firstPlace) podiumOrder.push(firstPlace);
+  
+  // 3位があれば追加
+  const thirdPlace = topThree.find(entry => entry.position === 3);
+  if (thirdPlace) podiumOrder.push(thirdPlace);
+  
+  // 上記で見つからない場合は、positionでソートして上位を表示
+  if (podiumOrder.length === 0) {
+    podiumOrder.push(...topThree.slice(0, 3));
+  }
 
   const getPositionConfig = (position: number) => {
     switch (position) {

@@ -842,6 +842,7 @@
     },
     "winLossRecord": "{{wins}}W - {{losses}}L",
     "noUsersFound": "No users found",
+    "noData": "No data available",
     "noRankingsYet": "No rankings yet",
     "tryDifferentSearch": "Try a different search term",
     "rankingsWillAppear": "Rankings will appear as users participate in battles",

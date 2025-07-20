@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { RankingEntry, VoterRankingEntry, SeasonRankingEntry, SeasonVoterRankingEntry, Season, HistoricalSeasonRanking, HistoricalSeasonVoterRanking, RankingType, VoterRankingType } from '../types';
 import { supabase } from '../lib/supabase';
+import { getRankFromRating } from '../utils/rankUtils';
 
 interface RankingState {
   rankings: RankingEntry[];
@@ -76,20 +77,41 @@ export const useRankingStore = create<RankingState>((set, get) => ({
   fetchRankings: async () => {
     set({ loading: true, error: null });
     try {
+      console.log('[DEBUG] fetchRankings: Starting fetch...');
       const { data, error } = await supabase
         .from('rankings_view')
         .select('*')
         .order('rating', { ascending: false });
 
+      console.log('[DEBUG] fetchRankings: Raw data:', data);
+      console.log('[DEBUG] fetchRankings: Error:', error);
+
       if (error) throw error;
 
-      const rankingsWithPosition = (data || []).map((entry, index) => ({
-        ...entry,
-        position: index + 1
-      }));
+      const rankingsWithPosition = (data || []).map((entry: any, index: number) => {
+        const rankInfo = getRankFromRating(entry.rating);
+        const totalBattles = entry.battles_won + entry.battles_lost;
+        const winRate = totalBattles > 0 ? (entry.battles_won / totalBattles) * 100 : 0;
+        
+        return {
+          user_id: entry.user_id,
+          username: entry.username,
+          avatar_url: entry.avatar_url,
+          rating: entry.rating,
+          season_points: entry.season_points,
+          rank_name: rankInfo.name,
+          rank_color: rankInfo.color,
+          battles_won: entry.battles_won,
+          battles_lost: entry.battles_lost,
+          win_rate: winRate,
+          position: index + 1
+        } as RankingEntry;
+      });
 
+      console.log('[DEBUG] fetchRankings: Processed rankings:', rankingsWithPosition);
       set({ rankings: rankingsWithPosition });
     } catch (error) {
+      console.error('[ERROR] fetchRankings:', error);
       set({ error: error instanceof Error ? error.message : 'Failed to fetch rankings' });
     } finally {
       set({ loading: false });
@@ -106,10 +128,23 @@ export const useRankingStore = create<RankingState>((set, get) => ({
 
       if (error) throw error;
 
-      const voterRankingsWithPosition = (data || []).map((entry, index) => ({
-        ...entry,
-        position: index + 1
-      }));
+      const voterRankingsWithPosition = (data || []).map((entry: any, index: number) => {
+        // voter_rankings_viewのidをuser_idにマッピング
+        const rankInfo = getRankFromRating(1200); // 投票者にはデフォルトランクを設定
+        
+        return {
+          user_id: entry.id,
+          username: entry.username,
+          avatar_url: entry.avatar_url,
+          vote_count: entry.vote_count,
+          rating: 1200, // デフォルト値
+          rank_name: rankInfo.name,
+          rank_color: rankInfo.color,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+          position: index + 1
+        } as VoterRankingEntry;
+      });
 
       set({ voterRankings: voterRankingsWithPosition });
     } catch (error) {

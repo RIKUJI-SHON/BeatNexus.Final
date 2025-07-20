@@ -1170,6 +1170,7 @@
     },
     "winLossRecord": "{{wins}}勝 - {{losses}}敗",
     "noUsersFound": "ユーザーが見つかりません",
+    "noData": "データがありません",
     "noRankingsYet": "まだランキングがありません",
     "tryDifferentSearch": "別の検索キーワードをお試しください",
     "rankingsWillAppear": "ユーザーがバトルに参加するとランキングが表示されます",
