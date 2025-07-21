@@ -1,0 +1,104 @@
+# 📝 事前登録者限定サインアップ機能 要件定義書
+
+## 📅 作成日
+2025-07-15
+
+## 🎯 概要
+事前登録者限定の先行リリース期間中、新規アカウント作成を許可されたメールアドレスのみに制限する機能を実装する。
+
+## 🔑 機能要件
+1.  **メールアドレス検証**: ユーザーがサインアップ時に入力したメールアドレスが、事前登録者リストに存在するかを検証する。
+2.  **アクセス制御**: 事前登録者リストに存在するメールアドレスのみ、アカウント作成プロセスを続行できる。
+3.  **エラーハンドリング**: リストに存在しないメールアドレスでサインアップしようとした場合、ユーザーに分かりやすいエラーメッセージを表示する。
+4.  **セキュリティ**: 事前登録者リストは、不正なアクセスから保護する。
+
+## 🔧 実装仕様
+
+### 1. データベース: `pre_registered_users` テーブル
+
+-   **テーブル名**: `pre_registered_users`
+-   **目的**: 事前登録されたユーザーのメールアドレスを保存する。
+-   **カラム**:
+    -   `id`: `uuid` (PRIMARY KEY, default: `gen_random_uuid()`)
+    -   `email`: `text` (UNIQUE, NOT NULL)
+    -   `created_at`: `timestamptz` (default: `now()`)
+-   **Row Level Security (RLS)**:
+    -   **有効化**: `ALTER TABLE public.pre_registered_users ENABLE ROW LEVEL SECURITY;`
+    -   **ポリシー**:
+        -   `service_role` のみ全操作（SELECT, INSERT, UPDATE, DELETE）を許可する。
+        -   これにより、Edge Function からの安全なアクセスを保証し、クライアントからの直接的なアクセスを防ぐ。
+        -   ポリシー名: `Allow full access for service_role`
+
+### 2. バックエンド: Edge Function `validate-preregistration`
+
+-   **Function名**: `validate-preregistration`
+-   **目的**: フロントエンドから受け取ったメールアドレスが `pre_registered_users` テーブルに存在するかを検証する。
+-   **パス**: `supabase/functions/validate-preregistration/index.ts`
+-   **処理フロー**:
+    1.  リクエストボディから `email` を受け取る。
+    2.  `email` が提供されていない場合は、`400 Bad Request` エラーを返す。
+    3.  Supabaseのサービスロールクライアント (`createClient` with `service_role` key) を使用して `pre_registered_users` テーブルを検索する。
+    4.  `email` がテーブルに存在する場合:
+        -   HTTPステータス `200 OK` と `{ "isRegistered": true }` を返す。
+    5.  `email` がテーブルに存在しない場合:
+        -   HTTPステータス `200 OK` と `{ "isRegistered": false }` を返す。（エラーではなく、検証結果として返す）
+    6.  データベース検索中にエラーが発生した場合:
+        -   HTTPステータス `500 Internal Server Error` とエラーメッセージを返す。
+-   **CORS設定**:
+    -   フロントエンドのオリジンからのリクエストを許可するように設定する。
+
+### 3. フロントエンド: サインアップ処理の変更
+
+-   **対象コンポーネント**: `src/components/auth/AuthModal.tsx`
+-   **対象ストア**: `src/store/authStore.ts`
+-   **処理フローの変更**:
+    1.  ユーザーがサインアップフォームにメールアドレスとパスワードを入力し、「サインアップ」ボタンをクリックする。
+    2.  `handleSignUp` 関数 (または同等の関数) 内で、`supabase.auth.signUp` を呼び出す **前に**、`validate-preregistration` Edge Function を呼び出す。
+        ```javascript
+        // 1. Edge Functionを呼び出し
+        const { data, error } = await supabase.functions.invoke('validate-preregistration', {
+          body: { email: email }
+        });
+
+        // 2. 結果を検証
+        if (error || !data || !data.isRegistered) {
+          // エラー処理：トースト通知などで「このメールアドレスは登録されていません」と表示
+          showToast('error', 'このメールアドレスは登録されていません。');
+          return;
+        }
+
+        // 3. 検証成功後、Supabase Authでサインアップ処理を実行
+        const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            data: {
+              username: // ... ユーザー名を取得する方法
+            },
+          },
+        });
+
+        // 4. 以降の処理
+        ```
+-   **UI/UX**:
+    -   事前登録されていないメールアドレスでサインアップしようとした場合、"このメールアドレスは登録されていません。招待されたメールアドレスを確認してください。" のような、分かりやすいエラーメッセージをトースト通知で表示する。
+    -   処理中は、ボタンをローディング状態にする。
+
+## ✅ 検証項目
+-   [ ] `pre_registered_users` テーブルが正しく作成され、RLSが設定されていること。
+-   [ ] `validate-preregistration` Edge Functionがデプロイされ、正常に動作すること。
+    -   [ ] 登録済みメールアドレスで `{"isRegistered": true}` が返ること。
+    -   [ ] 未登録メールアドレスで `{"isRegistered": false}` が返ること。
+-   [ ] フロントエンドのサインアップ画面で、
+    -   [ ] 登録済みメールアドレスでアカウント作成が成功すること。
+    -   [ ] 未登録メールアドレスでアカウント作成がブロックされ、エラーメッセージが表示されること。
+-   [ ] クライアントから `pre_registered_users` テーブルに直接アクセスできないこと。
+
+## 📊 影響範囲
+-   **データベース**: `pre_registered_users` テーブルの新規追加。
+-   **Edge Function**: `validate-preregistration` の新規作成。
+-   **フロントエンド**: `AuthModal.tsx`, `authStore.ts` のサインアップロジックの変更。
+description:
+globs:
+alwaysApply: false
+---

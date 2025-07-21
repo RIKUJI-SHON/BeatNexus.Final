@@ -104,7 +104,7 @@ alwaysApply: true
 
 6. **守るべきルールのディレクトリ/ファイル**
 
-   - ./cursor/rules/dev-rules/BeatNexus.mdc
+   - docs/BeatNexus.mdc
    - 上記ファイルのルールを厳守してください。
 
 ---

@@ -1,0 +1,77 @@
+---
+alwaysApply: false
+---
+## 2️⃣ データベース設計
+```sql
+create table public.site_news (
+  id uuid primary key default gen_random_uuid(),
+  title text not null,           -- 見出し
+  body text not null,            -- 本文 (markdown 可)
+  image_url text,                -- アイキャッチ (任意)
+  published_at timestamptz not null default now()
+);
+```
+
+### 2.1 RLS ポリシー
+```sql
+alter table public.site_news enable row level security;
+
+-- ① 読み取りは誰でも OK
+create policy "Public read" on public.site_news
+for select
+using (true);
+
+-- ② 書き込みは今は誰もできない (ダッシュボードのみ)
+-- insert/update/delete のポリシーを設定しない → 認証経由では実行不可
+```
+※ 将来、管理画面やサービスロールキーで投稿する際は、`service_role` だけに insert 権限を付与するポリシーを追加。
+
+### 2.2 マイグレーションファイル
+`supabase/migrations/20250709120000_create_site_news_table.sql` に上記 SQL を保存してリポジトリ管理する。
+
+---
+
+## 3️⃣ フロントエンド
+### 3.1 既存実装
+- `NewsSidebar.tsx` にタイトルバッジのみ表示済み。今後ここにニュースリストを追加。
+
+### 3.2 追加タスク
+1. `src/hooks/useNews.ts` を作成し、`site_news` から最新 5 件を取得。
+2. `NewsSidebar` 内でフックを呼び、カードレイアウトで表示。
+3. ローディング表示 / 60 秒間隔で再フェッチ。
+4. 将来 Realtime サブスク対応（v2 で実装予定）。
+
+---
+
+## 4️⃣ 運用フロー (v1)
+1. Supabase ダッシュボード → Table Editor → `site_news` を開く。
+2. 「Insert Row」で以下を入力し、Save。
+   - `title`: ニュースの見出し
+   - `body`: 本文（改行 OK、markdown OK）
+   - `image_url`: 任意。Storage に画像をアップ → URL を貼り付け
+   - `published_at`: 既定で `now()` が入るので基本触らない
+3. 1 分以内にフロント側で自動反映される。
+
+---
+
+## 5️⃣ 今後の展望 (v2 以降)
+- **管理画面**: 認証済み運営ユーザー専用の簡易 CMS 実装。
+- **ドラフト / 公開切替**: `is_published` カラム追加でステージング運用。
+- **多言語対応**: `language` カラム追加、ユーザーの `i18n` 設定でフィルタリング。
+- **ピン留め**: `is_pinned` (bool) + `pinned_order` でお知らせを固定表示。
+- **Realtime**: Supabase Realtime subscribe で push 配信。
+
+---
+
+## ✅ 検証項目 (v1)
+- [ ] 5 件以上登録した場合、最新 5 件のみ表示されるか
+- [ ] 画像無しニュースでもレイアウトが崩れないか
+- [ ] RLS によりフロントから書き込みがブロックされているか
+- [ ] 投稿後 60 秒以内に反映されるか
+
+---
+**作成者**: AI Assistant
+description:
+globs:
+alwaysApply: false
+---
