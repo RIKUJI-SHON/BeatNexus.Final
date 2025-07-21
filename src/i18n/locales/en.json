@@ -1800,5 +1800,11 @@
     "confirmEmailDescription": "We've sent a confirmation link to <strong>{{email}}</strong>. Please check your inbox (and spam folder) to complete your registration.",
     "gotIt": "Got it!",
     "country": "Country"
+  },
+  "newSeasonModal": {
+    "title": "🎉 New Season Started!",
+    "description": "A new season has begun! Join battles to climb the rankings or vote for your favorite creators to earn points!",
+    "goToBattle": "Join Battle",
+    "goToVote": "Go Vote"
   }
 }

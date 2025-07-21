@@ -6,6 +6,32 @@ import { useBattleMatchedStore } from './battleMatchedStore';
 import { getCurrentRank } from '../lib/rankUtils';
 import { BattleMatchedData } from '../components/ui/BattleMatchedModal';
 
+// Helper function to handle season start notifications
+const handleSeasonStartNotification = async (notificationData: Notification) => {
+  console.log('🎉 [NewSeasonModal] handleSeasonStartNotification called:', notificationData);
+  
+  try {
+    console.log('🚀 [NewSeasonModal] Opening new season modal...');
+    
+    // NewSeasonModalを表示
+    const { useModalStore } = await import('./useModalStore');
+    const { openNewSeasonModal } = useModalStore.getState();
+    openNewSeasonModal();
+    
+    console.log('✅ [NewSeasonModal] Modal open command sent');
+
+    // モーダル表示後に該当通知をデータベースから削除
+    if (notificationData.id) {
+      console.log('🗑️ [NotificationStore] Deleting season start notification from database after modal display');
+      const { deleteNotification } = useNotificationStore.getState();
+      await deleteNotification(notificationData.id);
+      console.log('✅ [NotificationStore] Season start notification deleted from database');
+    }
+  } catch (error) {
+    console.error('❌ [NewSeasonModal] Error handling season start notification:', error);
+  }
+};
+
 // Helper function to handle battle matched notifications
 const handleBattleMatchedNotification = async (notificationData: Notification) => {
   console.log('⚡ [BattleMatchedModal] handleBattleMatchedNotification called:', notificationData);
@@ -209,9 +235,10 @@ export interface Notification {
   id: string;
   title: string;
   message: string;
-  type: 'info' | 'success' | 'warning' | 'battle_matched' | 'battle_win' | 'battle_lose' | 'battle_draw';
+  type: 'info' | 'success' | 'warning' | 'battle_matched' | 'battle_win' | 'battle_lose' | 'battle_draw' | 'season_start';
   isRead: boolean;
   relatedBattleId?: string;
+  relatedSeasonId?: string; // 新シーズン用
   createdAt: Date;
   updatedAt: Date;
 }
@@ -374,6 +401,7 @@ export const useNotificationStore = create<NotificationState>()(
             type: item.type,
             isRead: item.is_read,
             relatedBattleId: item.related_battle_id,
+            relatedSeasonId: item.related_season_id,
             createdAt: new Date(item.created_at),
             updatedAt: new Date(item.updated_at),
           }));
@@ -422,6 +450,26 @@ export const useNotificationStore = create<NotificationState>()(
           } else {
             console.log('🚫 [NotificationStore] No pending battle matched notifications found');
           }
+
+          // 🎉 既に存在する未読シーズン開始通知があればモーダルを表示
+          const pendingSeasonStart = notifications.find(
+            (n) =>
+              !n.isRead &&
+              n.type === 'season_start'
+          );
+
+          console.log('🔍 [NotificationStore] Season start notification search result:', {
+            seasonStartNotifications: notifications.filter(n => n.type === 'season_start').length,
+            foundPending: !!pendingSeasonStart,
+            pendingSeasonStart
+          });
+
+          if (pendingSeasonStart) {
+            console.log('🎉 [NotificationStore] Pending season start found on initial fetch, showing modal');
+            await handleSeasonStartNotification(pendingSeasonStart);
+          } else {
+            console.log('🚫 [NotificationStore] No pending season start notifications found');
+          }
         } catch (error) {
           console.error('Error in fetchNotifications:', error);
           set({ 
@@ -446,6 +494,7 @@ export const useNotificationStore = create<NotificationState>()(
               message: notificationData.message,
               type: notificationData.type,
               related_battle_id: notificationData.relatedBattleId || null,
+              related_season_id: notificationData.relatedSeasonId || null,
             })
             .select()
             .single();

@@ -37,6 +37,9 @@ import { useBattleResultStore } from './store/battleResultStore';
 import { BattleMatchedModal } from './components/ui/BattleMatchedModal';
 import { useBattleMatchedStore } from './store/battleMatchedStore';
 
+// New Season Modal
+import { NewSeasonModal } from './components/ui/NewSeasonModal';
+
 // Pages
 import HomePage from './pages/HomePage';
 import BattlesPage from './pages/BattlesPage';
@@ -160,7 +163,7 @@ function AppContent() {
     } else {
       console.log('🚫 [App] No authenticated user, skipping notification system');
     }
-  }, [user, subscribeToNotifications, fetchNotifications]);
+  }, [user, subscribeToNotifications, fetchNotifications]); // checkForNewSeason, fetchActiveSeasonを依存配列から削除
 
   // 注意: オンボーディング表示は AuthProvider で新規アカウント作成時のみトリガーされる
   // ここでは手動でのオンボーディング表示制御はしない
@@ -199,6 +202,9 @@ function AppContent() {
         onClose={closeMatchModal}
         matchData={pendingMatch}
       />
+      
+      {/* New Season Modal - Global Level */}
+      <NewSeasonModal />
     </Router>
   );
 }

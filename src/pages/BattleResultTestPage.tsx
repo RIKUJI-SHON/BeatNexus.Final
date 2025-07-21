@@ -1,11 +1,15 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Button } from '../components/ui/Button';
 import { useBattleResultStore } from '../store/battleResultStore';
 import { useBattleMatchedStore } from '../store/battleMatchedStore';
+import { useModalStore } from '../store/useModalStore';
+import { useNotificationStore } from '../store/notificationStore';
 
 const BattleResultTestPage: React.FC = () => {
   const { showResultModal } = useBattleResultStore();
   const { showMatchModal } = useBattleMatchedStore();
+  const { openNewSeasonModal } = useModalStore();
+  const { createNotification } = useNotificationStore();
 
   const handleShowVictory = () => {
     showResultModal({
@@ -53,6 +57,24 @@ const BattleResultTestPage: React.FC = () => {
     });
   };
 
+  const handleShowNewSeason = () => {
+    openNewSeasonModal();
+  };
+
+  const handleCreateSeasonStartNotification = async () => {
+    try {
+      await createNotification({
+        title: '🎉 新シーズン開始！',
+        message: 'テストシーズンが開始されました！新しいバトルにチャレンジしましょう！',
+        type: 'season_start',
+        relatedSeasonId: '53f379c2-dcc1-4f71-a7a0-819b9bf4c8f1' // 現在のテストシーズンID
+      });
+      console.log('✅ Season start notification created successfully');
+    } catch (error) {
+      console.error('❌ Failed to create season start notification:', error);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-950 flex flex-col items-center justify-center gap-6 p-6">
       <h1 className="text-3xl font-bold text-white mb-8">Battle Result Modal Test</h1>
@@ -72,6 +94,14 @@ const BattleResultTestPage: React.FC = () => {
 
         <Button onClick={handleShowMatch} className="bg-purple-600 hover:bg-purple-700 px-8 py-3 font-semibold">
           マッチメイクモーダル
+        </Button>
+
+        <Button onClick={handleShowNewSeason} className="bg-green-600 hover:bg-green-700 px-8 py-3 font-semibold">
+          新シーズンモーダル
+        </Button>
+
+        <Button onClick={handleCreateSeasonStartNotification} className="bg-purple-600 hover:bg-purple-700 px-6 py-3 font-semibold">
+          シーズン開始通知テスト
         </Button>
       </div>
     </div>
