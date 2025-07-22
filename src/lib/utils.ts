@@ -1,4 +1,4 @@
-import { type ClassValue, clsx } from "clsx"
+import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 
 export function cn(...inputs: ClassValue[]) {
@@ -6,34 +6,37 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 /**
- * 言語コードを検証して正規化する関数
- * @param language - 検証する言語コード
- * @returns 正規化された言語コード ('en' | 'ja')
+ * ブラウザの言語設定を検出し、サポートされている言語コードを返す
  */
-export const validateLanguageCode = (language: string): string => {
-  if (language === 'ja' || language === 'en') {
-    return language;
+export function detectBrowserLanguage(): string {
+  // サポートされている言語
+  const supportedLanguages = ['ja', 'en'];
+  
+  // ブラウザの言語設定を取得
+  const browserLanguage = navigator.language || (navigator as any).userLanguage;
+  
+  // 言語コードを正規化（例: "ja-JP" -> "ja"）
+  const languageCode = browserLanguage.split('-')[0].toLowerCase();
+  
+  // サポートされている言語かチェック
+  if (supportedLanguages.includes(languageCode)) {
+    return languageCode;
   }
-  // 不正な値の場合はデフォルトを返す
-  console.warn('Unexpected language value:', language);
-  return 'en'; // デフォルトは英語
-};
+  
+  // デフォルトは日本語
+  return 'ja';
+}
 
 /**
- * ブラウザの言語設定を検出する関数
- * @returns 検出された言語コード ('en' | 'ja')
+ * 言語コードが有効かどうかをチェックし、有効な言語コードを返す
  */
-export const detectBrowserLanguage = (): string => {
-  const browserLanguages = navigator.languages || [navigator.language];
+export function validateLanguageCode(language: string): string {
+  const supportedLanguages = ['ja', 'en'];
   
-  for (const lang of browserLanguages) {
-    const normalizedLang = lang.toLowerCase();
-    if (normalizedLang.startsWith('ja')) {
-      return 'ja';
-    }
-    if (normalizedLang.startsWith('en')) {
-      return 'en';
-    }
+  if (supportedLanguages.includes(language.toLowerCase())) {
+    return language.toLowerCase();
   }
-  return 'en'; // デフォルト
-}; 
+  
+  // 無効な場合はデフォルトの日本語を返す
+  return 'ja';
+}

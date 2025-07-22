@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Plus, Trophy, Crown, ArrowRight, Play, Mic, Users, Archive, Medal, Star } from 'lucide-react';
-import beatnexusWordmark from '../assets/images/BEATNEXUS-WORDMARK.png';
-import heroBackground from '../assets/images/hero-background.png';
 import { BattleCard } from '../components/battle/BattleCard';
 import { ArchivedBattleCard } from '../components/battle/ArchivedBattleCard';
 import { BattleFilters } from '../components/battle/BattleFilters';
@@ -21,7 +19,7 @@ import { getRankColorClasses } from '../utils/rankUtils';
 import { useOnboardingStore } from '../store/onboardingStore';
 import { MonthlyLimitCard } from '../components/ui/SubmissionCooldownCard';
 import { TabbedRanking } from '../components/ui/TabbedRanking';
-import NewsSidebar from '../components/ui/NewsSidebar';
+import NewsCarousel from '../components/battle/NewsCarousel';
 
 const BattlesPage: React.FC = () => {
   const { t } = useTranslation();
@@ -37,12 +35,11 @@ const BattlesPage: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 10; // 1ページあたりの表示件数
   
-  const { battles, activeBattles, archivedBattles, archivedBattlesCount, communityMembersCount, totalVotesCount, totalSubmissionsCount, loading, archiveLoading, error, fetchBattles, fetchArchivedBattles, fetchArchivedBattlesCount, fetchCommunityMembersCount, fetchTotalVotesCount, fetchTotalSubmissionsCount } = useBattleStore();
+  const { battles, archivedBattles, archivedBattlesCount, communityMembersCount, totalVotesCount, totalSubmissionsCount, loading, archiveLoading, error, fetchBattles, fetchArchivedBattles, fetchArchivedBattlesCount, fetchCommunityMembersCount, fetchTotalVotesCount, fetchTotalSubmissionsCount } = useBattleStore();
   const { rankings, loading: rankingsLoading, fetchRankings } = useRankingStore();
   const { user } = useAuthStore();
   
-  // Get top 10 rankings safely (not used, TabbedRanking handles its own limit)
-  const topRankings = rankings?.slice(0, 10) || [];
+  // TabbedRanking handles its own limit
 
   useEffect(() => {
     const initializeData = async () => {
@@ -201,70 +198,17 @@ const BattlesPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-950 py-10">
       <div className="container-ultra-wide">
-        {/* Welcome Area - Enhanced Design */}
-        <section className="relative mb-8 overflow-hidden rounded-2xl border border-gray-700/50">
-          {/* Background Image */}
-          <div className="absolute inset-0">
-            {/* 背景画像 - ホーム画面と同じ画像を使用 */}
-            <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: `url(${heroBackground})` }}>
-              {/* フォールバック: オンライン画像（開発用） */}
-              <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?q=80&w=1920&auto=format&fit=crop')] bg-cover bg-center bg-no-repeat [background-image:var(--fallback-bg)]"></div>
-              
-              {/* グラデーションオーバーレイで可読性を確保 */}
-              <div className="absolute inset-0 bg-gradient-to-br from-gray-900/90 via-gray-900/85 to-gray-950/90"></div>
-              <div className="absolute inset-0 bg-gradient-to-t from-gray-950/60 via-transparent to-gray-900/40"></div>
-            </div>
-          </div>
-
-          {/* Enhanced Background Effects */}
-          <div className="absolute inset-0">
-            <div className="absolute top-10 left-10 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl"></div>
-            <div className="absolute bottom-10 right-10 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl"></div>
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-yellow-500/5 rounded-full blur-3xl"></div>
-          </div>
-
-          <div className="relative px-6 py-10 text-center z-10">
-            {/* Welcome Title - BEATNEXUS Wordmark */}
-            <div className="mb-4 animate-fade-in relative">
-              <div className="relative group">
-                {/* Glow Effect Background */}
-                <div className="absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity duration-500">
-                  <img 
-                    src={beatnexusWordmark} 
-                    alt=""
-                    className="mx-auto max-w-xs sm:max-w-sm md:max-w-md h-auto blur-sm scale-110 filter brightness-150"
-                  />
-                </div>
-                
-                {/* Main Wordmark */}
-                <img 
-                  src={beatnexusWordmark} 
-                  alt="BEATNEXUS"
-                  className="relative mx-auto max-w-xs sm:max-w-sm md:max-w-md h-auto drop-shadow-2xl group-hover:scale-105 transition-all duration-500 filter group-hover:brightness-110"
-                />
-              </div>
-            </div>
-            
-            {/* Enhanced Stats Grid - Hidden on mobile */}
-            {/* 統計カード（投稿動画数・コミュニティメンバー・総投票数）を削除 */}
-            
-            {/* Guide Link */}
-            <div className="text-xs text-gray-400 animate-fade-in-delay-3">
-              {t('battlesPage.welcome.guide.newHere')}{' '}
-              <button 
-                onClick={() => setOnboardingModalOpen(true)}
-                className="text-cyan-400 hover:text-cyan-300 font-semibold hover:underline transition-colors"
-              >
-                {t('battlesPage.welcome.guide.checkGuide')}
-              </button>
-            </div>
-          </div>
-        </section>
+        {/* News Carousel - Enhanced Design */}
+        <NewsCarousel />
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
-          {/* Left Sidebar - ニュース */}
+          {/* Left Sidebar - Monthly Limit */}
           <aside className="lg:col-span-1 space-y-6 sticky-sidebar hidden lg:block">
-              <NewsSidebar />
+            {user && (
+              <div className="w-full">
+                <MonthlyLimitCard />
+              </div>
+            )}
           </aside>
 
           {/* Main Content */}
@@ -458,13 +402,6 @@ const BattlesPage: React.FC = () => {
               showViewAllButton={true}
             />
 
-            {/* Monthly Limit Card - ランキングの下に配置 */}
-            {user && (
-              <div className="w-full hidden lg:block">
-                <MonthlyLimitCard />
-              </div>
-            )}
-
           </aside>
         </div>
 
@@ -477,13 +414,6 @@ const BattlesPage: React.FC = () => {
             maxItems={5}
             showViewAllButton={true}
           />
-        </div>
-      </div>
-      
-      {/* Mobile News Sidebar - モバイル版でのみ表示 */}
-      <div className="lg:hidden mt-6 w-full">
-        <div className="w-full px-4 sm:px-6">
-          <NewsSidebar />
         </div>
       </div>
       
