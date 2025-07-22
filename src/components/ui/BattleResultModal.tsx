@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Modal } from './Modal';
-import { Button } from './Button';
-import { useBattleResultStore, BattleResult } from '../../store/battleResultStore';
-import { calculateRankProgress } from '../../lib/rankUtils';
+import { BattleResult } from '../../store/battleResultStore';
 import { Share2 } from 'lucide-react';
 
 interface BattleResultModalProps {
@@ -42,8 +40,6 @@ export const BattleResultModal: React.FC<BattleResultModalProps> = ({
 
   const isDraw = !result.isWin && result.ratingChange === 0;
   const isPositiveChange = result.ratingChange > 0;
-  const rankProgress = calculateRankProgress(result.newRating);
-  const currentRankDisplay = rankProgress.currentRank.displayName;
 
   return (
     <>
@@ -135,7 +131,6 @@ export const BattleResultModal: React.FC<BattleResultModalProps> = ({
                     onClick={() => {
                       const text = t('battle.result.shareText', {
                         rating: result.newRating,
-                        rank: currentRankDisplay,
                         opponent: result.opponentUsername
                       });
                       const tags = "#BeatNexus #ビートボックス #Beatbox";

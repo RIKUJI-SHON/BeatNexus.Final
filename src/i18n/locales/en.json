@@ -121,7 +121,11 @@
       },
       "badges": {
         "title": "Special Badges",
-        "description": "Exclusive badges for Pro users"
+        "description": "Exclusive badges for Pro users",
+        "details": {
+          "description": "Description",
+          "earnedDate": "Earned Date"
+        }
       }
     }
   },
@@ -795,6 +799,9 @@
       "profileUpdateFailedDB": "Failed to update profile in database.",
       "profileUpdateSuccess": "Profile updated successfully!",
       "profileUpdateFailed": "Failed to update profile."
+    },
+    "emptyStates": {
+      "battleHistory": "Build your battle history by winning more battles!"
     }
   },
   "rankingPage": {
@@ -1134,7 +1141,8 @@
       "completedBattles": {
         "title": "No Battle History",
         "description": "Completed battles will appear here. Join new battles to build your history!",
-        "button": "Start Battle"
+        "button": "Start Battle",
+        "hint": "Build your battle history by winning more battles!"
       },
       "loadingHistory": "Loading history..."
     },

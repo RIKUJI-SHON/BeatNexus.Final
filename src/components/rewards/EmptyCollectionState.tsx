@@ -1,8 +1,8 @@
 import React from 'react';
-import { Medal, Shield, Trophy } from 'lucide-react';
+import { Medal, Trophy } from 'lucide-react';
 
 interface EmptyCollectionStateProps {
-  type?: 'all' | 'badges' | 'frames';
+  type?: 'all' | 'badges';
   className?: string;
 }
 
@@ -19,18 +19,11 @@ const EmptyCollectionState: React.FC<EmptyCollectionStateProps> = ({
           description: 'シーズンでのランキング達成でバッジを獲得できます',
           tip: 'ランキング上位入賞でレアなバッジをゲット！'
         };
-      case 'frames':
-        return {
-          icon: Shield,
-          title: 'フレームがありません',
-          description: 'プロフィール画像を装飾するフレームがまだありません',
-          tip: '特別な成績を収めてオリジナルフレームを獲得しよう！'
-        };
       default:
         return {
           icon: Trophy,
           title: 'コレクションが空です',
-          description: 'シーズンでの活躍により、バッジやフレームを獲得できます',
+          description: 'シーズンでの活躍により、バッジを獲得できます',
           tip: 'バトルで勝利を重ねて、限定アイテムをコレクションしよう！'
         };
     }

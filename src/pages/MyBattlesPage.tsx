@@ -89,11 +89,6 @@ const MyBattlesPage: React.FC = () => {
   const loading = battlesLoading || submissionsLoading;
   const error = battlesError || submissionsError;
 
-  const handleWatchReplay = (battle: ArchivedBattle) => {
-    // バトルリプレイページに遷移
-    navigate(`/battle-replay/${battle.id}`);
-  };
-
   // ページネーション処理
   const getCurrentPageData = () => {
     const currentPage = activePageState[`${activeTab}Page` as keyof typeof activePageState];
@@ -284,22 +279,57 @@ const MyBattlesPage: React.FC = () => {
                   />
                 </>
               ) : (
-                <Card className="bg-gray-900 border border-gray-800 p-8 text-center">
-                  <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gray-800 flex items-center justify-center">
-                    <Mic className="h-10 w-10 text-gray-600" />
+                <div className={`
+                  flex flex-col items-center justify-center
+                  py-16 px-8 text-center
+                  bg-gradient-to-br from-slate-800/40 to-slate-700/30
+                  rounded-xl border border-slate-600/30
+                `}>
+                  {/* アイコン */}
+                  <div className="relative mb-6">
+                    <div className="w-24 h-24 bg-gradient-to-br from-slate-700/60 to-slate-600/40 rounded-2xl flex items-center justify-center border border-slate-500/30">
+                      <Mic className="w-12 h-12 text-slate-400" />
+                    </div>
+                    
+                    {/* 装飾的なグロー効果 */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-slate-500/10 to-slate-600/10 rounded-2xl blur-xl opacity-50" />
                   </div>
-                  <h3 className="text-xl font-semibold text-white mb-4">{t('myBattlesPage.empty.activeBattles.title')}</h3>
-                  <p className="text-gray-400 mb-6">
-                    {t('myBattlesPage.empty.activeBattles.description')}
-                  </p>
+
+                  {/* メッセージ */}
+                  <div className="space-y-4 max-w-md">
+                    <h3 className="text-xl font-semibold text-slate-200">
+                      {t('myBattlesPage.empty.activeBattles.title')}
+                    </h3>
+                    
+                    <p className="text-slate-400 text-sm leading-relaxed">
+                      {t('myBattlesPage.empty.activeBattles.description')}
+                    </p>
+                    
+                    {/* ヒント */}
+                    <div className="mt-6 p-4 bg-slate-800/60 rounded-lg border border-slate-600/40">
+                      <p className="text-cyan-300 text-xs font-medium flex items-center justify-center gap-2">
+                        <Mic className="w-4 h-4" />
+                        新しいバトルを始めて、スキルを披露しよう！
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* 装飾的なパーティクル */}
+                  <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                    <div className="absolute top-10 left-10 w-2 h-2 bg-cyan-400/20 rounded-full animate-pulse" />
+                    <div className="absolute top-20 right-16 w-1 h-1 bg-purple-400/30 rounded-full animate-pulse" style={{ animationDelay: '1s' }} />
+                    <div className="absolute bottom-16 left-20 w-1.5 h-1.5 bg-amber-400/20 rounded-full animate-pulse" style={{ animationDelay: '2s' }} />
+                    <div className="absolute bottom-10 right-10 w-2 h-2 bg-pink-400/20 rounded-full animate-pulse" style={{ animationDelay: '0.5s' }} />
+                  </div>
+
                   <Button
                     variant="primary"
-                    className="bg-gradient-to-r from-cyan-500 to-purple-500"
+                    className="bg-gradient-to-r from-cyan-500 to-purple-500 mt-6"
                     onClick={() => navigate('/post')}
                   >
                     {t('myBattlesPage.empty.activeBattles.button')}
                   </Button>
-                </Card>
+                </div>
               )
             )}
 
@@ -325,15 +355,49 @@ const MyBattlesPage: React.FC = () => {
                   />
                 </>
               ) : (
-                <Card className="bg-gray-900 border border-gray-800 p-8 text-center">
-                  <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gray-800 flex items-center justify-center">
-                    <Clock className="h-10 w-10 text-gray-600" />
+                <div className={`
+                  flex flex-col items-center justify-center
+                  py-16 px-8 text-center
+                  bg-gradient-to-br from-slate-800/40 to-slate-700/30
+                  rounded-xl border border-slate-600/30
+                `}>
+                  {/* アイコン */}
+                  <div className="relative mb-6">
+                    <div className="w-24 h-24 bg-gradient-to-br from-slate-700/60 to-slate-600/40 rounded-2xl flex items-center justify-center border border-slate-500/30">
+                      <Clock className="w-12 h-12 text-slate-400" />
+                    </div>
+                    
+                    {/* 装飾的なグロー効果 */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-slate-500/10 to-slate-600/10 rounded-2xl blur-xl opacity-50" />
                   </div>
-                  <h3 className="text-xl font-semibold text-white mb-4">{t('myBattlesPage.empty.waitingSubmissions.title')}</h3>
-                  <p className="text-gray-400">
-                    {t('myBattlesPage.empty.waitingSubmissions.description')}
-                  </p>
-                </Card>
+
+                  {/* メッセージ */}
+                  <div className="space-y-4 max-w-md">
+                    <h3 className="text-xl font-semibold text-slate-200">
+                      {t('myBattlesPage.empty.waitingSubmissions.title')}
+                    </h3>
+                    
+                    <p className="text-slate-400 text-sm leading-relaxed">
+                      {t('myBattlesPage.empty.waitingSubmissions.description')}
+                    </p>
+                    
+                    {/* ヒント */}
+                    <div className="mt-6 p-4 bg-slate-800/60 rounded-lg border border-slate-600/40">
+                      <p className="text-cyan-300 text-xs font-medium flex items-center justify-center gap-2">
+                        <Clock className="w-4 h-4" />
+                        新しい投稿をしてマッチングを待とう！
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* 装飾的なパーティクル */}
+                  <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                    <div className="absolute top-10 left-10 w-2 h-2 bg-cyan-400/20 rounded-full animate-pulse" />
+                    <div className="absolute top-20 right-16 w-1 h-1 bg-purple-400/30 rounded-full animate-pulse" style={{ animationDelay: '1s' }} />
+                    <div className="absolute bottom-16 left-20 w-1.5 h-1.5 bg-amber-400/20 rounded-full animate-pulse" style={{ animationDelay: '2s' }} />
+                    <div className="absolute bottom-10 right-10 w-2 h-2 bg-pink-400/20 rounded-full animate-pulse" style={{ animationDelay: '0.5s' }} />
+                  </div>
+                </div>
               )
             )}
 
@@ -349,8 +413,6 @@ const MyBattlesPage: React.FC = () => {
                     <ArchivedBattleCard 
                       key={battle.id} 
                       battle={battle} 
-                      userId={user?.id || ''}
-                      onWatchReplay={handleWatchReplay}
                     />
                   ))}
                   
@@ -365,22 +427,57 @@ const MyBattlesPage: React.FC = () => {
                   />
                 </>
               ) : (
-                <Card className="bg-gray-900 border border-gray-800 p-8 text-center">
-                  <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gray-800 flex items-center justify-center">
-                    <Archive className="h-10 w-10 text-gray-600" />
+                <div className={`
+                  flex flex-col items-center justify-center
+                  py-16 px-8 text-center
+                  bg-gradient-to-br from-slate-800/40 to-slate-700/30
+                  rounded-xl border border-slate-600/30
+                `}>
+                  {/* アイコン */}
+                  <div className="relative mb-6">
+                    <div className="w-24 h-24 bg-gradient-to-br from-slate-700/60 to-slate-600/40 rounded-2xl flex items-center justify-center border border-slate-500/30">
+                      <Archive className="w-12 h-12 text-slate-400" />
+                    </div>
+                    
+                    {/* 装飾的なグロー効果 */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-slate-500/10 to-slate-600/10 rounded-2xl blur-xl opacity-50" />
                   </div>
-                  <h3 className="text-xl font-semibold text-white mb-4">{t('myBattlesPage.empty.completedBattles.title')}</h3>
-                  <p className="text-gray-400 mb-6">
-                    {t('myBattlesPage.empty.completedBattles.description')}
-                  </p>
+
+                  {/* メッセージ */}
+                  <div className="space-y-4 max-w-md">
+                    <h3 className="text-xl font-semibold text-slate-200">
+                      {t('myBattlesPage.empty.completedBattles.title')}
+                    </h3>
+                    
+                    <p className="text-slate-400 text-sm leading-relaxed">
+                      {t('myBattlesPage.empty.completedBattles.description')}
+                    </p>
+                    
+                    {/* ヒント */}
+                    <div className="mt-6 p-4 bg-slate-800/60 rounded-lg border border-slate-600/40">
+                      <p className="text-cyan-300 text-xs font-medium flex items-center justify-center gap-2">
+                        <Archive className="w-4 h-4" />
+                        {t('myBattlesPage.empty.completedBattles.hint')}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* 装飾的なパーティクル */}
+                  <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                    <div className="absolute top-10 left-10 w-2 h-2 bg-cyan-400/20 rounded-full animate-pulse" />
+                    <div className="absolute top-20 right-16 w-1 h-1 bg-purple-400/30 rounded-full animate-pulse" style={{ animationDelay: '1s' }} />
+                    <div className="absolute bottom-16 left-20 w-1.5 h-1.5 bg-amber-400/20 rounded-full animate-pulse" style={{ animationDelay: '2s' }} />
+                    <div className="absolute bottom-10 right-10 w-2 h-2 bg-pink-400/20 rounded-full animate-pulse" style={{ animationDelay: '0.5s' }} />
+                  </div>
+
                   <Button
                     variant="primary"
-                    className="bg-gradient-to-r from-cyan-500 to-purple-500"
+                    className="bg-gradient-to-r from-cyan-500 to-purple-500 mt-6"
                     onClick={() => navigate('/post')}
                   >
                     {t('myBattlesPage.empty.completedBattles.button')}
                   </Button>
-                </Card>
+                </div>
               )
             )}
           </div>

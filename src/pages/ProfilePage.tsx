@@ -481,16 +481,49 @@ const ProfilePage: React.FC = () => {
                   ))}
                 </div>
               ) : (
-                <Card className="p-12 text-center bg-gradient-to-br from-slate-800/80 to-slate-700/60 border border-slate-600/50 backdrop-blur-sm">
-                  <div className="flex flex-col items-center space-y-4">
-                    <div className="relative">
-                      <Target className="h-20 w-20 text-slate-400" />
-                      <div className="absolute inset-0 blur-xl bg-cyan-400/10 rounded-full" />
+                <div className={`
+                  flex flex-col items-center justify-center
+                  py-16 px-8 text-center
+                  bg-gradient-to-br from-slate-800/40 to-slate-700/30
+                  rounded-xl border border-slate-600/30
+                `}>
+                  {/* アイコン */}
+                  <div className="relative mb-6">
+                    <div className="w-24 h-24 bg-gradient-to-br from-slate-700/60 to-slate-600/40 rounded-2xl flex items-center justify-center border border-slate-500/30">
+                      <Target className="w-12 h-12 text-slate-400" />
                     </div>
-                    <h3 className="text-2xl font-bold text-white mb-2">{t('profilePage.battles.noActiveBattlesTitle')}</h3>
-                    <p className="text-slate-200 max-w-md leading-relaxed">{t('profilePage.battles.noActiveBattlesDescription')}</p>
+                    
+                    {/* 装飾的なグロー効果 */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-slate-500/10 to-slate-600/10 rounded-2xl blur-xl opacity-50" />
                   </div>
-                </Card>
+
+                  {/* メッセージ */}
+                  <div className="space-y-4 max-w-md">
+                    <h3 className="text-xl font-semibold text-slate-200">
+                      {t('profilePage.battles.noActiveBattlesTitle')}
+                    </h3>
+                    
+                    <p className="text-slate-400 text-sm leading-relaxed">
+                      {t('profilePage.battles.noActiveBattlesDescription')}
+                    </p>
+                    
+                    {/* ヒント */}
+                    <div className="mt-6 p-4 bg-slate-800/60 rounded-lg border border-slate-600/40">
+                      <p className="text-cyan-300 text-xs font-medium flex items-center justify-center gap-2">
+                        <Target className="w-4 h-4" />
+                        新しいバトルに参加してスキルを試そう！
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* 装飾的なパーティクル */}
+                  <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                    <div className="absolute top-10 left-10 w-2 h-2 bg-cyan-400/20 rounded-full animate-pulse" />
+                    <div className="absolute top-20 right-16 w-1 h-1 bg-purple-400/30 rounded-full animate-pulse" style={{ animationDelay: '1s' }} />
+                    <div className="absolute bottom-16 left-20 w-1.5 h-1.5 bg-amber-400/20 rounded-full animate-pulse" style={{ animationDelay: '2s' }} />
+                    <div className="absolute bottom-10 right-10 w-2 h-2 bg-pink-400/20 rounded-full animate-pulse" style={{ animationDelay: '0.5s' }} />
+                  </div>
+                </div>
               )}
             </div>
           )}
@@ -507,16 +540,49 @@ const ProfilePage: React.FC = () => {
                   ))}
                 </div>
               ) : (
-                <Card className="p-12 text-center bg-gradient-to-br from-slate-800/80 to-slate-700/60 border border-slate-600/50 backdrop-blur-sm">
-                  <div className="flex flex-col items-center space-y-4">
-                    <div className="relative">
-                      <Archive className="h-20 w-20 text-slate-400" />
-                      <div className="absolute inset-0 blur-xl bg-purple-400/10 rounded-full" />
+                <div className={`
+                  flex flex-col items-center justify-center
+                  py-16 px-8 text-center
+                  bg-gradient-to-br from-slate-800/40 to-slate-700/30
+                  rounded-xl border border-slate-600/30
+                `}>
+                  {/* アイコン */}
+                  <div className="relative mb-6">
+                    <div className="w-24 h-24 bg-gradient-to-br from-slate-700/60 to-slate-600/40 rounded-2xl flex items-center justify-center border border-slate-500/30">
+                      <Archive className="w-12 h-12 text-slate-400" />
                     </div>
-                    <h3 className="text-2xl font-bold text-white mb-2">{t('profilePage.battles.noArchivedBattlesTitle')}</h3>
-                    <p className="text-slate-200 max-w-md leading-relaxed">{t('profilePage.battles.noArchivedBattlesDescription')}</p>
+                    
+                    {/* 装飾的なグロー効果 */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-slate-500/10 to-slate-600/10 rounded-2xl blur-xl opacity-50" />
                   </div>
-                </Card>
+
+                  {/* メッセージ */}
+                  <div className="space-y-4 max-w-md">
+                    <h3 className="text-xl font-semibold text-slate-200">
+                      {t('profilePage.battles.noArchivedBattlesTitle')}
+                    </h3>
+                    
+                    <p className="text-slate-400 text-sm leading-relaxed">
+                      {t('profilePage.battles.noArchivedBattlesDescription')}
+                    </p>
+                    
+                    {/* ヒント */}
+                    <div className="mt-6 p-4 bg-slate-800/60 rounded-lg border border-slate-600/40">
+                      <p className="text-cyan-300 text-xs font-medium flex items-center justify-center gap-2">
+                        <Archive className="w-4 h-4" />
+                        {t('profilePage.emptyStates.battleHistory')}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* 装飾的なパーティクル */}
+                  <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                    <div className="absolute top-10 left-10 w-2 h-2 bg-cyan-400/20 rounded-full animate-pulse" />
+                    <div className="absolute top-20 right-16 w-1 h-1 bg-purple-400/30 rounded-full animate-pulse" style={{ animationDelay: '1s' }} />
+                    <div className="absolute bottom-16 left-20 w-1.5 h-1.5 bg-amber-400/20 rounded-full animate-pulse" style={{ animationDelay: '2s' }} />
+                    <div className="absolute bottom-10 right-10 w-2 h-2 bg-pink-400/20 rounded-full animate-pulse" style={{ animationDelay: '0.5s' }} />
+                  </div>
+                </div>
               )}
             </div>
           )}

@@ -2,7 +2,7 @@ export interface Reward {
   id: string;
   name: string;
   description: string | null;
-  type: 'badge' | 'frame';
+  type: 'badge';
   image_url: string;
   season_id: string | null;
   rank_requirement: number | null;
@@ -23,7 +23,5 @@ export interface UserReward {
 
 export interface CollectionStats {
   totalBadges: number;
-  totalFrames: number;
   earnedBadges: number;
-  earnedFrames: number;
 }
