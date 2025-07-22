@@ -743,6 +743,7 @@
       "description": "プロフィールを表示するにはログインするか、URLでユーザーを指定してください。"
     },
     "seasonRating": "シーズンレート",
+    "overallRating": "通算レート",
     "rank": {
       "currentRank": "現在のランク",
       "nextRank": "次のランク",
@@ -770,7 +771,8 @@
     "tabs": {
       "currentBattles": "現在のバトル",
       "battleHistory": "対戦履歴",
-      "posts": "投稿"
+      "posts": "投稿",
+      "collection": "コレクション"
     },
     "battles": {
       "noActiveBattlesTitle": "進行中のバトルはありません",

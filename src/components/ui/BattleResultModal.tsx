@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Modal } from './Modal';
 import { Button } from './Button';
-import { RankProgressBar } from '../profile/RankProgressBar';
 import { useBattleResultStore, BattleResult } from '../../store/battleResultStore';
 import { calculateRankProgress } from '../../lib/rankUtils';
 import { Share2 } from 'lucide-react';
@@ -126,15 +125,6 @@ export const BattleResultModal: React.FC<BattleResultModalProps> = ({
                     </span>
                   </div>
                 </div>
-              </div>
-
-              {/* Rank Progress Bar */}
-              <div className="mb-5">
-                <RankProgressBar 
-                  rankProgress={rankProgress}
-                  currentRating={result.newRating}
-                  showCurrentBadge={false}
-                />
               </div>
 
               {/* Share & Archive Buttons (Win) */}

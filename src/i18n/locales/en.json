@@ -741,6 +741,7 @@
       "description": "Please log in to view your profile, or specify a user in the URL."
     },
     "seasonRating": "Season Rating",
+    "overallRating": "Overall Rating",
     "rank": {
       "currentRank": "Current Rank",
       "nextRank": "Next Rank",
@@ -768,7 +769,8 @@
     "tabs": {
       "currentBattles": "Current Battles",
       "battleHistory": "Battle History",
-      "posts": "Posts"
+      "posts": "Posts",
+      "collection": "Collection"
     },
     "battles": {
       "noActiveBattlesTitle": "No Active Battles",

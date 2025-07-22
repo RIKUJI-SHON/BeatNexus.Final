@@ -19,7 +19,6 @@ export const AvatarUpload: React.FC<AvatarUploadProps> = ({
   onAvatarUpdate,
   className = '',
   isEditing,
-  userId,
   compact = false
 }) => {
   const { user } = useAuthStore();
@@ -74,7 +73,7 @@ export const AvatarUpload: React.FC<AvatarUploadProps> = ({
         }
       }
 
-      const { data: uploadData, error: uploadError } = await supabase.storage
+      const { error: uploadError } = await supabase.storage
         .from('avatars')
         .upload(fileName, file, {
           cacheControl: '3600',
@@ -104,9 +103,10 @@ export const AvatarUpload: React.FC<AvatarUploadProps> = ({
       onAvatarUpdate(newAvatarUrl);
       setPreviewUrl(null);
       
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Avatar upload error:', error);
-      setUploadError(error.message || 'アップロードに失敗しました');
+      const errorMessage = error instanceof Error ? error.message : 'アップロードに失敗しました';
+      setUploadError(errorMessage);
       setPreviewUrl(null);
     } finally {
       setIsUploading(false);
@@ -132,8 +132,9 @@ export const AvatarUpload: React.FC<AvatarUploadProps> = ({
 
   return (
     <div className={`relative ${className}`}>
-      <div className="relative group">
-        <div className={`${className.includes('w-40') ? 'w-40 h-40 rounded-full border-4 border-gray-800' : className.includes('w-24') ? 'w-24 h-24 rounded-lg border-2 border-cyan-500/30' : 'w-32 h-32 rounded-lg border-2 border-cyan-500/30'} overflow-hidden shadow-lg`}>
+      <div className="relative group w-full h-full">
+        {/* 固定サイズコンテナ - 編集モード時もサイズが変わらない */}
+        <div className="w-full h-full rounded-full border-4 border-slate-700 overflow-hidden shadow-2xl">
           <img 
             src={displayUrl}
             alt="プロフィール画像"
@@ -141,22 +142,25 @@ export const AvatarUpload: React.FC<AvatarUploadProps> = ({
           />
         </div>
         
+        {/* 編集モード時のオーバーレイ */}
         {isEditing && (
           <div 
-            className={`absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 ${className.includes('w-40') ? 'rounded-full' : 'rounded-lg'} flex items-center justify-center cursor-pointer`}
+            className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-full flex items-center justify-center cursor-pointer"
             onClick={handleUploadClick}
           >
             {isUploading ? (
-              <Loader className={`${className.includes('w-24') ? 'h-6 w-6' : 'h-8 w-8'} text-white animate-spin`} />
+              <Loader className="h-8 w-8 text-white animate-spin" />
             ) : (
-              !previewUrl && <Camera className={`${className.includes('w-24') ? 'h-6 w-6' : 'h-8 w-8'} text-white`} />
+              !previewUrl && <Camera className="h-8 w-8 text-white" />
             )}
           </div>
         )}
+        
+        {/* プレビューキャンセルボタン */}
         {previewUrl && !isUploading && isEditing && (
           <button
             onClick={handleCancelPreview}
-            className="absolute top-1 right-1 p-1 bg-red-600/80 rounded-full text-white hover:bg-red-500 transition-colors z-10"
+            className="absolute top-2 right-2 p-1 bg-red-600/80 rounded-full text-white hover:bg-red-500 transition-colors z-10"
             aria-label="キャンセル"
           >
             <X className="h-4 w-4" />
@@ -164,32 +168,8 @@ export const AvatarUpload: React.FC<AvatarUploadProps> = ({
         )}
       </div>
 
-      {isEditing && !compact && (
-        <>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/jpeg,image/png,image/webp"
-            onChange={handleFileSelect}
-            className="hidden"
-            disabled={isUploading}
-          />
-          <div className="mt-3 flex justify-center">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleUploadClick}
-              disabled={isUploading || !!previewUrl}
-              leftIcon={isUploading ? <Loader className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
-              className="border-cyan-500/50 text-cyan-400 hover:bg-cyan-500/10"
-            >
-              {isUploading ? 'アップロード中...' : '画像を変更'}
-            </Button>
-          </div>
-        </>
-      )}
-
-      {isEditing && compact && (
+      {/* 隠しファイル入力 */}
+      {isEditing && (
         <input
           ref={fileInputRef}
           type="file"
@@ -200,6 +180,23 @@ export const AvatarUpload: React.FC<AvatarUploadProps> = ({
         />
       )}
 
+      {/* compactモードでないときのみボタンを表示 */}
+      {isEditing && !compact && (
+        <div className="mt-3 flex justify-center">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleUploadClick}
+            disabled={isUploading || !!previewUrl}
+            leftIcon={isUploading ? <Loader className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+            className="border-cyan-500/50 text-cyan-400 hover:bg-cyan-500/10"
+          >
+            {isUploading ? 'アップロード中...' : '画像を変更'}
+          </Button>
+        </div>
+      )}
+
+      {/* エラーメッセージ */}
       {uploadError && (
         <div className="mt-2 text-sm text-red-400 text-center">
           {uploadError}
