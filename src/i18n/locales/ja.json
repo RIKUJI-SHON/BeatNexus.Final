@@ -1617,5 +1617,13 @@
     "description": "新しいシーズンが始まりました！バトルに参加してランキング上位を目指したり、お気に入りのクリエイターに投票してポイントを獲得しましょう！",
     "goToBattle": "バトルに参加",
     "goToVote": "投票しに行く"
+  },
+  "premium": {
+    "badges": {
+      "details": {
+        "description": "説明",
+        "earnedDate": "獲得日"
+      }
+    }
   }
 }

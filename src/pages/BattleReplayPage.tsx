@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Crown, Users, Calendar, ShieldCheck, ShieldX, Swords, TrendingUp, TrendingDown, Minus, Play, AlertTriangle, ArchiveX, Trophy, Star, MessageSquare, Clock, Volume2 } from 'lucide-react';
+import { ArrowLeft, Users, Calendar, ShieldCheck, ShieldX, Swords, TrendingUp, TrendingDown, Minus, Play, AlertTriangle, ArchiveX, Trophy, Star, MessageSquare, Clock, Volume2 } from 'lucide-react';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { ArchivedBattle, BattleComment } from '../types';
@@ -107,26 +107,33 @@ const BattleReplayPage: React.FC = () => {
     navigate(-1);
   };
 
+  // プロフィールページへの遷移関数
+  const navigateToProfile = (userId: string) => {
+    if (userId) {
+      navigate(`/profile/${userId}`);
+    }
+  };
+
   const loadPlayerRatings = async () => {
     try {
       const { data: playerAData } = await supabase
         .from('profiles')
-        .select('rating')
+        .select('season_points')
         .eq('id', battle?.player1_user_id || '')
         .single();
 
       const { data: playerBData } = await supabase
         .from('profiles')
-        .select('rating')
+        .select('season_points')
         .eq('id', battle?.player2_user_id || '')
         .single();
 
       setPlayerRatings({
-        playerA: { rating: playerAData?.rating || 1200, loading: false },
-        playerB: { rating: playerBData?.rating || 1200, loading: false },
+        playerA: { rating: playerAData?.season_points || 1200, loading: false },
+        playerB: { rating: playerBData?.season_points || 1200, loading: false },
       });
     } catch (err) {
-      console.warn('Failed to load player ratings', err);
+      console.warn('Failed to load player season points', err);
       setPlayerRatings({
         playerA: { rating: 1200, loading: false },
         playerB: { rating: 1200, loading: false },
@@ -376,25 +383,25 @@ const BattleReplayPage: React.FC = () => {
             
             {/* Main Battle Title with Player Names (Responsive) */}
             <div className="mb-6">
-              <div className="flex items-center justify-center gap-2 md:gap-4 overflow-hidden">
-                {/* Player A Username */}
+              <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2 md:gap-4 max-w-4xl mx-auto">
+                {/* Player A Username - Right aligned */}
                 <span
-                  className="truncate max-w-[40vw] text-2xl sm:text-3xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-white to-pink-400 text-right"
+                  className="truncate text-2xl sm:text-3xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-white to-pink-400 text-right"
                   title={battle.contestant_a?.username || 'Player A'}
                 >
                 {battle.contestant_a?.username || 'Player A'}
                 </span>
 
-                {/* VS Label (fixed width, no shrink) */}
+                {/* VS Label (fixed center position) */}
                 <span
-                  className="flex-shrink-0 mx-1 sm:mx-2 text-gray-400 text-2xl sm:text-3xl md:text-5xl font-black"
+                  className="flex-shrink-0 text-center text-gray-400 text-2xl sm:text-3xl md:text-5xl font-black px-2 md:px-4"
                 >
                   VS
                 </span>
 
-                {/* Player B Username */}
+                {/* Player B Username - Left aligned */}
                 <span
-                  className="truncate max-w-[40vw] text-2xl sm:text-3xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-white to-pink-400"
+                  className="truncate text-2xl sm:text-3xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-white to-pink-400 text-left"
                   title={battle.contestant_b?.username || 'Player B'}
                 >
                 {battle.contestant_b?.username || 'Player B'}
@@ -422,7 +429,7 @@ const BattleReplayPage: React.FC = () => {
           </div>
 
           {/* Battle Result Overview */}
-          <div className="battle-card mb-8">
+          <div className="battle-card mb-4 md:mb-6 max-w-7xl mx-auto">
             <div className="battle-card__content relative overflow-hidden">
               {/* Background Pattern */}
               <div className="absolute inset-0 opacity-5">
@@ -437,8 +444,9 @@ const BattleReplayPage: React.FC = () => {
                     {/* Player A Name - Mobile */}
                     <div className="flex items-center gap-3 mb-4 lg:hidden">
                       <div
-                        className="w-10 h-10 rounded-full p-1 flex-shrink-0"
+                        className="w-16 h-16 rounded-full p-1 flex-shrink-0 cursor-pointer hover:scale-105 transition-transform"
                         style={{ background: `linear-gradient(135deg, ${playerColorA}, ${playerColorA}80)` }}
+                        onClick={() => navigateToProfile(battle.player1_user_id)}
                       >
                         <img
                           src={battle.contestant_a?.avatar_url || getDefaultAvatarUrl()}
@@ -447,7 +455,11 @@ const BattleReplayPage: React.FC = () => {
                         />
                       </div>
                       <div className="flex flex-col">
-                        <div className="text-white font-bold text-xl truncate max-w-[70vw]" title={battle.contestant_a?.username || 'Player A'}>
+                        <div 
+                          className="text-white font-bold text-xl truncate max-w-[70vw] cursor-pointer hover:text-cyan-300 transition-colors" 
+                          title={battle.contestant_a?.username || 'Player A'}
+                          onClick={() => navigateToProfile(battle.player1_user_id)}
+                        >
                           {battle.contestant_a?.username || 'Player A'}
                         </div>
                         <div className="text-sm text-gray-300">
@@ -459,30 +471,38 @@ const BattleReplayPage: React.FC = () => {
                     {/* Player A Name - Desktop Layout */}
                     <div className="hidden lg:flex items-center gap-3 mb-4">
                       <div
-                        className="w-10 h-10 rounded-full p-1 flex-shrink-0"
+                        className="w-16 h-16 rounded-full p-1 flex-shrink-0 cursor-pointer hover:scale-105 transition-transform"
                         style={{ background: `linear-gradient(135deg, ${playerColorA}, ${playerColorA}80)` }}
+                        onClick={() => navigateToProfile(battle.player1_user_id)}
                       >
                         <img
-                          src={battle.contestant_a?.avatar_url || getDefaultAvatarUrl(battle.player1_user_id)}
+                          src={battle.contestant_a?.avatar_url || getDefaultAvatarUrl()}
                           alt={battle.contestant_a?.username}
                           className="w-full h-full rounded-full border border-gray-900 object-cover"
                         />
                       </div>
                       <div className="flex flex-col">
                         <div
-                          className="text-white font-bold text-xl truncate max-w-[140px] md:max-w-[180px]"
+                          className="text-white font-bold text-xl truncate max-w-[140px] md:max-w-[180px] cursor-pointer hover:text-cyan-300 transition-colors"
                           title={battle.contestant_a?.username || 'Player A'}
+                          onClick={() => navigateToProfile(battle.player1_user_id)}
                         >
                           {battle.contestant_a?.username || 'Player A'}
                         </div>
-                        <div className="text-sm text-gray-300">
-                          {playerRatings.playerA.loading ? '...' : playerRatings.playerA.rating}
+                        <div className="flex items-center gap-2">
+                          {playerRatings.playerA.loading ? (
+                            <div className="text-sm text-gray-400">読み込み中...</div>
+                          ) : (
+                            <div className="text-sm font-medium text-white">
+                              {playerRatings.playerA.rating}
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>
 
                     {/* Player A Video Preview */}
-                    <div className="aspect-video bg-black rounded-xl overflow-hidden relative shadow-2xl border-2" style={{ borderColor: playerColorA }}>
+                    <div className={`aspect-video bg-black rounded-xl overflow-hidden relative shadow-2xl ${isAWinner ? 'border-4 border-cyan-400 shadow-cyan-400/80' : isBWinner ? 'border-2 opacity-60' : 'border-2'}`} style={{ borderColor: isAWinner ? '#22d3ee' : isBWinner ? '#6b7280' : playerColorA }}>
                       {player1VideoStatus.available && player1VideoStatus.videoUrl ? (
                         <video
                           src={player1VideoStatus.videoUrl}
@@ -523,16 +543,7 @@ const BattleReplayPage: React.FC = () => {
                   {/* VS Separator */}
                   <div className="flex items-center justify-center lg:px-6">
                     <div className="flex flex-col items-center gap-4">
-                      <VSIcon className="w-12 h-12 md:w-16 md:h-16" />
-                      <div className="text-center bg-gray-800/50 px-4 py-2 rounded-xl backdrop-blur-sm border border-gray-600/30">
-                        <div className="flex items-center gap-2 text-gray-400 mb-1">
-                          <Users className="h-4 w-4" />
-                          <span className="text-sm font-medium">Final Votes</span>
-                        </div>
-                        <div className="text-2xl font-bold text-white">
-                          {totalVotes}
-                        </div>
-                      </div>
+                      <VSIcon className="w-20 h-20 md:w-24 md:h-24" />
                     </div>
                   </div>
 
@@ -542,21 +553,29 @@ const BattleReplayPage: React.FC = () => {
                     <div className="hidden lg:flex items-center gap-3 mb-4 lg:justify-end">
                       <div className="flex flex-col lg:items-end">
                         <div
-                          className="text-white font-bold text-xl truncate max-w-[140px] md:max-w-[180px]"
+                          className="text-white font-bold text-xl truncate max-w-[140px] md:max-w-[180px] cursor-pointer hover:text-cyan-300 transition-colors"
                           title={battle.contestant_b?.username || 'Player B'}
+                          onClick={() => navigateToProfile(battle.player2_user_id)}
                         >
                           {battle.contestant_b?.username || 'Player B'}
                         </div>
-                        <div className="text-sm text-gray-300 lg:text-right">
-                          {playerRatings.playerB.loading ? '...' : playerRatings.playerB.rating}
+                        <div className="flex items-center gap-2 lg:flex-row-reverse">
+                          {playerRatings.playerB.loading ? (
+                            <div className="text-sm text-gray-400">読み込み中...</div>
+                          ) : (
+                            <div className="text-sm font-medium text-white">
+                              {playerRatings.playerB.rating}
+                            </div>
+                          )}
                         </div>
                       </div>
                       <div
-                        className="w-10 h-10 rounded-full p-1 flex-shrink-0"
+                        className="w-16 h-16 rounded-full p-1 flex-shrink-0 cursor-pointer hover:scale-105 transition-transform"
                         style={{ background: `linear-gradient(135deg, ${playerColorB}, ${playerColorB}80)` }}
+                        onClick={() => navigateToProfile(battle.player2_user_id)}
                       >
                         <img
-                          src={battle.contestant_b?.avatar_url || getDefaultAvatarUrl(battle.player2_user_id)}
+                          src={battle.contestant_b?.avatar_url || getDefaultAvatarUrl()}
                           alt={battle.contestant_b?.username}
                           className="w-full h-full rounded-full border border-gray-900 object-cover"
                         />
@@ -564,7 +583,7 @@ const BattleReplayPage: React.FC = () => {
                     </div>
 
                     {/* Player B Video Preview */}
-                    <div className="aspect-video bg-black rounded-xl overflow-hidden relative shadow-2xl border-2" style={{ borderColor: playerColorB }}>
+                    <div className={`aspect-video bg-black rounded-xl overflow-hidden relative shadow-2xl ${isBWinner ? 'border-4 border-pink-400 shadow-pink-400/80' : isAWinner ? 'border-2 opacity-60' : 'border-2'}`} style={{ borderColor: isBWinner ? '#f472b6' : isAWinner ? '#6b7280' : playerColorB }}>
                       {player2VideoStatus.available && player2VideoStatus.videoUrl ? (
                         <video
                           src={player2VideoStatus.videoUrl}
@@ -601,40 +620,73 @@ const BattleReplayPage: React.FC = () => {
                       )}
                     </div>
                       
-                    {/* Player B Name - Mobile (Below Video) */}
+                    {/* Player B Name - Below Video on Mobile */}
                     <div className="flex items-center gap-3 mt-4 lg:hidden justify-end">
                       <div className="flex flex-col items-end">
-                        <div className="text-white font-bold text-xl truncate max-w-[70vw]" title={battle.contestant_b?.username || 'Player B'}>
+                        <div 
+                          className="text-white font-bold text-xl truncate max-w-[140px] md:max-w-[180px] cursor-pointer hover:text-cyan-300 transition-colors" 
+                          title={battle.contestant_b?.username || 'Player B'}
+                          onClick={() => navigateToProfile(battle.player2_user_id)}
+                        >
                           {battle.contestant_b?.username || 'Player B'}
                         </div>
-                        <div className="text-sm text-gray-300">
-                          {playerRatings.playerB.loading ? '...' : playerRatings.playerB.rating}
+                        <div className="flex items-center gap-2 flex-row-reverse">
+                          {playerRatings.playerB.loading ? (
+                            <div className="text-sm text-gray-400">読み込み中...</div>
+                          ) : (
+                            <div className="text-sm font-medium text-white">
+                              {playerRatings.playerB.rating}
+                            </div>
+                          )}
                         </div>
                       </div>
-                          <div 
-                            className="w-10 h-10 rounded-full p-1 flex-shrink-0"
-                            style={{ background: `linear-gradient(135deg, ${playerColorB}, ${playerColorB}80)` }}
-                          >
-                            <img
-                              src={battle.contestant_b?.avatar_url || getDefaultAvatarUrl(battle.player2_user_id)}
-                              alt={battle.contestant_b?.username}
-                              className="w-full h-full rounded-full border border-gray-900 object-cover"
-                            />
-                          </div>
-                        </div>
-
-                        {isBWinner && (
-                          <div className="absolute top-4 right-4">
-                            <div className="bg-gradient-to-r from-yellow-500 to-amber-600 rounded-full p-2 shadow-lg animate-pulse">
-                              <Crown className="h-5 w-5 text-white" />
-                            </div>
-                          </div>
-                        )}
+                      <div 
+                        className="w-16 h-16 rounded-full p-1 flex-shrink-0 cursor-pointer hover:scale-105 transition-transform"
+                        style={{ background: `linear-gradient(135deg, ${playerColorB}, ${playerColorB}80)` }}
+                        onClick={() => navigateToProfile(battle.player2_user_id)}
+                      >
+                        <img
+                          src={battle.contestant_b?.avatar_url || getDefaultAvatarUrl()}
+                          alt={battle.contestant_b?.username}
+                          className="w-full h-full rounded-full border border-gray-900 object-cover"
+                        />
+                      </div>
+                    </div>
                   </div>
                 </div>
                 
                 {/* Vote Distribution Bar */}
                 <div className="max-w-2xl mx-auto">
+                  <div className="flex justify-between text-sm text-gray-400 mb-3">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <div 
+                        className="w-3 h-3 rounded-full flex-shrink-0"
+                        style={{ backgroundColor: playerColorA }}
+                      ></div>
+                      <span 
+                        className="font-medium truncate max-w-[100px] md:max-w-[130px] cursor-pointer hover:text-cyan-300 transition-colors" 
+                        title={battle.contestant_a?.username || 'Player A'}
+                        onClick={() => navigateToProfile(battle.player1_user_id)}
+                      >
+                        {battle.contestant_a?.username || 'Player A'}
+                      </span>
+                      <span className="font-bold flex-shrink-0">{percentageA.toFixed(1)}%</span>
+                    </div>
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span className="font-bold flex-shrink-0">{percentageB.toFixed(1)}%</span>
+                      <span 
+                        className="font-medium truncate max-w-[100px] md:max-w-[130px] cursor-pointer hover:text-cyan-300 transition-colors" 
+                        title={battle.contestant_b?.username || 'Player B'}
+                        onClick={() => navigateToProfile(battle.player2_user_id)}
+                      >
+                        {battle.contestant_b?.username || 'Player B'}
+                      </span>
+                      <div 
+                        className="w-3 h-3 rounded-full flex-shrink-0"
+                        style={{ backgroundColor: playerColorB }}
+                      ></div>
+                    </div>
+                  </div>
                   <div className="h-4 bg-gray-800 rounded-full overflow-hidden shadow-inner border border-gray-700">
                     <div className="h-full flex">
                       <div 
@@ -668,11 +720,24 @@ const BattleReplayPage: React.FC = () => {
                 </div>
               </div>
             </div>
+            
+            {/* Final Votes Summary */}
+            <div className="flex justify-center mt-3 md:mt-4">
+              <div className="text-center bg-gray-800/50 px-4 py-2 rounded-xl backdrop-blur-sm border border-gray-600/30">
+                <div className="flex items-center gap-2 text-gray-400 mb-1">
+                  <Users className="h-4 w-4" />
+                  <span className="text-sm font-medium">Final Votes</span>
+                </div>
+                <div className="text-2xl font-bold text-white">
+                  {totalVotes}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
         {/* Voting Console Machine - Archive View (Read-only) */}
-        <div className="relative mt-8 md:mt-10">
+        <div className="relative mt-4 md:mt-6">
           <div className="flex justify-center">
             <div className="relative">
               
@@ -711,11 +776,6 @@ const BattleReplayPage: React.FC = () => {
                             VOTES
                           </div>
                         </div>
-                        {isAWinner && (
-                          <div className="absolute -top-2 -right-2 w-4 h-4 md:w-6 md:h-6 bg-green-500 rounded-full flex items-center justify-center shadow-lg">
-                            <Crown className="h-2 w-2 md:h-3 md:w-3 text-white" />
-                          </div>
-                        )}
                       </div>
                     </div>
                     
@@ -748,11 +808,6 @@ const BattleReplayPage: React.FC = () => {
                             VOTES
                           </div>
                         </div>
-                        {isBWinner && (
-                          <div className="absolute -top-2 -right-2 w-4 h-4 md:w-6 md:h-6 bg-green-500 rounded-full flex items-center justify-center shadow-lg">
-                            <Crown className="h-2 w-2 md:h-3 md:w-3 text-white" />
-                          </div>
-                        )}
                       </div>
                     </div>
 
@@ -784,7 +839,7 @@ const BattleReplayPage: React.FC = () => {
         </div>
 
         {/* Community Reactions */}
-        <div className="bg-gray-900 rounded-2xl border border-gray-700/50 p-8 mt-8">
+        <div className="bg-gray-900 rounded-2xl border border-gray-700/50 p-8 relative mt-16 md:mt-20">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center">
               <MessageSquare className="h-5 w-5 text-gray-300" />
@@ -812,9 +867,9 @@ const BattleReplayPage: React.FC = () => {
             <div className="space-y-4 max-h-96 overflow-y-auto">
               {battleComments[battle.id].map((comment: BattleComment) => (
                 <div key={comment.id} className="flex items-start gap-4 p-4 bg-gray-800 rounded-xl border border-gray-700/50">
-                  <div className="relative">
+                  <div className="relative cursor-pointer hover:scale-105 transition-transform" onClick={() => navigateToProfile(comment.user_id)}>
                     <img
-                      src={comment.avatar_url || getDefaultAvatarUrl(comment.user_id)}
+                      src={comment.avatar_url || getDefaultAvatarUrl()}
                       alt={comment.username}
                       className="w-10 h-10 rounded-full border-2 border-gray-600"
                     />
@@ -827,7 +882,12 @@ const BattleReplayPage: React.FC = () => {
                   
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="font-semibold text-white">{comment.username}</span>
+                      <span 
+                        className="font-semibold text-white cursor-pointer hover:text-cyan-300 transition-colors"
+                        onClick={() => navigateToProfile(comment.user_id)}
+                      >
+                        {comment.username}
+                      </span>
                       <span className={`text-xs px-2 py-1 rounded-full ${
                         comment.vote === 'A' ? 'bg-blue-500/20 text-blue-300' : 'bg-red-500/20 text-red-300'
                       }`}>

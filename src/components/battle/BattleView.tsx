@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Share2, ThumbsUp, ArrowLeft, Clock, MessageCircle, Crown, Play, UserX, X, Users, Timer, Volume2, Star, Shield, AlertTriangle, Send } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '../ui/Button';
 import { Card } from '../ui/Card';
 import { VoteCommentModal } from '../ui/VoteCommentModal';
@@ -23,6 +23,7 @@ interface BattleViewProps {
 
 export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = false }) => {
   const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
   const [hasVoted, setHasVoted] = useState<'A' | 'B' | null>(null);
   const [votesA, setVotesA] = useState(battle.votes_a);
   const [votesB, setVotesB] = useState(battle.votes_b);
@@ -65,38 +66,45 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
   
   const showVoteDetails = hasVoted !== null || isArchived || isUserParticipant;
 
-  // Load player ratings
+  // プロフィールページへの遷移関数
+  const navigateToProfile = (userId: string) => {
+    if (userId) {
+      navigate(`/profile/${userId}`);
+    }
+  };
+
+  // Load player season points
   const loadPlayerRatings = async () => {
     try {
-      // Player Aのレート取得
+      // Player Aのシーズンポイント取得
       const { data: playerAData, error: errorA } = await supabase
         .from('profiles')
-        .select('rating')
+        .select('season_points')
         .eq('id', battle.player1_user_id)
         .single();
 
-      // Player Bのレート取得
+      // Player Bのシーズンポイント取得
       const { data: playerBData, error: errorB } = await supabase
         .from('profiles')
-        .select('rating')
+        .select('season_points')
         .eq('id', battle.player2_user_id)
         .single();
 
       setPlayerRatings({
         playerA: { 
-          rating: playerAData?.rating || 1200, 
+          rating: playerAData?.season_points || 1200, 
           loading: false 
         },
         playerB: { 
-          rating: playerBData?.rating || 1200, 
+          rating: playerBData?.season_points || 1200, 
           loading: false 
         }
       });
 
-      if (errorA) console.warn('⚠️ Player A rating fetch error:', errorA);
-      if (errorB) console.warn('⚠️ Player B rating fetch error:', errorB);
+      if (errorA) console.warn('⚠️ Player A season points fetch error:', errorA);
+      if (errorB) console.warn('⚠️ Player B season points fetch error:', errorB);
     } catch (error) {
-      console.error('❌ Failed to load player ratings:', error);
+      console.error('❌ Failed to load player season points:', error);
       setPlayerRatings({
         playerA: { rating: 1200, loading: false },
         playerB: { rating: 1200, loading: false }
@@ -413,8 +421,9 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                 {/* Player A Name - Above Video on Mobile, Separate Position on Desktop */}
                 <div className="flex items-center gap-3 mb-4 lg:hidden">
                   <div 
-                    className="w-10 h-10 rounded-full p-1 flex-shrink-0"
+                    className="w-16 h-16 rounded-full p-1 flex-shrink-0 cursor-pointer hover:scale-105 transition-transform"
                     style={{ background: `linear-gradient(135deg, ${playerColorA}, ${playerColorA}80)` }}
+                    onClick={() => navigateToProfile(battle.player1_user_id)}
                   >
                     <img
                       src={battle.contestant_a?.avatar_url || getDefaultAvatarUrl()}
@@ -424,8 +433,9 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                   </div>
                   <div className="flex flex-col">
                     <div 
-                      className="text-white font-bold text-xl truncate max-w-[140px] md:max-w-[180px]" 
+                      className="text-white font-bold text-xl truncate max-w-[140px] md:max-w-[180px] cursor-pointer hover:text-cyan-300 transition-colors" 
                       title={battle.contestant_a?.username || 'Player A'}
+                      onClick={() => navigateToProfile(battle.player1_user_id)}
                     >
                       {battle.contestant_a?.username || 'Player A'}
                     </div>
@@ -444,8 +454,9 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                 {/* Player A Name - Desktop Layout */}
                 <div className="hidden lg:flex items-center gap-3 mb-4">
                   <div 
-                    className="w-10 h-10 rounded-full p-1 flex-shrink-0"
+                    className="w-16 h-16 rounded-full p-1 flex-shrink-0 cursor-pointer hover:scale-105 transition-transform"
                     style={{ background: `linear-gradient(135deg, ${playerColorA}, ${playerColorA}80)` }}
+                    onClick={() => navigateToProfile(battle.player1_user_id)}
                   >
                     <img
                       src={battle.contestant_a?.avatar_url || getDefaultAvatarUrl()}
@@ -455,8 +466,9 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                   </div>
                   <div className="flex flex-col">
                     <div 
-                      className="text-white font-bold text-xl truncate max-w-[140px] md:max-w-[180px]" 
+                      className="text-white font-bold text-xl truncate max-w-[140px] md:max-w-[180px] cursor-pointer hover:text-cyan-300 transition-colors" 
                       title={battle.contestant_a?.username || 'Player A'}
+                      onClick={() => navigateToProfile(battle.player1_user_id)}
                     >
                       {battle.contestant_a?.username || 'Player A'}
                     </div>
@@ -533,8 +545,9 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                 <div className="hidden lg:flex items-center gap-3 mb-4 lg:justify-end">
                   <div className="flex flex-col lg:items-end">
                     <div 
-                      className="text-white font-bold text-xl truncate max-w-[140px] md:max-w-[180px]" 
+                      className="text-white font-bold text-xl truncate max-w-[140px] md:max-w-[180px] cursor-pointer hover:text-cyan-300 transition-colors" 
                       title={battle.contestant_b?.username || 'Player B'}
+                      onClick={() => navigateToProfile(battle.player2_user_id)}
                     >
                       {battle.contestant_b?.username || 'Player B'}
                     </div>
@@ -549,8 +562,9 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                     </div>
                   </div>
                   <div 
-                    className="w-10 h-10 rounded-full p-1 flex-shrink-0"
+                    className="w-16 h-16 rounded-full p-1 flex-shrink-0 cursor-pointer hover:scale-105 transition-transform"
                     style={{ background: `linear-gradient(135deg, ${playerColorB}, ${playerColorB}80)` }}
+                    onClick={() => navigateToProfile(battle.player2_user_id)}
                   >
                     <img
                       src={battle.contestant_b?.avatar_url || getDefaultAvatarUrl()}
@@ -611,8 +625,9 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                 <div className="flex items-center gap-3 mt-4 lg:hidden justify-end">
                   <div className="flex flex-col items-end">
                     <div 
-                      className="text-white font-bold text-xl truncate max-w-[140px] md:max-w-[180px]" 
+                      className="text-white font-bold text-xl truncate max-w-[140px] md:max-w-[180px] cursor-pointer hover:text-cyan-300 transition-colors" 
                       title={battle.contestant_b?.username || 'Player B'}
+                      onClick={() => navigateToProfile(battle.player2_user_id)}
                     >
                       {battle.contestant_b?.username || 'Player B'}
                     </div>
@@ -627,8 +642,9 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                     </div>
                   </div>
                   <div 
-                    className="w-10 h-10 rounded-full p-1 flex-shrink-0"
+                    className="w-16 h-16 rounded-full p-1 flex-shrink-0 cursor-pointer hover:scale-105 transition-transform"
                     style={{ background: `linear-gradient(135deg, ${playerColorB}, ${playerColorB}80)` }}
+                    onClick={() => navigateToProfile(battle.player2_user_id)}
                   >
                     <img
                       src={battle.contestant_b?.avatar_url || getDefaultAvatarUrl()}
@@ -650,8 +666,9 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                       style={{ backgroundColor: playerColorA }}
                     ></div>
                     <span 
-                      className="font-medium truncate max-w-[100px] md:max-w-[130px]" 
+                      className="font-medium truncate max-w-[100px] md:max-w-[130px] cursor-pointer hover:text-cyan-300 transition-colors" 
                       title={battle.contestant_a?.username || 'Player A'}
+                      onClick={() => navigateToProfile(battle.player1_user_id)}
                     >
                       {battle.contestant_a?.username || 'Player A'}
                     </span>
@@ -660,8 +677,9 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                   <div className="flex items-center gap-2 min-w-0">
                     <span className="font-bold flex-shrink-0">{(100 - percentageA).toFixed(1)}%</span>
                     <span 
-                      className="font-medium truncate max-w-[100px] md:max-w-[130px]" 
+                      className="font-medium truncate max-w-[100px] md:max-w-[130px] cursor-pointer hover:text-cyan-300 transition-colors" 
                       title={battle.contestant_b?.username || 'Player B'}
+                      onClick={() => navigateToProfile(battle.player2_user_id)}
                     >
                       {battle.contestant_b?.username || 'Player B'}
                     </span>
@@ -732,8 +750,8 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                 {/* Player Header */}
                 <div className="relative p-6 bg-gradient-to-r from-blue-600/20 to-cyan-600/20 border-b border-cyan-500/30">
                   <div className="flex items-center gap-4">
-                    <div className="relative">
-                      <div className="w-20 h-20 rounded-full p-1 bg-gradient-to-r from-cyan-400 to-blue-600 shadow-lg">
+                    <div className="relative cursor-pointer hover:scale-105 transition-transform" onClick={() => navigateToProfile(battle.player1_user_id)}>
+                      <div className="w-24 h-24 rounded-full p-1 bg-gradient-to-r from-cyan-400 to-blue-600 shadow-lg">
                         <img
                           src={battle.contestant_a?.avatar_url || getDefaultAvatarUrl()}
                           alt={battle.contestant_a?.username || 'Contestant A'}
@@ -749,8 +767,9 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                     
                     <div className="flex-1">
                       <h3 
-                        className="text-2xl font-bold text-white mb-1 truncate max-w-[180px] md:max-w-[220px]" 
+                        className="text-2xl font-bold text-white mb-1 truncate max-w-[180px] md:max-w-[220px] cursor-pointer hover:text-cyan-300 transition-colors" 
                         title={battle.contestant_a?.username || 'Contestant A'}
+                        onClick={() => navigateToProfile(battle.player1_user_id)}
                       >
                         {battle.contestant_a?.username || 'Contestant A'}
                       </h3>
@@ -816,8 +835,8 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                 {/* Player Header */}
                 <div className="relative p-6 bg-gradient-to-r from-pink-600/20 to-purple-600/20 border-b border-pink-500/30">
                   <div className="flex items-center gap-4">
-                    <div className="relative">
-                      <div className="w-20 h-20 rounded-full p-1 bg-gradient-to-r from-pink-400 to-purple-600 shadow-lg">
+                    <div className="relative cursor-pointer hover:scale-105 transition-transform" onClick={() => navigateToProfile(battle.player2_user_id)}>
+                      <div className="w-24 h-24 rounded-full p-1 bg-gradient-to-r from-pink-400 to-purple-600 shadow-lg">
                         <img
                           src={battle.contestant_b?.avatar_url || getDefaultAvatarUrl()}
                           alt={battle.contestant_b?.username || 'Contestant B'}
@@ -833,8 +852,9 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                     
                     <div className="flex-1">
                       <h3 
-                        className="text-2xl font-bold text-white mb-1 truncate max-w-[180px] md:max-w-[220px]" 
+                        className="text-2xl font-bold text-white mb-1 truncate max-w-[180px] md:max-w-[220px] cursor-pointer hover:text-pink-300 transition-colors" 
                         title={battle.contestant_b?.username || 'Contestant B'}
+                        onClick={() => navigateToProfile(battle.player2_user_id)}
                       >
                         {battle.contestant_b?.username || 'Contestant B'}
                       </h3>

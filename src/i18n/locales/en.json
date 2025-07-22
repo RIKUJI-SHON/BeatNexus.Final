@@ -1816,5 +1816,13 @@
     "description": "A new season has begun! Join battles to climb the rankings or vote for your favorite creators to earn points!",
     "goToBattle": "Join Battle",
     "goToVote": "Go Vote"
+  },
+  "premium": {
+    "badges": {
+      "details": {
+        "description": "Description",
+        "earnedDate": "Earned Date"
+      }
+    }
   }
 }
