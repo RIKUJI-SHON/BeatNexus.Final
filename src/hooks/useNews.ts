@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import { supabase } from '@/lib/supabase';
-import type { NewsItem, NewsHookState, NewsQuery } from '@/types/news';
+import { supabase } from '../lib/supabase';
+import type { NewsItem, NewsHookState, NewsQuery } from '../types/news';
 
 export const useNews = (options: NewsQuery = {}): NewsHookState => {
   const { limit = 10, includeUnpublished = false } = options;

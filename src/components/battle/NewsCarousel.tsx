@@ -1,19 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { 
   Carousel, 
   CarouselContent, 
-  CarouselItem, 
-  CarouselNext, 
-  CarouselPrevious, 
+  CarouselItem,
   CarouselApi 
-} from '@/components/ui/carousel';
-import { ArticleModal } from '@/components/ui/ArticleModal';
-import { useNews } from '@/hooks/useNews';
-import { useOnboardingStore } from '@/store/onboardingStore';
-import type { NewsItem } from '@/types/news';
-import heroBackground from '@/assets/images/hero-background.png';
-import beatnexusWordmark from '@/assets/images/BEATNEXUS-WORDMARK.png';
+} from '../ui/carousel';
+import { ArticleModal } from '../ui/ArticleModal';
+import { useNews } from '../../hooks/useNews';
+import { useOnboardingStore } from '../../store/onboardingStore';
+import type { NewsItem } from '../../types/news';
+import heroBackground from '../../assets/images/hero-background.png';
+import beatnexusWordmark from '../../assets/images/BEATNEXUS-WORDMARK.png';
 
 interface NewsCarouselProps {
   className?: string;
@@ -253,16 +252,20 @@ const NewsCarousel: React.FC<NewsCarouselProps> = ({ className = '' }) => {
           {/* Navigation Arrows */}
           {allPanels.length > 1 && (
             <>
-              <CarouselPrevious 
-                className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 border-gray-600 text-white hover:bg-black/70 hover:text-cyan-300 z-10"
+              <button
+                onClick={() => api?.scrollPrev()}
+                className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 border border-gray-600 text-white hover:bg-black/70 hover:text-cyan-300 z-10 rounded-full w-8 h-8 flex items-center justify-center transition-colors"
+                aria-label="前のスライドへ"
               >
-                <span className="sr-only">前へ</span>
-              </CarouselPrevious>
-              <CarouselNext 
-                className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 border-gray-600 text-white hover:bg-black/70 hover:text-cyan-300 z-10"
+                <ArrowLeft className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => api?.scrollNext()}
+                className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 border border-gray-600 text-white hover:bg-black/70 hover:text-cyan-300 z-10 rounded-full w-8 h-8 flex items-center justify-center transition-colors"
+                aria-label="次のスライドへ"
               >
-                <span className="sr-only">次へ</span>
-              </CarouselNext>
+                <ArrowRight className="w-4 h-4" />
+              </button>
             </>
           )}
 

@@ -2,7 +2,7 @@ import React from 'react';
 import { X, Calendar, Tag } from 'lucide-react';
 import { format } from 'date-fns';
 import { ja } from 'date-fns/locale';
-import type { ArticleModalProps } from '@/types/news';
+import type { ArticleModalProps } from '../../types/news';
 
 export const ArticleModal: React.FC<ArticleModalProps> = ({ news, isOpen, onClose }) => {
   if (!isOpen) return null;
