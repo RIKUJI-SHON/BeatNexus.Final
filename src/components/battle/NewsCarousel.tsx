@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { ArrowRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { 
   Carousel, 
@@ -39,13 +38,35 @@ const NewsCarousel: React.FC<NewsCarouselProps> = ({ className = '' }) => {
   // 全パネル（ガイド + ニュース）
   const allPanels = [howToGuidePanel, ...news];
 
-  // 現在のスライドインデックスを監視
+  // 現在のスライドインデックスを監視と手動操作検出
   useEffect(() => {
     if (!api) return;
 
-    api.on('select', () => {
+    let isManualOperation = false;
+
+    const handleSelect = () => {
       setCurrent(api.selectedScrollSnap());
-    });
+      
+      // 手動操作の場合は自動スライドを一時停止
+      if (isManualOperation) {
+        setIsAutoPlaying(false);
+        setTimeout(() => setIsAutoPlaying(true), 5000); // 5秒後に再開
+        isManualOperation = false;
+      }
+    };
+
+    // 手動操作（矢印クリック、ドラッグ）を検出
+    const handlePointerDown = () => {
+      isManualOperation = true;
+    };
+
+    api.on('select', handleSelect);
+    api.on('pointerDown', handlePointerDown);
+
+    return () => {
+      api.off('select', handleSelect);
+      api.off('pointerDown', handlePointerDown);
+    };
   }, [api]);
 
   // 自動スライド機能
@@ -233,22 +254,14 @@ const NewsCarousel: React.FC<NewsCarouselProps> = ({ className = '' }) => {
           {allPanels.length > 1 && (
             <>
               <CarouselPrevious 
-                className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 border-gray-600 text-white hover:bg-black/70 hover:text-cyan-300"
-                onClick={() => {
-                  setIsAutoPlaying(false);
-                  setTimeout(() => setIsAutoPlaying(true), 5000); // 5秒後に再開
-                }}
+                className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 border-gray-600 text-white hover:bg-black/70 hover:text-cyan-300 z-10"
               >
-                <ArrowRight className="w-4 h-4 rotate-180" />
+                <span className="sr-only">前へ</span>
               </CarouselPrevious>
               <CarouselNext 
-                className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 border-gray-600 text-white hover:bg-black/70 hover:text-cyan-300"
-                onClick={() => {
-                  setIsAutoPlaying(false);
-                  setTimeout(() => setIsAutoPlaying(true), 5000); // 5秒後に再開
-                }}
+                className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 border-gray-600 text-white hover:bg-black/70 hover:text-cyan-300 z-10"
               >
-                <ArrowRight className="w-4 h-4" />
+                <span className="sr-only">次へ</span>
               </CarouselNext>
             </>
           )}
@@ -261,6 +274,7 @@ const NewsCarousel: React.FC<NewsCarouselProps> = ({ className = '' }) => {
                   key={index}
                   onClick={() => {
                     api?.scrollTo(index);
+                    // 手動操作なので、一時的に自動スライドを停止
                     setIsAutoPlaying(false);
                     setTimeout(() => setIsAutoPlaying(true), 5000); // 5秒後に再開
                   }}
