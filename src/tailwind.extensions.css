@@ -1,3 +1,24 @@
+/* デザイン仕様書に基づくアニメーション */
+@keyframes fadeIn {
+  0% { 
+    opacity: 0; 
+    transform: translateY(10px); 
+  }
+  100% { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+@keyframes float {
+  0%, 100% { 
+    transform: translateY(0); 
+  }
+  50% { 
+    transform: translateY(-20px); 
+  }
+}
+
 @keyframes blob {
   0% {
     transform: translate(0px, 0px) scale(1);
@@ -13,8 +34,29 @@
   }
 }
 
+.animate-fade-in { 
+  animation: fadeIn 0.2s ease-in-out; 
+}
+
+.animate-float { 
+  animation: float 6s ease-in-out infinite; 
+}
+
 .animate-blob {
   animation: blob 7s infinite;
+}
+
+/* ホバーエフェクト */
+.hover-lift {
+  transition: transform 0.3s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-2px);
+}
+
+.hover-glow:hover {
+  box-shadow: 0 8px 32px rgba(59, 130, 246, 0.3);
 }
 
 .animation-delay-2000 {
@@ -31,6 +73,7 @@
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 1;
+  line-clamp: 1;
 }
 
 .line-clamp-2 {
@@ -38,6 +81,7 @@
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
 }
 
 .line-clamp-3 {
@@ -45,6 +89,7 @@
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
+  line-clamp: 3;
 }
 
 

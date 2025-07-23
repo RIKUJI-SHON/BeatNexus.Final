@@ -905,30 +905,30 @@
       "title": "Season Off - Submission Restricted"
     },
     "guidelines": {
-      "title": "Video Guidelines",
-      "audioQuality": {
-        "title": "Audio Quality",
-        "description": "Clear audio is crucial. Use an external mic if possible."
+      "title": "BeatNexus Video Submission Guidelines",
+      "performanceTime": "Performance Time: 1-2 minutes",
+      "performanceFormat": "Performance Format: One-shot recording - Video and audio must be recorded simultaneously. Connecting performances with cut editing is prohibited.",
+      "identityVerification": "Identity Verification: Showing your face is not required but recommended.",
+      "lipSyncBan": "Lip Sync Prohibition: Lip syncing to pre-recorded audio (dubbing) is prohibited.",
+      "audioSource": "Audio Source: All sounds used in the performance must be generated on the spot from your voice or body.",
+      "sampleBan": "Sample Use Prohibition: The use of pre-recorded audio sources (samples) or metronomes that record sound is prohibited.",
+      "audioProcessing": {
+        "title": "Audio Processing",
+        "allowed": "Allowed Processing:",
+        "allowedItems": [
+          "Mixing and mastering",
+          "Basic audio quality correction applied to the entire recording (EQ, compressor, reverb)"
+        ],
+        "prohibited": "Prohibited Processing:",
+        "prohibitedItems": [
+          "Effects that significantly change the original sound, such as distortion and delay",
+          "Advanced editing that automatically changes processing for each sound"
+        ]
       },
-      "videoLengthSize": {
-        "title": "🔥 Video Length & Size【IMPORTANT】",
-        "description": "⚠️【STRICT RULE】Main battles MUST be 60 to 120 seconds (1-2 minutes) - this is mandatory!\n\n✅ Videos outside this range cannot be submitted\n✅ Follow the time limit and showcase your amazing performance\n\n🎯【IMPORTANT】Avoid 4K or ultra-high-quality recording\n・File sizes become too large and difficult to compress\n・Recommend 1080p (Full HD) or lower recording\n・Prioritize audio quality over video quality"
-      },
-      "facePolicy": {
-        "title": "Face Policy",
-        "description": "Showing your face is optional, but showing your mouth area is recommended."
-      },
-      "lipSyncPolicy": {
-        "title": "Lip Sync & Non-Simultaneous Recording Prohibition",
-        "description": "Videos must be filmed and recorded simultaneously. Lip syncing or other video techniques that may give a false impression of live performance are strictly prohibited."
-      },
-      "allowedEffects": {
-        "title": "Allowed Effects",
-        "description": "Effects that are generally considered 'mastering' tools to improve recording clarity, presence, and overall listenability are permitted, but must not fundamentally alter the performance itself."
-      },
-      "notAllowed": {
-        "title": "Not Allowed",
-        "description": "Background music, backing tracks, or copyrighted content."
+      "equipment": {
+        "title": "Recording Equipment",
+        "devices": "Equipment: All methods are welcome, from smartphones to professional equipment.",
+        "resolution": "Resolution: Please avoid 4K recording as it increases file size."
       }
     },
     "preview": {

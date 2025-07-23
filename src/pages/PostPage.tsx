@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Upload, X, Play, CheckCircle, Video, AlertCircle, Crown, Music, Mic, ArrowLeft, Shield, Settings } from 'lucide-react';
+import { Upload, X, CheckCircle, Video, AlertCircle, Crown, Mic, ArrowLeft, Settings } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
 import { useNavigate } from 'react-router-dom';
@@ -56,7 +56,7 @@ const isValidDuration = (duration: number, format: string): boolean => {
 };
 
 // Function to get duration error message
-const getDurationErrorMessage = (duration: number, format: string, t: (key: string, params?: any) => string): string => {
+const getDurationErrorMessage = (duration: number, format: string, t: (key: string, params?: Record<string, string | number>) => string): string => {
   switch (format) {
     case 'MAIN_BATTLE':
       if (duration < 60) {
@@ -87,7 +87,6 @@ const PostPage: React.FC = () => {
   const [videoFile, setVideoFile] = useState<File | null>(null);
   const [videoPreviewUrl, setVideoPreviewUrl] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
   const [step, setStep] = useState<'upload' | 'preview' | 'success'>('upload');
   const battleFormat = 'MAIN_BATTLE'; // Fixed to MAIN_BATTLE
   const [acceptedGuidelines, setAcceptedGuidelines] = useState(false);
@@ -100,7 +99,7 @@ const PostPage: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuthStore();
   const { t } = useTranslation();
-  const { canSubmit, remainingTime, cooldownInfo, isLoading: cooldownLoading, refreshCooldown } = useSubmissionCooldown();
+  const { canSubmit, remainingTime, cooldownInfo, refreshCooldown } = useSubmissionCooldown();
   const { submissionStatus } = useSubmissionStatus();
   const { 
     processVideo, 
@@ -111,7 +110,6 @@ const PostPage: React.FC = () => {
 
   // FFmpegのエラー状態を管理
   const [ffmpegError, setFfmpegError] = useState<string | null>(null);
-  const [stage, setStage] = useState<string>('');
   
   // 投稿モーダルの状態
   const [isSubmissionModalOpen, setIsSubmissionModalOpen] = useState(false);
@@ -125,23 +123,6 @@ const PostPage: React.FC = () => {
     navigate('/');
     return null;
   }
-
-  const validateFile = (file: File, duration?: number): boolean => {
-    // ファイルサイズチェック
-    if (file.size > MAX_FILE_SIZE) {
-      setError(t('postPage.errors.fileTooBig', { current: (file.size / 1024 / 1024).toFixed(1) }));
-      return false;
-    }
-    
-    // 動画の長さチェック（durationが提供されている場合）
-    if (duration !== undefined && !isValidDuration(duration, battleFormat)) {
-      setError(getDurationErrorMessage(duration, battleFormat, t));
-      return false;
-    }
-    
-    setError(null);
-    return true;
-  };
   
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -441,12 +422,12 @@ const PostPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-950 py-6 sm:py-10">
-      <div className="container mx-auto px-4">
+    <div className="min-h-screen bg-slate-950 py-6 sm:py-10">
+      <div className="container mx-auto px-4 max-w-7xl">
         <Button
           variant="ghost"
           size="sm"
-          className="mb-6 sm:mb-8 text-gray-400 hover:text-white"
+          className="mb-6 sm:mb-8 text-slate-400 hover:text-white transition-colors"
           onClick={() => navigate(-1)}
           leftIcon={<ArrowLeft className="h-4 w-4" />}
         >
@@ -454,16 +435,16 @@ const PostPage: React.FC = () => {
         </Button>
 
         {/* Header */}
-        <div className="text-center mb-6 sm:mb-8">
+        <div className="text-center mb-8 sm:mb-12">
           <div className="relative">
             {/* 背景のグラデーション効果 */}
             <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 via-purple-500/20 to-pink-500/20 blur-3xl transform -translate-y-4"></div>
             
-            <div className="relative">
-              <h1 className="text-3xl sm:text-4xl font-extrabold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-cyan-500 to-purple-500">
+            <div className="relative animate-fade-in">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-cyan-500 to-purple-500">
                 {t('postPage.title')}
               </h1>
-              <p className="text-gray-400 text-center">
+              <p className="text-lg text-slate-300 max-w-2xl mx-auto">
                 {t('postPage.subtitle')}
               </p>
             </div>
@@ -471,426 +452,530 @@ const PostPage: React.FC = () => {
         </div>
 
         {/* 重要な注意事項バナー */}
-        <div className="max-w-2xl mx-auto mb-8 sm:mb-12 space-y-3">
-          <div className="bg-gradient-to-r from-purple-600/20 to-blue-600/20 border border-purple-500/30 rounded-xl py-3 px-4 backdrop-blur-sm">
-            <div className="flex items-center justify-center gap-2 text-purple-300">
-              <Video className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
-              <span className="font-medium text-sm sm:text-base text-center">
+        <div className="max-w-4xl mx-auto mb-8 sm:mb-12 grid gap-4 sm:grid-cols-2">
+          <div className="bg-gradient-to-r from-purple-500/20 to-blue-500/20 border border-purple-500/30 rounded-xl py-4 px-6 backdrop-blur-sm hover:border-purple-500/50 transition-colors">
+            <div className="flex items-center justify-center gap-3 text-purple-300">
+              <Video className="h-5 w-5 flex-shrink-0" />
+              <span className="font-medium text-base text-center">
                 {t('postPage.importantNotice.videoDuration')}
               </span>
             </div>
           </div>
           
-          <div className="bg-gradient-to-r from-amber-600/20 to-orange-600/20 border border-amber-500/30 rounded-xl py-3 px-4 backdrop-blur-sm">
-            <div className="flex items-center justify-center gap-2 text-amber-300">
-              <Settings className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
-              <span className="font-medium text-sm sm:text-base text-center">
+          <div className="bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-500/30 rounded-xl py-4 px-6 backdrop-blur-sm hover:border-amber-500/50 transition-colors">
+            <div className="flex items-center justify-center gap-3 text-amber-300">
+              <Settings className="h-5 w-5 flex-shrink-0" />
+              <span className="font-medium text-base text-center">
                 {t('postPage.importantNotice.videoQuality')}
               </span>
             </div>
           </div>
         </div>
-        
-        <Card className="max-w-2xl mx-auto bg-gray-900 border border-gray-800">
-          <div className="p-6 sm:p-8">
 
-            {step === 'upload' && (
-              <>
-                {/* 投稿制限情報カード */}
-                {(!canSubmit || (submissionStatus && !submissionStatus.canSubmit)) && (cooldownInfo || submissionStatus) && (
-                  <div className="mb-6 bg-orange-500/10 border border-orange-500/30 rounded-lg p-4">
-                    <div className="flex items-center gap-2 mb-3">
-                      <AlertCircle className="h-5 w-5 text-orange-400" />
-                      <h3 className="font-medium text-white">
-                        {submissionStatus && !submissionStatus.canSubmit 
-                          ? t('postPage.seasonOff.title', 'シーズン外投稿制限')
-                          : t('postPage.cooldown.title', '投稿制限中')
-                        }
-                      </h3>
-                    </div>
-                    <p className="text-sm text-orange-200 mb-3">
-                      {submissionStatus && !submissionStatus.canSubmit 
-                        ? submissionStatus.message
-                        : cooldownInfo?.message
-                      }
-                    </p>
-                    {remainingTime && canSubmit && (
-                      <div className="bg-gray-800/50 rounded-lg p-3">
-                        <div className="flex items-center justify-between text-sm">
-                          <span className="text-gray-300">{t('postPage.cooldown.nextSubmission', '次回投稿可能まで')}</span>
-                          <span className="text-orange-400 font-medium">{remainingTime}</span>
+        {/* 2カラムレイアウト: 左（動画エリア）・右（ガイドライン） */}
+        <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
+          
+          {/* 左カラム: 動画アップロード・プレビューエリア */}
+          <div className="space-y-6">
+            <Card className="bg-slate-950 border border-slate-700 shadow-2xl">
+              <div className="p-6 sm:p-8">
+                
+                {step === 'upload' && (
+                  <>
+                    {/* 投稿制限情報カード */}
+                    {(!canSubmit || (submissionStatus && !submissionStatus.canSubmit)) && (cooldownInfo || submissionStatus) && (
+                      <div className="mb-6 bg-orange-500/10 border border-orange-500/30 rounded-xl p-4 backdrop-blur-sm">
+                        <div className="flex items-center gap-2 mb-3">
+                          <AlertCircle className="h-5 w-5 text-orange-400" />
+                          <h3 className="font-semibold text-white">
+                            {submissionStatus && !submissionStatus.canSubmit 
+                              ? t('postPage.seasonOff.title', 'シーズン外投稿制限')
+                              : t('postPage.cooldown.title', '投稿制限中')
+                            }
+                          </h3>
+                        </div>
+                        <p className="text-sm text-orange-200 mb-3">
+                          {submissionStatus && !submissionStatus.canSubmit 
+                            ? submissionStatus.message
+                            : cooldownInfo?.message
+                          }
+                        </p>
+                        {remainingTime && canSubmit && (
+                          <div className="bg-slate-800/50 rounded-lg p-3">
+                            <div className="flex items-center justify-between text-sm">
+                              <span className="text-slate-300">{t('postPage.cooldown.nextSubmission', '次回投稿可能まで')}</span>
+                              <span className="text-orange-400 font-medium">{remainingTime}</span>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* FFmpeg初期化エラー */}
+                    {ffmpegError && (
+                      <div className="mb-6 bg-red-500/10 border border-red-500/30 rounded-xl p-4 backdrop-blur-sm">
+                        <div className="flex items-start gap-2">
+                          <AlertCircle className="h-5 w-5 text-red-400 mt-0.5 flex-shrink-0" />
+                          <div className="flex-1">
+                            <h4 className="font-semibold text-white mb-1">{t('postPage.ffmpeg.initializationError')}</h4>
+                            <div className="text-sm text-red-200 mb-4">{ffmpegError}</div>
+                          </div>
                         </div>
                       </div>
                     )}
-                  </div>
-                )}
 
-                {/* FFmpeg初期化エラー */}
-                {ffmpegError && (
-                  <div className="mb-6 bg-red-500/10 border border-red-500/30 rounded-xl p-4 backdrop-blur-sm">
-                    <div className="flex items-start gap-2">
-                      <AlertCircle className="h-5 w-5 text-red-400 mt-0.5 flex-shrink-0" />
-                      <div className="flex-1">
-                        <h4 className="font-medium text-white mb-1">{t('postPage.ffmpeg.initializationError')}</h4>
-                        <div className="text-sm text-red-200 mb-4">{ffmpegError}</div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-
-
-                {error && (
-                  <div className="mb-6 bg-red-500/10 border border-red-500/30 rounded-xl p-4 backdrop-blur-sm">
-                    <div className="flex items-start gap-2">
-                      <AlertCircle className="h-5 w-5 text-red-400 mt-0.5 flex-shrink-0" />
-                      <div className="flex-1">
-                        <h4 className="font-medium text-white mb-1">{t('postPage.errors.problemOccurred')}</h4>
-                        <div className="text-sm text-red-200 whitespace-pre-line mb-4">{error}</div>
-                        
-                        {(error.includes('秒') || error.includes('seconds')) && (
-                          <div className="flex flex-wrap gap-2">
-                            <button
-                              onClick={() => {
-                                setError(null);
-                                triggerFileInput();
-                              }}
-                              className="px-3 py-1.5 bg-gray-600 hover:bg-gray-700 text-white text-sm rounded transition-colors"
-                            >
-                              {t('postPage.errors.selectDifferentVideo', '別の動画を選択')}
-                            </button>
+                    {/* エラー表示 */}
+                    {error && (
+                      <div className="mb-6 bg-red-500/10 border border-red-500/30 rounded-xl p-4 backdrop-blur-sm">
+                        <div className="flex items-start gap-2">
+                          <AlertCircle className="h-5 w-5 text-red-400 mt-0.5 flex-shrink-0" />
+                          <div className="flex-1">
+                            <h4 className="font-semibold text-slate-50 mb-1">{t('postPage.errors.problemOccurred')}</h4>
+                            <div className="text-sm text-red-200 whitespace-pre-line mb-4">{error}</div>
+                            
+                            {(error.includes('秒') || error.includes('seconds')) && (
+                              <div className="flex flex-wrap gap-2">
+                                <button
+                                  onClick={() => {
+                                    setError(null);
+                                    triggerFileInput();
+                                  }}
+                                  className="px-3 py-1.5 bg-slate-600 hover:bg-slate-700 text-white text-sm rounded-lg transition-colors"
+                                >
+                                  {t('postPage.errors.selectDifferentVideo', '別の動画を選択')}
+                                </button>
+                              </div>
+                            )}
                           </div>
-                        )}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* ファイルアップロード領域 */}
+                    <div 
+                      className={`border-2 border-dashed rounded-xl transition-all duration-300 relative hover-lift ${
+                        isDragging 
+                          ? 'border-cyan-400 bg-cyan-500/10 scale-105' 
+                          : 'border-slate-700 hover:border-cyan-500/50 hover:bg-slate-800/30'
+                      } ${!canSubmit || !isFFmpegLoaded || (submissionStatus && !submissionStatus.canSubmit) ? 'opacity-50 pointer-events-none' : ''}`}
+                      onDragOver={handleDragOver}
+                      onDragLeave={handleDragLeave}
+                      onDrop={handleDrop}
+                    >
+                      <input 
+                        type="file" 
+                        accept="video/*" 
+                        className="hidden" 
+                        ref={fileInputRef} 
+                        onChange={handleFileChange}
+                        disabled={!canSubmit || !isFFmpegLoaded || (submissionStatus?.canSubmit === false)}
+                      />
+                      
+                      {/* FFmpeg準備中のオーバーレイ */}
+                      {!isFFmpegLoaded && !ffmpegError && (
+                        <div className="absolute inset-0 bg-slate-900/90 backdrop-blur-sm rounded-xl flex items-center justify-center z-10">
+                          <div className="text-center">
+                            <div className="w-8 h-8 sm:w-10 sm:h-10 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
+                            <h3 className="text-base sm:text-lg font-semibold text-slate-50 mb-1">
+                              {t('postPage.ffmpeg.initializing')}
+                            </h3>
+                            <p className="text-xs sm:text-sm text-slate-400">
+                              {t('postPage.ffmpeg.initializingDescription')}
+                            </p>
+                          </div>
+                        </div>
+                      )}
+                      
+                      <div className="p-8 text-center">
+                        <div className="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-6 rounded-full bg-gradient-to-br from-slate-800 to-slate-700 flex items-center justify-center shadow-xl border border-slate-600">
+                          <Upload className="h-10 w-10 sm:h-12 sm:w-12 text-cyan-400" />
+                        </div>
+                        <h3 className="text-xl sm:text-2xl font-semibold text-slate-50 mb-3">
+                          {t('postPage.upload.dropHere')}
+                        </h3>
+                        <p className="text-slate-400 mb-6 text-base">
+                          {t('postPage.upload.orBrowse')}
+                        </p>
+                        <Button
+                          variant="outline"
+                          size="lg"
+                          onClick={triggerFileInput}
+                          disabled={!canSubmit || !isFFmpegLoaded || (submissionStatus?.canSubmit === false)}
+                          className="border-cyan-500/50 text-cyan-400 hover:bg-cyan-500/10 hover:border-cyan-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                        >
+                          {t('postPage.upload.selectVideo')}
+                        </Button>
                       </div>
                     </div>
-                  </div>
+                  </>
                 )}
 
-
-
-                <div 
-                  className={`border-2 border-dashed rounded-xl transition-all duration-300 relative ${
-                    isDragging 
-                      ? 'border-cyan-400 bg-cyan-500/10 scale-105' 
-                      : 'border-gray-700 hover:border-cyan-500/50 hover:bg-gray-800/30'
-                  } ${!canSubmit || !isFFmpegLoaded || (submissionStatus && !submissionStatus.canSubmit) ? 'opacity-50 pointer-events-none' : ''}`}
-                  onDragOver={handleDragOver}
-                  onDragLeave={handleDragLeave}
-                  onDrop={handleDrop}
-                >
-                  <input 
-                    type="file" 
-                    accept="video/*" 
-                    className="hidden" 
-                    ref={fileInputRef} 
-                    onChange={handleFileChange}
-                    disabled={!canSubmit || !isFFmpegLoaded || (submissionStatus && !submissionStatus.canSubmit)}
-                  />
-                  
-                  {/* FFmpeg準備中のオーバーレイ */}
-                  {!isFFmpegLoaded && !ffmpegError && (
-                    <div className="absolute inset-0 bg-gray-900/90 backdrop-blur-sm rounded-xl flex items-center justify-center z-10">
-                      <div className="text-center">
-                        <div className="w-8 h-8 sm:w-10 sm:h-10 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
-                        <h3 className="text-base sm:text-lg font-medium text-white mb-1">
-                          {t('postPage.ffmpeg.initializing')}
-                        </h3>
-                        <p className="text-xs sm:text-sm text-gray-400">
-                          {t('postPage.ffmpeg.initializingDescription')}
-                        </p>
+                {/* プレビューステップ */}
+                {step === 'preview' && videoPreviewUrl && (
+                  <form onSubmit={handleSubmit} className="space-y-8">
+                    <div>
+                      <label className="block text-lg font-semibold text-slate-50 mb-4">
+                        {t('postPage.preview.title')}
+                      </label>
+                      <div className="relative aspect-video bg-black rounded-xl overflow-hidden shadow-2xl border border-slate-700">
+                        <video
+                          src={videoPreviewUrl}
+                          className="w-full h-full object-contain"
+                          controls
+                        />
+                        <button
+                          type="button"
+                          onClick={handleRemoveVideo}
+                          className="absolute top-3 right-3 bg-slate-900/80 text-white p-2 rounded-lg hover:bg-slate-900 transition-colors"
+                        >
+                          <X className="h-5 w-5" />
+                        </button>
                       </div>
-                    </div>
-                  )}
-                  
-                  <div className="p-6 sm:p-8 text-center">
-                    <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-gray-800 to-gray-700 flex items-center justify-center shadow-lg border border-gray-600">
-                      <Upload className="h-8 w-8 sm:h-10 sm:w-10 text-cyan-400" />
-                    </div>
-                    <h3 className="text-lg sm:text-xl font-semibold text-white mb-2">
-                      {t('postPage.upload.dropHere')}
-                    </h3>
-                    <p className="text-gray-400 mb-4 text-sm sm:text-base">
-                      {t('postPage.upload.orBrowse')}
-                    </p>
-                    <Button
-                      variant="outline"
-                      onClick={triggerFileInput}
-                      disabled={!canSubmit || !isFFmpegLoaded || (submissionStatus && !submissionStatus.canSubmit)}
-                      className="border-cyan-500/50 text-cyan-400 hover:bg-cyan-500/10 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      {t('postPage.upload.selectVideo')}
-                    </Button>
-                  </div>
-                </div>
-
-                <div className="mt-6 sm:mt-8 space-y-6">
-                  <div className="text-center">
-                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-yellow-500/10 to-amber-500/10 rounded-xl border border-yellow-500/30 backdrop-blur-sm mb-4">
-                      <Crown className="h-5 w-5 text-yellow-400" />
-                      <h3 className="text-lg font-semibold text-yellow-100">{t('postPage.guidelines.title')}</h3>
-                    </div>
-                  </div>
-                  
-                  <div className="grid gap-4 sm:grid-cols-2">
-                    <div className="bg-gray-800/30 backdrop-blur-sm rounded-xl p-4 border border-gray-700/50 hover:border-cyan-500/30 transition-colors">
-                      <Music className="h-5 w-5 text-cyan-400 mb-2" />
-                      <h4 className="font-medium text-white mb-1 text-sm sm:text-base">{t('postPage.guidelines.audioQuality.title')}</h4>
-                      <p className="text-xs sm:text-sm text-gray-400">
-                        {t('postPage.guidelines.audioQuality.description')}
-                      </p>
-                    </div>
-                    <div className="bg-gradient-to-r from-purple-600/20 to-blue-600/20 border border-purple-500/30 rounded-xl p-4 backdrop-blur-sm">
-                      <div className="flex items-center gap-2 mb-3">
-                        <Video className="h-5 w-5 text-purple-300" />
-                        <span className="font-medium text-purple-300 text-sm sm:text-base">
-                          {t('postPage.guidelines.videoLengthSize.title')}
-                        </span>
+                      <div className="flex items-center mt-3 text-sm text-slate-400">
+                        <Video className="h-4 w-4 mr-2" />
+                        {videoFile?.name} ({Math.round((videoFile?.size || 0) / 1024 / 1024 * 10) / 10} MB)
                       </div>
-                      <div className="text-xs sm:text-sm text-gray-300 whitespace-pre-line">
-                        {t('postPage.guidelines.videoLengthSize.description')}
-                      </div>
-                    </div>
-                    <div className="bg-gray-800/30 backdrop-blur-sm rounded-xl p-4 border border-gray-700/50 hover:border-yellow-500/30 transition-colors">
-                      <AlertCircle className="h-5 w-5 text-yellow-400 mb-2" />
-                      <h4 className="font-medium text-white mb-1 text-sm sm:text-base">{t('postPage.guidelines.facePolicy.title')}</h4>
-                      <p className="text-xs sm:text-sm text-gray-400">
-                        {t('postPage.guidelines.facePolicy.description')}
-                      </p>
-                    </div>
-                    <div className="bg-gray-800/30 backdrop-blur-sm rounded-xl p-4 border border-red-500/30 hover:border-red-500/50 transition-colors">
-                      <Shield className="h-5 w-5 text-red-400 mb-2" />
-                      <h4 className="font-medium text-white mb-1 text-sm sm:text-base">{t('postPage.guidelines.lipSyncPolicy.title')}</h4>
-                      <p className="text-xs sm:text-sm text-gray-400">
-                        {t('postPage.guidelines.lipSyncPolicy.description')}
-                      </p>
-                    </div>
-                    <div className="bg-gray-800/30 backdrop-blur-sm rounded-xl p-4 border border-green-500/30 hover:border-green-500/50 transition-colors">
-                      <Settings className="h-5 w-5 text-green-400 mb-2" />
-                      <h4 className="font-medium text-white mb-1 text-sm sm:text-base">{t('postPage.guidelines.allowedEffects.title')}</h4>
-                      <p className="text-xs sm:text-sm text-gray-400">
-                        {t('postPage.guidelines.allowedEffects.description')}
-                      </p>
-                    </div>
-                    <div className="bg-gray-800/30 backdrop-blur-sm rounded-xl p-4 border border-red-500/30 hover:border-red-500/50 transition-colors">
-                      <X className="h-5 w-5 text-red-400 mb-2" />
-                      <h4 className="font-medium text-white mb-1 text-sm sm:text-base">{t('postPage.guidelines.notAllowed.title')}</h4>
-                      <p className="text-xs sm:text-sm text-gray-400">
-                        {t('postPage.guidelines.notAllowed.description')}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </>
-            )}
-
-            {step === 'preview' && videoPreviewUrl && (
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    {t('postPage.preview.title')}
-                  </label>
-                  <div className="relative aspect-video bg-black rounded-lg overflow-hidden">
-                    <video
-                      src={videoPreviewUrl}
-                      className="w-full h-full object-contain"
-                      controls
-                    />
-                    <button
-                      type="button"
-                      onClick={handleRemoveVideo}
-                      className="absolute top-2 right-2 bg-gray-900/70 text-white p-1.5 rounded-lg hover:bg-gray-900"
-                    >
-                      <X className="h-5 w-5" />
-                    </button>
-                  </div>
-                  <div className="flex items-center mt-2 text-sm text-gray-400">
-                    <Video className="h-4 w-4 mr-2" />
-                    {videoFile?.name} ({Math.round((videoFile?.size || 0) / 1024 / 1024 * 10) / 10} MB)
-                  </div>
-                  
-                  {/* 圧縮進行状況表示 */}
-                  {isProcessing && stage && (
-                    <div className="mt-4 bg-blue-500/10 border border-blue-500/30 rounded-xl p-4 backdrop-blur-sm">
-                      <div className="flex items-center gap-2 mb-2">
-                        <div className="w-4 h-4 border-2 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
-                        <span className="text-blue-300 font-medium text-sm">{stage}</span>
-                      </div>
-                      {progress > 0 && (
-                        <div className="w-full bg-gray-700 rounded-full h-2">
-                          <div 
-                            className="bg-gradient-to-r from-blue-500 to-cyan-500 h-2 rounded-full transition-all duration-300"
-                            style={{ width: `${progress}%` }}
-                          />
+                      
+                      {/* 圧縮進行状況表示 */}
+                      {isProcessing && (
+                        <div className="mt-4 bg-blue-500/10 border border-blue-500/30 rounded-xl p-4 backdrop-blur-sm">
+                          <div className="flex items-center gap-2 mb-2">
+                            <div className="w-4 h-4 border-2 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
+                            <span className="text-blue-300 font-medium text-sm">{t('postPage.processing')}</span>
+                          </div>
+                          {progress > 0 && (
+                            <div className="w-full bg-slate-700 rounded-full h-3">
+                              <div 
+                                className="bg-gradient-to-r from-blue-500 to-cyan-500 h-3 rounded-full transition-all duration-300"
+                                style={{ width: `${progress}%` }}
+                              />
+                            </div>
+                          )}
                         </div>
                       )}
                     </div>
-                  )}
-                </div>
 
-                {error && (
-                  <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4 backdrop-blur-sm">
-                    <div className="flex items-start gap-2">
-                      <AlertCircle className="h-5 w-5 text-red-400 mt-0.5 flex-shrink-0" />
-                      <div className="flex-1">
-                        <h4 className="font-medium text-white mb-1">{t('postPage.errors.problemOccurred')}</h4>
-                        <div className="text-sm text-red-200 whitespace-pre-line mb-4">{error}</div>
-                        
-                        {(error.includes('秒') || error.includes('seconds')) && (
-                          <div className="flex flex-wrap gap-2">
-                            <button
-                              onClick={() => {
-                                setError(null);
-                                // バトル形式選択にフォーカス
-                                document.querySelector('select')?.focus();
-                              }}
-                              className="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-sm rounded transition-colors"
-                            >
-                              {t('postPage.errors.changeBattleFormat', 'バトル形式を変更')}
-                            </button>
-                            <button
-                              onClick={() => {
-                                setError(null);
-                                triggerFileInput();
-                              }}
-                              className="px-3 py-1.5 bg-gray-600 hover:bg-gray-700 text-white text-sm rounded transition-colors"
-                            >
-                              {t('postPage.errors.selectDifferentVideo', '別の動画を選択')}
-                            </button>
+                    {/* エラー表示（プレビューステップ） */}
+                    {error && (
+                      <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4 backdrop-blur-sm">
+                        <div className="flex items-start gap-2">
+                          <AlertCircle className="h-5 w-5 text-red-400 mt-0.5 flex-shrink-0" />
+                          <div className="flex-1">
+                            <h4 className="font-semibold text-slate-50 mb-1">{t('postPage.errors.problemOccurred')}</h4>
+                            <div className="text-sm text-red-200 whitespace-pre-line mb-4">{error}</div>
+                            
+                            {(error.includes('秒') || error.includes('seconds')) && (
+                              <div className="flex flex-wrap gap-2">
+                                <button
+                                  onClick={() => {
+                                    setError(null);
+                                    // バトル形式選択にフォーカス
+                                    document.querySelector('select')?.focus();
+                                  }}
+                                  className="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-sm rounded-lg transition-colors"
+                                >
+                                  {t('postPage.errors.changeBattleFormat', 'バトル形式を変更')}
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    setError(null);
+                                    triggerFileInput();
+                                  }}
+                                  className="px-3 py-1.5 bg-slate-600 hover:bg-slate-700 text-white text-sm rounded-lg transition-colors"
+                                >
+                                  {t('postPage.errors.selectDifferentVideo', '別の動画を選択')}
+                                </button>
+                              </div>
+                            )}
                           </div>
-                        )}
+                        </div>
                       </div>
+                    )}
+
+                    {/* 投稿ガイドライン */}
+                    <div className="bg-slate-900/80 backdrop-blur-sm rounded-xl p-6 border border-slate-600">
+                      <div className="flex items-center gap-3 mb-6">
+                        <AlertCircle className="h-6 w-6 text-cyan-400" />
+                        <h3 className="font-semibold text-slate-50 text-lg">
+                          {t('postPage.submissionGuidelines.title')}
+                        </h3>
+                      </div>
+                      <ul className="space-y-3 text-sm text-slate-300 mb-8">
+                        <li className="flex items-start gap-3">
+                          <CheckCircle className="h-5 w-5 text-green-400 mt-0.5 flex-shrink-0" />
+                          <span>{t('postPage.submissionGuidelines.followFormatLength')}</span>
+                        </li>
+                        <li className="flex items-start gap-3">
+                          <CheckCircle className="h-5 w-5 text-green-400 mt-0.5 flex-shrink-0" />
+                          <span>{t('postPage.submissionGuidelines.ensureAudioQuality')}</span>
+                        </li>
+                        <li className="flex items-start gap-3">
+                          <CheckCircle className="h-5 w-5 text-green-400 mt-0.5 flex-shrink-0" />
+                          <span>{t('postPage.submissionGuidelines.faceOptional')}</span>
+                        </li>
+                        <li className="flex items-start gap-3">
+                          <X className="h-5 w-5 text-red-400 mt-0.5 flex-shrink-0" />
+                          <span>{t('postPage.submissionGuidelines.noBackgroundMusic')}</span>
+                        </li>
+                      </ul>
+
+                      <div className="space-y-4">
+                        <label className="flex items-start gap-3 cursor-pointer group">
+                          <input
+                            type="checkbox"
+                            checked={acceptedGuidelines}
+                            onChange={(e) => setAcceptedGuidelines(e.target.checked)}
+                            className="mt-1 rounded border-slate-600 text-cyan-500 focus:ring-cyan-500/30 bg-slate-700"
+                            required
+                          />
+                          <span className="text-sm text-slate-300 group-hover:text-slate-50 transition-colors">
+                            {t('postPage.submissionGuidelines.agreeGuidelines')}
+                          </span>
+                        </label>
+                        <label className="flex items-start gap-3 cursor-pointer group">
+                          <input
+                            type="checkbox"
+                            checked={acceptedFacePolicy}
+                            onChange={(e) => setAcceptedFacePolicy(e.target.checked)}
+                            className="mt-1 rounded border-slate-600 text-cyan-500 focus:ring-cyan-500/30 bg-slate-700"
+                            required
+                          />
+                          <span className="text-sm text-slate-300 group-hover:text-slate-50 transition-colors">
+                            {t('postPage.submissionGuidelines.understandFacePolicy')}
+                          </span>
+                        </label>
+                        <label className="flex items-start gap-3 cursor-pointer group">
+                          <input
+                            type="checkbox"
+                            checked={acceptedContent}
+                            onChange={(e) => setAcceptedContent(e.target.checked)}
+                            className="mt-1 rounded border-slate-600 text-cyan-500 focus:ring-cyan-500/30 bg-slate-700"
+                            required
+                          />
+                          <span className="text-sm text-slate-300 group-hover:text-slate-50 transition-colors">
+                            {t('postPage.submissionGuidelines.confirmOwnPerformance')}
+                          </span>
+                        </label>
+                      </div>
+                    </div>
+                    
+                    {/* ボタン群 */}
+                    <div className="flex flex-col sm:flex-row gap-4 pt-4">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="lg"
+                        onClick={handleRemoveVideo}
+                        className="flex-1 border-slate-700 text-slate-300 hover:text-slate-50 hover:border-slate-600"
+                      >
+                        {t('postPage.buttons.cancel')}
+                      </Button>
+                      <Button
+                        type="submit"
+                        variant="primary"
+                        size="lg"
+                        className="flex-1 bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600 shadow-lg hover:shadow-xl transition-all"
+                        isLoading={isSubmissionProcessing}
+                        disabled={!acceptedGuidelines || !acceptedFacePolicy || !acceptedContent || isSubmissionProcessing || !canSubmit}
+                        leftIcon={<Mic className="h-5 w-5" />}
+                      >
+                        {t('postPage.buttons.submitToBattlePool')}
+                      </Button>
+                    </div>
+                  </form>
+                )}
+
+                {/* 成功ステップ */}
+                {step === 'success' && (
+                  <div className="text-center py-8">
+                    <div className="relative mb-8">
+                      {/* 背景のグラデーション効果 */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-green-500/20 via-emerald-500/20 to-cyan-500/20 blur-3xl animate-pulse"></div>
+                      
+                      <div className="relative w-24 h-24 sm:w-28 sm:h-28 mx-auto rounded-full bg-gradient-to-br from-green-500/20 to-emerald-500/20 flex items-center justify-center shadow-2xl border border-green-500/30 animate-float">
+                        <CheckCircle className="h-12 w-12 sm:h-14 sm:w-14 text-green-400" />
+                      </div>
+                    </div>
+                    
+                    <h2 className="text-2xl sm:text-3xl font-bold text-slate-50 mb-3">
+                      {t('postPage.success.title')}
+                    </h2>
+                    <p className="text-slate-400 mb-8 text-base max-w-md mx-auto">
+                      {t('postPage.success.description')}
+                    </p>
+                    
+                    <div className="flex flex-col sm:flex-row justify-center gap-4">
+                      <Button
+                        variant="outline"
+                        size="lg"
+                        onClick={() => navigate('/my-battles')}
+                        className="border-slate-700 text-slate-300 hover:text-slate-50 hover:border-slate-600"
+                      >
+                        {t('postPage.buttons.viewMyBattles')}
+                      </Button>
+                      <Button
+                        variant="primary"
+                        size="lg"
+                        onClick={() => setStep('upload')}
+                        className="bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600 shadow-lg hover:shadow-xl transition-all"
+                      >
+                        {t('postPage.buttons.submitAnother')}
+                      </Button>
                     </div>
                   </div>
                 )}
+              </div>
+            </Card>
+          </div>
 
-                <div className="bg-gray-800/30 backdrop-blur-sm rounded-xl p-4 sm:p-6 border border-gray-700/50">
-                  <div className="flex items-center gap-2 mb-4">
-                    <AlertCircle className="h-5 w-5 text-cyan-400" />
-                    <h3 className="font-medium text-white text-sm sm:text-base">
-                      {t('postPage.submissionGuidelines.title')}
-                    </h3>
+          {/* 右カラム: ガイドライン */}
+          <div className="space-y-6">
+            <Card className="bg-slate-950 border border-slate-700 shadow-2xl sticky top-6">
+              <div className="p-6 sm:p-8">
+                {/* ガイドライン セクション */}
+                <div>
+                  <div className="text-center mb-6">
+                    <div className="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-yellow-500/10 to-amber-500/10 rounded-xl border border-yellow-500/30 backdrop-blur-sm">
+                      <Crown className="h-5 w-5 text-yellow-400" />
+                      <h3 className="text-xl font-semibold text-yellow-100">{t('postPage.guidelines.title')}</h3>
+                    </div>
                   </div>
-                  <ul className="space-y-2 text-sm text-gray-300 mb-6">
-                    <li className="flex items-start gap-2">
-                      <CheckCircle className="h-4 w-4 text-green-400 mt-1 flex-shrink-0" />
-                      {t('postPage.submissionGuidelines.followFormatLength')}
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <CheckCircle className="h-4 w-4 text-green-400 mt-1 flex-shrink-0" />
-                      {t('postPage.submissionGuidelines.ensureAudioQuality')}
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <CheckCircle className="h-4 w-4 text-green-400 mt-1 flex-shrink-0" />
-                      {t('postPage.submissionGuidelines.faceOptional')}
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <X className="h-4 w-4 text-red-400 mt-1 flex-shrink-0" />
-                      {t('postPage.submissionGuidelines.noBackgroundMusic')}
-                    </li>
-                  </ul>
-
-                  <div className="space-y-3">
-                    <label className="flex items-start gap-2 cursor-pointer group">
-                      <input
-                        type="checkbox"
-                        checked={acceptedGuidelines}
-                        onChange={(e) => setAcceptedGuidelines(e.target.checked)}
-                        className="mt-1 rounded border-gray-600 text-cyan-500 focus:ring-cyan-500/30 bg-gray-700"
-                        required
-                      />
-                      <span className="text-sm text-gray-300 group-hover:text-white">
-                        {t('postPage.submissionGuidelines.agreeGuidelines')}
-                      </span>
-                    </label>
-                    <label className="flex items-start gap-2 cursor-pointer group">
-                      <input
-                        type="checkbox"
-                        checked={acceptedFacePolicy}
-                        onChange={(e) => setAcceptedFacePolicy(e.target.checked)}
-                        className="mt-1 rounded border-gray-600 text-cyan-500 focus:ring-cyan-500/30 bg-gray-700"
-                        required
-                      />
-                      <span className="text-sm text-gray-300 group-hover:text-white">
-                        {t('postPage.submissionGuidelines.understandFacePolicy')}
-                      </span>
-                    </label>
-                    <label className="flex items-start gap-2 cursor-pointer group">
-                      <input
-                        type="checkbox"
-                        checked={acceptedContent}
-                        onChange={(e) => setAcceptedContent(e.target.checked)}
-                        className="mt-1 rounded border-gray-600 text-cyan-500 focus:ring-cyan-500/30 bg-gray-700"
-                        required
-                      />
-                      <span className="text-sm text-gray-300 group-hover:text-white">
-                        {t('postPage.submissionGuidelines.confirmOwnPerformance')}
-                      </span>
-                    </label>
-                  </div>
-                </div>
-                
-                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-2">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={handleRemoveVideo}
-                    className="flex-1 border-gray-700 text-gray-300 hover:text-white text-sm sm:text-base"
-                  >
-                    {t('postPage.buttons.cancel')}
-                  </Button>
-                  <Button
-                    type="submit"
-                    variant="primary"
-                    className="flex-1 bg-gradient-to-r from-cyan-500 to-purple-500 text-sm sm:text-base"
-                    isLoading={isUploading}
-                    disabled={!acceptedGuidelines || !acceptedFacePolicy || !acceptedContent || isUploading || !canSubmit}
-                    leftIcon={<Mic className="h-4 w-4 sm:h-5 sm:w-5" />}
-                  >
-                    {t('postPage.buttons.submitToBattlePool')}
-                  </Button>
-                </div>
-              </form>
-            )}
-
-            {step === 'success' && (
-              <div className="text-center py-4 sm:py-8">
-                <div className="relative mb-6">
-                  {/* 背景のグラデーション効果 */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-green-500/20 via-emerald-500/20 to-cyan-500/20 blur-2xl"></div>
                   
-                  <div className="relative w-20 h-20 sm:w-24 sm:h-24 mx-auto rounded-full bg-gradient-to-br from-green-500/20 to-emerald-500/20 flex items-center justify-center shadow-lg border border-green-500/30">
-                    <CheckCircle className="h-10 w-10 sm:h-12 sm:w-12 text-green-400" />
+                  {/* 統一されたガイドラインカード */}
+                  <div className="bg-slate-900 backdrop-blur-sm rounded-xl p-6 border border-slate-600 hover:border-cyan-500/30 transition-all hover-lift">
+                    <div className="space-y-6">
+                      {/* パフォーマンス時間 */}
+                      <div className="flex items-start gap-3">
+                        <div className="w-3 h-3 bg-cyan-400 rounded-full mt-2 flex-shrink-0"></div>
+                        <div>
+                          <h4 className="text-lg font-bold text-white mb-2">
+                            パフォーマンス時間：<span className="text-cyan-400">1分～2分</span>
+                          </h4>
+                          <p className="text-sm text-white/80">指定された時間内でパフォーマンスを行ってください</p>
+                        </div>
+                      </div>
+                      
+                      {/* パフォーマンス形式 */}
+                      <div className="flex items-start gap-3">
+                        <div className="w-3 h-3 bg-purple-400 rounded-full mt-2 flex-shrink-0"></div>
+                        <div>
+                          <h4 className="text-lg font-bold text-white mb-2">
+                            パフォーマンス形式：<span className="text-purple-400">ノーカット撮影</span>
+                          </h4>
+                          <p className="text-sm text-white/80">映像と音声は同時に録画・録音してください。パフォーマンスをカット編集で繋ぎ合わせることは禁止です。</p>
+                        </div>
+                      </div>
+                      
+                      {/* 本人確認 */}
+                      <div className="flex items-start gap-3">
+                        <div className="w-3 h-3 bg-yellow-400 rounded-full mt-2 flex-shrink-0"></div>
+                        <div>
+                          <h4 className="text-lg font-bold text-white mb-2">
+                            本人確認：<span className="text-yellow-400">顔出し推奨</span>
+                          </h4>
+                          <p className="text-sm text-white/80">顔出しは必須ではありませんが、推奨します。</p>
+                        </div>
+                      </div>
+                      
+                      {/* リップシンク禁止 */}
+                      <div className="flex items-start gap-3">
+                        <div className="w-3 h-3 bg-red-400 rounded-full mt-2 flex-shrink-0"></div>
+                        <div>
+                          <h4 className="text-lg font-bold text-white mb-2">
+                            <span className="text-red-400">リップシンク禁止</span>
+                          </h4>
+                          <p className="text-sm text-white/80">録音した音源に合わせた口パク（アテレコ）は禁止です。</p>
+                        </div>
+                      </div>
+                      
+                      {/* 音源 */}
+                      <div className="flex items-start gap-3">
+                        <div className="w-3 h-3 bg-green-400 rounded-full mt-2 flex-shrink-0"></div>
+                        <div>
+                          <h4 className="text-lg font-bold text-white mb-2">
+                            音源：<span className="text-green-400">リアルタイム音源</span>
+                          </h4>
+                          <p className="text-sm text-white/80">パフォーマンスで使われる全ての音は、あなたの声または体からその場で生み出されたものに限ります。</p>
+                        </div>
+                      </div>
+                      
+                      {/* サンプル使用禁止 */}
+                      <div className="flex items-start gap-3">
+                        <div className="w-3 h-3 bg-orange-400 rounded-full mt-2 flex-shrink-0"></div>
+                        <div>
+                          <h4 className="text-lg font-bold text-white mb-2">
+                            <span className="text-orange-400">サンプル使用禁止</span>
+                          </h4>
+                          <p className="text-sm text-white/80">事前に録音された音源（サンプル）や、音が録音されてしまうメトロノームの使用は禁止です。</p>
+                        </div>
+                      </div>
+                      
+                      {/* 音声の処理 */}
+                      <div className="bg-slate-800 rounded-lg p-5 border border-slate-600">
+                        <h4 className="text-xl font-bold text-white mb-4 flex items-center gap-3">
+                          <Settings className="h-5 w-5 text-blue-400" />
+                          <span className="text-blue-400">音声の処理</span>について
+                        </h4>
+                        
+                        {/* 許可される処理 */}
+                        <div className="mb-6">
+                          <h5 className="text-lg font-bold text-green-400 mb-3">✅ 許可される処理</h5>
+                          <ul className="space-y-2 ml-4">
+                            <li className="text-white flex items-start gap-3">
+                              <CheckCircle className="h-4 w-4 text-green-400 mt-1 flex-shrink-0" />
+                              <span><strong className="text-green-300">ミックス・マスタリング</strong></span>
+                            </li>
+                            <li className="text-white flex items-start gap-3">
+                              <CheckCircle className="h-4 w-4 text-green-400 mt-1 flex-shrink-0" />
+                              <span>録音後、全体にかける基本的な<strong className="text-green-300">音質補正</strong>（EQ、コンプレッサー、リバーブ）</span>
+                            </li>
+                          </ul>
+                        </div>
+                        
+                        {/* 禁止される処理 */}
+                        <div>
+                          <h5 className="text-lg font-bold text-red-400 mb-3">❌ 禁止される処理</h5>
+                          <ul className="space-y-2 ml-4">
+                            <li className="text-white flex items-start gap-3">
+                              <X className="h-4 w-4 text-red-400 mt-1 flex-shrink-0" />
+                              <span><strong className="text-red-300">ディストーション、ディレイ</strong>など、元の音を大きく変化させるエフェクト</span>
+                            </li>
+                            <li className="text-white flex items-start gap-3">
+                              <X className="h-4 w-4 text-red-400 mt-1 flex-shrink-0" />
+                              <span><strong className="text-red-300">音ごとに処理を自動で変える</strong>ような高度な編集</span>
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                      
+                      {/* 撮影・録音機材 */}
+                      <div className="bg-slate-800 rounded-lg p-5 border border-slate-600">
+                        <h4 className="text-xl font-bold text-white mb-4 flex items-center gap-3">
+                          <Video className="h-5 w-5 text-emerald-400" />
+                          <span className="text-emerald-400">撮影・録音機材</span>
+                        </h4>
+                        <div className="space-y-3">
+                          <div className="flex items-start gap-3">
+                            <CheckCircle className="h-4 w-4 text-emerald-400 mt-1 flex-shrink-0" />
+                            <p className="text-white">
+                              <strong className="text-emerald-300">機材</strong>：スマートフォンからプロフェッショナルな機材まで、あらゆる方法を歓迎します。
+                            </p>
+                          </div>
+                          <div className="flex items-start gap-3">
+                            <AlertCircle className="h-4 w-4 text-yellow-400 mt-1 flex-shrink-0" />
+                            <p className="text-white">
+                              <strong className="text-yellow-300">解像度</strong>：4Kでの撮影は、ファイルサイズが大きくなるためお控えください。
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                </div>
-                
-                <h2 className="text-xl sm:text-2xl font-bold text-white mb-2">
-                  {t('postPage.success.title')}
-                </h2>
-                <p className="text-gray-400 mb-6 sm:mb-8 text-sm sm:text-base">
-                  {t('postPage.success.description')}
-                </p>
-                
-                <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">
-                  <Button
-                    variant="outline"
-                    onClick={() => navigate('/my-battles')}
-                    className="border-gray-700 text-gray-300 hover:text-white text-sm sm:text-base"
-                  >
-                    {t('postPage.buttons.viewMyBattles')}
-                  </Button>
-                  <Button
-                    variant="primary"
-                    onClick={() => setStep('upload')}
-                    className="bg-gradient-to-r from-cyan-500 to-purple-500 text-sm sm:text-base"
-                  >
-                    {t('postPage.buttons.submitAnother')}
-                  </Button>
                 </div>
               </div>
-            )}
+            </Card>
           </div>
-        </Card>
-
+        </div>
       </div>
       
       {/* 投稿処理モーダル */}
