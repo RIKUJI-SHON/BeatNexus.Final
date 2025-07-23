@@ -13,13 +13,13 @@ export function detectBrowserLanguage(): string {
   const supportedLanguages = ['ja', 'en'];
   
   // ブラウザの言語設定を取得
-  const browserLanguage = navigator.language || (navigator as any).userLanguage;
+  const browserLanguage = navigator.language || (navigator as Navigator & { userLanguage?: string }).userLanguage;
   
   // 言語コードを正規化（例: "ja-JP" -> "ja"）
-  const languageCode = browserLanguage.split('-')[0].toLowerCase();
+  const languageCode = browserLanguage?.split('-')[0].toLowerCase();
   
   // サポートされている言語かチェック
-  if (supportedLanguages.includes(languageCode)) {
+  if (languageCode && supportedLanguages.includes(languageCode)) {
     return languageCode;
   }
   
