@@ -18,9 +18,22 @@ if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
   console.error("Missing Supabase env vars");
 }
 
-const DEFAULT_AVATAR = `${SITE_BASE_URL}/images/FI.png`;
+const DEFAULT_AVATAR = `${SITE_BASE_URL}/images/Profile.png`;
 const HERO_BG = `${SITE_BASE_URL}/images/hero-background.png`;
 const VS_LOGO = `${SITE_BASE_URL}/images/VS.png`;
+
+// フレンドリーURL用のユーティリティ関数
+function extractBattleIdFromUrl(battlePath: string): string | null {
+  // UUIDパターン（ハイフン区切りの8-4-4-4-12文字）にマッチ
+  const match = battlePath.match(/-([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})$/i);
+  return match ? match[1] : null;
+}
+
+function isLegacyBattleUrl(battlePath: string): boolean {
+  // レガシーURL（UUID形式）かどうかを判定
+  const uuidPattern = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
+  return uuidPattern.test(battlePath);
+}
 
 // 型定義
 interface Player {
@@ -28,22 +41,23 @@ interface Player {
   username: string | null;
 }
 
-// フレンドリーURLからバトルIDを抽出
-function extractBattleIdFromUrl(battlePath: string): string | null {
-  // UUIDパターン（ハイフン区切りの8-4-4-4-12文字）にマッチ
-  const match = battlePath.match(/-([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})$/i);
-  return match ? match[1] : null;
-}
-
-// レガシーUUIDBattleURLかどうかを判定
-function isLegacyBattleUrl(battlePath: string): boolean {
-  return /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(battlePath);
-}
-
-// resvg_wasm は実行時に動的 import される（resvg_runtime.js 内）
-
-async function fetchPlayers(battleId: string) {
+async function fetchPlayers(battlePath: string) {
   const admin = createClient(SUPABASE_URL!, SUPABASE_SERVICE_ROLE_KEY!);
+
+  // フレンドリーURL形式からバトルIDを抽出、失敗したらレガシーURLとして扱う
+  let battleId: string;
+  if (isLegacyBattleUrl(battlePath)) {
+    battleId = battlePath;
+  } else {
+    const extractedId = extractBattleIdFromUrl(battlePath);
+    if (!extractedId) {
+      console.error("Could not extract battle ID from path:", battlePath);
+      return null;
+    }
+    battleId = extractedId;
+  }
+
+  console.log("Searching for battle with ID:", battleId);
 
   // active_battles → archived_battles の順で検索
   let { data } = await admin
@@ -71,7 +85,10 @@ async function fetchPlayers(battleId: string) {
     }
   }
 
-  if (!data) return null;
+  if (!data) {
+    console.error("Battle not found with ID:", battleId);
+    return null;
+  }
 
   const [p1, p2] = await Promise.all([
     admin.from("profiles").select("avatar_url").eq("id", data.player1_user_id).single(),
@@ -118,30 +135,28 @@ serve(async (req) => {
   }
 
   const { searchParams } = new URL(req.url);
-  const battleIdParam = searchParams.get("battle_id");
+  const battlePath = searchParams.get("battle_path") || searchParams.get("battle_id"); // 互換性のため両方をサポート
   const format = (searchParams.get("format") ?? "png").toLowerCase();
 
   const client = createClient(supabaseUrl, serviceRole);
 
-  if (!battleIdParam) {
+  if (!battlePath) {
     const { data, error } = await client.from("active_battles").select("id").limit(5);
-    return new Response(JSON.stringify({ sample: data, error }), { headers: { "Content-Type": "application/json" } });
+    return new Response(JSON.stringify({ 
+      error: "battle_path or battle_id parameter required",
+      sample: data, 
+      db_error: error 
+    }), { 
+      headers: { "Content-Type": "application/json" } 
+    });
   }
 
-  // フレンドリーURLまたはレガシーUUIDからバトルIDを抽出
-  let battleId: string;
-  if (isLegacyBattleUrl(battleIdParam)) {
-    battleId = battleIdParam;
-  } else {
-    const extracted = extractBattleIdFromUrl(battleIdParam);
-    if (!extracted) {
-      return new Response("invalid battle path", { status: 400 });
-    }
-    battleId = extracted;
-  }
+  console.log("Processing battle path:", battlePath);
 
-  const players = await fetchPlayers(battleId);
-  if (!players) return new Response("not found", { status: 404 });
+  const players = await fetchPlayers(battlePath);
+  if (!players) {
+    return new Response("Battle not found", { status: 404 });
+  }
 
   const svg = buildSvg(players.p1, players.p2);
 
@@ -165,4 +180,4 @@ serve(async (req) => {
       headers: { "Content-Type": "image/svg+xml", ...corsHeaders },
     });
   }
-}); 
+});

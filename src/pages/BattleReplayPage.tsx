@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Users, Calendar, ShieldCheck, ShieldX, Swords, TrendingUp, TrendingDown, Minus, Play, AlertTriangle, ArchiveX, Trophy, Star, MessageSquare, Clock, Volume2 } from 'lucide-react';
-import { Card } from '../components/ui/Card';
+import { ArrowLeft, Users, Calendar, ShieldCheck, ShieldX, Swords, AlertTriangle, ArchiveX, Trophy, MessageSquare } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { ArchivedBattle, BattleComment } from '../types';
 import { supabase } from '../lib/supabase';
@@ -11,12 +10,12 @@ import { ja, enUS } from 'date-fns/locale';
 import { cn } from '../lib/utils';
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '../store/authStore';
-import { Badge } from '../components/ui/Badge';
 import { VSIcon } from '../components/ui/VSIcon';
 import { ShareBattleButton } from '../components/ui/ShareBattleButton';
 import { trackBeatNexusEvents } from '../utils/analytics';
 import { getDefaultAvatarUrl } from '../utils';
 import { Helmet } from 'react-helmet-async';
+import { getBattleIdFromPath } from '../utils/battleUrl';
 
 // 固定色設定（BattleViewと統一）
 const playerColorA = '#3B82F6'; // Blue for Player A
@@ -24,7 +23,7 @@ const playerColorB = '#EF4444'; // Red for Player B
 const gradientBg = 'from-blue-500/20 to-red-500/20';
 
 const BattleReplayPage: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
+  const { battlePath } = useParams<{ battlePath: string }>();
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const { user } = useAuthStore();
@@ -32,6 +31,11 @@ const BattleReplayPage: React.FC = () => {
   const [battle, setBattle] = useState<ArchivedBattle | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  // URL パスからバトルIDを抽出（新旧両形式に対応）
+  const id = useMemo(() => {
+    return getBattleIdFromPath(battlePath || '');
+  }, [battlePath]);
   const [playerRatings, setPlayerRatings] = useState<{
     playerA: { rating: number; loading: boolean };
     playerB: { rating: number; loading: boolean };

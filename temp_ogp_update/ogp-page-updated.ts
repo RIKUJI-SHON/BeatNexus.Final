@@ -2,19 +2,13 @@ import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-// URL utility functions
-function sanitizeUsername(username: string | null | undefined): string {
-  if (!username) return 'player';
-  
-  return username
-    .toLowerCase()
-    .replace(/[^a-z0-9-]/g, '') // 英数字とハイフンのみ許可
-    .replace(/-+/g, '-') // 連続するハイフンを1つに
-    .replace(/^-|-$/g, '') // 前後のハイフンを削除
-    .substring(0, 20) // 最大20文字
-    .replace(/^$/, 'player'); // 空文字の場合はplayerに
-}
+const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
+// フロントエンドの公開 URL （適宜変更）
+const SITE_BASE_URL = "https://beat-nexus-heatbeat-test.vercel.app";
 
+const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+
+// フレンドリーURL用のユーティリティ関数
 function extractBattleIdFromUrl(battlePath: string): string | null {
   // UUIDパターン（ハイフン区切りの8-4-4-4-12文字）にマッチ
   const match = battlePath.match(/-([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})$/i);
@@ -22,33 +16,29 @@ function extractBattleIdFromUrl(battlePath: string): string | null {
 }
 
 function isLegacyBattleUrl(battlePath: string): boolean {
-  const uuidRegex = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
-  return uuidRegex.test(battlePath);
+  // レガシーURL（UUID形式）かどうかを判定
+  const uuidPattern = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
+  return uuidPattern.test(battlePath);
 }
 
-function getBattleIdFromPath(battlePath: string): string | null {
-  if (!battlePath) return null;
-  
-  // レガシー形式（純粋なUUID）の場合
-  if (isLegacyBattleUrl(battlePath)) {
-    return battlePath;
-  }
-  
-  // 新形式からバトルIDを抽出
-  return extractBattleIdFromUrl(battlePath);
-}
-
-// 🌟 PNG 生成は既存の ogp-battle-card 関数に委譲し、ここではリバースプロキシのみ行う
-// PNG 変換は必要なときだけ動的に import して実行
-
-const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
-// フロントエンドの公開 URL （適宜変更）
-const SITE_BASE_URL = "https://beat-nexus-heatbeat-test.vercel.app";
-
-const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-
-async function fetchPlayers(battleId: string) {
+async function fetchPlayers(battlePath: string) {
   const admin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+  
+  // フレンドリーURL形式からバトルIDを抽出、失敗したらレガシーURLとして扱う
+  let battleId: string;
+  if (isLegacyBattleUrl(battlePath)) {
+    battleId = battlePath;
+  } else {
+    const extractedId = extractBattleIdFromUrl(battlePath);
+    if (!extractedId) {
+      console.error("Could not extract battle ID from path:", battlePath);
+      return null;
+    }
+    battleId = extractedId;
+  }
+
+  console.log("Searching for battle with ID:", battleId);
+
   let { data } = await admin
     .from("active_battles")
     .select("player1_user_id, player2_user_id")
@@ -83,36 +73,19 @@ async function fetchPlayers(battleId: string) {
     admin.from("profiles").select("avatar_url").eq("id", data.player2_user_id).single(),
   ]);
   return {
-    p1: p1.data?.avatar_url ?? `${SITE_BASE_URL}/images/FI.png`,
-    p2: p2.data?.avatar_url ?? `${SITE_BASE_URL}/images/FI.png`,
+    p1: p1.data?.avatar_url ?? `${SITE_BASE_URL}/images/Profile.png`,
+    p2: p2.data?.avatar_url ?? `${SITE_BASE_URL}/images/Profile.png`,
     isArchived
   };
 }
 
-function buildSvg(p1Url: string, p2Url: string) {
-  const HERO_BG = `${SITE_BASE_URL}/images/hero-background.png`;
-  const VS_LOGO = `${SITE_BASE_URL}/images/VS.png`;
-  return `<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630">
-  <defs>
-    <clipPath id="circleClipL"><circle cx="130" cy="315" r="130" /></clipPath>
-    <clipPath id="circleClipR"><circle cx="1070" cy="315" r="130" /></clipPath>
-  </defs>
-  <image href="${HERO_BG}" width="1200" height="630" />
-  <g clip-path="url(#circleClipL)"><image href="${p1Url}" x="0" y="185" width="260" height="260" preserveAspectRatio="xMidYMid slice" /></g>
-  <circle cx="130" cy="315" r="130" fill="none" stroke="#06b6d4" stroke-width="10" />
-  <g clip-path="url(#circleClipR)"><image href="${p2Url}" x="940" y="185" width="260" height="260" preserveAspectRatio="xMidYMid slice" /></g>
-  <circle cx="1070" cy="315" r="130" fill="none" stroke="#d946ef" stroke-width="10" />
-  <image href="${VS_LOGO}" x="520" y="235" width="160" height="160" />
-</svg>`;
-}
-
-function buildHtml(battleId: string, isArchived: boolean) {
-  const image = `${SUPABASE_URL}/functions/v1/ogp-battle-card?battle_id=${battleId}`;
+function buildHtml(battlePath: string, isArchived: boolean) {
+  // フレンドリーURL対応：battle_pathパラメータを使用
+  const image = `${SUPABASE_URL}/functions/v1/ogp-battle-card?battle_path=${encodeURIComponent(battlePath)}`;
   // アーカイブバトルは /battle-replay/ に、アクティブバトルは /battle/ にリダイレクト
   const target = isArchived ? 
-    `${SITE_BASE_URL}/battle-replay/${battleId}` : 
-    `${SITE_BASE_URL}/battle/${battleId}`;
+    `${SITE_BASE_URL}/battle-replay/${battlePath}` : 
+    `${SITE_BASE_URL}/battle/${battlePath}`;
   
   return `<!doctype html>
 <html lang="ja">
@@ -141,20 +114,19 @@ function buildHtml(battleId: string, isArchived: boolean) {
 
 serve(async (req) => {
   const { searchParams } = new URL(req.url);
-  let battleId = searchParams.get("battle_id");
+  // battle_path または battle_id パラメータをサポート（互換性のため）
+  const battlePath = searchParams.get("battle_path") || searchParams.get("battle_id");
   const imageOnly = searchParams.get("image") === "1";
   
-  if (!battleId) return new Response("battle_id query param required", { status: 400 });
-
-  // 新形式のURLの場合、バトルIDを抽出
-  const extractedId = getBattleIdFromPath(battleId);
-  if (extractedId) {
-    battleId = extractedId;
+  if (!battlePath) {
+    return new Response("battle_path or battle_id query param required", { status: 400 });
   }
+
+  console.log("Processing battle path:", battlePath);
 
   if (imageOnly) {
     // 既存の PNG 生成 Edge Function を呼び出して結果をそのまま返却
-    const pngUrl = `${SUPABASE_URL}/functions/v1/ogp-battle-card?battle_id=${battleId}&format=png`;
+    const pngUrl = `${SUPABASE_URL}/functions/v1/ogp-battle-card?battle_path=${encodeURIComponent(battlePath)}&format=png`;
     console.log(`Proxying to: ${pngUrl}`);
     const upstream = await fetch(pngUrl);
     console.log(`Upstream response: ${upstream.status} ${upstream.statusText}`);
@@ -171,7 +143,7 @@ serve(async (req) => {
   }
 
   // プレイヤー情報とアーカイブ状態を取得
-  const players = await fetchPlayers(battleId);
+  const players = await fetchPlayers(battlePath);
   if (!players) return new Response("Battle not found", { status: 404 });
 
   // User-Agent を確認してSNSクローラーかどうか判定
@@ -180,12 +152,12 @@ serve(async (req) => {
   
   // アーカイブバトルは /battle-replay/ に、アクティブバトルは /battle/ にリダイレクト
   const target = players.isArchived ? 
-    `${SITE_BASE_URL}/battle-replay/${battleId}` : 
-    `${SITE_BASE_URL}/battle/${battleId}`;
+    `${SITE_BASE_URL}/battle-replay/${battlePath}` : 
+    `${SITE_BASE_URL}/battle/${battlePath}`;
 
   // SNSクローラーの場合はOGP用HTMLを返す
   if (isSNSCrawler) {
-    const html = buildHtml(battleId, players.isArchived);
+    const html = buildHtml(battlePath, players.isArchived);
     return new Response(html, { headers: { "Content-Type": "text/html; charset=utf-8" } });
   }
 

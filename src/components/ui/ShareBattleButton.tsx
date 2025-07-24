@@ -2,6 +2,7 @@ import React from 'react';
 import { Share2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '../../store/authStore';
+import { generateBattleUrl } from '../../utils/battleUrl';
 
 interface ShareBattleButtonProps {
   battleId: string;
@@ -50,7 +51,8 @@ export const ShareBattleButton: React.FC<ShareBattleButtonProps> = ({
       shareText = arr[Math.floor(Math.random() * arr.length)];
     }
 
-    const url = `${window.location.origin}/battle-replay/${battleId}`;
+    const battleUrl = generateBattleUrl(player1Name, player2Name, battleId);
+    const url = `${window.location.origin}/battle-replay/${battleUrl}`;
     const tags = '#BeatNexus #ビートボックス #Beatbox';
     const taggedTextBase = `${shareText}\n\n${tags}`;
     const MAX_TEXT_LEN = 280 - 24; // URL 23 + space

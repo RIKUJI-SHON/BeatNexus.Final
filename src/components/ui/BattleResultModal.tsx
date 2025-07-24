@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { Modal } from './Modal';
 import { BattleResult } from '../../store/battleResultStore';
 import { Share2 } from 'lucide-react';
+import { generateBattleUrl } from '../../utils/battleUrl';
+import { useAuthStore } from '../../store/authStore';
 
 interface BattleResultModalProps {
   isOpen: boolean;
@@ -17,6 +19,7 @@ export const BattleResultModal: React.FC<BattleResultModalProps> = ({
 }) => {
   const { t } = useTranslation();
   const [showConfetti, setShowConfetti] = useState(false);
+  const { user } = useAuthStore();
 
   useEffect(() => {
     console.log('🎭 [BattleResultModal] Component render effect:', { isOpen, hasResult: !!result, result });
@@ -155,7 +158,13 @@ export const BattleResultModal: React.FC<BattleResultModalProps> = ({
                   <button
                     className="button bg-gradient-to-r from-purple-500 to-cyan-500 hover:from-purple-600 hover:to-cyan-600"
                     onClick={() => {
-                      window.location.href = `/battle-replay/${result.battleId}`;
+                      const currentUsername = user?.user_metadata?.username || 'Player1';
+                      const battleUrl = generateBattleUrl(
+                        currentUsername,
+                        result.opponentUsername,
+                        result.battleId
+                      );
+                      window.location.href = `/battle-replay/${battleUrl}`;
                     }}
                   >
                     {t('battle.result.viewArchive')}
@@ -169,7 +178,13 @@ export const BattleResultModal: React.FC<BattleResultModalProps> = ({
                   <button
                     className="button bg-gradient-to-r from-purple-500 to-cyan-500 hover:from-purple-600 hover:to-cyan-600"
                     onClick={() => {
-                      window.location.href = `/battle-replay/${result.battleId}`;
+                      const currentUsername = user?.user_metadata?.username || 'Player1';
+                      const battleUrl = generateBattleUrl(
+                        currentUsername,
+                        result.opponentUsername,
+                        result.battleId
+                      );
+                      window.location.href = `/battle-replay/${battleUrl}`;
                     }}
                   >
                     {t('battle.result.viewArchive')}

@@ -13,6 +13,7 @@ import { VotingTips } from '../ui/VotingTips';
 import { trackBeatNexusEvents } from '../../utils/analytics';
 import { getCurrentRank } from '../../lib/rankUtils';
 import { supabase } from '../../lib/supabase';
+import { generateBattleUrl } from '../../utils/battleUrl';
 import { getDefaultAvatarUrl } from '../../utils';
 import { useNotificationStore } from '../../store/notificationStore';
 
@@ -326,7 +327,12 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
       }
     }
 
-    const url = `${window.location.origin}/battle/${battle.id}`;
+    const battleUrl = generateBattleUrl(
+      battle.contestant_a?.username,
+      battle.contestant_b?.username,
+      battle.id
+    );
+    const url = `${window.location.origin}/battle/${battleUrl}`;
     const tags = "#BeatNexus #ビートボックス #Beatbox";
     const taggedTextBase = `${shareText}\n\n${tags}`;
 

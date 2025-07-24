@@ -4,6 +4,8 @@ import { Modal } from './Modal';
 import { Avatar } from './Avatar';
 import { Share2 } from 'lucide-react';
 import i18n from '../../i18n';
+import { generateBattleUrl } from '../../utils/battleUrl';
+import { useAuthStore } from '../../store/authStore';
 
 export interface BattleMatchedData {
   battleId: string;
@@ -28,6 +30,7 @@ export const BattleMatchedModal: React.FC<BattleMatchedModalProps> = ({
 }) => {
   const { t } = useTranslation();
   const [showSparks, setShowSparks] = useState(false);
+  const { user } = useAuthStore();
 
   useEffect(() => {
     console.log('⚡ [BattleMatchedModal] Component props changed:', { 
@@ -130,7 +133,13 @@ export const BattleMatchedModal: React.FC<BattleMatchedModalProps> = ({
                   <div className="vote-button-container">
                     <button
                       onClick={() => {
-                        window.location.href = `/battle/${matchData.battleId}`;
+                        const currentUsername = user?.user_metadata?.username || 'Player1';
+                        const battleUrl = generateBattleUrl(
+                          currentUsername,
+                          matchData.opponentUsername,
+                          matchData.battleId
+                        );
+                        window.location.href = `/battle/${battleUrl}`;
                       }}
                       className="vote-space-button"
                     >
@@ -154,7 +163,12 @@ export const BattleMatchedModal: React.FC<BattleMatchedModalProps> = ({
                       ? `BeatNexusでバトル中です！🔥\n対戦相手は ${opponentUsername} さん！\n\n最高のパフォーマンスをしたので、ぜひ見て応援（投票）お願いします！💪\n\n投票はこちらから👇`
                       : `I'm in a battle on BeatNexus! 🥊\nFacing off against the incredible ${opponentUsername}.\n\nGave it my all on this one. Check it out and drop a vote if you're feelin' my performance! 🙏\n\nWatch & Vote here 👇`;
 
-                    const url = `${window.location.origin}/battle/${matchData.battleId}`;
+                    const currentUsername = user?.user_metadata?.username || 'Player1';
+                    const url = `${window.location.origin}/battle/${generateBattleUrl(
+                      currentUsername,
+                      opponentUsername,
+                      matchData.battleId
+                    )}`;
                     const tags = "#BeatNexus #ビートボックス #Beatbox";
                     const taggedTextBase = `${shareText}\n\n${tags}`;
 

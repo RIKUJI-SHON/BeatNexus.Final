@@ -13,6 +13,7 @@ import { cn } from '../../lib/utils';
 import { getCurrentRank } from '../../lib/rankUtils';
 import { supabase } from '../../lib/supabase';
 import { getDefaultAvatarUrl } from '../../utils';
+import { getBattleUrlFromBattle } from '../../utils/battleUrl';
 
 interface SimpleBattleCardProps {
   battle: Battle;
@@ -121,7 +122,8 @@ export const SimpleBattleCard: React.FC<SimpleBattleCardProps> = ({ battle }) =>
 
   const handleCardClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    const destination = battle.is_archived ? `/battle-replay/${battle.id}` : `/battle/${battle.id}`;
+    const battleUrl = getBattleUrlFromBattle(battle);
+    const destination = battle.is_archived ? `/battle-replay/${battleUrl}` : `/battle/${battleUrl}`;
     navigate(destination);
   };
 

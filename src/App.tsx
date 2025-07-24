@@ -82,8 +82,8 @@ function RouterContent() {
             <Route path="/" element={<HomePage />} />
             <Route path="/battles" element={<BattlesPage />} />
             <Route path="/my-battles" element={<MyBattlesPage />} />
-            <Route path="/battle/:id" element={<BattleViewPage />} />
-            <Route path="/battle-replay/:id" element={<BattleReplayPage />} />
+            <Route path="/battle/:battlePath" element={<BattleViewPage />} />
+            <Route path="/battle-replay/:battlePath" element={<BattleReplayPage />} />
             <Route path="/post" element={<PostPage />} />
             <Route path="/profile/:userId" element={<ProfilePage />} />
             <Route path="/profile" element={<ProfilePage />} />

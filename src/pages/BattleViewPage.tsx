@@ -1,12 +1,18 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { useBattleStore } from '../store/battleStore';
 import { BattleView } from '../components/battle/BattleView';
 import { Helmet } from 'react-helmet-async';
+import { getBattleIdFromPath } from '../utils/battleUrl';
 
 const BattleViewPage: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
+  const { battlePath } = useParams<{ battlePath: string }>();
   const { battles, loading, error, fetchBattles } = useBattleStore();
+  
+  // URL パスからバトルIDを抽出（新旧両形式に対応）
+  const battleId = useMemo(() => {
+    return getBattleIdFromPath(battlePath || '');
+  }, [battlePath]);
   
   // データを取得
   useEffect(() => {
@@ -15,7 +21,7 @@ const BattleViewPage: React.FC = () => {
     }
   }, [fetchBattles, battles.length]);
   
-  const battle = battles.find(b => b.id === id);
+  const battle = battles.find(b => b.id === battleId);
   
   const imageUrl = 'https://beat-nexus-heatbeat-test.vercel.app/images/OGP.png';
   const pageTitle = battle ? 
