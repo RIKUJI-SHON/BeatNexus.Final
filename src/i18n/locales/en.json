@@ -313,6 +313,24 @@
       "simpleMessage": "Unlimited posts during testing phase"
     }
   },
+  "userInfoCard": {
+    "loading": "Loading profile information...",
+    "memberSince": "Member since {{date}}",
+    "currentSeason": "Current Season",
+    "notParticipating": "Not Participating in Season",
+    "notParticipatingMessage": "Join battles or vote to participate in season rankings!",
+    "noActiveSeason": "No Active Season",
+    "noActiveSeasonMessage": "There is currently no active season",
+    "rankings": {
+      "player": "Player",
+      "voter": "Voter", 
+      "notRanked": "--"
+    },
+    "points": {
+      "seasonPoints": "Season Points",
+      "votePoints": "Vote Points"
+    }
+  },
   "upload": {
   },
   "community": {

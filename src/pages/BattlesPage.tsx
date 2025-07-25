@@ -17,9 +17,8 @@ import { RankingEntry } from '../types';
 import { useTranslation } from 'react-i18next';
 import { getRankColorClasses } from '../utils/rankUtils';
 import { useOnboardingStore } from '../store/onboardingStore';
-import { MonthlyLimitCard } from '../components/ui/SubmissionCooldownCard';
+import { UserInfoCard } from '../components/ui/UserInfoCard';
 import { TabbedRanking } from '../components/ui/TabbedRanking';
-import { QuickActionsCard } from '../components/ui/QuickActionsCard';
 import { GuestPromptCard } from '../components/ui/GuestPromptCard';
 import NewsCarousel from '../components/battle/NewsCarousel';
 
@@ -208,8 +207,8 @@ const BattlesPage: React.FC = () => {
           <aside className="lg:col-span-1 space-y-6 sticky-sidebar hidden lg:block" aria-label="User status and quick actions">
             {user ? (
               <>
-                {/* クイックアクション */}
-                <QuickActionsCard />
+                {/* ユーザー情報 */}
+                <UserInfoCard />
               </>
             ) : (
               <>
@@ -432,11 +431,11 @@ const BattlesPage: React.FC = () => {
         </div>
       </section>
       
-      {/* Mobile Monthly Limit Card - モバイル版でのみ表示、コンテナの外に配置 */}
+      {/* Mobile User Info Card - モバイル版でのみ表示、コンテナの外に配置 */}
       {user && (
-        <section className="lg:hidden mt-6 w-full" aria-label="User monthly limit">
+        <section className="lg:hidden mt-6 w-full" aria-label="User info">
           <div className="w-full px-4 sm:px-6">
-            <MonthlyLimitCard />
+            <UserInfoCard />
           </div>
         </section>
       )}
