@@ -22,8 +22,11 @@ import { useLanguageInitialization } from './hooks/useLanguageInitialization';
 import { useOnboardingInitialization } from './hooks/useOnboardingInitialization';
 
 // Google Analytics
-import { initializeGA } from './utils/analytics';
+import { initializeGA, trackError } from './utils/analytics';
 import { useAnalytics, usePerformanceTracking } from './hooks/useAnalytics';
+
+// Error Boundary
+import { ErrorBoundary } from './components/ErrorBoundary';
 
 // Onboarding
 import OnboardingModal from './components/onboarding/OnboardingModal';
@@ -210,14 +213,37 @@ function AppContent() {
 }
 
 function App() {
+  // グローバルエラーハンドリング
+  useEffect(() => {
+    const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
+      console.error('Unhandled promise rejection:', event.reason);
+      trackError('Unhandled Promise Rejection', event.reason?.toString());
+    };
+
+    const handleError = (event: ErrorEvent) => {
+      console.error('Global error:', event.error);
+      trackError('Global Error', `${event.message} at ${event.filename}:${event.lineno}:${event.colno}`);
+    };
+
+    window.addEventListener('unhandledrejection', handleUnhandledRejection);
+    window.addEventListener('error', handleError);
+
+    return () => {
+      window.removeEventListener('unhandledrejection', handleUnhandledRejection);
+      window.removeEventListener('error', handleError);
+    };
+  }, []);
+
   return (
-    <AuthProvider>
-      <I18nextProvider i18n={i18n}>
-        <HelmetProvider>
-          <AppContent />
-        </HelmetProvider>
-      </I18nextProvider>
-    </AuthProvider>
+    <ErrorBoundary>
+      <AuthProvider>
+        <I18nextProvider i18n={i18n}>
+          <HelmetProvider>
+            <AppContent />
+          </HelmetProvider>
+        </I18nextProvider>
+      </AuthProvider>
+    </ErrorBoundary>
   );
 }
 

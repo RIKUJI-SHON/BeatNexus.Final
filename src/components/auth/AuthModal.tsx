@@ -82,7 +82,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
     try {
       if (mode === 'login') {
-        await signIn(email, password, rememberMe);
+        await signIn(email, password);
         onClose();
         navigate('/');
       } else {

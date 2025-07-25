@@ -8,7 +8,8 @@ import i18n from '../i18n';
 interface AuthState {
   user: User | null;
   loading: boolean;
-  signIn: (email: string, password: string, rememberMe?: boolean) => Promise<void>;
+  isUserInitiatedLogin?: boolean;
+  signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string, username: string) => Promise<{ user: User | null; error: any } | undefined>;
   validatePreregistration: (email: string) => Promise<boolean>;
   signOut: () => Promise<void>;
@@ -19,14 +20,16 @@ interface AuthState {
 export const useAuthStore = create<AuthState>((set) => ({
   user: null,
   loading: true,
-  signIn: async (email: string, password: string, rememberMe = true) => {
+  isUserInitiatedLogin: false,
+  signIn: async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
     if (error) throw error;
     
-    // Note: ログインイベントはsetUserで適切に発火される
+    // ログインアクションを実行したことをマーク
+    set({ isUserInitiatedLogin: true });
   },
   validatePreregistration: async (email: string) => {
     try {
@@ -114,12 +117,15 @@ export const useAuthStore = create<AuthState>((set) => ({
     }
   },
   setUserFromAuth: (user) => {
-    set({ user, loading: false });
+    const state = useAuthStore.getState();
+    const isUserLogin = state.isUserInitiatedLogin;
+    
+    set({ user, loading: false, isUserInitiatedLogin: false });
     
     // AuthProviderからの呼び出し（セッション復元など）
     if (user) {
-      // ログインイベントなしでUser IDのみ設定
-      setUserProperties(user.id, false);
+      // ユーザー主導のログインの場合はログインイベント付きで設定
+      setUserProperties(user.id, isUserLogin);
     }
   },
 }));

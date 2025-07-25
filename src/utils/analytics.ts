@@ -116,16 +116,14 @@ export const trackBeatNexusEvents = {
   profileView: (userId: string) => trackEvent('view_profile', 'user', userId),
   profileEdit: () => trackEvent('edit_profile', 'user'),
   userRegister: () => trackEvent('register', 'user'),
-  userLogin: (triggeredByUserAction: boolean = true) => {
-    // ユーザーアクション（実際のログイン）による場合のみイベントを発火
-    if (triggeredByUserAction) {
-      trackEvent('login', 'user');
-    }
-  },
+  userLogin: () => trackEvent('login', 'user'), // 常にログインイベントを発火
   userLogout: () => trackEvent('logout', 'user'),
   
   // ランキング関連
-  rankingView: (rankingType: 'rating' | 'voter') => trackEvent('view_ranking', 'ranking', rankingType),
+  rankingView: (rankingType: 'rating' | 'voter', subType?: string) => {
+    const label = subType ? `${rankingType}_${subType}` : rankingType;
+    trackEvent('view_ranking', 'ranking', label);
+  },
   
   // コミュニティ関連
   postCreate: () => trackEvent('create_post', 'community'),
@@ -167,7 +165,7 @@ export const setUserProperties = (userId: string, isNewLogin: boolean = false): 
     
     // 新規ログインの場合のみログインイベントを発火
     if (isNewLogin) {
-      trackBeatNexusEvents.userLogin(true);
+      trackBeatNexusEvents.userLogin();
     }
   } else {
     currentSetUserId = userId;

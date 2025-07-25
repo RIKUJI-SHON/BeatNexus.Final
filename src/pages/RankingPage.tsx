@@ -85,20 +85,14 @@ const RankingPage: React.FC = () => {
 
   const handleRankingTypeChange = (type: RankingType) => {
     setActiveRankingType(type);
-    if (type === 'current_season') {
-      trackBeatNexusEvents.rankingView('rating');
-    } else {
-      trackBeatNexusEvents.rankingView('rating');
-    }
+    // ランキング種別に応じてより詳細な追跡
+    trackBeatNexusEvents.rankingView('rating', type);
   };
 
   const handleVoterRankingTypeChange = (type: VoterRankingType) => {
     setActiveVoterRankingType(type);
-    if (type === 'current_season') {
-      trackBeatNexusEvents.rankingView('voter');
-    } else {
-      trackBeatNexusEvents.rankingView('voter');
-    }
+    // 投票者ランキング種別に応じてより詳細な追跡
+    trackBeatNexusEvents.rankingView('voter', type);
   };
 
   const handleSeasonSelect = (seasonId: string | 'all_time') => {
