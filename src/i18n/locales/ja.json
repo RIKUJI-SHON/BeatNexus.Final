@@ -492,7 +492,7 @@
       "steps": {
         "upload": {
           "title": "動画投稿",
-          "description": "ビートボックス動画をアップロード。24時間に1回投稿可能で、自動的にマッチング待機状態に。"
+          "description": "ビートボックス動画をアップロード。1時間に1回投稿可能で、自動的にマッチング待機状態に。"
         },
         "matching": {
           "title": "自動マッチング",
@@ -1101,14 +1101,29 @@
       "submitAnother": "別の動画を投稿"
     },
     "cooldown": {
-      "title": "24時間投稿制限",
-      "message": "24時間以内に投稿できるのは1本までです。",
+      "title": "1時間投稿制限",
+      "message": "1時間以内に投稿できるのは1本までです。",
       "nextSubmissionIn": "次回投稿可能まで:",
       "timeRemaining": "投稿まで {{time}}"
     },
     "success": {
       "title": "動画投稿が完了しました！",
       "description": "動画がアップロードされ、まもなく他のビートボクサーとマッチングされます。バトルが開始されたら通知でお知らせします。"
+    },
+    "submission": {
+      "cooldown": {
+        "canSubmit": "投稿可能です",
+        "restriction": "1時間以内に投稿できるのは1本までです。残り時間: {{hours}}時間{{minutes}}分",
+        "error": "クールダウンチェック中にエラーが発生しました: {{error}}"
+      },
+      "success": {
+        "created": "投稿が正常に作成されました。"
+      },
+      "error": {
+        "seasonRestriction": "シーズン制限により投稿できません。",
+        "cooldownActive": "1時間以内に投稿できるのは1本までです。次回投稿可能まで: {{hours}}時間{{minutes}}分",
+        "creationFailed": "投稿作成中にエラーが発生しました: {{error}}"
+      }
     },
     "importantNotice": {
       "videoDuration": "動画は必ず1分～2分で投稿してください",

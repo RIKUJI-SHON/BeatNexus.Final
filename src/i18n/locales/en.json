@@ -490,7 +490,7 @@
       "steps": {
         "upload": {
           "title": "Video Upload",
-          "description": "Upload your beatbox video. You can post once every 24 hours and automatically enter the matching queue."
+          "description": "Upload your beatbox video. You can post once every hour and automatically enter the matching queue."
         },
         "matching": {
           "title": "Auto Matching",
@@ -1042,14 +1042,29 @@
       "submitAnother": "Submit Another"
     },
     "cooldown": {
-      "title": "24-Hour Submission Limit",
-      "message": "You can only submit one video per 24 hours.",
+      "title": "1-Hour Submission Limit",
+      "message": "You can only submit one video per hour.",
       "nextSubmissionIn": "Next submission available in:",
       "timeRemaining": "{{time}} until next submission"
     },
     "success": {
       "title": "Video Submitted Successfully!",
       "description": "Your video has been uploaded and will be matched with another beatboxer soon. We'll notify you when your battle goes live."
+    },
+    "submission": {
+      "cooldown": {
+        "canSubmit": "Submission available",
+        "restriction": "You can only submit one video per hour. Time remaining: {{hours}}h {{minutes}}m",
+        "error": "Error during cooldown check: {{error}}"
+      },
+      "success": {
+        "created": "Submission created successfully."
+      },
+      "error": {
+        "seasonRestriction": "Submission not allowed due to season restrictions.",
+        "cooldownActive": "You can only submit one video per hour. Next submission available in: {{hours}}h {{minutes}}m",
+        "creationFailed": "Error occurred during submission creation: {{error}}"
+      }
     },
     "importantNotice": {
       "videoDuration": "Videos must be 1-2 minutes long",

@@ -1,13 +1,17 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuthStore } from '../store/authStore';
+import { useTranslation } from 'react-i18next';
 
 interface SubmissionCooldownResult {
   can_submit: boolean;
   last_submission_time: string | null;
   hours_since_last: number | null;
   cooldown_remaining_minutes: number;
-  message: string;
+  message_key?: string;
+  message_params?: any;
+  // Legacy support
+  message?: string;
 }
 
 interface SubmissionCooldownState {
@@ -20,6 +24,7 @@ interface SubmissionCooldownState {
 
 export const useSubmissionCooldown = () => {
   const { user } = useAuthStore();
+  const { t } = useTranslation();
   const [state, setState] = useState<SubmissionCooldownState>({
     cooldownInfo: null,
     isLoading: false,
@@ -52,11 +57,24 @@ export const useSubmissionCooldown = () => {
       }
 
       const cooldownInfo = data as SubmissionCooldownResult;
+      
+      // 翻訳されたメッセージを生成
+      let translatedMessage = '';
+      if (cooldownInfo.message_key && cooldownInfo.message_params) {
+        translatedMessage = t(cooldownInfo.message_key, cooldownInfo.message_params);
+      } else if (cooldownInfo.message) {
+        // レガシーサポート
+        translatedMessage = cooldownInfo.message;
+      }
+      
       const remainingTime = formatRemainingTime(cooldownInfo.cooldown_remaining_minutes);
 
       setState(prev => ({
         ...prev,
-        cooldownInfo,
+        cooldownInfo: {
+          ...cooldownInfo,
+          message: translatedMessage
+        },
         canSubmit: cooldownInfo.can_submit,
         remainingTime,
         isLoading: false,

@@ -187,9 +187,9 @@ const PostPage: React.FC = () => {
     
     if (!videoFile || !acceptedGuidelines || !acceptedFacePolicy || !acceptedContent) return;
     
-    // 24時間制限チェック
+    // 1時間制限チェック
     if (!canSubmit) {
-      setError(cooldownInfo?.message || '24時間以内に投稿できるのは1本までです。');
+      setError(cooldownInfo?.message || '1時間以内に投稿できるのは1本までです。');
       return;
     }
     
@@ -311,7 +311,7 @@ const PostPage: React.FC = () => {
         if (submissionResult.error === 'cooldown_active') {
           // Update cooldown info and show error
           refreshCooldown();
-          throw new Error(submissionResult.message || '24時間以内に投稿できるのは1本までです');
+          throw new Error(submissionResult.message || '1時間以内に投稿できるのは1本までです');
         }
         throw new Error(submissionResult.message || '投稿作成に失敗しました');
       }
