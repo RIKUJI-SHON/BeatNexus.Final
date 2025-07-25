@@ -68,7 +68,7 @@ const HomePage: React.FC = () => {
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-yellow-500/10 rounded-full blur-3xl"></div>
         </div>
 
-        <div className="container mx-auto px-4 relative z-10 text-center">
+        <div className="container-ultra-wide relative z-10 text-center">
           {/* Main Title - BEATNEXUS Wordmark */}
           <div className="mb-6 animate-fade-in relative">
             <div className="relative group">
@@ -169,7 +169,7 @@ const HomePage: React.FC = () => {
           <div className="absolute bottom-20 right-10 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl"></div>
         </div>
 
-        <div className="container mx-auto px-4 relative z-10">
+        <div className="container-ultra-wide relative z-10">
           <div className="text-center mb-20">
             <div className="inline-flex items-center gap-3 px-6 py-3 bg-gray-800/50 backdrop-blur-sm rounded-2xl border border-gray-700/50 mb-8">
               <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse"></div>
@@ -186,7 +186,7 @@ const HomePage: React.FC = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 container-ultra-wide">
             {/* Step 1: Upload */}
             <Card className="group relative bg-gradient-to-br from-gray-900 via-gray-850 to-gray-950 border border-gray-700/50 shadow-xl hover:shadow-2xl hover:shadow-cyan-500/10 transition-all duration-500 rounded-xl overflow-hidden backdrop-blur-sm p-8 text-center">
               {/* Background Image */}
@@ -315,7 +315,7 @@ const HomePage: React.FC = () => {
           <div className="absolute top-1/2 right-1/4 w-60 h-60 bg-yellow-500/5 rounded-full blur-3xl"></div>
         </div>
 
-        <div className="container mx-auto px-4 relative z-10">
+        <div className="container-ultra-wide relative z-10">
           <div className="text-center mb-20">
             {/* Ranking Title Badge */}
             <div className="mb-12">
@@ -327,7 +327,7 @@ const HomePage: React.FC = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 container-ultra-wide">
             {/* Player Ranking */}
             <Card className="group relative bg-gradient-to-br from-gray-900 via-gray-850 to-gray-950 border border-gray-700/50 shadow-xl hover:shadow-2xl hover:shadow-cyan-500/10 transition-all duration-500 rounded-xl overflow-hidden backdrop-blur-sm p-8">
               <div className="absolute inset-0 opacity-5">
@@ -384,7 +384,7 @@ const HomePage: React.FC = () => {
           <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl"></div>
         </div>
 
-        <div className="container mx-auto px-4 relative z-10">
+        <div className="container-ultra-wide relative z-10">
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
             準備はできた？ <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400">バトルを始めよう</span>！
           </h2>

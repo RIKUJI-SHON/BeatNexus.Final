@@ -201,9 +201,9 @@ const BattlesPage: React.FC = () => {
         {/* News Carousel - Enhanced Design */}
         <NewsCarousel />
 
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
+        <main className="grid grid-cols-1 gap-6 lg:grid-cols-5" role="main">
           {/* Left Sidebar - Monthly Limit */}
-          <aside className="lg:col-span-1 space-y-6 sticky-sidebar hidden lg:block">
+          <aside className="lg:col-span-1 space-y-6 sticky-sidebar hidden lg:block" aria-label="User status and quick actions">
             {user && (
               <div className="w-full">
                 <MonthlyLimitCard />
@@ -212,7 +212,7 @@ const BattlesPage: React.FC = () => {
           </aside>
 
           {/* Main Content */}
-          <div className={user ? 'lg:col-span-3' : 'lg:col-span-3'}>
+          <section className={user ? 'lg:col-span-3' : 'lg:col-span-3'} aria-label="Battle listings">
             <BattleFilters
               sortBy={sortBy}
               setSortBy={setSortBy}
@@ -223,53 +223,65 @@ const BattlesPage: React.FC = () => {
               isLoggedIn={!!user}
             />
             
-            <div className="space-y-6 mt-8">
+            <div className="space-y-6 mt-8" role="region" aria-label="Battle results">
               {sortBy !== 'completed' ? (
                 loading ? (
-                  <Card className="bg-gray-900 border border-gray-800 p-8 text-center">
-                    <div className="animate-spin w-12 h-12 border-4 border-cyan-500 border-t-transparent rounded-full mx-auto mb-4"></div>
+                  <Card className="bg-gray-900 border border-gray-800 p-8 text-center" role="status" aria-live="polite">
+                    <div 
+                      className="animate-spin w-12 h-12 border-4 border-cyan-500 border-t-transparent rounded-full mx-auto mb-4"
+                      aria-hidden="true"
+                    ></div>
                     <p className="text-gray-400">{t('battlesPage.status.loadingBattles')}</p>
                   </Card>
                 ) : error ? (
-                  <Card className="bg-gray-900 border border-red-500/20 p-8 text-center">
-                    <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-red-500/20 flex items-center justify-center">
+                  <Card className="bg-gray-900 border border-red-500/20 p-8 text-center" role="alert">
+                    <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-red-500/20 flex items-center justify-center" aria-hidden="true">
                       <Trophy className="h-10 w-10 text-red-500" />
                     </div>
-                    <h3 className="text-xl font-semibold text-white mb-4">{t('battlesPage.status.errorLoadingBattles')}</h3>
+                    <h2 className="text-xl font-semibold text-white mb-4">{t('battlesPage.status.errorLoadingBattles')}</h2>
                     <p className="text-gray-400 mb-6">{error}</p>
                     <Button
                       variant="primary"
                       onClick={() => fetchBattles()}
-                      className="bg-red-500 hover:bg-red-600"
+                      className="bg-red-500 hover:bg-red-600 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-gray-900"
+                      aria-describedby="error-description"
                     >
                       {t('battlesPage.status.tryAgainButton')}
                     </Button>
+                    <div id="error-description" className="sr-only">
+                      Click to retry loading battles after an error occurred
+                    </div>
                   </Card>
                 ) : paginatedActiveBattles.length > 0 ? (
                   <>
-                    {paginatedActiveBattles.map(battle => (
-                      <BattleCard key={battle.id} battle={battle} />
-                    ))}
+                    <div role="list" aria-label="Active battles">
+                      {paginatedActiveBattles.map(battle => (
+                        <div key={battle.id} role="listitem">
+                          <BattleCard battle={battle} />
+                        </div>
+                      ))}
+                    </div>
                     
                     {/* アクティブバトル用のページネーション */}
-                    <Pagination
-                      currentPage={currentPage}
-                      totalPages={activeBattlesTotalPages}
-                      onPageChange={handlePageChange}
-                      showingCount={ITEMS_PER_PAGE}
-                      totalCount={activeBattlesTotalItems}
-                      className="mt-8"
-                    />
+                    <nav aria-label="Battle pagination" className="mt-8">
+                      <Pagination
+                        currentPage={currentPage}
+                        totalPages={activeBattlesTotalPages}
+                        onPageChange={handlePageChange}
+                        showingCount={ITEMS_PER_PAGE}
+                        totalCount={activeBattlesTotalItems}
+                        className="mt-8"
+                      />
+                    </nav>
                   </>
                 ) : (
-                  <div className={`
-                    flex flex-col items-center justify-center
-                    py-16 px-8 text-center
-                    bg-gradient-to-br from-slate-800/40 to-slate-700/30
-                    rounded-xl border border-slate-600/30
-                  `}>
+                  <div 
+                    className="flex flex-col items-center justify-center py-16 px-8 text-center bg-gradient-to-br from-slate-800/40 to-slate-700/30 rounded-xl border border-slate-600/30"
+                    role="status"
+                    aria-live="polite"
+                  >
                     {/* アイコン */}
-                    <div className="relative mb-6">
+                    <div className="relative mb-6" aria-hidden="true">
                       <div className="w-24 h-24 bg-gradient-to-br from-slate-700/60 to-slate-600/40 rounded-2xl flex items-center justify-center border border-slate-500/30">
                         <Mic className="w-12 h-12 text-slate-400" />
                       </div>
@@ -280,11 +292,11 @@ const BattlesPage: React.FC = () => {
 
                     {/* メッセージ */}
                     <div className="space-y-4 max-w-md">
-                      <h3 className="text-xl font-semibold text-slate-200">
+                      <h2 className="text-xl font-semibold text-slate-200">
                         {t('battlesPage.status.noBattlesFound')}
-                      </h3>
+                      </h2>
                       
-                      <p className="text-slate-400 text-sm leading-relaxed">
+                      <p className="text-slate-400 text-base leading-relaxed">
                         {searchQuery 
                           ? t('battlesPage.status.noBattlesMatchSearch')
                           : loading 
@@ -295,8 +307,8 @@ const BattlesPage: React.FC = () => {
                       
                       {/* ヒント */}
                       <div className="mt-6 p-4 bg-slate-800/60 rounded-lg border border-slate-600/40">
-                        <p className="text-cyan-300 text-xs font-medium flex items-center justify-center gap-2">
-                          <Mic className="w-4 h-4" />
+                        <p className="text-cyan-300 text-sm font-medium flex items-center justify-center gap-2">
+                          <Mic className="w-4 h-4" aria-hidden="true" />
                           新しいバトルを作成して、コミュニティを盛り上げよう！
                         </p>
                       </div>
@@ -320,9 +332,10 @@ const BattlesPage: React.FC = () => {
                   </div>
                 )
               ) : (
+                // アーカイブされたバトルの表示（sortBy === 'completed'の場合）
                 archiveLoading ? (
                   <Card className="bg-gray-900 border border-gray-800 p-8 text-center">
-                    <div className="animate-spin w-12 h-12 border-4 border-purple-500 border-t-transparent rounded-full mx-auto mb-4"></div>
+                    <div className="animate-spin w-12 h-12 border-4 border-purple-500 border-t-transparent rounded-full mx-auto mb-4" aria-hidden="true"></div>
                     <p className="text-gray-400">{t('battlesPage.status.loadingCompletedBattles')}</p>
                   </Card>
                 ) : paginatedArchivedBattles.length > 0 ? (
@@ -345,23 +358,18 @@ const BattlesPage: React.FC = () => {
                     />
                   </>
                 ) : (
-                  <div className={`
-                    flex flex-col items-center justify-center
-                    py-16 px-8 text-center
-                    bg-gradient-to-br from-slate-800/40 to-slate-700/30
-                    rounded-xl border border-slate-600/30
-                  `}>
-                    {/* アイコン */}
-                    <div className="relative mb-6">
+                  <div 
+                    className="flex flex-col items-center justify-center py-16 px-8 text-center bg-gradient-to-br from-slate-800/40 to-slate-700/30 rounded-xl border border-slate-600/30"
+                    role="status"
+                    aria-live="polite"
+                  >
+                    <div className="relative mb-6" aria-hidden="true">
                       <div className="w-24 h-24 bg-gradient-to-br from-slate-700/60 to-slate-600/40 rounded-2xl flex items-center justify-center border border-slate-500/30">
                         <Archive className="w-12 h-12 text-slate-400" />
                       </div>
-                      
-                      {/* 装飾的なグロー効果 */}
                       <div className="absolute inset-0 bg-gradient-to-br from-slate-500/10 to-slate-600/10 rounded-2xl blur-xl opacity-50" />
                     </div>
 
-                    {/* メッセージ */}
                     <div className="space-y-4 max-w-md">
                       <h3 className="text-xl font-semibold text-slate-200">
                         {t('battlesPage.status.noCompletedBattles')}
@@ -371,17 +379,16 @@ const BattlesPage: React.FC = () => {
                         {t('battlesPage.status.checkBackSoonCompleted')}
                       </p>
                       
-                      {/* ヒント */}
                       <div className="mt-6 p-4 bg-slate-800/60 rounded-lg border border-slate-600/40">
                         <p className="text-cyan-300 text-xs font-medium flex items-center justify-center gap-2">
-                          <Archive className="w-4 h-4" />
+                          <Archive className="w-4 h-4" aria-hidden="true" />
                           完了したバトルがここに表示されます
                         </p>
                       </div>
                     </div>
 
                     {/* 装飾的なパーティクル */}
-                    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                    <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
                       <div className="absolute top-10 left-10 w-2 h-2 bg-cyan-400/20 rounded-full animate-pulse" />
                       <div className="absolute top-20 right-16 w-1 h-1 bg-purple-400/30 rounded-full animate-pulse" style={{ animationDelay: '1s' }} />
                       <div className="absolute bottom-16 left-20 w-1.5 h-1.5 bg-amber-400/20 rounded-full animate-pulse" style={{ animationDelay: '2s' }} />
@@ -391,10 +398,10 @@ const BattlesPage: React.FC = () => {
                 )
               )}
             </div>
-          </div>
+          </section>
 
           {/* Right Sidebar */}
-          <aside className="lg:col-span-1 space-y-6 sticky-sidebar-extended hidden lg:block">
+          <aside className="lg:col-span-1 space-y-6 sticky-sidebar-extended hidden lg:block" aria-label="Rankings and community stats">
             
             {/* Top Rankings with Tabs */}
             <TabbedRanking 
@@ -403,28 +410,30 @@ const BattlesPage: React.FC = () => {
             />
 
           </aside>
-        </div>
+        </main>
 
       </div>
       
       {/* Mobile Rankings - モバイル版でのみ表示 */}
-      <div className="lg:hidden mt-8 w-full">
+      <section className="lg:hidden mt-8 w-full" aria-label="Mobile rankings">
         <div className="w-full px-4 sm:px-6">
           <TabbedRanking 
             maxItems={5}
             showViewAllButton={true}
           />
         </div>
-      </div>
+      </section>
       
       {/* Mobile Monthly Limit Card - モバイル版でのみ表示、コンテナの外に配置 */}
       {user && (
-        <div className="lg:hidden mt-6 w-full">
+        <section className="lg:hidden mt-6 w-full" aria-label="User monthly limit">
           <div className="w-full px-4 sm:px-6">
             <MonthlyLimitCard />
           </div>
-        </div>
+        </section>
       )}
+
+      {/* Auth Modal */}
       <AuthModal
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}

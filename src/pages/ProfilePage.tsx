@@ -281,7 +281,7 @@ const ProfilePage: React.FC = () => {
         <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 via-purple-500/5 to-pink-500/5" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_transparent_0%,_rgba(15,23,42,0.8)_100%)]" />
         
-        <div className="container mx-auto px-4 relative z-10">
+        <div className="container-ultra-wide relative z-10">
           <div className="flex flex-col lg:flex-row items-center lg:items-start gap-8 lg:gap-12">
             {/* Avatar Section - Fixed positioning with consistent centering */}
             <div className="relative flex-shrink-0 flex flex-col items-center">
@@ -428,8 +428,8 @@ const ProfilePage: React.FC = () => {
 
 
       {/* Main Content Area - Tabs for Battles and Posts */}
-      <div className="container mx-auto px-4 py-12">
-        <div className="w-full max-w-6xl mx-auto">
+      <div className="container-ultra-wide py-12">
+        <div className="w-full">
           {/* Enhanced Tab Navigation */}
           <div className="relative mb-12">
             <div className="flex border-b border-slate-700/50 bg-slate-800/30 rounded-t-2xl p-2">

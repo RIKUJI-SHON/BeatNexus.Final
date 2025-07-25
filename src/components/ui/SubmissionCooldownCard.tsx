@@ -1,8 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, AlertCircle, CheckCircle, Plus, BarChart3, RefreshCw } from 'lucide-react';
-
-import { Button } from './Button';
-import { Link } from 'react-router-dom';
+import { Calendar, RefreshCw } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '../../lib/supabase';
@@ -72,24 +69,20 @@ export const MonthlyLimitCard: React.FC = () => {
   };
 
   useEffect(() => {
-    if (user) {
-      fetchMonthlyData();
-    }
-  }, [user]);
+    fetchMonthlyData();
+  }, [user]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (!user) {
     return (
-      <div className="glowing-card w-full">
-        <div className="glowing-card__content p-4 sm:p-6 lg:p-3">
-          <div className="text-center">
-            <div className="w-12 h-12 bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-3">
-              <Calendar className="h-6 w-6 text-gray-600" />
-            </div>
-            <h3 className="font-medium text-white mb-2">{t('monthlyLimit.title')}</h3>
-            <p className="text-sm text-gray-400 mb-3">
-              {t('monthlyLimit.loginToCheck')}
-            </p>
+      <div className="bg-slate-800/40 border border-slate-700/50 rounded-xl p-4 transition-all duration-300 hover:bg-slate-800/60 hover:border-slate-600/50">
+        <div className="text-center">
+          <div className="w-12 h-12 bg-slate-700/50 rounded-full flex items-center justify-center mx-auto mb-3">
+            <Calendar className="h-6 w-6 text-gray-400" />
           </div>
+          <h3 className="font-medium text-white mb-2">{t('monthlyLimit.title')}</h3>
+          <p className="text-sm text-gray-400">
+            {t('monthlyLimit.loginToCheck')}
+          </p>
         </div>
       </div>
     );
@@ -97,81 +90,68 @@ export const MonthlyLimitCard: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="glowing-card w-full">
-        <div className="glowing-card__content p-4 sm:p-6 lg:p-3">
-          <div className="text-center">
-            <div className="animate-spin w-8 h-8 border-2 border-cyan-500 border-t-transparent rounded-full mx-auto mb-3"></div>
-            <p className="text-sm text-gray-400">{t('monthlyLimit.checkingStatus')}</p>
-          </div>
+      <div className="bg-slate-800/40 border border-slate-700/50 rounded-xl p-4 transition-all duration-300">
+        <div className="text-center">
+          <div className="animate-spin w-8 h-8 border-2 border-cyan-500 border-t-transparent rounded-full mx-auto mb-3"></div>
+          <p className="text-sm text-gray-400">{t('monthlyLimit.checkingStatus')}</p>
         </div>
       </div>
     );
   }
 
-  const progressPercentage = monthlyData ? (monthlyData.used_count / monthlyData.limit) * 100 : 0;
-  const isNearLimit = monthlyData ? monthlyData.remaining <= 5 : false;
-  const isAtLimit = monthlyData ? monthlyData.remaining === 0 : false;
-
   return (
-    <div className="glowing-card w-full mx-auto">
-      <div className="glowing-card__content p-3 text-center">
-        {/* Header */}
-        <div className="text-center mb-3">
-          <div className="flex items-center justify-center gap-2 mb-1">
-            <Calendar className="h-4 w-4 text-cyan-400" />
-            <h2 className="text-base font-bold text-cyan-400">
-              {t('monthlyLimit.title')}
-            </h2>
-          </div>
-        </div>
-
-        {monthlyData && (
-          <>
-            {/* 残り投稿可能回数を表示 */}
-            <div className="mb-3">
-              <div className="text-center mb-2">
-                <div className="text-xs text-gray-400 mb-1">
-                  {t('monthlyLimit.remainingPosts')}
-                </div>
-                <div className="text-2xl font-bold text-white mb-1">
-                  {monthlyData.remaining === Infinity ? t('monthlyLimit.testMode.unlimited') : monthlyData.remaining}
-                </div>
-              </div>
-
-              {/* プログレスバー */}
-              <div className="space-y-2">
-                <div className="w-full bg-gray-700 rounded-full h-2 overflow-hidden">
-                  <div 
-                    className="h-full transition-all duration-300 bg-gradient-to-r from-green-500 to-blue-500"
-                    style={{ width: '100%' }}
-                  />
-                </div>
-                
-                <div className="flex flex-col sm:flex-row sm:justify-between text-xs text-gray-400 gap-1 sm:gap-0">
-                  <span>{t('monthlyLimit.usedPosts', { count: monthlyData.used_count })}</span>
-                  <span>{t('monthlyLimit.resetLabel')} {t('monthlyLimit.testMode.unlimited')}</span>
-                </div>
-              </div>
-            </div>
-
-            {/* リセット日 */}
-            <div className="mb-3 p-2 bg-gray-800/50 rounded-lg">
-              <div className="flex items-center justify-center gap-2 text-xs">
-                <RefreshCw className="h-3 w-3 text-gray-400" />
-                <span className="text-gray-400">{t('monthlyLimit.resetLabel')}</span>
-                <span className="font-medium text-white">{monthlyData.reset_date}</span>
-              </div>
-            </div>
-          </>
-        )}
-
-        {/* 説明 */}
-        <div className="mt-3 pt-2 border-t border-gray-700/50">
-          <p className="text-xs text-gray-400 text-center">
-            {t('monthlyLimit.testMode.simpleMessage')}
-          </p>
+    <div className="bg-slate-800/40 border border-slate-700/50 rounded-xl p-4 transition-all duration-300 hover:bg-slate-800/60 hover:border-slate-600/50">
+      {/* Header */}
+      <div className="text-center mb-4">
+        <div className="flex items-center justify-center gap-2 mb-2">
+          <Calendar className="h-5 w-5 text-cyan-400" />
+          <h2 className="text-lg font-semibold text-white">
+            {t('monthlyLimit.title')}
+          </h2>
         </div>
       </div>
+
+      {monthlyData && (
+        <>
+          {/* 投稿統計 */}
+          <div className="text-center mb-4">
+            <div className="text-xs text-gray-400 mb-1">
+              今月の投稿数
+            </div>
+            <div className="text-3xl font-bold text-cyan-400 mb-2">
+              {monthlyData.used_count}
+            </div>
+            <div className="text-sm text-gray-300">
+              {monthlyData.remaining === Infinity ? '無制限で投稿可能' : `残り ${monthlyData.remaining} 回`}
+            </div>
+          </div>
+
+          {/* プログレスバー（テスト版では装飾として） */}
+          <div className="mb-4">
+            <div className="w-full bg-slate-700/50 rounded-full h-2 overflow-hidden">
+              <div 
+                className="h-full transition-all duration-300 bg-gradient-to-r from-cyan-500 to-blue-500"
+                style={{ width: '100%' }}
+              />
+            </div>
+          </div>
+
+          {/* リセット情報 */}
+          <div className="p-3 bg-slate-700/30 rounded-lg border border-slate-600/30">
+            <div className="flex items-center justify-center gap-2 text-xs text-gray-300">
+              <RefreshCw className="h-3 w-3" />
+              <span>次回リセット: {monthlyData.reset_date}</span>
+            </div>
+          </div>
+
+          {/* 説明 */}
+          <div className="mt-3 pt-3 border-t border-slate-700/50">
+            <p className="text-xs text-gray-400 text-center leading-relaxed">
+              テスト期間中は無制限で投稿できます
+            </p>
+          </div>
+        </>
+      )}
     </div>
   );
 }; 

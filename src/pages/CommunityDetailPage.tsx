@@ -162,7 +162,7 @@ const CommunityDetailPage: React.FC = () => {
   if (!currentCommunity || !myRole) {
     return (
       <div className="min-h-screen bg-gray-950">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="container-ultra-wide py-12">
           <Card className="bg-gray-900 border-gray-700 p-12 text-center">
             <Users className="w-16 h-16 text-gray-600 mx-auto mb-4" />
             <h3 className="text-xl font-bold text-white mb-2">{t('communityNotFound')}</h3>
@@ -194,7 +194,7 @@ const CommunityDetailPage: React.FC = () => {
         }}
       >
         <div className="absolute inset-0 bg-gradient-to-r from-cyan-900/30 to-purple-900/30"></div>
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="relative z-10 container-ultra-wide">
           {/* ナビゲーション */}
           <div className="mb-6">
             <Button
@@ -276,7 +276,7 @@ const CommunityDetailPage: React.FC = () => {
       </section>
 
       {/* メインコンテンツ */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="container-ultra-wide py-8">
         {/* タブナビゲーション */}
         <div className="mb-8">
           <div className="flex flex-wrap gap-2 p-1 bg-gray-900 rounded-lg border border-gray-700">

@@ -423,7 +423,7 @@ const PostPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-slate-950 py-6 sm:py-10">
-      <div className="container mx-auto px-4 max-w-7xl">
+      <div className="container-ultra-wide">
         <Button
           variant="ghost"
           size="sm"

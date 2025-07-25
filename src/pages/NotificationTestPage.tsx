@@ -153,8 +153,8 @@ const NotificationTestPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-950 py-10">
-      <div className="container mx-auto px-4">
-        <div className="max-w-4xl mx-auto">
+      <div className="container-ultra-wide">
+        <div className="w-full">
           <h1 className="text-3xl font-bold text-white mb-2">通知システムテスト</h1>
           <p className="text-gray-400 mb-8">
             開発者向け: 各種通知の動作をテストできます。

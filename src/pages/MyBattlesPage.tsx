@@ -146,7 +146,7 @@ const MyBattlesPage: React.FC = () => {
   if (error) {
     return (
       <div className="min-h-screen bg-gray-950 py-10">
-        <div className="container mx-auto px-4">
+        <div className="container-ultra-wide">
           <Card className="bg-gray-900 border border-red-500/20 p-8 text-center">
             <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-red-500/20 flex items-center justify-center">
               <Trophy className="h-10 w-10 text-red-500" />
@@ -171,7 +171,7 @@ const MyBattlesPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-950 py-10">
-      <div className="container mx-auto px-4">
+      <div className="container-ultra-wide">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>

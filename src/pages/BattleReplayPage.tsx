@@ -349,7 +349,7 @@ const BattleReplayPage: React.FC = () => {
           <div className="absolute bottom-1/4 right-10 w-16 h-16 bg-pink-500/20 rounded-full blur-xl animate-pulse delay-700"></div>
         </div>
 
-        <div className="relative container mx-auto px-4 py-8 max-w-7xl">
+        <div className="relative container-ultra-wide py-8">
           
           {/* Header */}
           <div className="flex items-center gap-4 mb-8">
@@ -433,7 +433,7 @@ const BattleReplayPage: React.FC = () => {
           </div>
 
           {/* Battle Result Overview */}
-          <div className="battle-card mb-4 md:mb-6 max-w-7xl mx-auto">
+          <div className="battle-card mb-4 md:mb-6 w-full">
             <div className="battle-card__content relative overflow-hidden">
               {/* Background Pattern */}
               <div className="absolute inset-0 opacity-5">

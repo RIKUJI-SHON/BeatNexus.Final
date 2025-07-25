@@ -105,6 +105,7 @@ alwaysApply: true
 6. **守るべきルールのディレクトリ/ファイル**
 
    - docs/BeatNexus.mdc
+   - docs/デザインルールAtlassian/.md (デザインルールに関するドキュメント)
    - 上記ファイルのルールを厳守してください。
 
 ---

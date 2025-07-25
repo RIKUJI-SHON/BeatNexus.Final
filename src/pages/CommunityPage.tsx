@@ -245,7 +245,7 @@ const CommunityPage: React.FC = () => {
         }}
       >
         <div className="absolute inset-0 bg-gradient-to-r from-cyan-900/20 to-purple-900/20"></div>
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div className="relative z-10 container-ultra-wide text-center">
           <img
             src={beatnexusWordmark}
             alt="BeatNexus"
@@ -286,7 +286,7 @@ const CommunityPage: React.FC = () => {
       </section>
 
       {/* メインコンテンツ */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="container-ultra-wide py-12">
         {/* マイコミュニティセクション */}
         {user && userCommunities.length > 0 && (
           <section className="mb-12">

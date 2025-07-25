@@ -9,7 +9,7 @@ export const Footer: React.FC = () => {
   const { setOnboardingModalOpen } = useOnboardingStore();
   return (
     <footer className="bg-gray-900 text-white pt-12 pb-8">
-      <div className="container mx-auto px-4">
+      <div className="container-ultra-wide">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Logo and description */}
           <div className="col-span-1 md:col-span-1">
