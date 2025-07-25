@@ -311,7 +311,12 @@
       "testingPhase": "No submission limits during testing phase",
       "testingMessage": "The platform is currently in testing phase. There are no submission limits until official launch.",
       "simpleMessage": "Unlimited posts during testing phase"
-    }
+    },
+    "monthlySubmissions": "Monthly Submissions",
+    "unlimitedSubmissions": "Unlimited submissions available",
+    "remainingSubmissions": "{{count}} submissions remaining",
+    "nextReset": "Next reset: {{date}}",
+    "testPeriodMessage": "Unlimited submissions during test period"
   },
   "userInfoCard": {
     "loading": "Loading profile information...",
@@ -913,7 +918,62 @@
       "title": "Guidelines",
       "content": "I have read and agree to the Video Submission Guidelines",
       "face": "I understand that showing my face is optional, and showing my mouth area is recommended",
-      "appropriate": "I confirm this is my own performance and does not contain prohibited content"
+      "appropriate": "I confirm this is my own performance and does not contain prohibited content",
+      "detailed": {
+        "performanceTime": {
+          "title": "Performance Time: ",
+          "value": "1-2 minutes",
+          "description": "Please perform within the specified time frame"
+        },
+        "performanceFormat": {
+          "title": "Performance Format: ",
+          "value": "One-shot recording",
+          "description": "Video and audio must be recorded simultaneously. Connecting performances with cut editing is prohibited."
+        },
+        "identityVerification": {
+          "title": "Identity Verification: ",
+          "value": "Face showing recommended",
+          "description": "Showing your face is not required but recommended."
+        },
+        "lipSyncBan": {
+          "title": "Lip Sync Prohibition",
+          "description": "Lip syncing to pre-recorded audio (dubbing) is prohibited."
+        },
+        "audioSource": {
+          "title": "Audio Source: ",
+          "value": "Real-time audio",
+          "description": "All sounds used in the performance must be generated on the spot from your voice or body."
+        },
+        "sampleBan": {
+          "title": "Sample Use Prohibition",
+          "description": "The use of pre-recorded audio sources (samples) or metronomes that record sound is prohibited."
+        },
+        "audioProcessing": {
+          "title": "Audio Processing",
+          "subtitle": "",
+          "allowed": {
+            "title": "Allowed Processing",
+            "mixing": "Mixing and mastering",
+            "correction": "Basic audio quality correction applied to the entire recording (EQ, compressor, reverb)"
+          },
+          "prohibited": {
+            "title": "Prohibited Processing",
+            "effects": "Effects that significantly change the original sound, such as distortion and delay",
+            "advanced": "Advanced editing that automatically changes processing for each sound"
+          }
+        },
+        "equipment": {
+          "title": "Recording Equipment",
+          "devices": {
+            "title": "Equipment",
+            "description": "All methods are welcome, from smartphones to professional equipment."
+          },
+          "resolution": {
+            "title": "Resolution",
+            "description": "Please avoid 4K recording as it increases file size."
+          }
+        }
+      }
     },
     "cooldown": {
       "title": "Submission Cooldown",
@@ -921,33 +981,6 @@
     },
     "seasonOff": {
       "title": "Season Off - Submission Restricted"
-    },
-    "guidelines": {
-      "title": "Video Submission Guidelines",
-      "performanceTime": "Performance Time: 1-2 minutes",
-      "performanceFormat": "Performance Format: One-shot recording - Video and audio must be recorded simultaneously. Connecting performances with cut editing is prohibited.",
-      "identityVerification": "Identity Verification: Showing your face is not required but recommended.",
-      "lipSyncBan": "Lip Sync Prohibition: Lip syncing to pre-recorded audio (dubbing) is prohibited.",
-      "audioSource": "Audio Source: All sounds used in the performance must be generated on the spot from your voice or body.",
-      "sampleBan": "Sample Use Prohibition: The use of pre-recorded audio sources (samples) or metronomes that record sound is prohibited.",
-      "audioProcessing": {
-        "title": "Audio Processing",
-        "allowed": "Allowed Processing:",
-        "allowedItems": [
-          "Mixing and mastering",
-          "Basic audio quality correction applied to the entire recording (EQ, compressor, reverb)"
-        ],
-        "prohibited": "Prohibited Processing:",
-        "prohibitedItems": [
-          "Effects that significantly change the original sound, such as distortion and delay",
-          "Advanced editing that automatically changes processing for each sound"
-        ]
-      },
-      "equipment": {
-        "title": "Recording Equipment",
-        "devices": "Equipment: All methods are welcome, from smartphones to professional equipment.",
-        "resolution": "Resolution: Please avoid 4K recording as it increases file size."
-      }
     },
     "preview": {
       "title": "Video Preview"
@@ -1073,7 +1106,12 @@
       "cooldown": {
         "canSubmit": "Submission available",
         "restriction": "You can only submit one video per hour. Time remaining: {{hours}}h {{minutes}}m",
-        "error": "Error during cooldown check: {{error}}"
+        "remainingTime": "Next submission available in: {{time}}",
+        "error": "Error during cooldown check: {{error}}",
+        "timeFormat": {
+          "hoursMinutes": "{{hours}}h {{minutes}}m", 
+          "minutes": "{{minutes}}m"
+        }
       },
       "success": {
         "created": "Submission created successfully."

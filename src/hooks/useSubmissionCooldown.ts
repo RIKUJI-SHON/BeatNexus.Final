@@ -99,9 +99,9 @@ export const useSubmissionCooldown = () => {
     const remainingMinutes = minutes % 60;
     
     if (hours > 0) {
-      return `${hours}時間${remainingMinutes}分`;
+      return t('postPage.submission.cooldown.timeFormat.hoursMinutes', { hours, minutes: remainingMinutes });
     }
-    return `${remainingMinutes}分`;
+    return t('postPage.submission.cooldown.timeFormat.minutes', { minutes: remainingMinutes });
   };
 
   // コンポーネントマウント時とユーザー変更時にチェック

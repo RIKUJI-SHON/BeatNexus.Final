@@ -75,10 +75,10 @@ const SubmissionModal: React.FC<SubmissionModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-slate-800 rounded-2xl border border-slate-700 w-full max-w-2xl max-h-[90vh] overflow-hidden shadow-2xl">
+    <div className="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-start justify-center z-[9999] p-4 overflow-y-auto">
+      <div className="bg-slate-800 rounded-2xl border border-slate-700 w-full max-w-2xl min-h-fit my-8 overflow-hidden shadow-2xl relative">
         {/* ヘッダー */}
-        <div className="flex items-center justify-between p-6 border-b border-slate-700">
+        <div className="flex items-center justify-between p-6 border-b border-slate-700 sticky top-0 bg-slate-800 z-10">
           <h2 className="text-xl font-bold text-slate-50 flex items-center gap-3">
             <Upload className="h-6 w-6 text-cyan-400" />
             {t('submissionModal.title')}
@@ -86,14 +86,14 @@ const SubmissionModal: React.FC<SubmissionModalProps> = ({
           {!isProcessing && (
             <button
               onClick={onClose}
-              className="text-slate-400 hover:text-slate-50 transition-colors p-1"
+              className="text-slate-400 hover:text-slate-50 transition-colors p-1 hover:bg-slate-700 rounded"
             >
               <X className="h-5 w-5" />
             </button>
           )}
         </div>
 
-        <div className="p-6 space-y-6">
+        <div className="p-6 space-y-6 max-h-[calc(90vh-80px)] overflow-y-auto">
           {/* 動画プレビュー */}
           {videoPreviewUrl && (
             <div className="space-y-3">
@@ -181,7 +181,7 @@ const SubmissionModal: React.FC<SubmissionModalProps> = ({
         </div>
 
         {/* フッター */}
-        <div className="border-t border-slate-700 p-6">
+        <div className="border-t border-slate-700 p-6 sticky bottom-0 bg-slate-800 z-10">
           <div className="flex justify-end gap-4">
             {isProcessing && onCancel && (
               <button

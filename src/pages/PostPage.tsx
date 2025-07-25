@@ -190,7 +190,7 @@ const PostPage: React.FC = () => {
     
     // 1時間制限チェック
     if (!canSubmit) {
-      setError(cooldownInfo?.message || '1時間以内に投稿できるのは1本までです。');
+      setError(cooldownInfo?.message || t('postPage.submission.error.cooldownActive'));
       return;
     }
     
@@ -308,13 +308,28 @@ const PostPage: React.FC = () => {
       }
 
       // Check if submission creation was successful
-      if (!submissionResult.success) {
-        if (submissionResult.error === 'cooldown_active') {
+      if (!submissionResult || !submissionResult.success) {
+        console.error('❌ Submission failed:', submissionResult);
+        
+        if (submissionResult?.error === 'cooldown_active') {
           // Update cooldown info and show error
           refreshCooldown();
-          throw new Error(submissionResult.message || '1時間以内に投稿できるのは1本までです');
+          const errorMsg = submissionResult.message_key ? 
+            t(submissionResult.message_key, submissionResult.message_params) : 
+            (submissionResult.message || t('postPage.submission.error.cooldownActive'));
+          throw new Error(errorMsg);
+        } else if (submissionResult?.error === 'season_restriction') {
+          const errorMsg = submissionResult.message_key ? 
+            t(submissionResult.message_key, submissionResult.message_params) : 
+            (submissionResult.message || t('postPage.submission.error.seasonRestriction'));
+          throw new Error(errorMsg);
+        } else {
+          const errorMsg = submissionResult?.message_key ? 
+            t(submissionResult.message_key, submissionResult.message_params) : 
+            (submissionResult?.message || t('postPage.submission.error.creationFailed'));
+          console.error('Detailed error info:', submissionResult?.message_params);
+          throw new Error(errorMsg);
         }
-        throw new Error(submissionResult.message || '投稿作成に失敗しました');
       }
 
       const submissionId = submissionResult.submission_id;
@@ -490,25 +505,21 @@ const PostPage: React.FC = () => {
                           <AlertCircle className="h-5 w-5 text-orange-400" />
                           <h3 className="font-semibold text-white">
                             {submissionStatus && !submissionStatus.canSubmit 
-                              ? t('postPage.seasonOff.title', 'シーズン外投稿制限')
-                              : t('postPage.cooldown.title', '投稿制限中')
+                              ? t('postPage.seasonOff.title')
+                              : t('postPage.cooldown.title')
                             }
                           </h3>
                         </div>
                         <p className="text-sm text-orange-200 mb-3">
                           {submissionStatus && !submissionStatus.canSubmit 
                             ? submissionStatus.message
-                            : cooldownInfo?.message
+                            : (!canSubmit && remainingTime ? 
+                                t('postPage.submission.cooldown.remainingTime', { 
+                                  time: remainingTime 
+                                }) 
+                                : t('postPage.cooldown.message', { time: remainingTime || '' }))
                           }
                         </p>
-                        {remainingTime && canSubmit && (
-                          <div className="bg-slate-800/50 rounded-lg p-3">
-                            <div className="flex items-center justify-between text-sm">
-                              <span className="text-slate-300">{t('postPage.cooldown.nextSubmission', '次回投稿可能まで')}</span>
-                              <span className="text-orange-400 font-medium">{remainingTime}</span>
-                            </div>
-                          </div>
-                        )}
                       </div>
                     )}
 
@@ -642,7 +653,7 @@ const PostPage: React.FC = () => {
                         <div className="mt-4 bg-blue-500/10 border border-blue-500/30 rounded-xl p-4 backdrop-blur-sm">
                           <div className="flex items-center gap-2 mb-2">
                             <div className="w-4 h-4 border-2 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
-                            <span className="text-blue-300 font-medium text-sm">{t('postPage.processing')}</span>
+                            <span className="text-blue-300 font-medium text-sm">{t('postPage.processing.title')}</span>
                           </div>
                           {progress > 0 && (
                             <div className="w-full bg-slate-700 rounded-full h-3">
@@ -675,7 +686,7 @@ const PostPage: React.FC = () => {
                                   }}
                                   className="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-sm rounded-lg transition-colors"
                                 >
-                                  {t('postPage.errors.changeBattleFormat', 'バトル形式を変更')}
+                                  {t('postPage.errors.changeBattleFormat')}
                                 </button>
                                 <button
                                   onClick={() => {
@@ -852,9 +863,9 @@ const PostPage: React.FC = () => {
                         <div className="w-3 h-3 bg-blue-400 rounded-full mt-2 flex-shrink-0"></div>
                         <div>
                           <h4 className="text-lg font-bold text-slate-50 mb-2">
-                            パフォーマンス時間：<span className="text-blue-400">1分～2分</span>
+                            {t('postPage.guidelines.detailed.performanceTime.title')}<span className="text-blue-400">{t('postPage.guidelines.detailed.performanceTime.value')}</span>
                           </h4>
-                          <p className="text-sm text-slate-400">指定された時間内でパフォーマンスを行ってください</p>
+                          <p className="text-sm text-slate-400">{t('postPage.guidelines.detailed.performanceTime.description')}</p>
                         </div>
                       </div>
                       
@@ -863,9 +874,9 @@ const PostPage: React.FC = () => {
                         <div className="w-3 h-3 bg-cyan-400 rounded-full mt-2 flex-shrink-0"></div>
                         <div>
                           <h4 className="text-lg font-bold text-slate-50 mb-2">
-                            パフォーマンス形式：<span className="text-cyan-400">ノーカット撮影</span>
+                            {t('postPage.guidelines.detailed.performanceFormat.title')}<span className="text-cyan-400">{t('postPage.guidelines.detailed.performanceFormat.value')}</span>
                           </h4>
-                          <p className="text-sm text-slate-400">映像と音声は同時に録画・録音してください。パフォーマンスをカット編集で繋ぎ合わせることは禁止です。</p>
+                          <p className="text-sm text-slate-400">{t('postPage.guidelines.detailed.performanceFormat.description')}</p>
                         </div>
                       </div>
                       
@@ -874,9 +885,9 @@ const PostPage: React.FC = () => {
                         <div className="w-3 h-3 bg-emerald-400 rounded-full mt-2 flex-shrink-0"></div>
                         <div>
                           <h4 className="text-lg font-bold text-slate-50 mb-2">
-                            本人確認：<span className="text-emerald-400">顔出し推奨</span>
+                            {t('postPage.guidelines.detailed.identityVerification.title')}<span className="text-emerald-400">{t('postPage.guidelines.detailed.identityVerification.value')}</span>
                           </h4>
-                          <p className="text-sm text-slate-400">顔出しは必須ではありませんが、推奨します。</p>
+                          <p className="text-sm text-slate-400">{t('postPage.guidelines.detailed.identityVerification.description')}</p>
                         </div>
                       </div>
                       
@@ -885,9 +896,9 @@ const PostPage: React.FC = () => {
                         <div className="w-3 h-3 bg-red-400 rounded-full mt-2 flex-shrink-0"></div>
                         <div>
                           <h4 className="text-lg font-bold text-slate-50 mb-2">
-                            <span className="text-red-400">リップシンク禁止</span>
+                            <span className="text-red-400">{t('postPage.guidelines.detailed.lipSyncBan.title')}</span>
                           </h4>
-                          <p className="text-sm text-slate-400">録音した音源に合わせた口パク（アテレコ）は禁止です。</p>
+                          <p className="text-sm text-slate-400">{t('postPage.guidelines.detailed.lipSyncBan.description')}</p>
                         </div>
                       </div>
                       
@@ -896,9 +907,9 @@ const PostPage: React.FC = () => {
                         <div className="w-3 h-3 bg-purple-400 rounded-full mt-2 flex-shrink-0"></div>
                         <div>
                           <h4 className="text-lg font-bold text-slate-50 mb-2">
-                            音源：<span className="text-purple-400">リアルタイム音源</span>
+                            {t('postPage.guidelines.detailed.audioSource.title')}<span className="text-purple-400">{t('postPage.guidelines.detailed.audioSource.value')}</span>
                           </h4>
-                          <p className="text-sm text-slate-400">パフォーマンスで使われる全ての音は、あなたの声または体からその場で生み出されたものに限ります。</p>
+                          <p className="text-sm text-slate-400">{t('postPage.guidelines.detailed.audioSource.description')}</p>
                         </div>
                       </div>
                       
@@ -907,9 +918,9 @@ const PostPage: React.FC = () => {
                         <div className="w-3 h-3 bg-orange-400 rounded-full mt-2 flex-shrink-0"></div>
                         <div>
                           <h4 className="text-lg font-bold text-slate-50 mb-2">
-                            <span className="text-orange-400">サンプル使用禁止</span>
+                            <span className="text-orange-400">{t('postPage.guidelines.detailed.sampleBan.title')}</span>
                           </h4>
-                          <p className="text-sm text-slate-400">事前に録音された音源（サンプル）や、音が録音されてしまうメトロノームの使用は禁止です。</p>
+                          <p className="text-sm text-slate-400">{t('postPage.guidelines.detailed.sampleBan.description')}</p>
                         </div>
                       </div>
                       
@@ -917,35 +928,35 @@ const PostPage: React.FC = () => {
                       <div className="bg-slate-800 rounded-lg p-5 border border-slate-600">
                         <h4 className="text-xl font-bold text-slate-50 mb-4 flex items-center gap-3">
                           <Settings className="h-5 w-5 text-blue-400" />
-                          <span className="text-blue-400">音声の処理</span>について
+                          <span className="text-blue-400">{t('postPage.guidelines.detailed.audioProcessing.title')}</span>{t('postPage.guidelines.detailed.audioProcessing.subtitle')}
                         </h4>
                         
                         {/* 許可される処理 */}
                         <div className="mb-6">
-                          <h5 className="text-lg font-bold text-emerald-400 mb-3">✅ 許可される処理</h5>
+                          <h5 className="text-lg font-bold text-emerald-400 mb-3">✅ {t('postPage.guidelines.detailed.audioProcessing.allowed.title')}</h5>
                           <ul className="space-y-2 ml-4">
                             <li className="text-slate-50 flex items-start gap-3">
                               <CheckCircle className="h-4 w-4 text-emerald-400 mt-1 flex-shrink-0" />
-                              <span><strong className="text-emerald-300">ミックス・マスタリング</strong></span>
+                              <span><strong className="text-emerald-300">{t('postPage.guidelines.detailed.audioProcessing.allowed.mixing')}</strong></span>
                             </li>
                             <li className="text-slate-50 flex items-start gap-3">
                               <CheckCircle className="h-4 w-4 text-emerald-400 mt-1 flex-shrink-0" />
-                              <span>録音後、全体にかける基本的な<strong className="text-emerald-300">音質補正</strong>（EQ、コンプレッサー、リバーブ）</span>
+                              <span>{t('postPage.guidelines.detailed.audioProcessing.allowed.correction')}</span>
                             </li>
                           </ul>
                         </div>
                         
                         {/* 禁止される処理 */}
                         <div>
-                          <h5 className="text-lg font-bold text-red-400 mb-3">❌ 禁止される処理</h5>
+                          <h5 className="text-lg font-bold text-red-400 mb-3">❌ {t('postPage.guidelines.detailed.audioProcessing.prohibited.title')}</h5>
                           <ul className="space-y-2 ml-4">
                             <li className="text-slate-50 flex items-start gap-3">
                               <X className="h-4 w-4 text-red-400 mt-1 flex-shrink-0" />
-                              <span><strong className="text-red-300">ディストーション、ディレイ</strong>など、元の音を大きく変化させるエフェクト</span>
+                              <span><strong className="text-red-300">{t('postPage.guidelines.detailed.audioProcessing.prohibited.effects')}</strong></span>
                             </li>
                             <li className="text-slate-50 flex items-start gap-3">
                               <X className="h-4 w-4 text-red-400 mt-1 flex-shrink-0" />
-                              <span><strong className="text-red-300">音ごとに処理を自動で変える</strong>ような高度な編集</span>
+                              <span><strong className="text-red-300">{t('postPage.guidelines.detailed.audioProcessing.prohibited.advanced')}</strong></span>
                             </li>
                           </ul>
                         </div>
@@ -955,19 +966,19 @@ const PostPage: React.FC = () => {
                       <div className="bg-slate-800 rounded-lg p-5 border border-slate-600">
                         <h4 className="text-xl font-bold text-slate-50 mb-4 flex items-center gap-3">
                           <Video className="h-5 w-5 text-purple-400" />
-                          <span className="text-purple-400">撮影・録音機材</span>
+                          <span className="text-purple-400">{t('postPage.guidelines.detailed.equipment.title')}</span>
                         </h4>
                         <div className="space-y-3">
                           <div className="flex items-start gap-3">
                             <CheckCircle className="h-4 w-4 text-emerald-400 mt-1 flex-shrink-0" />
                             <p className="text-slate-50">
-                              <strong className="text-emerald-300">機材</strong>：スマートフォンからプロフェッショナルな機材まで、あらゆる方法を歓迎します。
+                              <strong className="text-emerald-300">{t('postPage.guidelines.detailed.equipment.devices.title')}</strong>：{t('postPage.guidelines.detailed.equipment.devices.description')}
                             </p>
                           </div>
                           <div className="flex items-start gap-3">
                             <AlertCircle className="h-4 w-4 text-amber-400 mt-1 flex-shrink-0" />
                             <p className="text-slate-50">
-                              <strong className="text-amber-300">解像度</strong>：4Kでの撮影は、ファイルサイズが大きくなるためお控えください。
+                              <strong className="text-amber-300">{t('postPage.guidelines.detailed.equipment.resolution.title')}</strong>：{t('postPage.guidelines.detailed.equipment.resolution.description')}
                             </p>
                           </div>
                         </div>

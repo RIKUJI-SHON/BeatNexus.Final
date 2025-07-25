@@ -332,7 +332,12 @@
       "testingPhase": "テスト段階のため投稿制限は无効",
       "testingMessage": "現在プラットフォームはテスト段階です。正式運用開始まで投稿回数に制限はありません。",
       "simpleMessage": "テスト中のため投稿回数は無制限です"
-    }
+    },
+    "monthlySubmissions": "今月の投稿数",
+    "unlimitedSubmissions": "無制限で投稿可能",
+    "remainingSubmissions": "残り {{count}} 回",
+    "nextReset": "次回リセット: {{date}}",
+    "testPeriodMessage": "テスト期間中は無制限で投稿できます"
   },
   "userInfoCard": {
     "loading": "プロフィール情報を読み込み中...",
@@ -988,7 +993,62 @@
       "title": "ガイドライン",
       "content": "動画投稿ガイドラインを読み、同意します",
       "face": "顔出しは任意で、口元の表示を推奨することを理解しています",
-      "appropriate": "これは私自身のパフォーマンスであり、禁止されたコンテンツを含まないことを確認します"
+      "appropriate": "これは私自身のパフォーマンスであり、禁止されたコンテンツを含まないことを確認します",
+      "detailed": {
+        "performanceTime": {
+          "title": "パフォーマンス時間：",
+          "value": "1分～2分",
+          "description": "指定された時間内でパフォーマンスを行ってください"
+        },
+        "performanceFormat": {
+          "title": "パフォーマンス形式：",
+          "value": "ノーカット撮影",
+          "description": "映像と音声は同時に録画・録音してください。パフォーマンスをカット編集で繋ぎ合わせることは禁止です。"
+        },
+        "identityVerification": {
+          "title": "本人確認：",
+          "value": "顔出し推奨",
+          "description": "顔出しは必須ではありませんが、推奨します。"
+        },
+        "lipSyncBan": {
+          "title": "リップシンク禁止",
+          "description": "録音した音源に合わせた口パク（アテレコ）は禁止です。"
+        },
+        "audioSource": {
+          "title": "音源：",
+          "value": "リアルタイム音源",
+          "description": "パフォーマンスで使われる全ての音は、あなたの声または体からその場で生み出されたものに限ります。"
+        },
+        "sampleBan": {
+          "title": "サンプル使用禁止",
+          "description": "事前に録音された音源（サンプル）や、音が録音されてしまうメトロノームの使用は禁止です。"
+        },
+        "audioProcessing": {
+          "title": "音声の処理",
+          "subtitle": "について",
+          "allowed": {
+            "title": "許可される処理",
+            "mixing": "ミックス・マスタリング",
+            "correction": "録音後、全体にかける基本的な音質補正（EQ、コンプレッサー、リバーブ）"
+          },
+          "prohibited": {
+            "title": "禁止される処理",
+            "effects": "ディストーション、ディレイなど、元の音を大きく変化させるエフェクト",
+            "advanced": "音ごとに処理を自動で変えるような高度な編集"
+          }
+        },
+        "equipment": {
+          "title": "撮影・録音機材",
+          "devices": {
+            "title": "機材",
+            "description": "スマートフォンからプロフェッショナルな機材まで、あらゆる方法を歓迎します。"
+          },
+          "resolution": {
+            "title": "解像度",
+            "description": "4Kでの撮影は、ファイルサイズが大きくなるためお控えください。"
+          }
+        }
+      }
     },
     "cooldown": {
       "title": "投稿制限中",
@@ -1005,33 +1065,6 @@
       "retry": "動画を撮り直す",
       "compressing": "圧縮中",
       "success": "圧縮が正常に完了しました！"
-    },
-    "guidelines": {
-      "title": "動画投稿ガイドライン",
-      "performanceTime": "パフォーマンス時間：1分～2分",
-      "performanceFormat": "パフォーマンス形式：一発撮り - 映像と音声は同時に録画・録音してください。パフォーマンスをカット編集で繋ぎ合わせることは禁止です。",
-      "identityVerification": "本人確認：顔出しは必須ではありませんが、推奨します。",
-      "lipSyncBan": "リップシンク禁止：録音した音源に合わせた口パク（アテレコ）は禁止です。",
-      "audioSource": "音源：パフォーマンスで使われる全ての音は、あなたの声または体からその場で生み出されたものに限ります。",
-      "sampleBan": "サンプル使用禁止：事前に録音された音源（サンプル）や、音が録音されてしまうメトロノームの使用は禁止です。",
-      "audioProcessing": {
-        "title": "音声の処理",
-        "allowed": "許可される処理：",
-        "allowedItems": [
-          "ミックス・マスタリング",
-          "録音後、全体にかける基本的な音質補正（EQ、コンプレッサー、リバーブ）"
-        ],
-        "prohibited": "禁止される処理：",
-        "prohibitedItems": [
-          "ディストーション、ディレイなど、元の音を大きく変化させるエフェクト",
-          "音ごとに処理を自動で変えるような高度な編集"
-        ]
-      },
-      "equipment": {
-        "title": "撮影・録音機材",
-        "devices": "機材：スマートフォンからプロフェッショナルな機材まで、あらゆる方法を歓迎します。",
-        "resolution": "解像度：4Kでの撮影は、ファイルサイズが大きくなるためお控えください。"
-      }
     },
     "preview": {
       "title": "動画プレビュー"
@@ -1150,7 +1183,12 @@
       "cooldown": {
         "canSubmit": "投稿可能です",
         "restriction": "1時間以内に投稿できるのは1本までです。残り時間: {{hours}}時間{{minutes}}分",
-        "error": "クールダウンチェック中にエラーが発生しました: {{error}}"
+        "remainingTime": "次回投稿可能まで: {{time}}",
+        "error": "クールダウンチェック中にエラーが発生しました: {{error}}",
+        "timeFormat": {
+          "hoursMinutes": "{{hours}}時間{{minutes}}分",
+          "minutes": "{{minutes}}分"
+        }
       },
       "success": {
         "created": "投稿が正常に作成されました。"
