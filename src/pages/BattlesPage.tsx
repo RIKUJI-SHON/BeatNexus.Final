@@ -19,6 +19,8 @@ import { getRankColorClasses } from '../utils/rankUtils';
 import { useOnboardingStore } from '../store/onboardingStore';
 import { MonthlyLimitCard } from '../components/ui/SubmissionCooldownCard';
 import { TabbedRanking } from '../components/ui/TabbedRanking';
+import { QuickActionsCard } from '../components/ui/QuickActionsCard';
+import { GuestPromptCard } from '../components/ui/GuestPromptCard';
 import NewsCarousel from '../components/battle/NewsCarousel';
 
 const BattlesPage: React.FC = () => {
@@ -202,12 +204,18 @@ const BattlesPage: React.FC = () => {
         <NewsCarousel />
 
         <main className="grid grid-cols-1 gap-6 lg:grid-cols-5" role="main">
-          {/* Left Sidebar - Monthly Limit */}
+          {/* Left Sidebar - User Actions */}
           <aside className="lg:col-span-1 space-y-6 sticky-sidebar hidden lg:block" aria-label="User status and quick actions">
-            {user && (
-              <div className="w-full">
-                <MonthlyLimitCard />
-              </div>
+            {user ? (
+              <>
+                {/* クイックアクション */}
+                <QuickActionsCard />
+              </>
+            ) : (
+              <>
+                {/* 未ログインユーザー向けアカウント作成促進 */}
+                <GuestPromptCard onSignUpClick={() => setIsAuthModalOpen(true)} />
+              </>
             )}
           </aside>
 

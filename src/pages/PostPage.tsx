@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Upload, X, CheckCircle, Video, AlertCircle, Crown, Mic, ArrowLeft, Settings } from 'lucide-react';
+import { Upload, X, CheckCircle, Video, AlertCircle, Mic, ArrowLeft, Settings } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
 import { useNavigate } from 'react-router-dom';
@@ -11,6 +11,7 @@ import { useVideoProcessor } from '../hooks/useVideoProcessor';
 import { useSubmissionStatus } from '../hooks/useSubmissionStatus';
 import { trackBeatNexusEvents } from '../utils/analytics';
 import SubmissionModal from '../components/ui/SubmissionModal';
+import { MonthlyLimitCard } from '../components/ui/SubmissionCooldownCard';
 
 // Maximum file size in bytes (200MB)
 const MAX_FILE_SIZE = 200 * 1024 * 1024;
@@ -826,6 +827,9 @@ const PostPage: React.FC = () => {
                 )}
               </div>
             </Card>
+            
+            {/* 月間投稿制限カード */}
+            <MonthlyLimitCard />
           </div>
 
           {/* 右カラム: ガイドライン */}
@@ -835,9 +839,8 @@ const PostPage: React.FC = () => {
                 {/* ガイドライン セクション */}
                 <div>
                   <div className="text-center mb-6">
-                    <div className="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-yellow-500/10 to-amber-500/10 rounded-xl border border-yellow-500/30 backdrop-blur-sm">
-                      <Crown className="h-5 w-5 text-yellow-400" />
-                      <h3 className="text-xl font-semibold text-yellow-100">{t('postPage.guidelines.title')}</h3>
+                    <div className="inline-flex items-center justify-center px-6 py-3 bg-slate-800/50 rounded-xl border border-cyan-500/30 backdrop-blur-sm">
+                      <h3 className="text-xl font-semibold text-cyan-100">{t('postPage.guidelines.title')}</h3>
                     </div>
                   </div>
                   
@@ -846,34 +849,34 @@ const PostPage: React.FC = () => {
                     <div className="space-y-6">
                       {/* パフォーマンス時間 */}
                       <div className="flex items-start gap-3">
-                        <div className="w-3 h-3 bg-cyan-400 rounded-full mt-2 flex-shrink-0"></div>
+                        <div className="w-3 h-3 bg-blue-400 rounded-full mt-2 flex-shrink-0"></div>
                         <div>
-                          <h4 className="text-lg font-bold text-white mb-2">
-                            パフォーマンス時間：<span className="text-cyan-400">1分～2分</span>
+                          <h4 className="text-lg font-bold text-slate-50 mb-2">
+                            パフォーマンス時間：<span className="text-blue-400">1分～2分</span>
                           </h4>
-                          <p className="text-sm text-white/80">指定された時間内でパフォーマンスを行ってください</p>
+                          <p className="text-sm text-slate-400">指定された時間内でパフォーマンスを行ってください</p>
                         </div>
                       </div>
                       
                       {/* パフォーマンス形式 */}
                       <div className="flex items-start gap-3">
-                        <div className="w-3 h-3 bg-purple-400 rounded-full mt-2 flex-shrink-0"></div>
+                        <div className="w-3 h-3 bg-cyan-400 rounded-full mt-2 flex-shrink-0"></div>
                         <div>
-                          <h4 className="text-lg font-bold text-white mb-2">
-                            パフォーマンス形式：<span className="text-purple-400">ノーカット撮影</span>
+                          <h4 className="text-lg font-bold text-slate-50 mb-2">
+                            パフォーマンス形式：<span className="text-cyan-400">ノーカット撮影</span>
                           </h4>
-                          <p className="text-sm text-white/80">映像と音声は同時に録画・録音してください。パフォーマンスをカット編集で繋ぎ合わせることは禁止です。</p>
+                          <p className="text-sm text-slate-400">映像と音声は同時に録画・録音してください。パフォーマンスをカット編集で繋ぎ合わせることは禁止です。</p>
                         </div>
                       </div>
                       
                       {/* 本人確認 */}
                       <div className="flex items-start gap-3">
-                        <div className="w-3 h-3 bg-yellow-400 rounded-full mt-2 flex-shrink-0"></div>
+                        <div className="w-3 h-3 bg-emerald-400 rounded-full mt-2 flex-shrink-0"></div>
                         <div>
-                          <h4 className="text-lg font-bold text-white mb-2">
-                            本人確認：<span className="text-yellow-400">顔出し推奨</span>
+                          <h4 className="text-lg font-bold text-slate-50 mb-2">
+                            本人確認：<span className="text-emerald-400">顔出し推奨</span>
                           </h4>
-                          <p className="text-sm text-white/80">顔出しは必須ではありませんが、推奨します。</p>
+                          <p className="text-sm text-slate-400">顔出しは必須ではありませんが、推奨します。</p>
                         </div>
                       </div>
                       
@@ -881,21 +884,21 @@ const PostPage: React.FC = () => {
                       <div className="flex items-start gap-3">
                         <div className="w-3 h-3 bg-red-400 rounded-full mt-2 flex-shrink-0"></div>
                         <div>
-                          <h4 className="text-lg font-bold text-white mb-2">
+                          <h4 className="text-lg font-bold text-slate-50 mb-2">
                             <span className="text-red-400">リップシンク禁止</span>
                           </h4>
-                          <p className="text-sm text-white/80">録音した音源に合わせた口パク（アテレコ）は禁止です。</p>
+                          <p className="text-sm text-slate-400">録音した音源に合わせた口パク（アテレコ）は禁止です。</p>
                         </div>
                       </div>
                       
                       {/* 音源 */}
                       <div className="flex items-start gap-3">
-                        <div className="w-3 h-3 bg-green-400 rounded-full mt-2 flex-shrink-0"></div>
+                        <div className="w-3 h-3 bg-purple-400 rounded-full mt-2 flex-shrink-0"></div>
                         <div>
-                          <h4 className="text-lg font-bold text-white mb-2">
-                            音源：<span className="text-green-400">リアルタイム音源</span>
+                          <h4 className="text-lg font-bold text-slate-50 mb-2">
+                            音源：<span className="text-purple-400">リアルタイム音源</span>
                           </h4>
-                          <p className="text-sm text-white/80">パフォーマンスで使われる全ての音は、あなたの声または体からその場で生み出されたものに限ります。</p>
+                          <p className="text-sm text-slate-400">パフォーマンスで使われる全ての音は、あなたの声または体からその場で生み出されたものに限ります。</p>
                         </div>
                       </div>
                       
@@ -903,31 +906,31 @@ const PostPage: React.FC = () => {
                       <div className="flex items-start gap-3">
                         <div className="w-3 h-3 bg-orange-400 rounded-full mt-2 flex-shrink-0"></div>
                         <div>
-                          <h4 className="text-lg font-bold text-white mb-2">
+                          <h4 className="text-lg font-bold text-slate-50 mb-2">
                             <span className="text-orange-400">サンプル使用禁止</span>
                           </h4>
-                          <p className="text-sm text-white/80">事前に録音された音源（サンプル）や、音が録音されてしまうメトロノームの使用は禁止です。</p>
+                          <p className="text-sm text-slate-400">事前に録音された音源（サンプル）や、音が録音されてしまうメトロノームの使用は禁止です。</p>
                         </div>
                       </div>
                       
                       {/* 音声の処理 */}
                       <div className="bg-slate-800 rounded-lg p-5 border border-slate-600">
-                        <h4 className="text-xl font-bold text-white mb-4 flex items-center gap-3">
+                        <h4 className="text-xl font-bold text-slate-50 mb-4 flex items-center gap-3">
                           <Settings className="h-5 w-5 text-blue-400" />
                           <span className="text-blue-400">音声の処理</span>について
                         </h4>
                         
                         {/* 許可される処理 */}
                         <div className="mb-6">
-                          <h5 className="text-lg font-bold text-green-400 mb-3">✅ 許可される処理</h5>
+                          <h5 className="text-lg font-bold text-emerald-400 mb-3">✅ 許可される処理</h5>
                           <ul className="space-y-2 ml-4">
-                            <li className="text-white flex items-start gap-3">
-                              <CheckCircle className="h-4 w-4 text-green-400 mt-1 flex-shrink-0" />
-                              <span><strong className="text-green-300">ミックス・マスタリング</strong></span>
+                            <li className="text-slate-50 flex items-start gap-3">
+                              <CheckCircle className="h-4 w-4 text-emerald-400 mt-1 flex-shrink-0" />
+                              <span><strong className="text-emerald-300">ミックス・マスタリング</strong></span>
                             </li>
-                            <li className="text-white flex items-start gap-3">
-                              <CheckCircle className="h-4 w-4 text-green-400 mt-1 flex-shrink-0" />
-                              <span>録音後、全体にかける基本的な<strong className="text-green-300">音質補正</strong>（EQ、コンプレッサー、リバーブ）</span>
+                            <li className="text-slate-50 flex items-start gap-3">
+                              <CheckCircle className="h-4 w-4 text-emerald-400 mt-1 flex-shrink-0" />
+                              <span>録音後、全体にかける基本的な<strong className="text-emerald-300">音質補正</strong>（EQ、コンプレッサー、リバーブ）</span>
                             </li>
                           </ul>
                         </div>
@@ -936,11 +939,11 @@ const PostPage: React.FC = () => {
                         <div>
                           <h5 className="text-lg font-bold text-red-400 mb-3">❌ 禁止される処理</h5>
                           <ul className="space-y-2 ml-4">
-                            <li className="text-white flex items-start gap-3">
+                            <li className="text-slate-50 flex items-start gap-3">
                               <X className="h-4 w-4 text-red-400 mt-1 flex-shrink-0" />
                               <span><strong className="text-red-300">ディストーション、ディレイ</strong>など、元の音を大きく変化させるエフェクト</span>
                             </li>
-                            <li className="text-white flex items-start gap-3">
+                            <li className="text-slate-50 flex items-start gap-3">
                               <X className="h-4 w-4 text-red-400 mt-1 flex-shrink-0" />
                               <span><strong className="text-red-300">音ごとに処理を自動で変える</strong>ような高度な編集</span>
                             </li>
@@ -950,21 +953,21 @@ const PostPage: React.FC = () => {
                       
                       {/* 撮影・録音機材 */}
                       <div className="bg-slate-800 rounded-lg p-5 border border-slate-600">
-                        <h4 className="text-xl font-bold text-white mb-4 flex items-center gap-3">
-                          <Video className="h-5 w-5 text-emerald-400" />
-                          <span className="text-emerald-400">撮影・録音機材</span>
+                        <h4 className="text-xl font-bold text-slate-50 mb-4 flex items-center gap-3">
+                          <Video className="h-5 w-5 text-purple-400" />
+                          <span className="text-purple-400">撮影・録音機材</span>
                         </h4>
                         <div className="space-y-3">
                           <div className="flex items-start gap-3">
                             <CheckCircle className="h-4 w-4 text-emerald-400 mt-1 flex-shrink-0" />
-                            <p className="text-white">
+                            <p className="text-slate-50">
                               <strong className="text-emerald-300">機材</strong>：スマートフォンからプロフェッショナルな機材まで、あらゆる方法を歓迎します。
                             </p>
                           </div>
                           <div className="flex items-start gap-3">
-                            <AlertCircle className="h-4 w-4 text-yellow-400 mt-1 flex-shrink-0" />
-                            <p className="text-white">
-                              <strong className="text-yellow-300">解像度</strong>：4Kでの撮影は、ファイルサイズが大きくなるためお控えください。
+                            <AlertCircle className="h-4 w-4 text-amber-400 mt-1 flex-shrink-0" />
+                            <p className="text-slate-50">
+                              <strong className="text-amber-300">解像度</strong>：4Kでの撮影は、ファイルサイズが大きくなるためお控えください。
                             </p>
                           </div>
                         </div>
