@@ -888,6 +888,31 @@ const PostPage: React.FC = () => {
                   {/* 統一されたガイドラインカード */}
                   <div className="bg-slate-900 backdrop-blur-sm rounded-xl p-6 border border-slate-600 hover:border-cyan-500/30 transition-all hover-lift">
                     <div className="space-y-6">
+                      {/* 動画冒頭の挨拶 */}
+                      <div className="flex items-start gap-3">
+                        <div className="w-3 h-3 bg-amber-400 rounded-full mt-2 flex-shrink-0"></div>
+                        <div>
+                          <h4 className="text-lg font-bold text-slate-50 mb-2">
+                            {t('postPage.guidelines.detailed.greetingRule.title')}<span className="text-amber-400">{t('postPage.guidelines.detailed.greetingRule.value')}</span>
+                          </h4>
+                          <p className="text-sm text-slate-400 mb-3">{t('postPage.guidelines.detailed.greetingRule.description')}</p>
+                          
+                          {/* 例文リスト */}
+                          <div className="bg-slate-800/50 rounded-lg p-3 border border-slate-700">
+                            <p className="text-xs font-semibold text-amber-300 mb-2">{t('postPage.guidelines.detailed.greetingRule.examples.title')}</p>
+                            <ul className="space-y-1">
+                              {(t('postPage.guidelines.detailed.greetingRule.examples.list', { returnObjects: true }) as string[]).map((example, index) => (
+                                <li key={index} className="text-xs text-slate-300 flex items-start gap-2">
+                                  <span className="text-amber-400 mt-0.5">•</span>
+                                  <span>{example}</span>
+                                </li>
+                              ))}
+                            </ul>
+                            <p className="text-xs text-slate-400 mt-2 italic">{t('postPage.guidelines.detailed.greetingRule.examples.note')}</p>
+                          </div>
+                        </div>
+                      </div>
+                      
                       {/* パフォーマンス時間 */}
                       <div className="flex items-start gap-3">
                         <div className="w-3 h-3 bg-blue-400 rounded-full mt-2 flex-shrink-0"></div>

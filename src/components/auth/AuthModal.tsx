@@ -22,6 +22,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   const [mode, setLocalMode] = useState<'login' | 'signup'>(initialMode);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [username, setUsername] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [otpCode, setOtpCode] = useState('');
@@ -76,6 +77,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
     if (mode === 'signup' && password.length < 6) {
       setError(t('auth.passwordRequirement'));
+      setLoading(false);
+      return;
+    }
+
+    if (mode === 'signup' && password !== confirmPassword) {
+      setError(t('auth.passwordMismatch', 'パスワードが一致しません'));
       setLoading(false);
       return;
     }
@@ -260,6 +267,28 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   <p className="text-gray-400 text-sm mt-2">{t('auth.passwordRequirement')}</p>
                 )}
               </div>
+
+              {/* Password Confirmation (Signup only) */}
+              {mode === 'signup' && (
+                <div>
+                  <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-300 mb-2">
+                    {t('auth.confirmPassword', 'パスワード確認')}
+                  </label>
+                  <input
+                    type="password"
+                    id="confirmPassword"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className="w-full px-4 py-3 bg-gray-800/50 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition-colors"
+                    placeholder={t('auth.confirmPasswordPlaceholder', 'パスワードを再入力してください') as string}
+                    required
+                    minLength={6}
+                  />
+                  {confirmPassword && password !== confirmPassword && (
+                    <p className="text-red-400 text-sm mt-2">{t('auth.passwordMismatch', 'パスワードが一致しません')}</p>
+                  )}
+                </div>
+              )}
 
               {/* Country dropdown removed: integrated with phone input */}
 

@@ -920,6 +920,20 @@
       "face": "I understand that showing my face is optional, and showing my mouth area is recommended",
       "appropriate": "I confirm this is my own performance and does not contain prohibited content",
       "detailed": {
+        "greetingRule": {
+          "title": "Opening Greeting: ",
+          "value": "Required",
+          "description": "Before starting your performance, declare your participation in BeatNexus with your voice. You must include the word 'BeatNexus'.",
+          "examples": {
+            "title": "Examples: ",
+            "list": [
+              "\"I'm joining BeatNexus, I'm [your player name]!\"",
+              "\"This is my video for BeatNexus.\"",
+              "\"Shout out to BeatNexus!\""
+            ],
+            "note": "You can say it however you like, but you must include the word 'BeatNexus'."
+          }
+        },
         "performanceTime": {
           "title": "Performance Time: ",
           "value": "1-2 minutes",
@@ -927,7 +941,7 @@
         },
         "performanceFormat": {
           "title": "Performance Format: ",
-          "value": "One-shot recording",
+          "value": "Simultaneous Audio-Video Recording",
           "description": "Video and audio must be recorded simultaneously. Connecting performances with cut editing is prohibited."
         },
         "identityVerification": {

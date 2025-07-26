@@ -995,6 +995,20 @@
       "face": "顔出しは任意で、口元の表示を推奨することを理解しています",
       "appropriate": "これは私自身のパフォーマンスであり、禁止されたコンテンツを含まないことを確認します",
       "detailed": {
+        "greetingRule": {
+          "title": "動画冒頭の挨拶：",
+          "value": "必須",
+          "description": "パフォーマンスを始める前に、あなたの声でBeatNexusへの参加を宣言してください。必ず「BeatNexus」という単語を含めてください。",
+          "examples": {
+            "title": "例文：",
+            "list": [
+              "「BeatNexusに参加します、[あなたのプレイヤー名]です！」",
+              "「This is my video for BeatNexus.」",
+              "「Shout out to BeatNexus！」"
+            ],
+            "note": "言い方は自由ですが、必ず「BeatNexus」という単語を入れてください。"
+          }
+        },
         "performanceTime": {
           "title": "パフォーマンス時間：",
           "value": "1分～2分",
@@ -1002,7 +1016,7 @@
         },
         "performanceFormat": {
           "title": "パフォーマンス形式：",
-          "value": "ノーカット撮影",
+          "value": "音声と映像の同時撮影",
           "description": "映像と音声は同時に録画・録音してください。パフォーマンスをカット編集で繋ぎ合わせることは禁止です。"
         },
         "identityVerification": {
