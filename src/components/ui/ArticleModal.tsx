@@ -39,17 +39,30 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({ news, isOpen, onClos
           );
         }
 
-        // 太字
-        const boldText = line.replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-white">$1</strong>');
+        // 太字（安全な方法で処理）
+        const parts = line.split(/(\*\*.*?\*\*)/g);
         
         // 空行
         if (line.trim() === '') {
           return <br key={index} />;
         }
         
-        // 通常のテキスト
+        // 通常のテキスト（安全にレンダリング）
         return (
-          <p key={index} className="text-gray-300 mb-4 leading-relaxed" dangerouslySetInnerHTML={{ __html: boldText }} />
+          <p key={index} className="text-gray-300 mb-4 leading-relaxed">
+            {parts.map((part, partIndex) => {
+              if (part.startsWith('**') && part.endsWith('**')) {
+                // 太字部分を安全に処理
+                const boldContent = part.slice(2, -2);
+                return (
+                  <strong key={partIndex} className="font-semibold text-white">
+                    {boldContent}
+                  </strong>
+                );
+              }
+              return part;
+            })}
+          </p>
         );
       });
   };

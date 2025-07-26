@@ -15,12 +15,24 @@ import BattlesPage from './BattlesPage';
 import { useRequireAuth } from '../hooks/useRequireAuth';
 import { AuthModal } from '../components/auth/AuthModal';
 import { useTranslation } from 'react-i18next';
+import { useCanonicalUrl, useDynamicMeta } from '../hooks/useSEO';
 
 const HomePage: React.FC = () => {
   const { user } = useAuthStore();
   const navigate = useNavigate();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const { t } = useTranslation();
+
+  // SEO設定
+  useCanonicalUrl({
+    canonicalUrl: 'https://beatnexus.vercel.app/',
+    excludeQueryParams: true
+  });
+
+  useDynamicMeta({
+    title: 'BeatNexus - Beatbox Battle Community',
+    description: 'ビートボクサーのための競技プラットフォーム。動画投稿、自動マッチング、コミュニティ投票でバトルを楽しもう！'
+  });
 
   const requireAuth = useRequireAuth({
     showAuthModal: true,
