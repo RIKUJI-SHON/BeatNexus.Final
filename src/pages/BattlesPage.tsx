@@ -19,7 +19,7 @@ import { getRankColorClasses } from '../utils/rankUtils';
 import { useOnboardingStore } from '../store/onboardingStore';
 import { UserInfoCard } from '../components/ui/UserInfoCard';
 import { TabbedRanking } from '../components/ui/TabbedRanking';
-import { GuestPromptCard } from '../components/ui/GuestPromptCard';
+
 import NewsCarousel from '../components/battle/NewsCarousel';
 
 const BattlesPage: React.FC = () => {
@@ -210,12 +210,7 @@ const BattlesPage: React.FC = () => {
                 {/* ユーザー情報 */}
                 <UserInfoCard />
               </>
-            ) : (
-              <>
-                {/* 未ログインユーザー向けアカウント作成促進 */}
-                <GuestPromptCard onSignUpClick={() => setIsAuthModalOpen(true)} />
-              </>
-            )}
+            ) : null}
           </aside>
 
           {/* Main Content */}
