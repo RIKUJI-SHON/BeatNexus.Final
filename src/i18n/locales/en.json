@@ -1022,7 +1022,7 @@
       "recordingFailed": "Error occurred during recording",
       "processingError": "Processing error",
       "videoProcessingFailed": "Failed to process video file",
-      "fileTooBig": "File size exceeds limit. Current: {{current}}MB (Limit: 200MB)",
+      "fileTooBig": "File size exceeds limit. Current: {{current}}MB (Limit: 2048MB)",
       "compressionFailed": "Automatic compression failed. Please try 'Fast Compression' or 'Simple Method'.",
       "fastCompressionFailed": "Fast compression failed. Please try 'Simple Method' for manual handling.",
       "fileSizeStillLarge": "Compressed file size: {{size}}MB. Further compression needed.",
@@ -1568,11 +1568,11 @@
       },
       "videoFormats": {
         "question": "What video formats are supported?",
-        "answer": "We support MP4, WebM, and MOV formats. File size must be under 200MB. For the best beatbox experience, we recommend recording with high video quality and crystal-clear audio."
+        "answer": "We support MP4, WebM, and MOV formats. File size must be under 2GB. For the best beatbox experience, we recommend recording with high video quality and crystal-clear audio."
       },
       "uploadFailed": {
         "question": "My video upload is failing",
-        "answer": "Check that your file size is under 200MB and format is MP4, WebM, or MOV. Also verify your internet connection and try refreshing your browser."
+        "answer": "Check that your file size is under 2GB and format is MP4, WebM, or MOV. Also verify your internet connection and try refreshing your browser."
       },
       "mobile": {
         "question": "Can I use BeatNexus on mobile?",

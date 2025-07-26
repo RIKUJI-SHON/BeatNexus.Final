@@ -13,8 +13,8 @@ import { trackBeatNexusEvents } from '../utils/analytics';
 import SubmissionModal from '../components/ui/SubmissionModal';
 import { MonthlyLimitCard } from '../components/ui/SubmissionCooldownCard';
 
-// Maximum file size in bytes (200MB)
-const MAX_FILE_SIZE = 200 * 1024 * 1024;
+// Maximum file size in bytes (2GB - 大容量動画対応強化)
+const MAX_FILE_SIZE = 2 * 1024 * 1024 * 1024;
 
 // Function to get video duration
 const getVideoDuration = (file: File): Promise<number> => {
@@ -106,6 +106,7 @@ const PostPage: React.FC = () => {
     processVideo, 
     isLoading: isProcessing, 
     progress, 
+    currentStage: compressionStage,
     isReady: isFFmpegLoaded
   } = useVideoProcessor();
 
@@ -118,6 +119,24 @@ const PostPage: React.FC = () => {
   const [submissionStage, setSubmissionStage] = useState<string>('');
   const [submissionError, setSubmissionError] = useState<string | null>(null);
   const [isSubmissionProcessing, setIsSubmissionProcessing] = useState(false);
+  const [isCompressing, setIsCompressing] = useState(false);
+
+  // モーダル表示用の総合進捗を計算
+  const getModalProgress = () => {
+    if (isCompressing && isProcessing) {
+      // 圧縮中は圧縮の進捗を10-50%にマッピング
+      return 10 + (progress * 0.4); // progress(0-100) を 10-50% にマッピング
+    }
+    return submissionProgress;
+  };
+
+  // モーダル表示用のステージメッセージを計算
+  const getModalStage = () => {
+    if (isCompressing && compressionStage) {
+      return `${t('submissionModal.compressing')} - ${compressionStage}`;
+    }
+    return submissionStage;
+  };
 
   // Redirect if not authenticated
   if (!user) {
@@ -220,24 +239,31 @@ const PostPage: React.FC = () => {
       let finalVideoFile = videoFile;
       
       // ファイルサイズをチェックして、必要に応じて圧縮
-      const compressionThreshold = 200 * 1024 * 1024; // 200MB
+      const compressionThreshold = 300 * 1024 * 1024; // 300MB（大容量ファイル対応）
       
       if (videoFile.size > compressionThreshold) {
         setSubmissionStage(t('submissionModal.compressing'));
         setSubmissionProgress(10);
+        setIsCompressing(true); // 圧縮フラグを設定
         
         try {
-          // 動画処理を実行
+          console.log(`🔄 Starting compression for ${videoFile.name} (${(videoFile.size / 1024 / 1024).toFixed(1)}MB)`);
+          console.log('📋 Current VideoProcessor state:', { isReady: isFFmpegLoaded, isLoading: isProcessing, progress });
+          
+          // 動画処理を実行（プログレス更新を監視）
           const processedResult = await processVideo(videoFile);
+          console.log('🎬 processVideo returned result:', processedResult);
           
           // Blobの場合はFileに変換
           if (processedResult instanceof File) {
             finalVideoFile = processedResult;
           } else {
             // BlobをFileに変換
-            const fileName = videoFile.name.replace(/\.[^/.]+$/, '') + '_processed.mp4';
+            const fileName = videoFile.name.replace(/\.[^/.]+$/, '') + '_compressed.mp4';
             finalVideoFile = new File([processedResult], fileName, { type: 'video/mp4' });
           }
+          
+          console.log(`✅ Compression completed: ${(finalVideoFile.size / 1024 / 1024).toFixed(1)}MB`);
           
           // 圧縮後のファイルサイズチェック
           if (finalVideoFile.size > MAX_FILE_SIZE) {
@@ -246,11 +272,15 @@ const PostPage: React.FC = () => {
             return;
           }
           
+          // 圧縮完了、投稿段階に移行
           setSubmissionProgress(50);
+          setIsCompressing(false); // 圧縮完了
+          setSubmissionStage(t('submissionModal.uploading')); // 次の段階を明示
         } catch (compressionError) {
           console.error('Compression error:', compressionError);
           setSubmissionError(compressionError instanceof Error ? compressionError.message : t('postPage.errors.videoProcessingFailed'));
           setIsSubmissionProcessing(false);
+          setIsCompressing(false); // エラー時も圧縮状態をリセット
           return;
         }
       } else {
@@ -264,7 +294,7 @@ const PostPage: React.FC = () => {
       }
       
       setSubmissionStage(t('submissionModal.uploading'));
-      setSubmissionProgress(60);
+      setSubmissionProgress(65);
       // Upload video to storage
       const fileExt = finalVideoFile.name.split('.').pop();
       const fileName = `${crypto.randomUUID()}.${fileExt}`;
@@ -287,7 +317,7 @@ const PostPage: React.FC = () => {
       }
 
       setSubmissionStage(t('submissionModal.creating'));
-      setSubmissionProgress(75);
+      setSubmissionProgress(80);
 
       // Get video URL
       const { data: { publicUrl } } = supabase.storage
@@ -335,7 +365,7 @@ const PostPage: React.FC = () => {
       const submissionId = submissionResult.submission_id;
 
       setSubmissionStage(t('submissionModal.matching'));
-      setSubmissionProgress(90);
+      setSubmissionProgress(95);
 
       // Call the webhook to trigger matchmaking
       console.log('Calling matchmaking webhook...');
@@ -998,14 +1028,15 @@ const PostPage: React.FC = () => {
         onClose={() => setIsSubmissionModalOpen(false)}
         videoFile={videoFile}
         videoPreviewUrl={videoPreviewUrl}
-        stage={submissionStage}
-        progress={submissionProgress}
+        stage={getModalStage()} // 詳細ステージを使用
+        progress={getModalProgress()} // 統合された進捗値を使用
         isProcessing={isSubmissionProcessing}
         error={submissionError}
         onCancel={() => {
           setIsSubmissionModalOpen(false);
           setIsSubmissionProcessing(false);
           setSubmissionError(null);
+          setIsCompressing(false);
         }}
       />
     </div>

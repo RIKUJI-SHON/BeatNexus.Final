@@ -2,6 +2,9 @@
 -- 作成日: 2025年7月25日19:00
 -- 機能: 関数内でのenum値を正しい大文字形式に修正
 
+-- 古い関数を削除（battle_format型のパラメータを持つもの）
+DROP FUNCTION IF EXISTS public.create_submission_with_cooldown_check(uuid, text, battle_format);
+
 -- 修正されたcreate_submission_with_cooldown_check関数
 CREATE OR REPLACE FUNCTION public.create_submission_with_cooldown_check(
   p_user_id uuid,

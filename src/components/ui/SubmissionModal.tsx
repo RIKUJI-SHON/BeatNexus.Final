@@ -28,36 +28,61 @@ const SubmissionModal: React.FC<SubmissionModalProps> = ({
   const { t } = useTranslation();
   const [startTime, setStartTime] = useState<number | null>(null);
   const [estimatedTimeRemaining, setEstimatedTimeRemaining] = useState<string>('');
+  const [compressionPhase, setCompressionPhase] = useState<boolean>(true);
 
-  // 推定残り時間の計算
+  // 推定残り時間の計算（段階別）
   useEffect(() => {
     if (isProcessing && progress > 0) {
+      // 圧縮段階かどうかを判定
+      const isCompressionStage = stage.includes('圧縮') || stage.includes('メモリ') || stage.includes('FFmpeg');
+      
       if (!startTime) {
         setStartTime(Date.now());
+        setCompressionPhase(isCompressionStage);
         return;
       }
 
       const elapsed = (Date.now() - startTime) / 1000; // 秒
-      const progressRatio = progress / 100;
-      const totalEstimated = elapsed / progressRatio;
-      const remaining = totalEstimated - elapsed;
+      
+      // 圧縮段階から投稿段階に移った場合、時間見積もりをリセット
+      if (compressionPhase && !isCompressionStage && progress > 50) {
+        setStartTime(Date.now());
+        setCompressionPhase(false);
+        // 投稿段階は短時間で完了すると見積もり
+        setEstimatedTimeRemaining('約1分');
+        return;
+      }
+      
+      let remaining = 0;
+      
+      if (isCompressionStage && progress < 50) {
+        // 圧縮段階: 通常の時間計算
+        const progressRatio = progress / 50; // 圧縮は50%まで
+        const totalEstimated = elapsed / progressRatio;
+        remaining = totalEstimated - elapsed;
+      } else {
+        // 投稿段階: 短時間で完了
+        const remainingProgress = 100 - progress;
+        remaining = (remainingProgress / 50) * 60; // 残り50%を最大1分で完了
+      }
 
       if (remaining > 0) {
         if (remaining < 60) {
-          setEstimatedTimeRemaining(t('submissionModal.estimatedTime.seconds', { seconds: Math.round(remaining) }));
+          setEstimatedTimeRemaining(`約${Math.max(Math.round(remaining), 10)}秒`);
         } else {
           const minutes = Math.floor(remaining / 60);
-          const seconds = Math.round(remaining % 60);
-          setEstimatedTimeRemaining(t('submissionModal.estimatedTime.minutes', { minutes, seconds }));
+          setEstimatedTimeRemaining(`約${minutes}分`);
         }
       } else {
-        setEstimatedTimeRemaining(t('submissionModal.estimatedTime.almostDone'));
+        setEstimatedTimeRemaining('まもなく完了');
       }
     } else {
+      // 処理が完了または開始前
       setStartTime(null);
       setEstimatedTimeRemaining('');
+      setCompressionPhase(true);
     }
-  }, [isProcessing, progress, startTime, t]);
+  }, [isProcessing, progress, stage, startTime, compressionPhase]);
 
   // ブラウザ離脱防止
   useEffect(() => {
@@ -163,7 +188,19 @@ const SubmissionModal: React.FC<SubmissionModalProps> = ({
               {estimatedTimeRemaining && (
                 <div className="flex items-center gap-2 text-sm text-slate-400">
                   <Clock className="h-4 w-4" />
-                  <span>{t('submissionModal.estimatedRemaining')}: {estimatedTimeRemaining}</span>
+                  <span>推定残り時間: {estimatedTimeRemaining}</span>
+                </div>
+              )}
+              
+              {/* 大容量ファイル用の案内 */}
+              {videoFile && videoFile.size > 800 * 1024 * 1024 && stage.includes('圧縮') && (
+                <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-3 backdrop-blur-sm">
+                  <div className="flex items-start gap-2">
+                    <Clock className="h-4 w-4 text-blue-400 mt-0.5 flex-shrink-0" />
+                    <div className="text-sm text-blue-200">
+                      大容量ファイルのため圧縮に時間がかかります。ブラウザを閉じずにお待ちください。
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
