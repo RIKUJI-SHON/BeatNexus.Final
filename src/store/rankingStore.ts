@@ -88,10 +88,20 @@ export const useRankingStore = create<RankingState>((set, get) => ({
 
       if (error) throw error;
 
-      const rankingsWithPosition = (data || []).map((entry: any, index: number) => {
+      // RANK()相当の順位計算（同ポイント時は同順位）
+      const sortedData = [...(data || [])];
+      const rankingsWithPosition = sortedData.map((entry: any) => {
         const rankInfo = getRankFromRating(entry.rating);
         const totalBattles = entry.battles_won + entry.battles_lost;
         const winRate = totalBattles > 0 ? (entry.battles_won / totalBattles) * 100 : 0;
+        
+        // 同じレーティングを持つエントリより高いレーティングのエントリ数 + 1 = 順位
+        let position = 1;
+        for (let i = 0; i < sortedData.length; i++) {
+          if (sortedData[i].rating > entry.rating) {
+            position++;
+          }
+        }
         
         return {
           user_id: entry.user_id,
@@ -104,7 +114,7 @@ export const useRankingStore = create<RankingState>((set, get) => ({
           battles_won: entry.battles_won,
           battles_lost: entry.battles_lost,
           win_rate: winRate,
-          position: index + 1
+          position: position
         } as RankingEntry;
       });
 
@@ -128,9 +138,19 @@ export const useRankingStore = create<RankingState>((set, get) => ({
 
       if (error) throw error;
 
-      const voterRankingsWithPosition = (data || []).map((entry: any, index: number) => {
+      // RANK()相当の順位計算（同ポイント時は同順位）
+      const sortedData = [...(data || [])];
+      const voterRankingsWithPosition = sortedData.map((entry: any) => {
         // voter_rankings_viewのidをuser_idにマッピング
         const rankInfo = getRankFromRating(1200); // 投票者にはデフォルトランクを設定
+        
+        // 同じ投票数を持つエントリより高い投票数のエントリ数 + 1 = 順位
+        let position = 1;
+        for (let i = 0; i < sortedData.length; i++) {
+          if (sortedData[i].vote_count > entry.vote_count) {
+            position++;
+          }
+        }
         
         return {
           user_id: entry.id,
@@ -142,7 +162,7 @@ export const useRankingStore = create<RankingState>((set, get) => ({
           rank_color: rankInfo.color,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
-          position: index + 1
+          position: position
         } as VoterRankingEntry;
       });
 
@@ -194,10 +214,22 @@ export const useRankingStore = create<RankingState>((set, get) => ({
 
       if (error) throw error;
 
-      const seasonRankingsWithPosition = (data || []).map((entry, index) => ({
-        ...entry,
-        position: index + 1
-      }));
+      // RANK()相当の順位計算（同ポイント時は同順位）
+      const sortedData = [...(data || [])];
+      const seasonRankingsWithPosition = sortedData.map((entry) => {
+        // 同じシーズンポイントを持つエントリより高いポイントのエントリ数 + 1 = 順位
+        let position = 1;
+        for (let i = 0; i < sortedData.length; i++) {
+          if (sortedData[i].season_points > entry.season_points) {
+            position++;
+          }
+        }
+        
+        return {
+          ...entry,
+          position: position
+        };
+      });
 
       set({ seasonRankings: seasonRankingsWithPosition });
     } catch (error) {

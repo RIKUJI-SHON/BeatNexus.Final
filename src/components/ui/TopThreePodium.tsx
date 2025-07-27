@@ -55,7 +55,7 @@ export const TopThreePodium: React.FC<TopThreePodiumProps> = ({
   for (const position of sortedPositions) {
     const entriesAtPosition = positionGroups[position];
     for (const entry of entriesAtPosition) {
-      if (displayCount < 3) {
+      if (displayCount < 5 && position <= 3) { // 最大5人まで、3位以内のみ
         // 表彰台の表示順：2位、1位、3位の順で配置
         if (position === 2 && displayCount === 0) {
           podiumOrder.unshift(entry); // 2位を最初に配置
@@ -77,8 +77,8 @@ export const TopThreePodium: React.FC<TopThreePodiumProps> = ({
     const finalOrder = [];
     
     // 2位を探して最初に配置
-    const secondPlaceEntry = podiumOrder.find(entry => getPosition(entry) === 2);
-    if (secondPlaceEntry) finalOrder.push(secondPlaceEntry);
+    const secondPlaceEntries = podiumOrder.filter(entry => getPosition(entry) === 2);
+    finalOrder.push(...secondPlaceEntries);
     
     // 1位を中央に配置
     const firstPlaceEntries = podiumOrder.filter(entry => getPosition(entry) === 1);
@@ -88,9 +88,9 @@ export const TopThreePodium: React.FC<TopThreePodiumProps> = ({
     const remainingEntries = podiumOrder.filter(entry => getPosition(entry) !== 1 && getPosition(entry) !== 2);
     finalOrder.push(...remainingEntries);
     
-    // 最大3人まで表示
+    // 同率順位対応：最大5人まで表示
     podiumOrder.length = 0;
-    podiumOrder.push(...finalOrder.slice(0, 3));
+    podiumOrder.push(...finalOrder.slice(0, 5));
   }
 
   const getPositionConfig = (position: number) => {

@@ -260,9 +260,6 @@ const RankingPage: React.FC = () => {
     entry.username.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // 🏆 NEW: Top 3 extraction for highlight display
-  const topThree = filteredData.slice(0, 3);
-
   // Type guards and utility functions
   const isVoterEntry = (entry: unknown): entry is VoterRankingEntry => {
     return typeof entry === 'object' && entry !== null && 'vote_count' in entry && typeof (entry as VoterRankingEntry).vote_count === 'number';
@@ -297,6 +294,9 @@ const RankingPage: React.FC = () => {
     }
     return '';
   };
+
+  // 🏆 Top 3 extraction for highlight display (同率順位対応)
+  const topThree = filteredData.filter(entry => getPosition(entry) <= 3);
 
   const getRatingOrSeasonPoints = (entry: unknown): number => {
     if (activeTab === 'player') {
@@ -727,7 +727,10 @@ const RankingPage: React.FC = () => {
                   </div>
                 ) : (
                   <>
-                    {filteredData.slice(3, 15).map((entry) => {
+                    {filteredData
+                      .filter(entry => getPosition(entry) > 3)
+                      .slice(0, 12)
+                      .map((entry) => {
                       const isTopThree = getPosition(entry) <= 3;
                       
                       return (
