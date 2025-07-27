@@ -255,16 +255,20 @@ export const useRankingStore = create<RankingState>((set, get) => ({
   },
 
   fetchHistoricalSeasonVoterRankings: async (seasonId: string) => {
+    console.log('[DEBUG] fetchHistoricalSeasonVoterRankings called with:', seasonId);
     set({ historicalVoterLoading: true, historicalVoterError: null });
     try {
       const { data, error } = await supabase.rpc('get_season_voter_rankings_by_id', {
         p_season_id: seasonId
       });
 
+      console.log('[DEBUG] fetchHistoricalSeasonVoterRankings response:', { data, error });
+
       if (error) throw error;
 
       set({ historicalSeasonVoterRankings: data || [] });
     } catch (error) {
+      console.error('[ERROR] fetchHistoricalSeasonVoterRankings:', error);
       set({ historicalVoterError: error instanceof Error ? error.message : 'Failed to fetch historical season voter rankings' });
     } finally {
       set({ historicalVoterLoading: false });

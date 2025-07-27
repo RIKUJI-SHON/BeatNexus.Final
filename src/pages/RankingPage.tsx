@@ -102,6 +102,8 @@ const RankingPage: React.FC = () => {
   };
 
   const handleSeasonSelect = (seasonId: string | 'all_time') => {
+    console.log('[DEBUG] Season selected:', { seasonId, currentSeasonId: currentSeason?.id });
+    
     if (seasonId === 'all_time') {
       // All Time選択時
       handleRankingTypeChange('all_time');
@@ -114,6 +116,7 @@ const RankingPage: React.FC = () => {
       
       // 過去のシーズンを選択した場合、履歴データを取得
       if (seasonId !== currentSeason?.id) {
+        console.log('[DEBUG] Fetching historical data for season:', seasonId);
         fetchHistoricalSeasonRankings(seasonId);
         fetchHistoricalSeasonVoterRankings(seasonId);
       }
@@ -166,6 +169,22 @@ const RankingPage: React.FC = () => {
           console.log('[DEBUG] Returning seasonVoterRankings:', seasonVoterRankings);
           return seasonVoterRankings;
         } else {
+          console.log('[DEBUG] Historical voter rankings:', {
+            historicalSeasonVoterRankings,
+            mappedData: historicalSeasonVoterRankings.map(entry => ({
+              user_id: entry.user_id,
+              username: entry.username,
+              avatar_url: entry.avatar_url,
+              vote_count: entry.votes,
+              position: entry.rank,
+              rating: 0,
+              rank_name: 'Historical',
+              rank_color: 'gray',
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+            }))
+          });
+          
           return historicalSeasonVoterRankings.map(entry => ({
             user_id: entry.user_id,
             username: entry.username,
