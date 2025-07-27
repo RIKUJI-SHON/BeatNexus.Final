@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Battle } from '../../types';
 import { BattleCommentsModal } from '../ui/BattleCommentsModal';
-import { Clock, Crown, MessageSquare, ThumbsUp } from 'lucide-react';
+import { Clock, Crown, MessageSquare } from 'lucide-react';
 import { VSIcon } from '../ui/VSIcon';
 import { RatingChangeDisplay } from '../ui/RatingChangeDisplay';
 import { format } from 'date-fns';
@@ -144,7 +144,7 @@ export const SpecialBattleCard: React.FC<SpecialBattleCardProps> = ({ battle }) 
     color, 
     isWinner, 
     defaultNameKey, 
-    userId,
+    _userId,
     currentRating,
     ratingLoading
   }: {

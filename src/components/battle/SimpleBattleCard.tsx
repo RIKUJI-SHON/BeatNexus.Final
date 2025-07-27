@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Battle } from '../../types';
 import { VoteButton } from '../ui/VoteButton';
 import { BattleCommentsModal } from '../ui/BattleCommentsModal';
-import { Clock, Crown, MessageSquare, ThumbsUp } from 'lucide-react';
+import { Clock, Crown, MessageSquare } from 'lucide-react';
 import { VSIcon } from '../ui/VSIcon';
 import { RatingChangeDisplay } from '../ui/RatingChangeDisplay';
 import { format } from 'date-fns';

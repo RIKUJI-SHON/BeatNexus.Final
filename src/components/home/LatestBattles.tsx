@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, Trophy, Crown, ArrowRight, Users, Mic, Medal, Star } from 'lucide-react';
+import { Plus, Trophy, ArrowRight, Mic } from 'lucide-react';
 import { BattleCard } from '../battle/BattleCard';
 import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';

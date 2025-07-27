@@ -2,15 +2,12 @@ import React, { useMemo } from 'react';
 import { ArchivedBattle, Battle } from '../../types';
 import { SimpleBattleCard } from './SimpleBattleCard';
 import { SpecialBattleCard } from './SpecialBattleCard';
-import { useTranslation } from 'react-i18next';
 
 interface ArchivedBattleCardProps {
   battle: ArchivedBattle;
 }
 
 export const ArchivedBattleCard: React.FC<ArchivedBattleCardProps> = ({ battle }) => {
-  const { t } = useTranslation();
-
   const totalVotes = useMemo(() => {
     return (battle.final_votes_a || 0) + (battle.final_votes_b || 0);
   }, [battle.final_votes_a, battle.final_votes_b]);
