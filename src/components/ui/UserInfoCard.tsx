@@ -46,8 +46,8 @@ export const UserInfoCard: React.FC = () => {
     try {
       const { data: voterData, error } = await supabase
         .from('season_voter_rankings_view')
-        .select('position')
-        .eq('user_id', user.id)
+        .select('rank')
+        .eq('id', user.id)
         .single();
 
       if (error && error.code !== 'PGRST116') {
@@ -55,7 +55,7 @@ export const UserInfoCard: React.FC = () => {
         return;
       }
 
-      setVoterRank(voterData?.position || 0);
+      setVoterRank(voterData?.rank || 0);
     } catch (error) {
       console.error('Error in fetchVoterRank:', error);
     }

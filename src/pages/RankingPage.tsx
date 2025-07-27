@@ -7,7 +7,7 @@ import { useRankingStore } from '../store/rankingStore';
 import { useTranslation } from 'react-i18next';
 import { trackBeatNexusEvents } from '../utils/analytics';
 import { getDefaultAvatarUrl } from '../utils';
-import { VoterRankingEntry, SeasonRankingEntry, RankingType, VoterRankingType } from '../types';
+import { VoterRankingEntry, SeasonRankingEntry, SeasonVoterRankingEntry, RankingType, VoterRankingType } from '../types';
 
 type TabType = 'player' | 'voter';
 
@@ -63,16 +63,22 @@ const RankingPage: React.FC = () => {
   const [showSeasonDropdown, setShowSeasonDropdown] = useState(false);
 
   useEffect(() => {
-    // 初期データ取得
-    fetchSeasons();
-    fetchRankings();
-    fetchVoterRankings();
-    fetchSeasonRankings();
-    fetchSeasonVoterRankings();
+    // 初期データ取得（シーズン情報を最初に取得してから他のデータを取得）
+    const initializeData = async () => {
+      await fetchSeasons(); // シーズン情報を最初に取得
+      await Promise.all([
+        fetchRankings(),
+        fetchVoterRankings(),
+        fetchSeasonRankings(),
+        fetchSeasonVoterRankings()
+      ]);
+    };
+    
+    initializeData();
     
     // Track initial ranking view
     trackBeatNexusEvents.rankingView('rating');
-  }, []); // 空の依存配列で1回だけ実行
+  }, [fetchSeasons, fetchRankings, fetchVoterRankings, fetchSeasonRankings, fetchSeasonVoterRankings]); // 依存配列を追加
 
   const handleTabChange = (isChecked: boolean) => {
     const newTab = isChecked ? 'voter' : 'player';
@@ -117,6 +123,15 @@ const RankingPage: React.FC = () => {
 
   // 現在表示するデータを決定
   const getCurrentData = () => {
+    console.log('[DEBUG] getCurrentData - Current state:', {
+      activeTab,
+      activeVoterRankingType,
+      currentSeason: currentSeason?.name,
+      selectedSeasonId,
+      seasonVoterRankings: seasonVoterRankings.length,
+      voterRankings: voterRankings.length
+    });
+
     if (activeTab === 'player') {
       const rankingType = activeRankingType;
       if (rankingType === 'current_season') {
@@ -139,8 +154,16 @@ const RankingPage: React.FC = () => {
       }
     } else {
       const voterRankingType = activeVoterRankingType;
+      console.log('[DEBUG] Voter ranking logic:', {
+        voterRankingType,
+        isCurrentSeason: voterRankingType === 'current_season',
+        seasonMatch: selectedSeasonId === currentSeason?.id,
+        noSelectedSeason: !selectedSeasonId
+      });
+      
       if (voterRankingType === 'current_season') {
         if (selectedSeasonId === currentSeason?.id || !selectedSeasonId) {
+          console.log('[DEBUG] Returning seasonVoterRankings:', seasonVoterRankings);
           return seasonVoterRankings;
         } else {
           return historicalSeasonVoterRankings.map(entry => ({
@@ -157,6 +180,7 @@ const RankingPage: React.FC = () => {
           }));
         }
       } else {
+        console.log('[DEBUG] Returning voterRankings:', voterRankings);
         return voterRankings;
       }
     }
@@ -229,24 +253,46 @@ const RankingPage: React.FC = () => {
   const topThree = filteredData.slice(0, 3);
 
   // Type guards and utility functions
-  const isVoterEntry = (entry: any): entry is VoterRankingEntry => {
-    return 'vote_count' in entry && typeof entry.vote_count === 'number';
+  const isVoterEntry = (entry: unknown): entry is VoterRankingEntry => {
+    return typeof entry === 'object' && entry !== null && 'vote_count' in entry && typeof (entry as VoterRankingEntry).vote_count === 'number';
   };
 
-  const isSeasonRankingEntry = (entry: any): entry is SeasonRankingEntry => {
-    return 'season_points' in entry && typeof entry.season_points === 'number';
+  const isSeasonVoterEntry = (entry: unknown): entry is SeasonVoterRankingEntry => {
+    return typeof entry === 'object' && entry !== null && 'season_vote_points' in entry && typeof (entry as SeasonVoterRankingEntry).season_vote_points === 'number';
   };
 
-  const getVoteCount = (entry: any): number => {
-    return isVoterEntry(entry) ? entry.vote_count : 0;
+  const isSeasonRankingEntry = (entry: unknown): entry is SeasonRankingEntry => {
+    return typeof entry === 'object' && entry !== null && 'season_points' in entry && typeof (entry as SeasonRankingEntry).season_points === 'number';
   };
 
-  const getRatingOrSeasonPoints = (entry: any): number => {
+  const getVoteCount = (entry: unknown): number => {
+    if (isVoterEntry(entry)) return entry.vote_count;
+    if (isSeasonVoterEntry(entry)) return entry.season_vote_points;
+    return 0;
+  };
+
+  const getPosition = (entry: unknown): number => {
+    if (typeof entry === 'object' && entry !== null) {
+      if ('position' in entry) return (entry as { position: number }).position;
+      if ('rank' in entry) return (entry as { rank: number }).rank;
+    }
+    return 0;
+  };
+
+  const getUserId = (entry: unknown): string => {
+    if (typeof entry === 'object' && entry !== null) {
+      if ('user_id' in entry) return (entry as { user_id: string }).user_id;
+      if ('id' in entry) return (entry as { id: string }).id;
+    }
+    return '';
+  };
+
+  const getRatingOrSeasonPoints = (entry: unknown): number => {
     if (activeTab === 'player') {
       if (activeRankingType === 'current_season') {
         return isSeasonRankingEntry(entry) ? entry.season_points : 0;
       } else {
-        return entry.rating || 0;
+        return typeof entry === 'object' && entry !== null && 'rating' in entry ? (entry as { rating: number }).rating : 0;
       }
     } else {
       return getVoteCount(entry);
@@ -619,6 +665,8 @@ const RankingPage: React.FC = () => {
               getVoteCount={getVoteCount}
               getRatingColor={getRatingColor}
               getVoteCountColor={getVoteCountColor}
+              getPosition={getPosition}
+              getUserId={getUserId}
             />
           )}
 
@@ -661,12 +709,12 @@ const RankingPage: React.FC = () => {
                 ) : (
                   <>
                     {filteredData.slice(3, 15).map((entry) => {
-                      const isTopThree = entry.position <= 3;
+                      const isTopThree = getPosition(entry) <= 3;
                       
                       return (
                     <Link 
-                      key={entry.user_id} 
-                      to={`/profile/${entry.user_id}`}
+                      key={getUserId(entry)} 
+                      to={`/profile/${getUserId(entry)}`}
                       className={`block px-4 py-4 transition-colors group ${
                         activeTab === 'player' 
                           ? 'hover:bg-cyan-500/5' 
@@ -682,7 +730,7 @@ const RankingPage: React.FC = () => {
                       <div className="grid grid-cols-10 gap-4 items-center">
                         {/* ランク */}
                         <div className="col-span-2 text-center">
-                          {getPositionDisplay(entry.position)}
+                          {getPositionDisplay(getPosition(entry))}
                         </div>
                         
                         {/* ユーザー情報 */}

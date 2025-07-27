@@ -213,11 +213,11 @@ export const useRankingStore = create<RankingState>((set, get) => ({
       const { data, error } = await supabase
         .from('season_voter_rankings_view')
         .select('*')
-        .order('vote_count', { ascending: false });
+        .order('season_vote_points', { ascending: false });
 
       if (error) throw error;
 
-      // ビューが既にpositionを含んでいるため、そのまま使用
+      // ビューが既にrankを含んでいるため、そのまま使用
       set({ seasonVoterRankings: data || [] });
     } catch (error) {
       set({ seasonVoterError: error instanceof Error ? error.message : 'Failed to fetch season voter rankings' });

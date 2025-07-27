@@ -11,6 +11,8 @@ interface TopThreePodiumProps {
   getVoteCount: (entry: any) => number;
   getRatingColor: (rating: number) => string;
   getVoteCountColor: (voteCount: number) => string;
+  getPosition: (entry: any) => number;
+  getUserId: (entry: any) => string;
 }
 
 export const TopThreePodium: React.FC<TopThreePodiumProps> = ({
@@ -20,6 +22,8 @@ export const TopThreePodium: React.FC<TopThreePodiumProps> = ({
   getVoteCount,
   getRatingColor,
   getVoteCountColor,
+  getPosition,
+  getUserId,
 }) => {
   const { t } = useTranslation();
 
@@ -29,15 +33,15 @@ export const TopThreePodium: React.FC<TopThreePodiumProps> = ({
   const podiumOrder = [];
   
   // 2位があれば追加
-  const secondPlace = topThree.find(entry => entry.position === 2);
+  const secondPlace = topThree.find(entry => getPosition(entry) === 2);
   if (secondPlace) podiumOrder.push(secondPlace);
   
   // 1位は必ず追加（存在する場合）
-  const firstPlace = topThree.find(entry => entry.position === 1);
+  const firstPlace = topThree.find(entry => getPosition(entry) === 1);
   if (firstPlace) podiumOrder.push(firstPlace);
   
   // 3位があれば追加
-  const thirdPlace = topThree.find(entry => entry.position === 3);
+  const thirdPlace = topThree.find(entry => getPosition(entry) === 3);
   if (thirdPlace) podiumOrder.push(thirdPlace);
   
   // 上記で見つからない場合は、positionでソートして上位を表示
@@ -106,26 +110,26 @@ export const TopThreePodium: React.FC<TopThreePodiumProps> = ({
 
 
         <div className="flex justify-center items-end gap-4 sm:gap-6 md:gap-8">
-          {podiumOrder.map((entry, index) => {
+          {podiumOrder.map((entry) => {
             if (!entry) return null;
             
-            const config = getPositionConfig(entry.position);
+            const position = getPosition(entry);
+            const config = getPositionConfig(position);
             if (!config) return null;
 
-            const Icon = config.icon;
             const isPlayerTab = activeTab === 'player';
 
             return (
               <Link
-                key={`podium-${entry.user_id}`}
-                to={`/profile/${entry.user_id}`}
+                key={`podium-${getUserId(entry)}`}
+                to={`/profile/${getUserId(entry)}`}
                 className={`relative flex flex-col items-center p-3 sm:p-4 w-28 sm:w-32 md:w-36 ${config.height} rounded-2xl bg-gradient-to-br ${config.bgGradient} border-2 ${config.borderColor} backdrop-blur-sm transition-all duration-300 ${config.transform} ${config.shadowColor} shadow-xl group ${config.pulse}`}
               >
                 {/* ランキングアイコン */}
                 <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 z-10">
                   <img
                     src={config.rankImage}
-                    alt={`${entry.position}位`}
+                    alt={`${position}位`}
                     className="w-12 h-12 object-contain drop-shadow-lg"
                   />
                 </div>
@@ -136,7 +140,7 @@ export const TopThreePodium: React.FC<TopThreePodiumProps> = ({
                     src={entry.avatar_url || getDefaultAvatarUrl()}
                     alt={entry.username}
                     className="w-16 h-16 object-cover"
-                    onError={(e) => {
+                    onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
                       const target = e.target as HTMLImageElement;
                       if (target.src !== getDefaultAvatarUrl()) {
                         target.src = getDefaultAvatarUrl();

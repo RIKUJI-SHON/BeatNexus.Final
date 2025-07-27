@@ -348,16 +348,11 @@ export interface SeasonRankingEntry {
 }
 
 export interface SeasonVoterRankingEntry {
-  user_id: string;
+  id: string; // user_id → id に変更
   username: string;
   avatar_url: string | null;
-  vote_count: number; // これはseason_vote_pointsの値
-  rating: number;
-  rank_name: string;
-  rank_color: string;
-  created_at: string;
-  updated_at: string;
-  position: number;
+  season_vote_points: number; // vote_count → season_vote_points に変更
+  rank: number; // position → rank に変更
 }
 
 export interface HistoricalSeasonRanking {

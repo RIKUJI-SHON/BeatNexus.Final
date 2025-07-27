@@ -125,16 +125,16 @@ export const TabbedRanking: React.FC<TabbedRankingProps> = ({
     
     return (
     <Link 
-      key={entry.user_id}
-      to={`/profile/${entry.user_id}`}
+      key={entry.id}
+      to={`/profile/${entry.id}`}
       className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800/30 transition-all duration-300 group"
     >
       <div className="flex items-center justify-center w-8 h-8">
-        {getPositionIcon(entry.position)}
+        {getPositionIcon(entry.rank)}
       </div>
       
       <img
-        src={entry.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${entry.user_id}`}
+        src={entry.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${entry.id}`}
         alt={entry.username}
         className="w-10 h-10 rounded-lg object-cover border border-gray-600/50 group-hover:border-purple-500/50 transition-colors"
       />
@@ -146,8 +146,8 @@ export const TabbedRanking: React.FC<TabbedRankingProps> = ({
           >
           {entry.username}
         </div>
-        <div className={`text-sm font-bold ${getVoteCountColor(entry.vote_count)}`}>
-            {`${entry.vote_count * 100} VP`}
+        <div className={`text-sm font-bold ${getVoteCountColor(entry.season_vote_points)}`}>
+            {`${entry.season_vote_points * 100} VP`}
         </div>
       </div>
     </Link>
