@@ -2,14 +2,12 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Plus, Trophy, ArrowRight, Mic } from 'lucide-react';
 import { BattleCard } from '../battle/BattleCard';
-import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';
 import { Card } from '../ui/Card';
 import { TabbedRanking } from '../ui/TabbedRanking';
 import { useRankingStore } from '../../store/rankingStore';
 import { useBattleStore } from '../../store/battleStore';
 import { useTranslation } from 'react-i18next';
-import { getRankColorClasses } from '../../utils/rankUtils';
 
 const LatestBattles: React.FC = () => {
   const { t } = useTranslation();

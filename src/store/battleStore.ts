@@ -58,61 +58,42 @@ export const useBattleStore = create<BattleState>((set, get) => ({
   fetchBattles: async () => {
     set({ loading: true, error: null });
     try {
-      console.log('=== DEBUGGING BATTLE FETCH ===');
-      console.log('Fetching battles from active_battles table...');
-      
-      // まず基本的なテーブル確認
-      const { data: tableCheck, error: tableError } = await supabase
-        .from('active_battles')
-        .select('id, status, battle_format')
-        .limit(5);
-      
-      console.log('Table check result:', tableCheck);
-      if (tableError) {
-        console.error('Table check error:', tableError);
-        throw new Error(`テーブルアクセスエラー: ${tableError.message}`);
-      }
-      
-      // プロフィールテーブル確認
-      const { data: profileCheck, error: profileError } = await supabase
-        .from('profiles')
-        .select('id, username')
-        .limit(3);
-      
-      console.log('Profile table check:', profileCheck);
-      if (profileError) {
-        console.error('Profile check error:', profileError);
-        throw new Error(`プロフィールテーブルエラー: ${profileError.message}`);
-      }
-      
-      // サブミッションテーブル確認
-      const { data: submissionCheck, error: submissionError } = await supabase
-        .from('submissions')
-        .select('id, user_id, video_url')
-        .limit(3);
-      
-      console.log('Submission table check:', submissionCheck);
-      if (submissionError) {
-        console.error('Submission check error:', submissionError);
-        throw new Error(`サブミッションテーブルエラー: ${submissionError.message}`);
-      }
-      
-      console.log('=== ALL TABLES ACCESSIBLE ===');
-      
-      // Step 1: シンプルなactive_battlesクエリ
+      // 効率的な単一クエリでバトルデータとプレイヤー情報を取得
       const { data: battlesData, error: battlesError } = await supabase
         .from('active_battles')
         .select(`
           id,
           player1_submission_id,
           player2_submission_id,
+          player1_user_id,
+          player2_user_id,
           battle_format,
           status,
           votes_a,
           votes_b,
           end_voting_at,
           created_at,
-          updated_at
+          updated_at,
+          player1:profiles!player1_user_id(
+            id,
+            username,
+            avatar_url,
+            rating
+          ),
+          player2:profiles!player2_user_id(
+            id,
+            username,
+            avatar_url,
+            rating
+          ),
+          submission1:submissions!player1_submission_id(
+            id,
+            video_url
+          ),
+          submission2:submissions!player2_submission_id(
+            id,
+            video_url
+          )
         `)
         .eq('status', 'ACTIVE')
         .order('created_at', { ascending: false });
@@ -122,135 +103,54 @@ export const useBattleStore = create<BattleState>((set, get) => ({
         throw battlesError;
       }
 
-      console.log('Raw battles data:', battlesData);
-
-      if (!battlesData || battlesData.length === 0) {
-        console.log('No active battles found');
-        set({ battles: [], activeBattles: [] });
-        return;
-      }
-
-      // Step 2: 関連するsubmissionのIDを取得
-      const submissionIds = battlesData.flatMap(battle => [
-        battle.player1_submission_id, 
-        battle.player2_submission_id
-      ]);
-
-      // Step 3: submissionsデータを取得
-      const { data: submissionsData, error: submissionsError } = await supabase
-        .from('submissions')
-        .select('id, user_id, video_url')
-        .in('id', submissionIds);
-
-      if (submissionsError) {
-        console.error('Submissions query error:', submissionsError);
-        throw submissionsError;
-      }
-
-      // Step 4: ユーザーIDを取得
-      const userIds = submissionsData?.map(sub => sub.user_id) || [];
-
-      // Step 5: profilesデータを取得
-      const { data: profilesData, error: profilesError } = await supabase
-        .from('profiles')
-        .select('id, username, avatar_url')
-        .in('id', userIds);
-
-      if (profilesError) {
-        console.error('Profiles query error:', profilesError);
-        throw profilesError;
-      }
-
-      console.log('Submissions data:', submissionsData);
-      console.log('Profiles data:', profilesData);
-
-      // Step 6: データを変換（JavaScript側で結合）
-      const transformedBattles = battlesData.map((battle: any) => {
-        const player1Submission = submissionsData?.find(sub => sub.id === battle.player1_submission_id);
-        const player2Submission = submissionsData?.find(sub => sub.id === battle.player2_submission_id);
-        const player1 = profilesData?.find(profile => profile.id === player1Submission?.user_id);
-        const player2 = profilesData?.find(profile => profile.id === player2Submission?.user_id);
-
-        return {
-          id: battle.id,
-          player1_submission_id: battle.player1_submission_id,
-          player2_submission_id: battle.player2_submission_id,
-          player1_user_id: player1Submission?.user_id || '',
-          player2_user_id: player2Submission?.user_id || '',
-          contestant_a_id: player1Submission?.user_id || null,
-          contestant_b_id: player2Submission?.user_id || null,
-          battle_format: battle.battle_format,
-          status: battle.status.toLowerCase(),
-          votes_a: battle.votes_a || 0,
-          votes_b: battle.votes_b || 0,
-          end_voting_at: battle.end_voting_at,
-          created_at: battle.created_at,
-          updated_at: battle.updated_at || battle.created_at,
-          contestant_a: player1 ? {
-            username: player1.username,
-            avatar_url: player1.avatar_url
-          } : undefined,
-          contestant_b: player2 ? {
-            username: player2.username,
-            avatar_url: player2.avatar_url
-          } : undefined,
-          video_url_a: player1Submission?.video_url,
-          video_url_b: player2Submission?.video_url
-        };
-      });
-
-      console.log('Transformed battles:', transformedBattles);
+      // データ変換を最適化
+      const transformedBattles = battlesData?.map(battle => ({
+        id: battle.id,
+        player1_submission_id: battle.player1_submission_id,
+        player2_submission_id: battle.player2_submission_id,
+        player1_user_id: battle.player1_user_id,
+        player2_user_id: battle.player2_user_id,
+        battle_format: battle.battle_format,
+        status: battle.status,
+        votes_a: battle.votes_a,
+        votes_b: battle.votes_b,
+        end_voting_at: battle.end_voting_at,
+        created_at: battle.created_at,
+        updated_at: battle.updated_at,
+        contestant_a: battle.player1 ? {
+          id: battle.player1.id,
+          username: battle.player1.username,
+          avatar_url: battle.player1.avatar_url,
+          rating: battle.player1.rating
+        } : null,
+        contestant_b: battle.player2 ? {
+          id: battle.player2.id,
+          username: battle.player2.username,
+          avatar_url: battle.player2.avatar_url,
+          rating: battle.player2.rating
+        } : null,
+        video_a: battle.submission1?.video_url,
+        video_b: battle.submission2?.video_url
+      })) || [];
 
       set({ 
-        battles: transformedBattles,
-        activeBattles: transformedBattles
+        battles: transformedBattles, 
+        activeBattles: transformedBattles, 
+        loading: false 
       });
     } catch (error) {
       console.error('Error fetching battles:', error);
-      set({ error: error instanceof Error ? error.message : 'Failed to fetch battles' });
-    } finally {
-      set({ loading: false });
+      set({ 
+        error: error instanceof Error ? error.message : 'バトルの取得に失敗しました', 
+        loading: false 
+      });
     }
+  fetchActiveBattles: async () => {
+    // fetchBattlesと重複するため、fetchBattlesを呼び出す
+    await get().fetchBattles();
   },
 
-  fetchActiveBattles: async () => {
-    set({ loading: true, error: null });
-    try {
-      // Step 1: Fetch active battles
-      const { data: battlesData, error: battlesError } = await supabase
-        .from('active_battles')
-        .select(`
-          id,
-          player1_submission_id,
-          player2_submission_id,
-          battle_format,
-          status,
-          votes_a,
-          votes_b,
-          end_voting_at,
-          created_at,
-          updated_at
-        `)
-        .eq('status', 'ACTIVE')
-        .order('created_at', { ascending: false });
-
-      if (battlesError) {
-        console.error('Error fetching active_battles entries:', battlesError);
-        throw battlesError;
-      }
-
-      if (!battlesData || battlesData.length === 0) {
-        set({ activeBattles: [], loading: false });
-        return;
-      }
-
-      // Step 2: Get submission IDs
-      const submissionIds = battlesData.flatMap(battle => [
-        battle.player1_submission_id,
-        battle.player2_submission_id
-      ].filter(id => id != null) as string[]); // Ensure IDs are not null and are strings
-
-      if (submissionIds.length === 0) {
+  fetchArchivedBattles: async () => {
         // Handle cases where battles might exist but have no valid submission IDs (should not happen in normal operation)
         const transformedBattlesWithoutSubmissions = battlesData.map((battle: any) => ({
           id: battle.id,

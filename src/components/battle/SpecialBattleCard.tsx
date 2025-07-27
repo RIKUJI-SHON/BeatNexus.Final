@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, memo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Battle } from '../../types';
@@ -21,7 +21,7 @@ interface SpecialBattleCardProps {
 
 // 色の固定化のため、colorPairs配列は不要になりました
 
-export const SpecialBattleCard: React.FC<SpecialBattleCardProps> = ({ battle }) => {
+export const SpecialBattleCard: React.FC<SpecialBattleCardProps> = memo(({ battle }) => {
   const { t, i18n } = useTranslation();
   const [isCommentsModalOpen, setIsCommentsModalOpen] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState<string>('');
@@ -297,4 +297,6 @@ export const SpecialBattleCard: React.FC<SpecialBattleCardProps> = ({ battle }) 
       />
     </>
   );
-};
+});
+
+SpecialBattleCard.displayName = 'SpecialBattleCard';
