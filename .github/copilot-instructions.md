@@ -120,7 +120,7 @@ alwaysApply: true
 - Supabaseのマイグレーションファイルは、`supabase/migrations/` ディレクトリに保存してください。
 - Supabase プロジェクトID: 本番用`qgqcjtjxaoplhxurbpis`, 開発環境用 `wdttluticnlqzmqmfvgt`
 
-実装完了後、要件定義ディレクトリ `.cursor/rules/dev-rules/` に実装ログを残して。yyyy-mm-dd_機能名.mdc という形式で保存して。起動時も読んで
+実装完了後、要件定義ディレクトリ `.cursor/docs/dev-rules/` に実装ログを残して。yyyy-mm-dd_機能名.mdc という形式で保存して。起動時も読んで
 
 ---
 

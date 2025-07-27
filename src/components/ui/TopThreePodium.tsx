@@ -5,7 +5,11 @@ import { useTranslation } from 'react-i18next';
 import { getDefaultAvatarUrl } from '../../utils';
 
 interface TopThreePodiumProps {
-  topThree: any[];
+  topThree: Array<{
+    username: string;
+    avatar_url?: string;
+    [key: string]: any;
+  }>;
   activeTab: 'player' | 'voter';
   getRatingOrSeasonPoints: (entry: any) => number;
   getVoteCount: (entry: any) => number;
@@ -29,24 +33,64 @@ export const TopThreePodium: React.FC<TopThreePodiumProps> = ({
 
   if (topThree.length === 0) return null;
 
-  // 表彰台の配置順（利用可能なデータに基づく）
+  // 表彰台の配置順（同率順位対応）
   const podiumOrder = [];
   
-  // 2位があれば追加
-  const secondPlace = topThree.find(entry => getPosition(entry) === 2);
-  if (secondPlace) podiumOrder.push(secondPlace);
+  // 全てのエントリを順位でグループ化
+  const positionGroups: { [position: number]: any[] } = {};
+  topThree.forEach(entry => {
+    const position = getPosition(entry);
+    if (!positionGroups[position]) {
+      positionGroups[position] = [];
+    }
+    positionGroups[position].push(entry);
+  });
   
-  // 1位は必ず追加（存在する場合）
-  const firstPlace = topThree.find(entry => getPosition(entry) === 1);
-  if (firstPlace) podiumOrder.push(firstPlace);
+  // 順位順でソートして上位3人を選択（同率の場合は複数表示）
+  const sortedPositions = Object.keys(positionGroups)
+    .map(Number)
+    .sort((a, b) => a - b);
   
-  // 3位があれば追加
-  const thirdPlace = topThree.find(entry => getPosition(entry) === 3);
-  if (thirdPlace) podiumOrder.push(thirdPlace);
+  let displayCount = 0;
+  for (const position of sortedPositions) {
+    const entriesAtPosition = positionGroups[position];
+    for (const entry of entriesAtPosition) {
+      if (displayCount < 3) {
+        // 表彰台の表示順：2位、1位、3位の順で配置
+        if (position === 2 && displayCount === 0) {
+          podiumOrder.unshift(entry); // 2位を最初に配置
+        } else if (position === 1) {
+          // 1位を中央に配置（2位がある場合は2番目、ない場合は最初）
+          const insertIndex = podiumOrder.length > 0 ? 1 : 0;
+          podiumOrder.splice(insertIndex, 0, entry);
+        } else {
+          podiumOrder.push(entry); // 3位以下は末尾に追加
+        }
+        displayCount++;
+      }
+    }
+  }
   
-  // 上記で見つからない場合は、positionでソートして上位を表示
-  if (podiumOrder.length === 0) {
-    podiumOrder.push(...topThree.slice(0, 3));
+  // 表示順が崩れている場合の修正（同率1位が複数いる場合など）
+  if (podiumOrder.length > 0) {
+    // 実際の順位に基づいて最終的な表示位置を調整
+    const finalOrder = [];
+    
+    // 2位を探して最初に配置
+    const secondPlaceEntry = podiumOrder.find(entry => getPosition(entry) === 2);
+    if (secondPlaceEntry) finalOrder.push(secondPlaceEntry);
+    
+    // 1位を中央に配置
+    const firstPlaceEntries = podiumOrder.filter(entry => getPosition(entry) === 1);
+    finalOrder.push(...firstPlaceEntries);
+    
+    // 3位以下を最後に配置
+    const remainingEntries = podiumOrder.filter(entry => getPosition(entry) !== 1 && getPosition(entry) !== 2);
+    finalOrder.push(...remainingEntries);
+    
+    // 最大3人まで表示
+    podiumOrder.length = 0;
+    podiumOrder.push(...finalOrder.slice(0, 3));
   }
 
   const getPositionConfig = (position: number) => {

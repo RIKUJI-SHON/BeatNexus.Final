@@ -310,26 +310,34 @@ const RankingPage: React.FC = () => {
     }
   };
 
-  // 表示用: 数字をアイコンの代わりに表示（リスト用）
+  // 表示用: バッジアイコンと数字の組み合わせ表示（リスト用）  
   const getPositionDisplay = (position: number) => {
-    const colorMap: Record<number, { text: string; bg: string; glow: string }> = {
-      1: { text: 'text-yellow-400', bg: 'bg-yellow-500/20', glow: 'drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]' },
-      2: { text: 'text-gray-300', bg: 'bg-gray-400/20', glow: 'drop-shadow-[0_0_6px_rgba(156,163,175,0.5)]' },
-      3: { text: 'text-amber-600', bg: 'bg-amber-600/20', glow: 'drop-shadow-[0_0_6px_rgba(217,119,6,0.5)]' }
-    };
-    
-    const config = colorMap[position];
-    if (config) {
-      return (
-        <div className={`flex items-center justify-center w-8 h-8 rounded-full ${config.bg} border border-current ${config.glow}`}>
-          <span className={`text-sm font-extrabold ${config.text} ${config.glow}`}>#{position}</span>
-        </div>
-      );
+    switch (position) {
+      case 1:
+        return (
+          <div className="flex items-center justify-center w-full h-8">
+            <img src="/images/1st-place.png" alt="1st Place" className="h-6 w-6 object-contain" />
+          </div>
+        );
+      case 2:
+        return (
+          <div className="flex items-center justify-center w-full h-8">
+            <img src="/images/2nd-place.png" alt="2nd Place" className="h-6 w-6 object-contain" />
+          </div>
+        );
+      case 3:
+        return (
+          <div className="flex items-center justify-center w-full h-8">
+            <img src="/images/3rd-place.png" alt="3rd Place" className="h-6 w-6 object-contain" />
+          </div>
+        );
+      default:
+        return (
+          <div className="flex items-center justify-center w-full h-8">
+            <span className="text-lg font-extrabold text-gray-400">#{position}</span>
+          </div>
+        );
     }
-    
-    return (
-      <span className="text-lg md:text-xl font-extrabold text-gray-400">#{position}</span>
-    );
   };
 
   const getRatingColor = (rating: number) => {
