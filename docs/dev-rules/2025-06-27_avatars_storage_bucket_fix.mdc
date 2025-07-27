@@ -1,0 +1,118 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# 🗂️ アバターStorageバケット修正実装ログ
+
+## 📅 実装日
+2025-06-27
+
+## 🎯 概要
+コピーデータベース（wdttluticnlqzmqmfvgt）でプロフィール画像設定時にバケットが存在しないエラーが発生していた問題を解決。
+元データベースから不足していた `avatars` Storageバケットとそのアクセスポリシーを完全復元。
+
+## 🔍 発見された問題
+### Storageバケットの不整合
+- **元データベース（qgqcjtjxaoplhxurbpis）**: `videos` と `avatars` の2つのバケット
+- **コピー先データベース（wdttluticnlqzmqmfvgt）**: `videos` バケットのみ
+- **結果**: プロフィール画像アップロード機能が「バケットが存在しません」エラーで利用不可
+
+## 📝 実装内容
+
+### ✅ avatarsバケット作成
+```sql
+INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+VALUES (
+    'avatars',
+    'avatars', 
+    true,
+    5242880,  -- 5MB制限
+    ARRAY['image/jpeg', 'image/png', 'image/webp', 'image/gif']
+);
+```
+
+### ✅ RLSポリシー完全復元（4つのポリシー）
+
+#### 1. アップロード権限
+```sql
+CREATE POLICY "Users can upload their own avatars" ON storage.objects
+    FOR INSERT TO public
+    WITH CHECK (bucket_id = 'avatars' AND auth.uid()::text = (storage.foldername(name))[1]);
+```
+
+#### 2. 閲覧権限（パブリック）
+```sql
+CREATE POLICY "Public can view avatars" ON storage.objects
+    FOR SELECT TO public
+    USING (bucket_id = 'avatars');
+```
+
+#### 3. 更新権限（自分のファイルのみ）
+```sql
+CREATE POLICY "Users can update their own avatars" ON storage.objects
+    FOR UPDATE TO public
+    USING (bucket_id = 'avatars' AND auth.uid()::text = (storage.foldername(name))[1]);
+```
+
+#### 4. 削除権限（自分のファイルのみ）
+```sql
+CREATE POLICY "Users can delete their own avatars" ON storage.objects
+    FOR DELETE TO public
+    USING (bucket_id = 'avatars' AND auth.uid()::text = (storage.foldername(name))[1]);
+```
+
+## 🔧 技術詳細
+
+### バケット設定の特徴
+- **パブリックアクセス**: `public: true` - アバター画像は全ユーザーが閲覧可能
+- **ファイルサイズ制限**: 5MB (`5242880` bytes)
+- **許可するMIMEタイプ**: JPEG, PNG, WebP, GIF の画像形式のみ
+- **フォルダ構造**: ユーザーID別フォルダでファイル分離
+
+### セキュリティ機能
+- ユーザーは自分のフォルダ（`auth.uid()`）にのみアップロード可能
+- 他のユーザーのファイルの変更・削除は不可
+- パブリック閲覧は許可（プロフィール画像表示のため）
+
+## 🎯 解決された問題
+1. **プロフィール画像アップロード機能復活**: 「バケットが存在しません」エラー解消
+2. **画像表示機能復活**: アップロードした画像の表示が可能
+3. **セキュリティ確保**: ユーザー別ファイル隔離と適切なアクセス制御
+4. **元データベースとの完全一致**: 同じバケット設定とポリシー構成
+
+## 📊 影響範囲
+- **フロントエンド**: プロフィール画像設定・表示機能の正常化
+- **ストレージ**: avatarsバケットの利用可能化
+- **セキュリティ**: 適切なファイルアクセス権限の設定
+- **ユーザビリティ**: プロフィール機能の完全利用可能
+
+## 🚀 検証項目
+- ✅ avatarsバケット作成完了
+- ✅ 4つのRLSポリシー設定完了
+- ✅ 元データベースとの設定完全一致確認
+- [ ] フロントエンドでのプロフィール画像アップロード動作確認
+- [ ] アップロードした画像の表示確認
+- [ ] 他ユーザーの画像への不正アクセス防止確認
+
+## 🔗 関連機能・ファイル
+- `src/components/profile/AvatarUpload.tsx` - プロフィール画像アップロードコンポーネント
+- `storage.objects` テーブル - ファイルメタデータ保存
+- `storage.buckets` テーブル - バケット設定保存
+- `auth.uid()` 関数 - ユーザー識別とフォルダ分離
+
+## 📈 今後の運用
+### 新環境作成時の注意点
+- データベースダンプはテーブルデータのみで、Storageバケット設定は含まれない
+- 新環境作成時は必ずStorageバケットとRLSポリシーの手動設定が必要
+- 本ログを参考に同じ設定を適用
+
+### 定期確認項目
+- バケット設定の整合性チェック
+- RLSポリシーの動作確認
+- ファイルサイズ制限の適切性確認
+
+---
+**実装者**: AI Assistant  
+**対象データベース**: wdttluticnlqzmqmfvgt (コピー先)  
+**ステータス**: avatarsバケット復元完了、動作確認待ち

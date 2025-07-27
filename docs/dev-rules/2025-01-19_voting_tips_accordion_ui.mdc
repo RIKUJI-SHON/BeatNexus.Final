@@ -1,0 +1,310 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# 🎯 投票ガイド縦並びアコーディオン式UI改善実装ログ
+
+## 📅 実装日
+2025-01-19
+
+## 🎯 概要
+投票ガイド機能を縦並びアコーディオン式に変更し、色付き点数表示と評価項目名の色分け表示を実装。
+ユーザーの設定状況が一目で分かる直感的なUIに改善。
+
+## 🔍 ユーザー要求
+1. タブを縦並びアコーディオン式に変更（クリックで下に拡張）
+2. モーダル内の「RIKUJI」「RIKUJI2」プレイヤーヘッダーを削除  
+3. タブの点数表記を色付きに変更（「6(青):4(赤)」→ 色付き数値）
+4. 評価項目名を優勢な方の色で表記
+5. 未設定・同点時は白で表記
+6. **追加要求**: プレイヤーA/Bではなく実際のプレイヤー名表示
+7. **追加要求**: 各プレイヤーの合計点数表示機能
+8. **UI簡素化要求**: 合計点数表示の背景削除
+9. **UI簡素化要求**: x/40形式から点数のみ表示に変更
+10. **UI簡素化要求**: Linear Scaleの下の視覚的分布バー削除
+
+## 📝 実装内容
+
+### ✅ アコーディオン式UI変更
+**ファイル**: `src/components/ui/VotingTips.tsx`
+
+#### 状態管理の変更
+```typescript
+// Before: 常に1つのタブがアクティブ
+const [activeTab, setActiveTab] = useState('technicality');
+
+// After: 全て閉じた状態も可能
+const [activeTab, setActiveTab] = useState<string | null>(null);
+
+// Before: 初期値5で設定済み
+const [scores, setScores] = useState({
+  technicality: 5,
+  // ...
+});
+
+// After: null = 未設定状態
+const [scores, setScores] = useState({
+  technicality: null as number | null,
+  // ...
+});
+```
+
+#### アコーディオン機能
+```typescript
+const toggleTab = (tabKey: string) => {
+  setActiveTab(activeTab === tabKey ? null : tabKey);
+};
+```
+
+### ✅ 色付き点数表示システム
+#### 新しい表示ロジック
+```typescript
+const getScoreDisplay = (criterion: keyof typeof scores) => {
+  const score = scores[criterion];
+  
+  // 未設定状態
+  if (score === null) {
+    return { 
+      text: t('battleView.notSet'), 
+      className: 'text-gray-500',
+      titleColor: 'text-white',
+      scoreElement: null
+    };
+  }
+  
+  // 評価項目名の色決定
+  let titleColor = 'text-white';
+  if (score > 5) titleColor = 'text-cyan-300';      // プレイヤーA優勢
+  else if (score < 5) titleColor = 'text-pink-300'; // プレイヤーB優勢
+  // score === 5 の場合は白のまま
+  
+  // 色付き点数要素
+  const scoreElement = (
+    <span className="text-xs">
+      <span className="text-cyan-300 font-medium">{score}</span>
+      <span className="text-gray-400 mx-1">:</span>
+      <span className="text-pink-300 font-medium">{10 - score}</span>
+    </span>
+  );
+  
+  return { text, className, titleColor, scoreElement };
+};
+```
+
+### ✅ UI構造の変更
+#### Before: 横並びタブ + 切り替え表示
+```jsx
+<div className="flex flex-wrap gap-1 mb-4">
+  {/* タブボタン群 */}
+</div>
+{/* アクティブタブのみ表示 */}
+```
+
+#### After: 縦並びアコーディオン
+```jsx
+<div className="space-y-2">
+  {criteriaList.map((criterion) => (
+    <div className="border border-gray-700 rounded-lg overflow-hidden">
+      {/* タブヘッダー（常に表示） */}
+      <button onClick={() => toggleTab(criterion.key)}>
+        <span className={`${scoreDisplay.titleColor}`}>
+          {criterion.name}
+        </span>
+        {scoreDisplay.scoreElement || <span>{scoreDisplay.text}</span>}
+        {/* 展開アイコン */}
+      </button>
+      
+      {/* 展開コンテンツ（条件表示） */}
+      {isExpanded && (
+        <div className="animate-fade-in">
+          {/* Linear Scaleスライダー */}
+        </div>
+      )}
+    </div>
+  ))}
+</div>
+```
+
+### ✅ 実際のプレイヤー名表示
+**ファイル**: `src/components/ui/VotingTips.tsx`
+
+#### Props復活と実装
+```typescript
+interface VotingTipsProps {
+  playerAName?: string;
+  playerBName?: string;
+}
+
+export const VotingTips: React.FC<VotingTipsProps> = ({ 
+  playerAName = 'Player A', 
+  playerBName = 'Player B' 
+}) => {
+```
+
+#### 使用箇所での実装
+- **合計点数表示**: `{playerAName}` / `{playerBName}`
+- **展開コンテンツ**: `{playerAName}: 6点` / `{playerBName}: 4点`
+- **BattleView.tsx**: 既に適切にprops渡し済み
+
+### ✅ 合計点数表示システム
+#### useMemoによるパフォーマンス最適化
+```typescript
+const totalScores = useMemo(() => {
+  const criteriaKeys = ['technicality', 'musicality', 'originality', 'showmanship'] as const;
+  let playerATotal = 0;
+  let playerBTotal = 0;
+  let setCount = 0;
+
+  criteriaKeys.forEach(key => {
+    const score = scores[key];
+    if (score !== null) {
+      playerATotal += score;
+      playerBTotal += (10 - score);
+      setCount++;
+    }
+  });
+
+  return { playerATotal, playerBTotal, setCount, maxPossible: setCount * 10 };
+}, [scores]);
+```
+
+#### 合計点数UI（簡素化版）
+```jsx
+<div className="text-sm font-medium text-white mb-2 text-center">
+  {t('battleView.totalScores')}
+</div>
+<div className="flex justify-between items-center text-sm">
+  <div className="flex items-center gap-2">
+    <div className="w-2.5 h-2.5 rounded-full bg-cyan-500"></div>
+    <span className="text-cyan-300 font-medium">{playerAName}</span>
+    <span className="text-cyan-300 font-bold">
+      {totalScores.playerATotal}
+    </span>
+  </div>
+  <div className="flex items-center gap-2">
+    <span className="text-pink-300 font-bold">
+      {totalScores.playerBTotal}
+    </span>
+    <span className="text-pink-300 font-medium">{playerBName}</span>
+    <div className="w-2.5 h-2.5 rounded-full bg-pink-500"></div>
+  </div>
+</div>
+{totalScores.setCount < 4 && (
+  <div className="text-xs text-gray-500 text-center mt-2 mb-3">
+    {t('battleView.unsetItems', { count: 4 - totalScores.setCount })}
+  </div>
+)}
+```
+
+### ✅ UI簡素化実装
+**ファイル**: `src/components/ui/VotingTips.tsx`
+
+#### 1. 合計点数表示の背景削除
+```diff
+- <div className="bg-gray-800 rounded-lg p-3 border border-gray-700">
++ {/* 背景要素削除 - シンプルなレイアウトに変更 */}
+```
+
+#### 2. 点数表示の簡素化
+```diff
+- {totalScores.playerATotal}/{totalScores.maxPossible}
++ {totalScores.playerATotal}
+```
+
+#### 3. 視覚的分布バーの削除
+```diff
+- {/* Visual Distribution Bar */}
+- <div className="h-3 bg-gray-600 rounded-lg overflow-hidden flex">
+-   <div className="bg-cyan-500 transition-all duration-300 ease-out"
+-        style={{ width: `${(score !== null ? score : 5) * 10}%` }}>
+-   </div>
+-   <div className="bg-pink-500 transition-all duration-300 ease-out"
+-        style={{ width: `${(score !== null ? 10 - score : 5) * 10}%` }}>
+-   </div>
+- </div>
++ {/* 視覚的分布バー削除 - Linear Scaleスライダーのみに統一 */}
+```
+
+### ✅ 不要要素の削除
+1. **プレイヤーヘッダー削除**: モーダル最上部の「RIKUJI」「RIKUJI2」表示を削除
+2. **固定プレイヤー名削除**: 「プレイヤーA」「プレイヤーB」から実際の名前に変更
+3. **背景装飾削除**: 合計点数表示の背景ボックスを削除
+4. **重複UI削除**: Linear Scaleの下の視覚的分布バーを削除
+
+### ✅ 翻訳ファイル更新
+**ファイル**: `src/i18n/locales/ja.json`, `en.json`
+
+```json
+// ja.json
+"notSet": "未設定",
+"totalScores": "合計点数",
+"unsetItems": "{{count}}項目が未設定です"
+
+// en.json  
+"notSet": "Not Set",
+"totalScores": "Total Scores",
+"unsetItems": "{{count}} items not set"
+```
+
+## 🎨 UI/UX改善点
+
+### 視覚的改善
+1. **色分け評価項目名**: 優勢な方の色で項目名を表示
+   - シアン（プレイヤーA優勢）
+   - ピンク（プレイヤーB優勢）
+   - 白（未設定・同点）
+
+2. **直感的な点数表示**: 色付き数値で瞬時に配分が分かる
+   - `6:4` → <span style="color:cyan">6</span>:<span style="color:pink">4</span>
+
+3. **状態別UI**: 
+   - **未設定**: グレーで「未設定」表示
+   - **設定済み**: 色分けされた点数表示
+   - **同点**: 白で表示
+
+### UX改善
+1. **アコーディオン式**: 必要な項目のみ展開して集中できる
+2. **一覧性**: タブヘッダーで全ての設定状況を一目で確認
+3. **視覚的フィードバック**: 矢印アイコンの回転アニメーション
+4. **UI簡素化**: 背景要素削除でスッキリとした表示
+5. **情報集約**: 重複するUI要素削除で重要情報に集中
+
+## 📊 影響範囲
+- **コンポーネント**: VotingTips.tsx（大幅リニューアル）
+- **翻訳**: 日英2言語に未設定状態の翻訳追加
+- **機能**: 既存のLinear Scale機能を維持
+- **パフォーマンス**: React要素の動的生成（scoreElement）
+
+## 🚀 今後の改善案
+1. **アニメーション強化**: アコーディオン展開時のスムーズアニメーション
+2. **キーボード対応**: Tab/Enter操作での展開/折りたたみ
+3. **アクセシビリティ**: ARIA属性の追加
+4. **保存機能**: ユーザーの評価を保存・復元
+
+## ✅ 検証項目
+- [x] アコーディオン式展開/折りたたみ動作
+- [x] 色付き点数表示の正確性
+- [x] 評価項目名の色分け
+- [x] 未設定状態の適切な表示
+- [x] 同点時の白表示
+- [x] 多言語対応（日英）
+- [x] 実際のプレイヤー名表示
+- [x] 合計点数計算・表示機能
+- [x] useMemoによるパフォーマンス最適化
+- [x] 合計点数表示の背景削除
+- [x] 点数表示の簡素化（x/40 → 点数のみ）
+- [x] 視覚的分布バーの削除
+- [ ] 実際のバトル画面での動作確認
+- [ ] モバイル・PC レスポンシブ確認
+
+## 🔗 関連ファイル
+- `src/components/ui/VotingTips.tsx` - メインコンポーネント
+- `src/i18n/locales/ja.json` - 日本語翻訳
+- `src/i18n/locales/en.json` - 英語翻訳
+- `src/components/battle/BattleView.tsx` - 使用元コンポーネント
+
+---
+**実装者**: AI Assistant  
+**レビュー**: 要レビュー  
+**ステータス**: 最終実装完了（実名表示・合計点数・UI簡素化・パフォーマンス最適化済み）

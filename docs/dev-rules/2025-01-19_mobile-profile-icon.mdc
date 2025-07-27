@@ -1,0 +1,162 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# 📱 モバイル版ヘッダープロフィールアイコン実装ログ
+
+## 📅 実装日
+2025-01-19
+
+## 🎯 概要
+モバイル版ヘッダーにプロフィールアイコンを追加し、タップするとPC版のhover効果と同様のプロフィール情報ウィンドウを表示する機能を実装。
+
+## 🔍 要件
+### ユーザーからの要求
+- モバイル版ヘッダーにプロフィールアイコンを配置
+- 既存のメニューボタンと併存させる
+- アイコンタップでPC版hover効果と同様のウィンドウ表示
+- ログインユーザーのみ表示
+
+### 技術的要件
+- 既存のメニューボタンとの共存
+- PC版HoverCardと同様のUI/UX
+- モバイル専用タッチ操作対応
+- 外側タップでドロップダウンを閉じる
+
+## 📝 実装内容
+
+### ✅ 状態管理の追加
+**ファイル**: `src/components/layout/Header.tsx`
+
+```typescript
+// 新しい状態を追加
+const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+```
+
+### ✅ 必要なアイコンのインポート追加
+```typescript
+// 追加されたインポート
+import { Menu, X, Bell, ShoppingCart, Plus, User, Crown, Settings, LogOut } from 'lucide-react';
+```
+
+### ✅ モバイル版右側アクション部分の再構築
+**変更箇所**: ヘッダー右側部分
+
+#### 変更前
+```typescript
+{/* Mobile menu button - 右端に配置 */}
+<button className="md:hidden text-gray-400 hover:text-white">
+  {/* メニューボタンのみ */}
+</button>
+```
+
+#### 変更後
+```typescript
+{/* Mobile Right Actions */}
+<div className="md:hidden flex items-center space-x-3">
+  {/* プロフィールアイコン + メニューボタン */}
+</div>
+```
+
+### ✅ プロフィールアイコンとドロップダウンの実装
+#### プロフィールアイコンボタン
+- サイズ: 8x8 (32px)
+- 円角: rounded-lg
+- ボーダー: グレー → タップ時シアン
+- 画像: ユーザーアバターまたはデフォルト
+
+#### ドロップダウンメニュー
+- PC版HoverCardと同一デザイン
+- 幅: 72 (288px)
+- 背景: グラデーション付きダークテーマ
+- メニュー項目: PROFILE、MY BATTLES、SETTINGS、LOGOUT
+
+### ✅ 外側クリック検知機能
+```typescript
+useEffect(() => {
+  const handleClickOutside = (event: MouseEvent) => {
+    if (isProfileDropdownOpen) {
+      const target = event.target as Element;
+      if (!target.closest('.profile-dropdown-container')) {
+        setIsProfileDropdownOpen(false);
+      }
+    }
+  };
+
+  document.addEventListener('mousedown', handleClickOutside);
+  return () => {
+    document.removeEventListener('mousedown', handleClickOutside);
+  };
+}, [isProfileDropdownOpen]);
+```
+
+## 🔧 技術詳細
+
+### レイアウト構造
+```
+ヘッダー右側 (モバイル版)
+├── プロフィールアイコン (ログイン時のみ)
+│   ├── アバター画像ボタン
+│   └── ドロップダウンメニュー
+│       ├── ユーザー情報セクション
+│       └── メニュー項目 (PROFILE, MY BATTLES, SETTINGS, LOGOUT)
+└── ハンバーガーメニューボタン
+```
+
+### レスポンシブ対応
+- `md:hidden`: モバイル版のみ表示
+- PC版では既存のHoverCardが継続使用
+- タブレット以上では非表示
+
+### UX設計
+- **アイコンサイズ**: タッチしやすい32px
+- **間隔**: プロフィールアイコンとメニューボタン間に12px
+- **視覚的フィードバック**: ボーダーカラー変更
+- **操作性**: タップで開閉、外側タップで閉じる
+
+## 🎯 解決された問題
+1. **モバイルでのプロフィールアクセス向上**: ハンバーガーメニューを開かずに直接アクセス
+2. **UI一貫性**: PC版hover効果と同様のデザインでブランド統一
+3. **操作効率**: より少ないタップでプロフィール関連機能にアクセス
+4. **空間効率**: 既存のメニューボタンと共存
+
+## 📊 影響範囲
+- **モバイルデバイス**: プロフィールアイコンとドロップダウンが追加
+- **PC版**: 既存のHoverCard機能はそのまま維持
+- **ログインユーザー**: プロフィールアイコンが表示される
+- **未ログインユーザー**: メニューボタンのみ表示（変更なし）
+
+## 🚀 検証項目
+- [x] プロフィールアイコンのモバイル表示確認
+- [x] タップでドロップダウン開閉確認
+- [x] 外側タップでドロップダウンが閉じることを確認
+- [x] 各メニュー項目のナビゲーション動作確認
+- [x] ログアウト機能の動作確認
+- [ ] 実機でのタッチ操作確認
+- [ ] 異なる画面サイズでの表示確認
+
+## 🔗 関連ファイル
+- `src/components/layout/Header.tsx` - メイン実装ファイル
+- `src/components/ui/HoverCard.tsx` - PC版参考デザイン
+
+## 📚 学習ポイント
+### モバイルUIデザイン
+- タッチターゲットの適切なサイズ設定
+- モバイル専用UIコンポーネントの実装
+- PC版とモバイル版の一貫性保持
+
+### React状態管理
+- ドロップダウン開閉状態の管理
+- useEffectでのイベントリスナー適切な設定・解除
+- 条件付きレンダリングでのユーザー体験向上
+
+### ユーザビリティ
+- 外側クリックでのドロップダウン閉じる操作
+- 視覚的フィードバックでのインタラクション向上
+- アクセシビリティを考慮したボタン実装
+
+---
+**実装者**: AI Assistant  
+**レビュー**: 完了  
+**ステータス**: 実装完了、動作確認待ち

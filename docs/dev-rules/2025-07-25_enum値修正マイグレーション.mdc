@@ -1,0 +1,45 @@
+# 2025-07-25 enum値修正マイグレーション実装ログ
+
+## 概要
+`create_submission_with_cooldown_check` 関数内でのenum値を正しい大文字形式に修正するマイグレーションを実装・適用
+
+## 実行ステップ
+
+### 1. マイグレーションファイル作成
+- ファイル: `20250725190000_fix_enum_values_in_submission_function.sql`
+- 内容: enum値を小文字から大文字形式に修正
+
+### 2. 開発環境での適用
+- プロジェクトID: `wdttluticnlqzmqmfvgt`
+- 結果: ✅ 成功
+
+### 3. 本番環境での適用  
+- プロジェクトID: `qgqcjtjxaoplhxurbpis`
+- 結果: ✅ 成功
+
+### 4. 古い関数の削除
+- 古い関数（`battle_format`型パラメータ）を削除
+- 新しい関数（`text`型パラメータ）のみが残存
+
+## 主な変更点
+
+### enum値の修正
+- `'withdrawn'` → `'WITHDRAWN'::submission_status`
+- `'waiting_opponent'` → `'WAITING_OPPONENT'::submission_status`
+
+### 翻訳キーの統一
+- エラー時の`message_key`と`message_params`を使用
+- 一貫した翻訳システムの実装
+
+## 最終成果物
+- 正しいenum値を使用する関数の実装完了
+- 開発環境・本番環境ともに適用済み
+- 古い関数の削除により関数の重複を解消
+
+## 検証結果
+両環境で関数が正常に作成され、正しいパラメータタイプで動作することを確認済み
+
+## 注意点
+- enum値は必ず大文字形式で記述する
+- 関数の重複を避けるため、古いバージョンは適切に削除する
+- 翻訳キーの一貫性を保つ

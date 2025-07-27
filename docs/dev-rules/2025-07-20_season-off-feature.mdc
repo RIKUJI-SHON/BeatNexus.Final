@@ -1,0 +1,195 @@
+# シーズンオフ機能実装ログ
+
+**実装日**: 2025年7月20日  
+**機能名**: シーズンオフ期間の投稿制限とUI改善  
+**ステータス**: 実装完了（開発環境テスト済み）
+
+## 実装概要
+
+シーズン間の空白期間（シーズンオフ）における動画投稿制限機能と、適切なUI表示機能を実装しました。
+
+## 実装内容
+
+### 1. データベース機能 (Backend)
+
+#### ファイル: `supabase/migrations/20250720_implement_season_off_features.sql`
+- **新機能**: `can_submit_video()` 関数
+  - シーズンの状態に基づいて投稿可能かを判定
+  - シーズン終了5日前からの投稿制限
+  - シーズンオフ期間中の投稿制限
+
+- **新機能**: `get_submission_status()` 関数
+  - 詳細な投稿状態情報を返す
+  - 制限理由（SEASON_OFF / ENDING_SOON）
+  - 次のシーズン開始日情報
+
+- **修正**: `create_submission_with_cooldown_check()` 関数
+  - シーズン制限チェックを統合
+  - 投稿前にシーズン状態を確認
+
+#### 投稿制限条件:
+1. アクティブなシーズンが存在しない場合
+2. シーズン終了5日前以降の場合
+
+### 2. Frontend Hook Implementation
+
+#### ファイル: `src/hooks/useSubmissionStatus.ts`
+- **新規作成**: カスタムReactフック
+- **機能**:
+  - `SubmissionStatus` インターフェース定義
+  - リアルタイムの投稿状態取得
+  - エラーハンドリングとローディング状態管理
+  - 適切な制限メッセージ生成
+
+```typescript
+export interface SubmissionStatus {
+  canSubmit: boolean;
+  reason: 'SEASON_OFF' | 'ENDING_SOON' | null;
+  message: string;
+  nextSeasonStartDate: string | null;
+  activeSeason: {
+    id: string;
+    name: string;
+    end_at: string;
+  } | null;
+}
+```
+
+### 3. PostPage UI Integration
+
+#### ファイル: `src/pages/PostPage.tsx`
+- **統合**: `useSubmissionStatus` フックの使用
+- **UI改善**:
+  - シーズンオフ時の投稿制限カードの表示
+  - ドロップゾーンとボタンの無効化
+  - 適切な制限メッセージの表示
+  - クールダウン制限との統合表示
+
+#### 実装された制限UI:
+```tsx
+{(!canSubmit || !submissionStatus?.canSubmit) && (cooldownInfo || submissionStatus) && (
+  <div className="mb-6 bg-orange-500/10 border border-orange-500/30 rounded-lg p-4">
+    <div className="flex items-center gap-2 mb-3">
+      <AlertCircle className="h-5 w-5 text-orange-400" />
+      <h3 className="font-medium text-white">
+        {submissionStatus && !submissionStatus.canSubmit 
+          ? t('postPage.seasonOff.title', 'シーズン外投稿制限')
+          : t('postPage.cooldown.title', '投稿制限中')
+        }
+      </h3>
+    </div>
+    <p className="text-sm text-orange-200 mb-3">
+      {submissionStatus && !submissionStatus.canSubmit 
+        ? submissionStatus.message
+        : cooldownInfo?.message
+      }
+    </p>
+  </div>
+)}
+```
+
+### 4. RankingPage UI Enhancement
+
+#### ファイル: `src/pages/RankingPage.tsx`
+- **統合**: `useSubmissionStatus` フックの使用
+- **新機能**: シーズンオフ期間の警告バナー
+- **UI改善**:
+  - 視覚的に目立つシーズンオフ通知
+  - 次のシーズン開始日の表示
+  - 適切なアイコンとカラーリング
+
+#### 実装されたシーズンオフバナー:
+```tsx
+{submissionStatus && !submissionStatus.canSubmit && submissionStatus.reason === 'SEASON_OFF' && (
+  <div className="mb-8">
+    <Card className="bg-gradient-to-r from-amber-600/20 to-orange-600/20 border border-amber-500/30 backdrop-blur-sm">
+      <div className="p-6">
+        <div className="flex items-center gap-3 mb-3">
+          <AlertCircle className="h-6 w-6 text-amber-400 flex-shrink-0" />
+          <h3 className="text-lg font-semibold text-amber-200">
+            {t('rankingPage.seasonOff.title', 'シーズンオフ期間中')}
+          </h3>
+        </div>
+        <!-- メッセージと次のシーズン開始日表示 -->
+      </div>
+    </Card>
+  </div>
+)}
+```
+
+### 5. 国際化対応
+
+#### ファイル: `src/i18n/locales/ja.json`
+- **追加**: 新しい翻訳キー
+  - `postPage.seasonOff.title`: "シーズン外投稿制限"
+  - `rankingPage.seasonOff.title`: "シーズンオフ期間中"
+  - `rankingPage.seasonOff.nextSeasonStart`: "次のシーズン開始予定"
+
+## テスト結果
+
+### 開発環境テスト
+- **プロジェクトID**: `wdttluticnlqzmqmfvgt`
+- **マイグレーション**: 正常適用完了
+- **ビルド**: エラーなしで完了
+- **UI**: 適切に表示されることを確認
+
+### 機能検証項目
+✅ シーズンオフ時の投稿制限が正常に動作  
+✅ UI上で適切な制限メッセージが表示  
+✅ ドロップゾーンとボタンが無効化される  
+✅ ランキングページでシーズンオフバナーが表示  
+✅ 次のシーズン開始日が正しく表示  
+✅ 既存のクールダウン制限との統合が正常  
+
+## 本番環境デプロイ準備
+
+### 次のステップ
+1. 本番環境（`qgqcjtjxaoplhxurbpis`）へのマイグレーション適用
+2. 本番環境での動作確認
+3. ユーザーテスト
+
+### デプロイコマンド（本番用）
+```sql
+-- 本番環境への適用
+-- プロジェクトID: qgqcjtjxaoplhxurbpis
+-- マイグレーション: 20250720_implement_season_off_features.sql
+```
+
+## 技術仕様
+
+### アーキテクチャ
+- **Backend**: PostgreSQL関数によるビジネスロジック実装
+- **Frontend**: カスタムReactフックによる状態管理
+- **UI**: 条件付きレンダリングによる動的表示制御
+
+### パフォーマンス考慮
+- フック内でのキャッシング機能
+- 必要時のみAPI呼び出し
+- エラー境界の適切な実装
+
+### 拡張性
+- 新しい制限条件の追加が容易
+- 翻訳キーの体系的な管理
+- UI コンポーネントの再利用可能性
+
+## 課題と改善点
+
+### 現在の制限
+- シーズンオフの条件は手動設定が必要
+- 自動シーズン遷移機能は別途実装が必要
+
+### 将来的な改善
+- シーズン自動遷移機能の実装
+- より詳細な制限条件の設定機能
+- ユーザー通知システムとの統合
+
+## 関連ドキュメント
+- 要件定義: `docs/season_off_feature_spec.md`
+- データベース設計: `supabase/migrations/20250720_implement_season_off_features.sql`
+- フロントエンド仕様: カスタムフック `useSubmissionStatus.ts`
+
+---
+
+**実装者**: GitHub Copilot  
+**レビュー**: 開発環境テスト完了  
+**次回アクション**: 本番環境デプロイ

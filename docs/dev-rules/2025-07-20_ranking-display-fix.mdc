@@ -1,0 +1,116 @@
+# ランキングページ通算ランキング表示問題修正ログ
+
+**実装日**: 2025-07-20  
+**修正内容**: 通算ランキングが表示されない問題の解決
+
+## 問題
+
+ランキングページの通算ランキングで何も表示されない問題が発生していました。
+
+## 原因分析
+
+1. **データベースビューとTypeScript型の不一致**
+   - `rankings_view`には`rank_name`、`rank_color`、`win_rate`フィールドが存在しない
+   - TypeScriptの`RankingEntry`インターフェースではこれらが必須フィールド
+   - フロントエンドでの型チェックでエラーが発生していた可能性
+
+2. **データ変換不備**
+   - DBから取得したデータがそのまま使用され、必要な計算が行われていない
+   - ランク情報や勝率の計算がフロントエンドで実装されていない
+
+## 解決策
+
+### 1. ランキングストアの修正
+
+**fetchRankings関数の更新**:
+```typescript
+fetchRankings: async () => {
+  try {
+    const { data, error } = await supabase
+      .from('rankings_view')
+      .select('*')
+      .order('rating', { ascending: false });
+
+    const rankingsWithPosition = (data || []).map((entry: any, index: number) => {
+      const rankInfo = getRankFromRating(entry.rating);
+      const totalBattles = entry.battles_won + entry.battles_lost;
+      const winRate = totalBattles > 0 ? (entry.battles_won / totalBattles) * 100 : 0;
+      
+      return {
+        user_id: entry.user_id,
+        username: entry.username,
+        avatar_url: entry.avatar_url,
+        rating: entry.rating,
+        season_points: entry.season_points,
+        rank_name: rankInfo.name,        // 計算で追加
+        rank_color: rankInfo.color,      // 計算で追加
+        battles_won: entry.battles_won,
+        battles_lost: entry.battles_lost,
+        win_rate: winRate,               // 計算で追加
+        position: index + 1
+      } as RankingEntry;
+    });
+
+    set({ rankings: rankingsWithPosition });
+  } catch (error) {
+    // エラーハンドリング
+  }
+}
+```
+
+**fetchVoterRankings関数の更新**:
+```typescript
+fetchVoterRankings: async () => {
+  // 同様にvoter_rankings_viewの id を user_id にマッピング
+  // 不足フィールドをデフォルト値で補完
+}
+```
+
+### 2. デバッグログの追加
+
+- データ取得前後でのログ出力
+- 変換後データの構造確認
+- エラーの詳細キャッチ
+
+### 3. 型安全性の向上
+
+`getRankFromRating`ユーティリティ関数を使用してレーティングから適切なランク情報を計算。
+
+## データベース確認
+
+```sql
+-- 実際のデータ存在確認
+SELECT COUNT(*) FROM rankings_view; -- 結果: 2人のユーザー
+SELECT * FROM rankings_view LIMIT 2; -- データは正常に存在
+```
+
+## 修正されたファイル
+
+1. **src/store/rankingStore.ts**
+   - fetchRankings関数の完全書き直し
+   - fetchVoterRankings関数の修正
+   - デバッグログの追加
+
+2. **src/pages/RankingPage.tsx**
+   - デバッグログの追加
+   - 状態監視の強化
+
+## 期待される結果
+
+- 通算ランキングでユーザーが表示される
+- ランク名・色が正しく表示される
+- 勝率が正しく計算される
+- デバッグログでデータフローが確認可能
+
+## テスト確認項目
+
+- [ ] 通算ランキングタブでデータ表示
+- [ ] ランク色・名前の正しい表示
+- [ ] 勝率計算の正確性
+- [ ] 投票者ランキングも同様に動作
+- [ ] ブラウザコンソールでエラーなし
+
+---
+
+**状態**: 🔧 修正完了、テスト待ち  
+**開発サーバー**: http://localhost:3001 で確認可能

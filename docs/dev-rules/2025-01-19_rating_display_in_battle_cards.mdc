@@ -1,0 +1,248 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# 🏆 バトルカード レート表示実装ログ
+
+## 📅 実装日
+2025-01-19
+
+## 🎯 概要
+バトルカードのユーザー名の下にプレイヤーのレート値を表示する機能を追加。
+ランクシステムと連携して色分け表示を実装。
+
+## 📝 更新履歴
+- **初回実装**: レート値＋ランク名表示
+- **2025-01-19 更新**: ランク名（ティア）を削除、レート値のみ表示に変更
+- **2025-01-19 更新**: ユーザー名のフォントサイズを拡大（text-lg → text-xl）
+
+## 🔍 実装内容
+
+### ✅ レート情報取得機能
+**ファイル**: `src/components/battle/BattleView.tsx`
+
+#### 新規追加されたimport
+```typescript
+import { getCurrentRank } from '../../lib/rankUtils';
+import { supabase } from '../../lib/supabase';
+```
+
+#### レート情報管理state
+```typescript
+const [playerRatings, setPlayerRatings] = useState<{
+  playerA: { rating: number; loading: boolean };
+  playerB: { rating: number; loading: boolean };
+}>({
+  playerA: { rating: 1200, loading: true },
+  playerB: { rating: 1200, loading: true }
+});
+```
+
+#### レート取得関数
+```typescript
+const loadPlayerRatings = async () => {
+  try {
+    // Player Aのレート取得
+    const { data: playerAData, error: errorA } = await supabase
+      .from('profiles')
+      .select('rating')
+      .eq('id', battle.player1_user_id)
+      .single();
+
+    // Player Bのレート取得
+    const { data: playerBData, error: errorB } = await supabase
+      .from('profiles')
+      .select('rating')
+      .eq('id', battle.player2_user_id)
+      .single();
+
+    setPlayerRatings({
+      playerA: { 
+        rating: playerAData?.rating || 1200, 
+        loading: false 
+      },
+      playerB: { 
+        rating: playerBData?.rating || 1200, 
+        loading: false 
+      }
+    });
+  } catch (error) {
+    // エラーハンドリング - デフォルト値1200に設定
+  }
+};
+```
+
+### ✅ UI実装: レート表示コンポーネント
+
+#### SimpleBattleCard レート表示
+**Player A/B共通レイアウト**:
+```typescript
+{/* Player Rating Display */}
+<div className="mb-2 flex items-center justify-center">
+  {playerRatings.playerA.loading ? (
+    <div className="text-xs text-gray-400">---</div>
+  ) : (
+    <div 
+      className="text-sm font-medium"
+      style={{ color: getCurrentRank(playerRatings.playerA.rating).iconColor }}
+    >
+      {playerRatings.playerA.rating}
+    </div>
+  )}
+</div>
+```
+
+#### SpecialBattleCard レート表示
+**PlayerDisplayコンポーネント拡張**:
+```typescript
+const PlayerDisplay = ({ 
+  // 既存のprops...
+  currentRating,
+  ratingLoading
+}: {
+  // 既存の型定義...
+  currentRating: number;
+  ratingLoading: boolean;
+}) => (
+  <div className="text-center">
+    {/* アバターとユーザー名 */}
+    <h3 className="text-lg font-bold text-white mb-2 truncate">
+      {player?.username || t('battleCard.unknownUser')}
+    </h3>
+    {/* レート表示 */}
+    <div className="mb-2 flex items-center justify-center">
+      {ratingLoading ? (
+        <div className="text-xs text-gray-400">---</div>
+      ) : (
+        <div 
+          className="text-sm font-medium"
+          style={{ color: getCurrentRank(currentRating).iconColor }}
+        >
+          {currentRating}
+        </div>
+      )}
+    </div>
+    {/* 投票数など既存コンテンツ */}
+  </div>
+);
+```
+
+#### Player A（左側）レート表示
+```typescript
+<div className="flex flex-col">
+  <div className="text-white font-bold text-lg">
+    {battle.contestant_a?.username || 'Player A'}
+  </div>
+  <div className="flex items-center gap-2">
+    {playerRatings.playerA.loading ? (
+      <div className="text-sm text-gray-400">読み込み中...</div>
+    ) : (
+      <>
+        <div 
+          className="text-sm font-medium"
+          style={{ color: getCurrentRank(playerRatings.playerA.rating).iconColor }}
+        >
+          {playerRatings.playerA.rating}
+        </div>
+        <div className="text-xs text-gray-400">
+          {getCurrentRank(playerRatings.playerA.rating).displayName}
+        </div>
+      </>
+    )}
+  </div>
+</div>
+```
+
+#### Player B（右側）レート表示
+```typescript
+<div className="flex flex-col lg:items-end">
+  <div className="text-white font-bold text-lg">
+    {battle.contestant_b?.username || 'Player B'}
+  </div>
+  <div className="flex items-center gap-2 lg:flex-row-reverse">
+    {playerRatings.playerB.loading ? (
+      <div className="text-sm text-gray-400">読み込み中...</div>
+    ) : (
+      <>
+        <div 
+          className="text-sm font-medium"
+          style={{ color: getCurrentRank(playerRatings.playerB.rating).iconColor }}
+        >
+          {playerRatings.playerB.rating}
+        </div>
+        <div className="text-xs text-gray-400">
+          {getCurrentRank(playerRatings.playerB.rating).displayName}
+        </div>
+      </>
+    )}
+  </div>
+</div>
+```
+
+## 🔧 技術詳細
+
+### ランクシステム連携
+- **`getCurrentRank()`**: レート値からランク情報を取得
+- **ランク色**: `iconColor`プロパティでレート値に応じた色分け表示
+
+### ランク一覧と色分け
+| ランク | レート範囲 | 色 |
+|--------|-----------|---|
+| Unranked | 0-1099 | グレー |
+| Beginner | 1100-1199 | グレー |
+| Intermediate | 1200-1299 | イエロー |
+| Advanced | 1300-1399 | グリーン |
+| Expert | 1400-1599 | ブルー |
+| Master | 1600-1799 | パープル |
+| Grandmaster | 1800+ | ピンク |
+
+### レスポンシブ対応
+- **モバイル**: 左右対称レイアウト
+- **デスクトップ**: Player B右寄せ（`lg:items-end`, `lg:flex-row-reverse`）
+
+### エラーハンドリング
+- **読み込み中**: "読み込み中..."表示
+- **取得失敗**: デフォルト値1200に設定
+- **console警告**: エラー詳細をコンソールに出力
+
+## 🎯 解決された問題
+1. **レート可視化**: プレイヤーの実力が一目で分かる
+2. **マッチング公平性**: レート差による実力差の認識向上
+3. **競技性向上**: ランクシステムとの連携で達成感を促進
+4. **視覚的情報**: 色分けでランクレベルを直感的に表示
+5. **シンプル表示**: ランク名を削除してレート値のみの簡潔な表示
+6. **視認性向上**: ユーザー名を大きく表示して可読性を改善
+
+## 📊 影響範囲
+- **バトルビューページ**: プレイヤー情報の充実
+- **バトルズページ**: SimpleBattleCard と SpecialBattleCard にレート表示追加
+- **ユーザー体験**: レート情報による戦略的投票判断
+- **競技性**: ランクマッチングの透明性向上
+
+## 🚀 今後の改善提案
+1. **レート変化表示**: バトル後のレート変動予測
+2. **ツールチップ**: ランクシステムの詳細説明
+3. **パフォーマンス**: レート情報のキャッシュ化
+4. **アニメーション**: レート表示のフェードイン効果
+
+## ✅ 検証項目
+- [x] レート値の正常表示
+- [x] ランク色の適切な表示
+- [x] 読み込み状態の表示
+- [x] レスポンシブレイアウト
+- [ ] パフォーマンステスト
+- [ ] 多様なレート値での表示確認
+
+## 🔗 関連ファイル・技術
+- `src/components/battle/BattleView.tsx` - バトルビューページ実装
+- `src/components/battle/SimpleBattleCard.tsx` - シンプルバトルカード実装
+- `src/components/battle/SpecialBattleCard.tsx` - スペシャルバトルカード実装
+- `src/lib/rankUtils.ts` - ランクシステム
+- `src/lib/supabase.ts` - データベース接続
+- Supabase `profiles` テーブル - レート情報ストレージ
+
+---
+**実装者**: AI Assistant  
+**レビュー**: 要レビュー  
+**ステータス**: 実装完了、動作確認待ち

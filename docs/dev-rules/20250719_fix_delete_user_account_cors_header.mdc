@@ -1,0 +1,51 @@
+# 20250719_fix_delete_user_account_cors_header.mdc
+
+## 概要
+delete-user-accountエッジファンクションのCORS設定にx-client-versionヘッダーを追加し、フロントエンドからのAPIリクエスト時に発生していたCORSエラーを解消した。
+
+## 実行日時
+2025年7月19日
+
+## 問題詳細
+- フロントエンドからアカウント削除のエッジファンクションへのAPIリクエストでCORSエラーが発生
+- x-client-versionヘッダーが送信されているが、エッジファンクションのCORS設定で許可されていなかった
+- プリフライト（OPTIONS）リクエストでリクエストが拒否されていた
+
+## 修正内容
+### 修正ファイル
+- `supabase/functions/delete-user-account/index.ts`
+
+### 修正詳細
+CORSヘッダー設定を以下のように変更：
+
+**修正前:**
+```typescript
+'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+```
+
+**修正後:**
+```typescript
+'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-client-version',
+```
+
+## デプロイ履歴
+1. **開発環境 (wdttluticnlqzmqmfvgt)**: version 8でデプロイ完了
+2. **本番環境 (qgqcjtjxaoplhxurbpis)**: version 7でデプロイ完了
+
+## 検証
+- 開発環境、本番環境ともにx-client-versionヘッダーを含むCORS設定が正常に反映されたことを確認
+- フロントエンドからのアカウント削除APIリクエストが正常に動作することを期待
+
+## 技術詳細
+- エッジファンクションの関数本体のロジックは変更なし
+- CORS設定のみ修正
+- 既存のCORSヘッダー（authorization, x-client-info, apikey, content-type）は維持
+
+## 関連ファイル
+- 元のマイグレーションドキュメント: `20250719_fix_delete_user_account_cors_header.sql`
+- エッジファンクション: `supabase/functions/delete-user-account/index.ts`
+- この実装ログ: `.cursor/rules/dev-rules/20250719_fix_delete_user_account_cors_header.mdc`
+
+## 注意事項
+- この修正により、フロントエンドから送信されるx-client-versionヘッダーがエッジファンクションで正常に受け取れるようになった
+- セキュリティ上の懸念はなし（既に許可されているヘッダーの拡張のみ）

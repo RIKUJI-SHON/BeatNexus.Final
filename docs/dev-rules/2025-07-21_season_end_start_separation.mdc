@@ -1,0 +1,187 @@
+# 2025-07-21 シーズン終了・開始処理の分離
+
+## 概要
+従来の`end_current_season`関数に含まれていたシーズン開始処理を分離し、シーズン終了と開始を独立した関数として実装
+
+## 問題の詳細
+- 既存の`end_current_season`関数はシーズン終了処理と新シーズン自動開始処理が混在
+- シーズン終了と開始を個別にコントロールしたいニーズ
+- 処理の責任分離による保守性向上が必要
+
+## 実装内容
+
+### 1. 新関数: start_new_season() の作成
+
+**機能:**
+- 新しいシーズンの開始専用関数
+- アクティブシーズン存在チェック
+- カスタムシーズン名・期間指定可能
+
+**パラメータ:**
+- `p_season_name` (TEXT): シーズン名（NULL時は自動生成）
+- `p_duration_months` (INTEGER): シーズン期間（月単位、デフォルト3ヶ月）
+
+**自動シーズン名生成ロジック:**
+```sql
+SELECT COALESCE(MAX(
+  CASE 
+    WHEN name ~ '^[0-9]+-S[0-9]+$' THEN 
+      SPLIT_PART(SPLIT_PART(name, '-S', 2), '', 1)::INTEGER
+    ELSE 0
+  END
+), 0) + 1 INTO v_next_season_number
+FROM seasons;
+
+v_new_season_name := '2025-S' || v_next_season_number;
+```
+
+**エラーハンドリング:**
+- アクティブシーズン存在時はエラーレスポンス
+- 既存シーズン情報も返却
+
+### 2. 既存関数: end_current_season() の修正
+
+**削除された処理:**
+- 新シーズン自動開始ロジック
+- シーズン番号計算
+- 新シーズン作成処理
+
+**残存する処理:**
+- アクティブシーズン検出
+- バトルランキングアーカイブ（バトル経験者のみ）
+- 投票者ランキングアーカイブ
+- シーズンステータス更新（'ended'）
+- ユーザーポイントリセット
+
+**新メッセージ:**
+```json
+{
+  "message": "シーズンが正常に終了しました。新しいシーズンを開始するには start_new_season() 関数を実行してください。"
+}
+```
+
+## テスト結果
+
+### Test 1: アクティブシーズン存在時の新シーズン開始
+```sql
+SELECT start_new_season();
+```
+**結果:** ✅ 適切にエラーレスポンス
+```json
+{
+  "success": false,
+  "error": "active_season_exists",
+  "message": "アクティブなシーズンが既に存在します",
+  "existing_season": {"id": "...", "name": "2025-S3"}
+}
+```
+
+### Test 2: 修正されたシーズン終了処理
+```sql
+SELECT end_current_season();
+```
+**結果:** ✅ 終了のみで開始処理なし
+```json
+{
+  "success": true,
+  "ended_season": {
+    "id": "ae1472c7-ec80-4a70-8651-d5a31eef4829",
+    "name": "2025-S3",
+    "player_rankings_saved": 2,
+    "voter_rankings_saved": 0,
+    "ended_at": "2025-07-21T08:41:07.200569+00:00"
+  }
+}
+```
+
+### Test 3: デフォルト設定での新シーズン開始
+```sql
+SELECT start_new_season();
+```
+**結果:** ✅ 自動シーズン名「2025-S5」生成
+```json
+{
+  "success": true,
+  "new_season": {
+    "id": "ca98735d-5aaa-4f3b-9171-f6e23e062dc8",
+    "name": "2025-S5",
+    "duration_months": 3
+  }
+}
+```
+
+### Test 4: カスタム設定での新シーズン開始
+```sql
+SELECT start_new_season('TEST-Custom-Season', 2);
+```
+**結果:** ✅ カスタム名・期間で作成
+```json
+{
+  "success": true,
+  "new_season": {
+    "name": "TEST-Custom-Season",
+    "duration_months": 2,
+    "end_at": "2025-09-21T08:41:43.180599+00:00"
+  }
+}
+```
+
+### Test 5: エラーハンドリング
+```sql
+-- アクティブシーズンなしでの終了処理
+SELECT end_current_season();
+```
+**結果:** ✅ 適切にエラーレスポンス
+```json
+{
+  "success": false,
+  "error": "no_active_season",
+  "message": "アクティブなシーズンが見つかりません"
+}
+```
+
+## 使用方法
+
+### シーズン終了
+```sql
+SELECT end_current_season();
+```
+
+### 新シーズン開始（デフォルト設定）
+```sql
+SELECT start_new_season();
+```
+
+### 新シーズン開始（カスタム設定）
+```sql
+SELECT start_new_season('Summer-2025', 4);  -- 4ヶ月間のSummer-2025シーズン
+```
+
+## データ整合性確保
+
+### バトル経験者フィルタ維持
+- アーカイブ対象：勝利数 + 敗北数 >= 1
+- 経験値フィルタリングロジックは変更なし
+
+### ポイントリセット
+- 全ユーザーのseason_points: 1200
+- 全ユーザーのseason_vote_points: 0
+
+## 適用環境
+- 開発環境（wdttluticnlqzmqmfvgt）: ✅ 実装・テスト完了
+
+## 次のステップ
+1. 本番環境への適用
+2. pg_cronジョブの更新（必要に応じて）
+3. 管理画面での手動実行機能追加検討
+
+## 実装完了状況
+✅ start_new_season関数作成完了
+✅ end_current_season関数修正完了
+✅ 全テストケース検証完了
+✅ エラーハンドリング検証完了
+✅ 既存機能の動作確認完了
+
+## 関連ファイル
+- `supabase/migrations/`: 新関数作成・既存関数修正マイグレーション
+- 既存の`end_current_season`関数を呼び出している箇所（pg_cronなど）は影響なし

@@ -1,0 +1,135 @@
+# シーズン終了関数とデータベース整合性チェック結果
+
+## 実行日時
+2025年7月27日
+
+## 概要
+シーズン終了時の`end_current_season`関数とデータベースの整合性を調査し、重大な差異を発見しました。
+
+## 🚨 発見された重大な差異
+
+### 1. `end_current_season`関数の大幅な違い
+
+#### 本番環境の関数
+```sql
+-- 投票者ランキングのアーカイブ処理
+INSERT INTO season_voter_rankings (
+  season_id,
+  user_id,
+  votes,
+  rank
+)
+SELECT 
+  v_current_season.id,
+  id,
+  season_vote_points,  -- profilesテーブルから取得
+  ROW_NUMBER() OVER (ORDER BY season_vote_points DESC, username ASC)
+FROM profiles
+WHERE is_deleted = FALSE
+AND season_vote_points >= 1;  -- 投票経験者のみ（0ポイントを除外）
+
+-- 新シーズンの自動開始機能あり
+INSERT INTO seasons (name, status, start_at, end_at) 
+VALUES (v_new_season_name, 'active', NOW(), NOW() + INTERVAL '3 months');
+```
+
+#### 開発環境の関数  
+```sql
+-- 投票者ランキングのアーカイブ処理（同じ）
+INSERT INTO season_voter_rankings (
+  season_id,
+  user_id,
+  votes,  -- 修正: points → votes というコメントあり
+  rank
+)
+SELECT 
+  v_current_season.id,
+  id,
+  season_vote_points,  -- profilesテーブルから取得
+  ROW_NUMBER() OVER (ORDER BY season_vote_points DESC, username ASC)
+FROM profiles
+WHERE is_deleted = FALSE
+AND season_vote_points >= 1;
+
+-- 新シーズンの自動開始機能なし（手動実行が必要）
+RETURN json_build_object('message', 'シーズンが正常に終了しました。新しいシーズンを開始するには start_new_season() 関数を実行してください。');
+```
+
+### 2. テーブル構造は一致
+- `season_voter_rankings`テーブル: ✅ 完全一致
+- `season_rankings`テーブル: ✅ 完全一致
+
+### 3. フロントエンドとの整合性確認
+
+#### `season_voter_rankings_view`の使用
+フロントエンドでは以下のカラムを使用：
+- `id` (profilesから)
+- `username` (profilesから)  
+- `avatar_url` (profilesから)
+- `season_vote_points` (profilesから)
+- `rank` (算出値)
+
+#### `get_season_voter_rankings_by_id`関数の戻り値
+```sql
+RETURN TABLE(
+  rank bigint,
+  user_id uuid,
+  username text,
+  avatar_url text,
+  votes integer,  -- season_voter_rankings.votesカラム
+  season_id uuid
+)
+```
+
+#### アーカイブ処理の整合性
+✅ **問題なし** - アーカイブ時に`profiles.season_vote_points`を`season_voter_rankings.votes`に正しく保存
+
+## 🔍 詳細分析
+
+### データフロー
+1. **現在のシーズン中**: `profiles.season_vote_points`に投票ポイントが蓄積
+2. **シーズン終了時**: `end_current_season()`実行
+3. **アーカイブ処理**: `profiles.season_vote_points` → `season_voter_rankings.votes`に保存
+4. **リセット**: `profiles.season_vote_points = 0`
+5. **フロントエンドでの表示**: `get_season_voter_rankings_by_id()`で過去シーズンの結果を取得
+
+### カラム名の整合性
+- ✅ アーカイブ処理: `season_vote_points`(profiles) → `votes`(season_voter_rankings)
+- ✅ 関数戻り値: `votes`カラムを返す
+- ✅ ビューとの整合性: `season_voter_rankings_view`は現在のシーズンの`season_vote_points`を使用
+
+## ⚠️ 運用面での差異（実装方式の違い）
+
+### 本番環境
+- シーズン終了と同時に新シーズンが自動開始（1つの関数で処理）
+- 3ヶ月間隔で自動設定
+- シーズン名の自動生成 (`2025-S1`, `2025-S2`...)
+- `end_current_season()`関数内で新シーズン作成も実行
+
+### 開発環境（修正）
+- シーズン終了と開始を分離（2つのcronジョブで処理）
+- `end_current_season()`はシーズン終了のみ実行
+- `start_new_season()`は別のcronジョブ（jobid: 4, UTC 10:00）で自動実行
+- **両環境とも完全自動化されている**
+
+## 結論
+
+### ✅ データベース整合性
+- **問題なし** - テーブル構造、カラム名、データ型すべて一致
+- **問題なし** - アーカイブ処理のデータフローは正常
+- **問題なし** - フロントエンドとの整合性も保たれている
+
+### ✅ 運用面の整合性（修正）
+- **両環境とも完全自動化** - 実装方式は異なるが結果は同じ
+- 自動シーズン開始の有無が主な違い
+
+### 推奨アクション
+1. **緊急性**: なし - データの整合性に問題なし、両環境とも自動化済み
+2. **実装方式の統一検討**: 本番環境の一括処理 vs 開発環境の分離処理
+3. **監視**: シーズン終了処理の動作確認を定期的に実施
+
+## 注意事項
+- **両環境とも自動化済み** - cronジョブによる完全自動化が実現
+- 本番環境: 1つの関数で終了→開始を一括処理
+- 開発環境: 2つのcronジョブで終了・開始を分離処理  
+- **データの整合性は両環境とも保たれている**

@@ -1,0 +1,94 @@
+# MonthlyLimitCard デザイン改善ログ
+
+## 実装日
+2025-01-23
+
+## 実装概要
+MonthlyLimitCardのデザインをPostPageのデザインスタイルに合わせて改善しました。
+
+## 変更内容
+### 1. メインコンテナーのスタイル改善
+**Before**: `bg-slate-800/40 border border-slate-700/50 rounded-xl p-4`
+**After**: `bg-slate-950 border border-slate-700 shadow-2xl rounded-xl p-6`
+
+### 2. ホバー効果の統一
+**Before**: `hover:bg-slate-800/60 hover:border-slate-600/50`
+**After**: `hover:border-slate-600`
+
+### 3. 内部コンテンツエリアの改善
+- PostPageの他のカードと同様の内部構造を採用
+- `bg-slate-900/80 backdrop-blur-sm rounded-xl p-6 border border-slate-600`
+- ホバー時のボーダー効果: `hover:border-cyan-500/30 transition-all`
+
+### 4. 統計表示の強化
+- フォントサイズの拡大: `text-3xl` → `text-4xl`
+- テキストの階層化: uppercase、tracking-widerを追加
+- 色彩の統一: `text-gray-400` → `text-slate-400`
+
+### 5. プログレスバーの改善
+- 高さの増加: `h-2` → `h-3`
+- グラデーション変更: `from-cyan-500 to-blue-500` → `from-cyan-500 to-purple-500`
+- アニメーション時間延長: `duration-300` → `duration-500`
+
+### 6. ヘッダーアイコンの改善
+- アイコン背景の追加: `bg-slate-800/50 rounded-full`
+- サイズ調整: 10x10のコンテナーに変更
+
+## デザイン一貫性の向上
+### PostPageとの統一ポイント
+1. **メインカード**: `bg-slate-950 border border-slate-700 shadow-2xl`
+2. **内部要素**: `bg-slate-900/80 backdrop-blur-sm`
+3. **ボーダー**: `border-slate-600` with `hover:border-cyan-500/30`
+4. **スペーシング**: `p-6` for consistent padding
+5. **色彩**: slate色系の統一、cyan-purpleグラデーション
+
+## UI/UX上の改善点
+### Before
+- 薄い背景色で視認性が低い
+- PostPageの他の要素と異なるデザイン
+- 小さなパディングで情報が詰まって見える
+
+### After
+- PostPageと統一されたデザイン言語
+- 十分な視認性とコントラスト
+- 適切なスペーシングで読みやすさ向上
+- ホバー効果でインタラクティブ感を演出
+
+## 技術的な詳細
+### スタイリングパターンの統一
+```tsx
+// メインコンテナー
+bg-slate-950 border border-slate-700 shadow-2xl
+
+// 内部コンテンツエリア
+bg-slate-900/80 backdrop-blur-sm rounded-xl p-6 border border-slate-600
+
+// ホバー効果
+hover:border-cyan-500/30 transition-all
+```
+
+### レスポンシブ対応
+- 既存のレスポンシブ機能を維持
+- パディングの増加によりモバイルでの視認性も向上
+
+## 影響範囲
+- MonthlyLimitCardの視覚的な改善
+- PostPageでの統一されたデザイン体験
+- BattlesPageでも同様の改善効果
+
+## テスト項目
+- [ ] PostPageでの表示確認
+- [ ] BattlesPageでの表示確認
+- [ ] デスクトップでのホバー効果確認
+- [ ] モバイルでの視認性確認
+- [ ] ダークテーマでのコントラスト確認
+
+## 今後の改善可能性
+- より詳細なアニメーション効果
+- 統計データの可視化強化
+- 季節やイベントに応じたテーマ変更機能
+
+## 関連ファイル
+- `src/components/ui/SubmissionCooldownCard.tsx`: 実装対象ファイル
+- `src/pages/PostPage.tsx`: デザイン参考元
+- `src/pages/BattlesPage.tsx`: 使用箇所

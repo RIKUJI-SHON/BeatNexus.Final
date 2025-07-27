@@ -1,0 +1,149 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# 🗑️ 左上総投票数タグ削除実装ログ
+
+## 📅 実装日
+2025-01-19
+
+## 🎯 概要
+バトルカードの左上にある総投票数タグを削除。VSアイコン下に新しい総投票数表示を追加したため、重複していた上部のタグを整理してUIをクリーンに。
+
+## 🔍 削除された要素
+
+### SimpleBattleCard.tsx
+- **左上総投票数バッジ**: `総投票数: X` のグレー系バッジ
+- **Usersアイコン**: 総投票数と一緒に表示されていたアイコン
+
+### SpecialBattleCard.tsx  
+- **左上総投票数バッジ**: `総投票数: X` のシアン系バッジ
+- **Usersアイコン**: 総投票数と一緒に表示されていたアイコン
+
+## 📝 実装内容
+
+### ✅ SimpleBattleCard.tsx の修正
+
+**変更前のヘッダー**:
+```tsx
+<div className="flex justify-between items-start mb-6">
+  <div className="flex items-center gap-2 text-xs font-bold px-3 py-1.5 rounded-full bg-gray-800/60 text-gray-300 border border-gray-600/30">
+    <Users className="h-3 w-3" />
+    {t('battleCard.totalVotes')}: {totalVotes}
+  </div>
+  <div className={cn('flex items-center gap-2 px-3 py-1 rounded-full backdrop-blur-sm', 
+    isExpired ? 'bg-gray-700/50 text-gray-300 border border-gray-600/30' : 
+    'bg-gray-800/60 text-gray-300 border border-gray-600/30')}>
+    <Clock className="h-3 w-3" />
+    <span className="text-xs font-medium">{timeRemaining}</span>
+  </div>
+</div>
+```
+
+**変更後のヘッダー**:
+```tsx
+<div className="flex justify-end items-start mb-6">
+  <div className={cn('flex items-center gap-2 px-3 py-1 rounded-full backdrop-blur-sm', 
+    isExpired ? 'bg-gray-700/50 text-gray-300 border border-gray-600/30' : 
+    'bg-gray-800/60 text-gray-300 border border-gray-600/30')}>
+    <Clock className="h-3 w-3" />
+    <span className="text-xs font-medium">{timeRemaining}</span>
+  </div>
+</div>
+```
+
+### ✅ SpecialBattleCard.tsx の修正
+
+**変更前のヘッダー**:
+```tsx
+<div className="flex justify-between items-start mb-6">
+  <div className="flex items-center gap-2 text-xs font-bold px-3 py-1.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
+    <Users className="h-3 w-3" />
+    {t('battleCard.totalVotes')}: {totalVotes}
+  </div>
+  <div className={cn('flex items-center gap-2 px-3 py-1 rounded-full backdrop-blur-sm', 
+    isExpired ? 'bg-gray-700/50 text-gray-300 border border-gray-600/30' : 
+    'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30')}>
+    <Clock className="h-3 w-3" />
+    <span className="text-xs font-medium">{timeRemaining}</span>
+  </div>
+</div>
+```
+
+**変更後のヘッダー**:
+```tsx
+<div className="flex justify-end items-start mb-6">
+  <div className={cn('flex items-center gap-2 px-3 py-1 rounded-full backdrop-blur-sm', 
+    isExpired ? 'bg-gray-700/50 text-gray-300 border border-gray-600/30' : 
+    'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30')}>
+    <Clock className="h-3 w-3" />
+    <span className="text-xs font-medium">{timeRemaining}</span>
+  </div>
+</div>
+```
+
+### ✅ インポートの最適化
+
+**変更前**:
+```tsx
+import { Clock, Users, Crown, MessageSquare, ThumbsUp } from 'lucide-react';
+```
+
+**変更後**:
+```tsx
+import { Clock, Crown, MessageSquare, ThumbsUp } from 'lucide-react';
+```
+
+## 🎯 実装のポイント
+
+### レイアウト調整
+- **justify-between → justify-end**: 左側要素削除により右寄せに変更
+- **時間表示**: 右上の位置を維持、機能は保持
+- **視覚バランス**: シンプルなヘッダーでカード全体がすっきり
+
+### 情報の集約
+- **重複排除**: 同じ情報（総投票数）の重複表示を解消
+- **視覚的階層**: VSアイコン下の表示により、より直感的な情報配置
+- **ユーザビリティ**: 情報が分散せず一箇所に集約
+
+## 📊 影響範囲
+- **SimpleBattleCard.tsx**: ヘッダーレイアウト簡素化
+- **SpecialBattleCard.tsx**: 同様の変更適用
+- **ユーザー体験**: 情報の重複がなくなりスッキリしたUI
+- **視覚的クリーンさ**: カード上部の情報密度が適正化
+
+## 🚀 期待される効果
+
+### UI/UXの向上
+- **情報の明確化**: 総投票数の表示場所が一箇所に統一
+- **視覚的整理**: カード上部がすっきりし、メインコンテンツに集中
+- **認知負荷軽減**: 重複情報の排除により理解しやすい
+
+### デザイン品質向上
+- **ミニマリズム**: 不要な要素を削減したクリーンなデザイン
+- **階層明確化**: 重要な情報（VSアイコン下の投票数）がより目立つ
+- **バランス改善**: ヘッダーの情報量が適正化
+
+## ✅ 検証項目
+- [x] SimpleBattleCardでの左上総投票数タグ削除確認
+- [x] SpecialBattleCardでの左上総投票数タグ削除確認
+- [x] 右上の時間表示正常動作確認
+- [x] VSアイコン下の総投票数表示維持確認
+- [x] 不要なインポート削除確認
+- [ ] レイアウトバランス確認
+- [ ] 各デバイスでの表示確認
+
+## 🔗 関連ファイル
+- `src/components/battle/SimpleBattleCard.tsx` - 標準バトルカード
+- `src/components/battle/SpecialBattleCard.tsx` - スペシャルバトルカード
+
+## 🔄 設計判断の背景
+- **情報の一元化**: 総投票数はVSアイコン下で十分
+- **視覚的整理**: カードが情報過多にならないよう配慮
+- **ユーザビリティ**: 重要な情報に焦点を当てたデザイン
+
+---
+**実装者**: AI Assistant  
+**レビュー**: 要レビュー  
+**ステータス**: 左上総投票数タグ削除完了

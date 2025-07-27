@@ -1,0 +1,925 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# 🚀 AWS S3 + CloudFront 動画ストレージ移行計画書
+
+## 📅 作成日
+2025-01-20
+
+## 🎯 概要
+BeatNexusプロジェクトの動画ストレージをSupabaseから**AWS S3 + CloudFront**に移行し、グローバルな高速配信とコスト最適化を実現する包括的な移行計画。
+
+## 🔍 現在の実装分析
+
+### 📁 現在のSupabaseストレージ実装
+```typescript
+// 現在の動画アップロード (PostPage.tsx)
+const { error: uploadError } = await supabase.storage
+  .from('videos')
+  .upload(filePath, videoFile);
+
+const { data: { publicUrl } } = supabase.storage
+  .from('videos')
+  .getPublicUrl(filePath);
+```
+
+### 🗄️ データベース内の動画URL保存箇所
+1. **submissions.video_url** - 投稿動画URL
+2. **archived_battles.player1_video_url** - アーカイブバトル動画URL (プレイヤー1)
+3. **archived_battles.player2_video_url** - アーカイブバトル動画URL (プレイヤー2)
+
+### 🔧 現在の削除システム
+```sql
+-- delete_user_videos_from_storage関数でSupabaseストレージから物理削除
+DELETE FROM storage.objects 
+WHERE bucket_id = 'videos' 
+  AND name = replace(v_storage_path, 'videos/', '');
+```
+
+## 📋 移行計画
+
+### 🚀 **Phase 1: AWS基盤構築** (実装期間: 2-3日)
+
+#### 1.1 AWS S3設定
+```bash
+# AWS CLIでバケット作成
+aws s3 mb s3://beatnexus-videos --region us-east-1
+
+# CORS設定
+aws s3api put-bucket-cors \
+  --bucket beatnexus-videos \
+  --cors-configuration file://cors-config.json
+```
+
+**cors-config.json:**
+```json
+{
+  "CORSRules": [
+    {
+      "AllowedOrigins": ["*"],
+      "AllowedHeaders": ["*"],
+      "AllowedMethods": ["PUT", "POST", "DELETE", "GET"],
+      "MaxAgeSeconds": 3000,
+      "ExposeHeaders": [
+        "x-amz-server-side-encryption",
+        "x-amz-request-id",
+        "x-amz-id-2"
+      ]
+    }
+  ]
+}
+```
+
+#### 1.2 CloudFront Distribution作成
+```typescript
+// AWS CDKでのCloudFront設定例
+const distribution = new cloudfront.Distribution(this, 'VideoDistribution', {
+  defaultBehavior: {
+    origin: new origins.S3Origin(bucket),
+    viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+    compress: true,
+    cachePolicyId: cloudfront.CachePolicyId.CACHING_OPTIMIZED,
+  },
+  priceClass: cloudfront.PriceClass.PRICE_CLASS_100,
+  geoRestriction: cloudfront.GeoRestriction.allowlist('US', 'JP', 'CN', 'IN', 'BR'),
+});
+```
+
+#### 1.3 IAM権限設定
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "s3:PutObject",
+        "s3:PutObjectAcl",
+        "s3:DeleteObject",
+        "s3:GetObject"
+      ],
+      "Resource": "arn:aws:s3:::beatnexus-videos/*"
+    }
+  ]
+}
+```
+
+### 🏗️ **Phase 2: ストレージ抽象化レイヤー実装** (実装期間: 3-4日)
+
+#### 2.1 新規依存関係追加
+```json
+// package.json への追加
+{
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.490.0",
+    "@aws-sdk/s3-request-presigner": "^3.490.0",
+    "@aws-sdk/lib-storage": "^3.490.0"
+  }
+}
+```
+
+#### 2.2 ストレージサービス抽象化
+```typescript
+// src/lib/storage/IVideoStorage.ts
+export interface IVideoStorage {
+  upload(file: File, userId: string): Promise<string>;
+  delete(url: string): Promise<void>;
+  getUrl(path: string): string;
+  generatePresignedUrl(key: string, contentType: string): Promise<string>;
+}
+
+// src/lib/storage/SupabaseVideoStorage.ts
+export class SupabaseVideoStorage implements IVideoStorage {
+  async upload(file: File, userId: string): Promise<string> {
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${crypto.randomUUID()}.${fileExt}`;
+    const filePath = `${userId}/${fileName}`;
+    
+    const { error } = await supabase.storage
+      .from('videos')
+      .upload(filePath, file);
+    
+    if (error) throw new Error(`Upload failed: ${error.message}`);
+    
+    const { data: { publicUrl } } = supabase.storage
+      .from('videos')
+      .getPublicUrl(filePath);
+    
+    return publicUrl;
+  }
+  
+  async delete(url: string): Promise<void> {
+    // 既存の削除ロジック
+  }
+  
+  getUrl(path: string): string {
+    return path; // Supabaseでは既にフルURL
+  }
+  
+  async generatePresignedUrl(key: string, contentType: string): Promise<string> {
+    throw new Error('Presigned URLs not supported by Supabase');
+  }
+}
+
+// src/lib/storage/S3VideoStorage.ts
+export class S3VideoStorage implements IVideoStorage {
+  private s3Client: S3Client;
+  private bucketName: string;
+  private cloudFrontDomain: string;
+  
+  constructor() {
+    this.s3Client = new S3Client({
+      region: process.env.AWS_REGION!,
+      credentials: {
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+      },
+    });
+    this.bucketName = process.env.AWS_S3_BUCKET!;
+    this.cloudFrontDomain = process.env.CLOUDFRONT_DOMAIN!;
+  }
+  
+  async upload(file: File, userId: string): Promise<string> {
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${crypto.randomUUID()}.${fileExt}`;
+    const key = `videos/${userId}/${fileName}`;
+    
+    const uploadCommand = new PutObjectCommand({
+      Bucket: this.bucketName,
+      Key: key,
+      Body: file,
+      ContentType: file.type,
+      ACL: 'public-read',
+    });
+    
+    await this.s3Client.send(uploadCommand);
+    
+    return `https://${this.cloudFrontDomain}/${key}`;
+  }
+  
+  async delete(url: string): Promise<void> {
+    const key = this.extractKeyFromUrl(url);
+    
+    const deleteCommand = new DeleteObjectCommand({
+      Bucket: this.bucketName,
+      Key: key,
+    });
+    
+    await this.s3Client.send(deleteCommand);
+  }
+  
+  getUrl(path: string): string {
+    if (path.startsWith('https://')) return path;
+    return `https://${this.cloudFrontDomain}/${path}`;
+  }
+  
+  async generatePresignedUrl(key: string, contentType: string): Promise<string> {
+    const command = new PutObjectCommand({
+      Bucket: this.bucketName,
+      Key: key,
+      ContentType: contentType,
+      ACL: 'public-read',
+    });
+    
+    return getSignedUrl(this.s3Client, command, { expiresIn: 3600 });
+  }
+  
+  private extractKeyFromUrl(url: string): string {
+    if (url.includes(this.cloudFrontDomain)) {
+      return url.split(`${this.cloudFrontDomain}/`)[1];
+    }
+    // Supabase URLの場合の処理
+    const match = url.match(/.*\/storage\/v1\/object\/public\/videos\/(.+)$/);
+    return match ? `videos/${match[1]}` : '';
+  }
+}
+
+// src/lib/storage/VideoStorageFactory.ts
+export class VideoStorageFactory {
+  static create(): IVideoStorage {
+    const provider = process.env.NEXT_PUBLIC_STORAGE_PROVIDER || 'supabase';
+    
+    switch (provider) {
+      case 's3':
+        return new S3VideoStorage();
+      case 'supabase':
+      default:
+        return new SupabaseVideoStorage();
+    }
+  }
+}
+```
+
+#### 2.3 環境変数設定
+```env
+# .env.local
+NEXT_PUBLIC_STORAGE_PROVIDER=s3
+AWS_REGION=us-east-1
+AWS_ACCESS_KEY_ID=your-access-key
+AWS_SECRET_ACCESS_KEY=your-secret-key
+AWS_S3_BUCKET=beatnexus-videos
+CLOUDFRONT_DOMAIN=d1234567890.cloudfront.net
+```
+
+### 🔄 **Phase 3: フロントエンド移行** (実装期間: 2-3日)
+
+#### 3.1 PostPage.tsx更新
+```typescript
+// src/pages/PostPage.tsx
+import { VideoStorageFactory } from '../lib/storage/VideoStorageFactory';
+
+const PostPage: React.FC = () => {
+  const videoStorage = VideoStorageFactory.create();
+  
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsUploading(true);
+    setError(null);
+    
+    try {
+      // ストレージ抽象化レイヤーを使用
+      const videoUrl = await videoStorage.upload(videoFile, user.id);
+      
+      // 既存のRPC呼び出しは変更なし
+      const { data: submissionResult, error: submissionError } = await supabase
+        .rpc('create_submission_with_cooldown_check', {
+          p_user_id: user.id,
+          p_video_url: videoUrl, // 新しいCloudFront URL
+          p_battle_format: battleFormat
+        });
+      
+      // 残りの処理は既存と同じ
+    } catch (err) {
+      setError(err instanceof Error ? err.message : '投稿に失敗しました');
+    } finally {
+      setIsUploading(false);
+    }
+  };
+};
+```
+
+#### 3.2 プリサインドURL対応（オプション）
+```typescript
+// src/hooks/usePresignedUpload.ts
+export const usePresignedUpload = () => {
+  const [uploadProgress, setUploadProgress] = useState(0);
+  
+  const uploadWithProgress = async (file: File, userId: string) => {
+    const videoStorage = VideoStorageFactory.create();
+    const key = `videos/${userId}/${crypto.randomUUID()}.${file.name.split('.').pop()}`;
+    
+    // プリサインドURL取得
+    const presignedUrl = await videoStorage.generatePresignedUrl(key, file.type);
+    
+    // XMLHttpRequestでプログレス付きアップロード
+    return new Promise<string>((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      
+      xhr.upload.onprogress = (event) => {
+        if (event.lengthComputable) {
+          const progress = (event.loaded / event.total) * 100;
+          setUploadProgress(progress);
+        }
+      };
+      
+      xhr.onload = () => {
+        if (xhr.status === 200) {
+          const cloudFrontUrl = `https://${process.env.NEXT_PUBLIC_CLOUDFRONT_DOMAIN}/${key}`;
+          resolve(cloudFrontUrl);
+        } else {
+          reject(new Error(`Upload failed: ${xhr.status}`));
+        }
+      };
+      
+      xhr.onerror = () => reject(new Error('Network error'));
+      
+      xhr.open('PUT', presignedUrl);
+      xhr.setRequestHeader('Content-Type', file.type);
+      xhr.send(file);
+    });
+  };
+  
+  return { uploadWithProgress, uploadProgress };
+};
+```
+
+### 🗄️ **Phase 4: バックエンド関数更新** (実装期間: 2日)
+
+#### 4.1 削除関数の更新
+```sql
+-- supabase/migrations/20250120000000_update_storage_deletion_for_s3.sql
+
+-- S3対応の動画削除関数
+CREATE OR REPLACE FUNCTION delete_user_videos_from_s3_and_supabase(p_user_id uuid)
+RETURNS JSON
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+  v_video_record RECORD;
+  v_deleted_count INTEGER := 0;
+  v_failed_count INTEGER := 0;
+  v_deleted_urls TEXT[] := '{}';
+  v_failed_urls TEXT[] := '{}';
+  v_storage_provider TEXT;
+BEGIN
+  -- 環境変数からストレージプロバイダーを取得
+  v_storage_provider := current_setting('app.storage_provider', true);
+  IF v_storage_provider IS NULL THEN
+    v_storage_provider := 'supabase'; -- デフォルト
+  END IF;
+  
+  -- ユーザーに関連する全ての動画URLを取得
+  FOR v_video_record IN
+    SELECT video_url, 'submissions' as source_table
+    FROM submissions 
+    WHERE user_id = p_user_id AND video_url IS NOT NULL
+    UNION
+    SELECT player1_video_url as video_url, 'archived_battles_p1' as source_table
+    FROM archived_battles 
+    WHERE player1_user_id = p_user_id AND player1_video_url IS NOT NULL
+    UNION
+    SELECT player2_video_url as video_url, 'archived_battles_p2' as source_table
+    FROM archived_battles 
+    WHERE player2_user_id = p_user_id AND player2_video_url IS NOT NULL
+  LOOP
+    BEGIN
+      IF v_storage_provider = 's3' THEN
+        -- S3の場合：CloudFrontまたはS3 URLから削除
+        -- 実際の削除はアプリケーション側で実行
+        -- ここではログ記録のみ
+        INSERT INTO video_deletion_queue (video_url, user_id, created_at)
+        VALUES (v_video_record.video_url, p_user_id, NOW());
+        
+        v_deleted_count := v_deleted_count + 1;
+        v_deleted_urls := v_deleted_urls || v_video_record.video_url;
+      ELSE
+        -- Supabaseの場合：既存ロジック
+        -- （既存のSupabase削除コード）
+      END IF;
+      
+    EXCEPTION WHEN OTHERS THEN
+      v_failed_count := v_failed_count + 1;
+      v_failed_urls := v_failed_urls || v_video_record.video_url;
+    END;
+  END LOOP;
+  
+  RETURN json_build_object(
+    'success', true,
+    'deleted_count', v_deleted_count,
+    'failed_count', v_failed_count,
+    'deleted_urls', v_deleted_urls,
+    'failed_urls', v_failed_urls,
+    'storage_provider', v_storage_provider
+  );
+END;
+$$;
+
+-- 動画削除キューテーブル作成
+CREATE TABLE IF NOT EXISTS video_deletion_queue (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  video_url TEXT NOT NULL,
+  user_id UUID NOT NULL,
+  deleted BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  processed_at TIMESTAMPTZ
+);
+```
+
+#### 4.2 Edge Function更新
+```typescript
+// supabase/functions/delete-user-account/index.ts
+import { S3Client, DeleteObjectCommand } from 'aws-sdk/client-s3';
+
+const s3Client = new S3Client({
+  region: Deno.env.get('AWS_REGION')!,
+  credentials: {
+    accessKeyId: Deno.env.get('AWS_ACCESS_KEY_ID')!,
+    secretAccessKey: Deno.env.get('AWS_SECRET_ACCESS_KEY')!,
+  },
+});
+
+async function deleteVideoFromS3(videoUrl: string): Promise<boolean> {
+  try {
+    // CloudFront URLからS3キーを抽出
+    const cloudFrontDomain = Deno.env.get('CLOUDFRONT_DOMAIN');
+    const bucketName = Deno.env.get('AWS_S3_BUCKET');
+    
+    let key: string;
+    if (videoUrl.includes(cloudFrontDomain!)) {
+      key = videoUrl.split(`${cloudFrontDomain}/`)[1];
+    } else {
+      // Supabase URLの場合の後方互換性
+      const match = videoUrl.match(/.*\/storage\/v1\/object\/public\/videos\/(.+)$/);
+      key = match ? `videos/${match[1]}` : '';
+    }
+    
+    if (!key) return false;
+    
+    const deleteCommand = new DeleteObjectCommand({
+      Bucket: bucketName,
+      Key: key,
+    });
+    
+    await s3Client.send(deleteCommand);
+    return true;
+  } catch (error) {
+    console.error('S3 deletion error:', error);
+    return false;
+  }
+}
+
+// アカウント削除時の処理を更新
+async function safeDeleteUserProfile(supabaseClient: SupabaseClient, userId: string) {
+  console.log(`Attempting to safely delete profile for user ${userId}`);
+  
+  // S3からの動画削除を先に実行
+  const storageProvider = Deno.env.get('STORAGE_PROVIDER') || 'supabase';
+  
+  if (storageProvider === 's3') {
+    // 削除キューから動画URLを取得して削除
+    const { data: queuedVideos } = await supabaseClient
+      .from('video_deletion_queue')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('deleted', false);
+    
+    if (queuedVideos) {
+      for (const video of queuedVideos) {
+        const deleted = await deleteVideoFromS3(video.video_url);
+        
+        // 削除状態を更新
+        await supabaseClient
+          .from('video_deletion_queue')
+          .update({ 
+            deleted: deleted,
+            processed_at: new Date().toISOString()
+          })
+          .eq('id', video.id);
+      }
+    }
+  }
+  
+  // 既存のアカウント削除処理
+  const { data, error } = await supabaseClient.rpc('safe_delete_user_account', {
+    p_user_id: userId
+  });
+  
+  // 残りは既存と同じ
+}
+```
+
+### 📊 **Phase 5: データ移行戦略** (実装期間: 3-5日)
+
+#### 5.1 段階的移行アプローチ
+```typescript
+// src/utils/videoMigration.ts
+export class VideoMigrationService {
+  private supabaseStorage = new SupabaseVideoStorage();
+  private s3Storage = new S3VideoStorage();
+  
+  async migrateVideo(supabaseUrl: string, userId: string): Promise<string> {
+    try {
+      // 1. Supabaseから動画をダウンロード
+      const response = await fetch(supabaseUrl);
+      const blob = await response.blob();
+      
+      // 2. File オブジェクトを作成
+      const fileName = this.extractFileName(supabaseUrl);
+      const file = new File([blob], fileName, { type: blob.type });
+      
+      // 3. S3にアップロード
+      const s3Url = await this.s3Storage.upload(file, userId);
+      
+      // 4. データベースのURLを更新
+      await this.updateDatabaseUrls(supabaseUrl, s3Url);
+      
+      // 5. Supabaseから削除
+      await this.supabaseStorage.delete(supabaseUrl);
+      
+      return s3Url;
+    } catch (error) {
+      console.error('Migration failed:', error);
+      throw error;
+    }
+  }
+  
+  private async updateDatabaseUrls(oldUrl: string, newUrl: string): Promise<void> {
+    // submissions テーブルの更新
+    await supabase
+      .from('submissions')
+      .update({ video_url: newUrl })
+      .eq('video_url', oldUrl);
+    
+    // archived_battles テーブルの更新
+    await supabase
+      .from('archived_battles')
+      .update({ player1_video_url: newUrl })
+      .eq('player1_video_url', oldUrl);
+    
+    await supabase
+      .from('archived_battles')
+      .update({ player2_video_url: newUrl })
+      .eq('player2_video_url', oldUrl);
+  }
+  
+  private extractFileName(url: string): string {
+    return url.split('/').pop() || 'unknown.mp4';
+  }
+}
+
+// マイグレーション実行スクリプト
+export async function runVideoMigration() {
+  const migrationService = new VideoMigrationService();
+  
+  // 全てのSupabase動画URLを取得
+  const { data: submissions } = await supabase
+    .from('submissions')
+    .select('id, video_url, user_id')
+    .like('video_url', '%supabase.co%');
+  
+  if (submissions) {
+    for (const submission of submissions) {
+      try {
+        console.log(`Migrating video: ${submission.video_url}`);
+        await migrationService.migrateVideo(
+          submission.video_url,
+          submission.user_id
+        );
+        console.log(`✅ Migration completed for submission ${submission.id}`);
+        
+        // レート制限対策
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      } catch (error) {
+        console.error(`❌ Migration failed for submission ${submission.id}:`, error);
+      }
+    }
+  }
+}
+```
+
+#### 5.2 移行監視ダッシュボード
+```typescript
+// src/pages/admin/migration-dashboard.tsx
+export default function MigrationDashboard() {
+  const [migrationStats, setMigrationStats] = useState({
+    total: 0,
+    migrated: 0,
+    failed: 0,
+    inProgress: 0
+  });
+  
+  useEffect(() => {
+    const checkMigrationStatus = async () => {
+      // Supabase URLs の数をカウント
+      const { count: totalSupabase } = await supabase
+        .from('submissions')
+        .select('*', { count: 'exact', head: true })
+        .like('video_url', '%supabase.co%');
+      
+      // S3 URLs の数をカウント
+      const { count: totalS3 } = await supabase
+        .from('submissions')
+        .select('*', { count: 'exact', head: true })
+        .like('video_url', '%cloudfront.net%');
+      
+      setMigrationStats({
+        total: (totalSupabase || 0) + (totalS3 || 0),
+        migrated: totalS3 || 0,
+        failed: 0, // エラーログから取得
+        inProgress: 0 // 進行中のジョブ数
+      });
+    };
+    
+    checkMigrationStatus();
+    const interval = setInterval(checkMigrationStatus, 5000);
+    
+    return () => clearInterval(interval);
+  }, []);
+  
+  return (
+    <div className="p-6">
+      <h1 className="text-2xl font-bold mb-6">Video Migration Dashboard</h1>
+      
+      <div className="grid grid-cols-4 gap-4 mb-6">
+        <Card>
+          <CardContent className="p-4">
+            <div className="text-2xl font-bold">{migrationStats.total}</div>
+            <div className="text-sm text-gray-600">Total Videos</div>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardContent className="p-4">
+            <div className="text-2xl font-bold text-green-600">{migrationStats.migrated}</div>
+            <div className="text-sm text-gray-600">Migrated</div>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardContent className="p-4">
+            <div className="text-2xl font-bold text-blue-600">{migrationStats.inProgress}</div>
+            <div className="text-sm text-gray-600">In Progress</div>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardContent className="p-4">
+            <div className="text-2xl font-bold text-red-600">{migrationStats.failed}</div>
+            <div className="text-sm text-gray-600">Failed</div>
+          </CardContent>
+        </Card>
+      </div>
+      
+      <div className="mb-4">
+        <div className="flex justify-between text-sm mb-2">
+          <span>Migration Progress</span>
+          <span>{Math.round((migrationStats.migrated / migrationStats.total) * 100)}%</span>
+        </div>
+        <div className="w-full bg-gray-200 rounded-full h-2">
+          <div 
+            className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+            style={{ width: `${(migrationStats.migrated / migrationStats.total) * 100}%` }}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+```
+
+### 🧪 **Phase 6: テスト & 検証** (実装期間: 2日)
+
+#### 6.1 自動テストスイート
+```typescript
+// src/tests/storage.test.ts
+import { describe, it, expect, beforeEach } from 'vitest';
+import { S3VideoStorage } from '../lib/storage/S3VideoStorage';
+
+describe('S3VideoStorage', () => {
+  let storage: S3VideoStorage;
+  
+  beforeEach(() => {
+    storage = new S3VideoStorage();
+  });
+  
+  it('should upload video and return CloudFront URL', async () => {
+    const mockFile = new File(['test'], 'test.mp4', { type: 'video/mp4' });
+    const url = await storage.upload(mockFile, 'user123');
+    
+    expect(url).toMatch(/^https:\/\/.*\.cloudfront\.net\/videos\/user123\/.*\.mp4$/);
+  });
+  
+  it('should delete video from S3', async () => {
+    const testUrl = 'https://d123.cloudfront.net/videos/user123/test.mp4';
+    
+    await expect(storage.delete(testUrl)).resolves.not.toThrow();
+  });
+  
+  it('should generate valid presigned URL', async () => {
+    const presignedUrl = await storage.generatePresignedUrl(
+      'videos/user123/test.mp4',
+      'video/mp4'
+    );
+    
+    expect(presignedUrl).toMatch(/^https:\/\/.*\.amazonaws\.com\/.*\?.*Signature=.*/);
+  });
+});
+```
+
+#### 6.2 パフォーマンステスト
+```typescript
+// src/tests/performance.test.ts
+import { describe, it, expect } from 'vitest';
+
+describe('Performance Tests', () => {
+  it('should load video faster with CloudFront', async () => {
+    const cloudFrontUrl = 'https://d123.cloudfront.net/videos/test.mp4';
+    const supabaseUrl = 'https://project.supabase.co/storage/v1/object/public/videos/test.mp4';
+    
+    const cloudFrontStart = performance.now();
+    await fetch(cloudFrontUrl, { method: 'HEAD' });
+    const cloudFrontTime = performance.now() - cloudFrontStart;
+    
+    const supabaseStart = performance.now();
+    await fetch(supabaseUrl, { method: 'HEAD' });
+    const supabaseTime = performance.now() - supabaseStart;
+    
+    console.log(`CloudFront: ${cloudFrontTime}ms, Supabase: ${supabaseTime}ms`);
+    expect(cloudFrontTime).toBeLessThan(supabaseTime * 0.8); // 20%以上の改善を期待
+  });
+});
+```
+
+### 📈 **Phase 7: 監視 & 最適化** (継続的)
+
+#### 7.1 CloudWatch監視設定
+```typescript
+// AWS CDKでのモニタリング設定
+const alarm = new cloudwatch.Alarm(this, 'HighErrorRate', {
+  metric: distribution.metricErrorRate(),
+  threshold: 5,
+  evaluationPeriods: 2,
+  treatMissingData: cloudwatch.TreatMissingData.NOT_BREACHING,
+});
+
+const dashboard = new cloudwatch.Dashboard(this, 'VideoDeliveryDashboard', {
+  widgets: [
+    [
+      new cloudwatch.GraphWidget({
+        title: 'CloudFront Cache Hit Rate',
+        left: [distribution.metricCacheHitRate()],
+      }),
+    ],
+    [
+      new cloudwatch.GraphWidget({
+        title: 'S3 Request Metrics',
+        left: [
+          bucket.metric('NumberOfObjects'),
+          bucket.metric('BucketSizeBytes'),
+        ],
+      }),
+    ],
+  ],
+});
+```
+
+#### 7.2 コスト監視
+```typescript
+// src/utils/costMonitoring.ts
+export class CostMonitoringService {
+  async getStorageCosts(): Promise<CostBreakdown> {
+    // AWS Cost Explorer APIを使用してコスト分析
+    const s3Costs = await this.getS3Costs();
+    const cloudFrontCosts = await this.getCloudFrontCosts();
+    const dataTransferCosts = await this.getDataTransferCosts();
+    
+    return {
+      s3Storage: s3Costs,
+      cloudFrontDelivery: cloudFrontCosts,
+      dataTransfer: dataTransferCosts,
+      total: s3Costs + cloudFrontCosts + dataTransferCosts,
+    };
+  }
+  
+  async compareWithSupabase(): Promise<CostComparison> {
+    const currentCosts = await this.getStorageCosts();
+    const estimatedSupabaseCosts = await this.estimateSupabaseCosts();
+    
+    return {
+      s3Total: currentCosts.total,
+      supabaseEstimate: estimatedSupabaseCosts,
+      savings: estimatedSupabaseCosts - currentCosts.total,
+      savingsPercentage: ((estimatedSupabaseCosts - currentCosts.total) / estimatedSupabaseCosts) * 100,
+    };
+  }
+}
+```
+
+## 📊 期待される効果
+
+### 🚀 パフォーマンス向上
+- **配信速度**: 50-80%改善（グローバルエッジキャッシュ）
+- **アップロード速度**: 30-60%改善（S3 Transfer Acceleration）
+- **レスポンス時間**: 平均200ms削減
+
+### 💰 コスト最適化
+| 容量 | Supabase | AWS S3+CloudFront | 削減率 |
+|------|----------|-------------------|--------|
+| 100GB | ~$25/月 | ~$8/月 | 68% |
+| 1TB | ~$250/月 | ~$35/月 | 86% |
+| 10TB | 制限あり | ~$280/月 | - |
+
+### 📈 スケーラビリティ
+- **容量制限**: 実質無制限
+- **帯域幅**: 無制限（CloudFront）
+- **地理的分散**: 世界400+エッジロケーション
+
+## ⚠️ リスク & 対策
+
+### 技術的リスク
+1. **移行中のダウンタイム**
+   - 対策: 段階的移行、ロールバック計画
+2. **データ損失リスク**
+   - 対策: 移行前完全バックアップ、検証プロセス
+3. **互換性問題**
+   - 対策: 抽象化レイヤー、後方互換性維持
+
+### 運用リスク
+1. **AWS依存性**
+   - 対策: マルチクラウド対応設計
+2. **コスト超過**
+   - 対策: 詳細な監視、自動アラート
+3. **セキュリティ**
+   - 対策: IAM最小権限、暗号化、監査ログ
+
+## 📅 実装スケジュール
+
+| Phase | 期間 | 担当 | 主要タスク |
+|-------|------|------|-----------|
+| Phase 1 | Day 1-3 | DevOps | AWS基盤構築 |
+| Phase 2 | Day 4-7 | Backend | ストレージ抽象化 |
+| Phase 3 | Day 8-10 | Frontend | UI移行 |
+| Phase 4 | Day 11-12 | Backend | 関数更新 |
+| Phase 5 | Day 13-17 | Full Team | データ移行 |
+| Phase 6 | Day 18-19 | QA | テスト & 検証 |
+| Phase 7 | Day 20+ | DevOps | 監視 & 最適化 |
+
+## 🎯 成功指標
+
+### KPI設定
+1. **パフォーマンス**
+   - 動画読み込み時間: < 2秒
+   - アップロード成功率: > 99%
+   - CDNキャッシュヒット率: > 85%
+
+2. **コスト**
+   - 月間ストレージコスト: < $100
+   - データ転送コスト: < $50
+   - 総コスト削減: > 60%
+
+3. **ユーザー体験**
+   - 動画投稿完了率: > 95%
+   - エラー率: < 1%
+   - ユーザー満足度: > 4.5/5
+
+## 🔄 ロールバック計画
+
+### 緊急時対応
+1. **即座切り戻し**: 環境変数変更でSupabaseに復帰
+2. **データ整合性**: 移行ログベースでの状態復元
+3. **段階的復旧**: 機能別の個別ロールバック
+
+### 手順
+```bash
+# 緊急ロールバック
+export NEXT_PUBLIC_STORAGE_PROVIDER=supabase
+# アプリケーション再起動
+pm2 restart beatnexus
+
+# データベース復旧
+psql -d beatnexus -f rollback_migration.sql
+```
+
+---
+
+## 📝 まとめ
+
+この移行計画により、BeatNexusは以下を実現します：
+
+✅ **グローバル高速配信** - CloudFrontによる世界規模の高速化  
+✅ **コスト大幅削減** - 60-80%のストレージコスト削減  
+✅ **無制限スケール** - 将来の成長に対応する拡張性  
+✅ **運用効率化** - 自動化された監視と最適化  
+✅ **ユーザー体験向上** - 高速で安定した動画サービス  
+
+**実装開始日**: 2025-01-21  
+**完了予定日**: 2025-02-10  
+**レビュー者**: 開発チーム全体  
+**承認者**: プロジェクトオーナー  
+
+---
+**🎵 次世代のビートボクシングプラットフォームへ、さらなる進化を！ 🎵**
+

@@ -1,0 +1,126 @@
+# 📝 事前登録者限定サインアップ機能 実装ログ
+
+## 📅 実装日
+2025-07-17
+
+## 🎯 概要
+事前登録者限定の先行リリース期間中、新規アカウント作成を許可されたメールアドレスのみに制限する機能の実装が完了しました。
+
+## ✅ 実装内容
+
+### 1. データベース実装
+- **マイグレーションファイル**: `supabase/migrations/20250715100000_create_pre_registered_users_table.sql`
+- **テーブル作成**: `pre_registered_users` テーブルを作成
+  - `id`: UUID主キー
+  - `email`: 一意制約付きメールアドレス
+  - `created_at`: 作成日時
+- **Row Level Security (RLS)**:
+  - テーブルでRLSを有効化
+  - service_roleのみ全操作を許可するポリシーを作成
+- **適用環境**: 開発環境・本番環境の両方に適用完了
+
+### 2. バックエンド実装 (Edge Function)
+- **Function名**: `validate-preregistration`
+- **ファイル**: `supabase/functions/validate-preregistration/index.ts`
+- **機能**:
+  - POSTリクエストでメールアドレスを受け取り
+  - メールアドレス形式のバリデーション
+  - `pre_registered_users` テーブルを検索
+  - `{"isRegistered": boolean}` 形式でレスポンス
+- **セキュリティ**: service_role keyを使用してデータベースアクセス
+- **CORS設定**: フロントエンドからのアクセスを許可
+- **デプロイ状況**: 開発環境・本番環境の両方にデプロイ完了
+
+### 3. フロントエンド実装
+#### authStore.ts
+- **新規関数追加**: `validatePreregistration`
+  - Edge Functionを呼び出してメールアドレスを検証
+- **signUp関数更新**:
+  - サインアップ前に事前登録チェックを実行
+  - 未登録の場合はエラーを投げてサインアップを中止
+  - 翻訳済みエラーメッセージを使用
+
+#### 翻訳ファイル更新
+- **日本語** (`src/i18n/locales/ja.json`):
+  - `auth.error.emailNotPreregistered`: 未登録メールアドレスのエラー
+  - `auth.error.preregistrationCheckFailed`: 検証失敗エラー
+- **英語** (`src/i18n/locales/en.json`):
+  - 同様のエラーメッセージを英語で追加
+
+### 4. テストデータ
+- **追加データ**:
+  - `test@example.com`
+  - `demo@beatnexus.com`
+  - `beta@test.jp`
+- **環境**: 開発環境・本番環境の両方に追加
+
+## 🔧 技術詳細
+
+### セキュリティ設計
+- **RLS有効**: `pre_registered_users` テーブルはservice_roleのみアクセス可能
+- **Edge Function**: service_role keyを使用してセキュアにデータベースアクセス
+- **フロントエンド**: 直接的なデータベースアクセスは不可、Edge Function経由のみ
+
+### エラーハンドリング
+- **ネットワークエラー**: 適切なエラーメッセージでユーザーに通知
+- **バリデーションエラー**: メールアドレス形式チェック
+- **未登録エラー**: 分かりやすいメッセージで案内
+- **国際化対応**: 日英両言語でエラーメッセージを提供
+
+### データフロー
+```
+1. ユーザーがサインアップフォームを入力
+2. フロントエンド: validate-preregistration Edge Functionを呼び出し
+3. Edge Function: pre_registered_usersテーブルを検索
+4. 結果判定:
+   - 登録済み → Supabase Authでサインアップ続行
+   - 未登録 → エラーメッセージ表示、サインアップ中止
+```
+
+## 📊 影響範囲
+- **データベース**: 新規テーブル追加（既存機能への影響なし）
+- **Edge Function**: 新規追加（既存機能への影響なし）
+- **フロントエンド**: サインアップフローの強化（既存ログイン機能への影響なし）
+
+## 🚀 使用方法
+
+### 管理者向け: 事前登録ユーザーの追加
+```sql
+-- 新しいメールアドレスを事前登録リストに追加
+INSERT INTO pre_registered_users (email) VALUES ('user@example.com');
+
+-- 登録済みメールアドレス一覧確認
+SELECT email, created_at FROM pre_registered_users ORDER BY created_at DESC;
+```
+
+### 一般ユーザー向け
+1. 事前登録されたメールアドレスでサインアップフォームにアクセス
+2. 通常通りアカウント情報を入力
+3. 事前登録チェックが自動実行される
+4. 登録済みの場合 → アカウント作成続行
+5. 未登録の場合 → エラーメッセージ表示
+
+## ✅ 検証項目
+- [x] `pre_registered_users` テーブルが正しく作成されていること
+- [x] RLSポリシーが正しく設定されていること
+- [x] `validate-preregistration` Edge Functionが両環境にデプロイされていること
+- [x] 登録済みメールアドレスでサインアップが成功すること
+- [x] 未登録メールアドレスでサインアップがブロックされること
+- [x] エラーメッセージが適切に表示されること
+- [x] 日英両言語で正しくエラーメッセージが表示されること
+
+## 📝 今後の拡張案
+- **管理画面**: 事前登録ユーザーの管理UIの追加
+- **招待システム**: 招待リンク機能の実装
+- **バッチ登録**: CSVファイルからの一括登録機能
+- **期限管理**: 事前登録の有効期限設定機能
+
+---
+**実装者**: AI Assistant  
+**レビュー**: 要レビュー  
+**ステータス**: 実装完了、テストデータ投入済み
+**次のステップ**: ユーザビリティテスト実施
+description:
+globs:
+alwaysApply: false
+---

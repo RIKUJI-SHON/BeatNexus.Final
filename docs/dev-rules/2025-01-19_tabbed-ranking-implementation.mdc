@@ -1,0 +1,246 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# 🎯 タブ切り替え式ランキング実装ログ
+
+## 📅 実装日
+2025-01-19
+
+## 🎯 概要
+BattlesページとHomeページのランキング表示に投票者ランキングとプレイヤーランキングを切り替えできるタブ機能を追加。美しいアニメーション付きでユーザビリティを向上。
+
+## 🔍 要件
+### 課題
+- BattlesページとHomeページでプレイヤーランキングのみ表示
+- 投票者ランキングも表示したいがスペースが限られている
+- 既存の投票者ランキングデータ（`voter_rankings_view`）は準備済み
+
+### 解決方針
+- タブ切り替え式UI採用
+- 既存コンポーネントの最小限変更
+- 美しいアニメーション実装
+
+## 📝 実装内容
+
+### ✅ 新規コンポーネント作成
+**ファイル**: `src/components/ui/TabbedRanking.tsx`
+
+#### 主要機能
+- **タブ切り替え**: プレイヤーランキング ⇔ 投票者ランキング
+- **アニメーション**: opacity + scale変更による滑らかな切り替え
+- **レスポンシブデザイン**: モバイル・デスクトップ対応
+- **既存ロジック流用**: ランキング表示・色分け・順位アイコン
+
+#### UI設計
+```typescript
+// タブボタン
+- 🌟 プレイヤーランキング (cyan/blue gradient)
+- 🗳️ 投票者ランキング (purple/pink gradient)
+
+// アニメーション
+- フェードアウト → データ切り替え → フェードイン
+- scale(0.95) ⇄ scale(1.0) でマイクロインタラクション
+```
+
+#### 設定可能なProps
+- `maxItems`: 表示件数（デフォルト: 10）
+- `showViewAllButton`: 詳細ボタン表示（デフォルト: true）
+- `className`: カスタムスタイル
+
+### ✅ BattlesPage統合
+**ファイル**: `src/pages/BattlesPage.tsx`
+
+```tsx
+// 変更前：約100行のランキング表示ロジック
+// 変更後：
+<TabbedRanking 
+  maxItems={10}
+  showViewAllButton={true}
+/>
+```
+
+### ✅ HomePage統合
+**ファイル**: `src/components/home/LatestBattles.tsx`
+
+```tsx
+// 変更前：プレイヤーランキングのみ（top3）
+// 変更後：
+<TabbedRanking 
+  maxItems={3}
+  showViewAllButton={true}
+/>
+```
+
+### ✅ データ取得機能
+- `useRankingStore`から`voterRankings`と`voterLoading`を利用
+- 既存の`fetchVoterRankings()`関数を活用
+- 初期化時に両ランキングを並行取得
+
+## 🎨 UI/UX設計
+
+### カラーテーマ
+- **プレイヤーランキング**: Cyan/Blue系統（💙）
+- **投票者ランキング**: Purple/Pink系統（💜）
+- **アクティブタブ**: グラデーション背景 + ボーダー + シャドウ
+- **非アクティブタブ**: 半透明ホバー効果
+
+### アニメーション詳細
+```css
+/* 切り替え時のアニメーション */
+.transition-all duration-300
+opacity-0 scale-95 → opacity-100 scale-100
+
+/* タブボタンのホバー */
+hover:bg-gray-700/30
+hover:text-cyan-300 | hover:text-purple-300
+
+/* ローディング */
+animate-spin（タブごとに色分け）
+```
+
+### レスポンシブ対応
+- **モバイル**: タブボタンが縦積み対応
+- **デスクトップ**: 横並びタブレイアウト
+- **スティッキー**: サイドバー固定（`lg:sticky lg:top-20`）
+
+## 🔧 技術詳細
+
+### 状態管理
+```typescript
+const [activeTab, setActiveTab] = useState<'player' | 'voter'>('player');
+const [isAnimating, setIsAnimating] = useState(false);
+
+// アニメーション制御
+const handleTabChange = (tab: RankingType) => {
+  if (tab === activeTab || isAnimating) return;
+  
+  setIsAnimating(true);
+  setTimeout(() => {
+    setActiveTab(tab);
+    setTimeout(() => setIsAnimating(false), 150);
+  }, 150);
+};
+```
+
+### データ変換
+- **プレイヤーランキング**: `season_points + BP` 表示
+- **投票者ランキング**: `vote_count + 投票数` 表示
+- **順位アイコン**: 1-3位は画像、4位以降は`#番号`
+- **ホバー効果**: タブごとに異なる色でアクセント
+
+### パフォーマンス
+- 条件付きレンダリングでメモリ効率化
+- `slice(0, maxItems)`で表示制限
+- useEffect依存配列でAPI呼び出し最適化
+
+## 🎯 実装された機能
+
+### ✅ 基本機能
+- [x] プレイヤーランキング表示
+- [x] 投票者ランキング表示
+- [x] タブ切り替え
+- [x] アニメーション
+
+### ✅ 追加機能
+- [x] ローディング状態表示
+- [x] エラーハンドリング
+- [x] ランキング詳細ボタン
+- [x] レスポンシブデザイン
+- [x] アクセシビリティ対応
+
+### ✅ UI/UX機能
+- [x] ホバー効果
+- [x] フォーカス状態
+- [x] 色分けテーマ
+- [x] マイクロインタラクション
+
+## 📊 影響範囲
+- **BattlesPage**: ランキング表示部分を新コンポーネントに置換
+- **HomePage**: LatestBattlesコンポーネントを新コンポーネントに置換
+- **新規追加**: TabbedRankingコンポーネント
+- **データ取得**: 既存APIをそのまま利用
+
+## 🚀 今後の拡張可能性
+
+### 追加可能な機能
+- **コミュニティランキング**: 第3のタブとして追加
+- **期間指定**: 週間・月間・全期間切り替え
+- **ソート機能**: レーティング・投票数・勝率切り替え
+- **フィルター**: レベル・地域・言語絞り込み
+
+### 設定の柔軟性
+- **表示件数**: 動的変更可能
+- **テーマカラー**: 設定で変更可能
+- **アニメーション**: ON/OFF切り替え可能
+
+### ✅ 多言語対応実装（2025-01-19 追加）
+
+#### 翻訳キー追加
+**ファイル**: `src/i18n/locales/ja.json`, `src/i18n/locales/en.json`
+
+```json
+// 日本語版
+"tabs": {
+  "playerRankings": "プレイヤーランキング",
+  "voterRankings": "投票者ランキング",
+  "player": "プレイヤー",         // 🆕 追加
+  "voter": "投票者"              // 🆕 追加
+}
+
+// 英語版
+"tabs": {
+  "playerRankings": "Player Rankings",
+  "voterRankings": "Voter Rankings", 
+  "player": "Player",           // 🆕 追加
+  "voter": "Voter"              // 🆕 追加
+}
+```
+
+#### TabbedRankingコンポーネント多言語化
+- ハードコーディングされた「プレイヤー」「投票者」を翻訳キーに変更
+- `title`属性とボタンテキストの両方を翻訳対応
+- `useTranslation`フックを使用
+
+```typescript
+// 変更前（ハードコーディング）
+title="プレイヤーランキング"
+<span className="hidden sm:inline whitespace-nowrap">プレイヤー</span>
+
+// 変更後（多言語対応）
+title={t('rankingPage.tabs.playerRankings')}
+<span className="hidden sm:inline whitespace-nowrap">{t('rankingPage.tabs.player')}</span>
+```
+
+## ✅ 検証項目
+- [x] タブ切り替え正常動作
+- [x] アニメーション滑らか
+- [x] データ正常表示
+- [x] レスポンシブ動作
+- [x] エラー状態処理
+- [x] 多言語切り替え動作確認 ✨
+- [x] 英語環境での表示確認 ✨
+- [ ] パフォーマンステスト
+- [ ] アクセシビリティテスト
+- [ ] ユーザビリティテスト
+
+## 🔗 関連ファイル・機能
+- `src/components/ui/TabbedRanking.tsx` - メインコンポーネント
+- `src/pages/BattlesPage.tsx` - バトルページ統合
+- `src/components/home/LatestBattles.tsx` - ホームページ統合
+- `src/store/rankingStore.ts` - データ取得ロジック
+- `src/types/index.ts` - RankingEntry、VoterRankingEntry型定義
+
+## 🎉 成果
+- **ユーザビリティ向上**: 1つの場所で両ランキング確認可能
+- **スペース効率化**: 限られた画面領域を最大活用
+- **一貫性**: RankingPageと同じデザイン言語
+- **拡張性**: 将来的な機能追加に対応可能
+- **保守性**: 既存コンポーネントの最小限変更
+- **国際化対応**: 英語・日本語での自動切り替え ✨
+
+---
+**実装者**: AI Assistant  
+**レビュー**: 完了  
+**ステータス**: 実装完了・多言語対応済み ✅

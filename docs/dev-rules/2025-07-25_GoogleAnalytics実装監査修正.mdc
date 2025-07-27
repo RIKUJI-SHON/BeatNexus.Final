@@ -1,0 +1,220 @@
+# Googleアナリティクス実装監査・修正ログ
+
+**日付**: 2025年7月25日  
+**作業者**: AI Assistant  
+**作業内容**: Googleアナリティクス実装の監査とログイン追跡の修正
+
+## 🔍 監査結果
+
+### 発見された問題
+
+1. **ログイン追跡の問題**
+   - **問題**: ユーザーがログインしても `userLogin` イベントが発火しない
+   - **原因**: `signIn()` 後に `AuthProvider` の `onAuthStateChange` で `setUserFromAuth()` が呼ばれ、常に `isNewLogin: false` でアナリティクスが設定されていた
+   - **影響**: 実際のログインとページリロード/セッション復元が区別できず、正確なユーザー行動分析ができない
+
+2. **ランキング追跡の改善余地**
+   - **問題**: ランキング種別（現在シーズン/歴代）が区別されていない
+   - **影響**: 詳細なランキング利用分析ができない
+
+3. **エラー追跡の不足**
+   - **問題**: グローバルエラー・未処理Promise拒否の追跡なし
+   - **影響**: アプリケーションエラーの包括的な分析ができない
+
+## 🔧 実施した修正
+
+### 1. ログイン追跡の修正
+
+#### authStore.ts の修正
+```typescript
+// インターフェースにフラグを追加
+interface AuthState {
+  // ... 既存フィールド
+  isUserInitiatedLogin?: boolean;
+}
+
+// signIn 実行時にフラグを設定
+signIn: async (email: string, password: string) => {
+  const { error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
+  if (error) throw error;
+  
+  // ログインアクションを実行したことをマーク
+  set({ isUserInitiatedLogin: true });
+}
+
+// setUserFromAuth でフラグを確認してイベント発火を制御
+setUserFromAuth: (user) => {
+  const state = useAuthStore.getState();
+  const isUserLogin = state.isUserInitiatedLogin;
+  
+  set({ user, loading: false, isUserInitiatedLogin: false });
+  
+  if (user) {
+    // ユーザー主導のログインの場合のみログインイベント付きで設定
+    setUserProperties(user.id, isUserLogin);
+  }
+}
+```
+
+#### AuthModal.tsx の修正
+```typescript
+// rememberMe 引数を削除（未使用のため）
+await signIn(email, password); // 修正前: signIn(email, password, rememberMe)
+```
+
+### 2. ランキング追跡の詳細化
+
+#### analytics.ts の修正
+```typescript
+// ランキング追跡にサブタイプを追加
+rankingView: (rankingType: 'rating' | 'voter', subType?: string) => {
+  const label = subType ? `${rankingType}_${subType}` : rankingType;
+  trackEvent('view_ranking', 'ranking', label);
+}
+```
+
+#### RankingPage.tsx の修正
+```typescript
+// より詳細な追跡を実装
+const handleRankingTypeChange = (type: RankingType) => {
+  setActiveRankingType(type);
+  trackBeatNexusEvents.rankingView('rating', type);
+};
+
+const handleVoterRankingTypeChange = (type: VoterRankingType) => {
+  setActiveVoterRankingType(type);
+  trackBeatNexusEvents.rankingView('voter', type);
+};
+```
+
+### 3. エラー追跡の強化
+
+#### ErrorBoundary.tsx の作成
+```typescript
+export class ErrorBoundary extends Component<Props, State> {
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.error('ErrorBoundary caught an error:', error, errorInfo);
+    
+    // Google Analyticsにエラーを送信
+    trackError(
+      error.message, 
+      `${error.stack || ''}\n\nComponent Stack: ${errorInfo.componentStack}`
+    );
+  }
+  // ... エラーUI表示処理
+}
+```
+
+#### App.tsx のグローバルエラーハンドリング
+```typescript
+function App() {
+  // グローバルエラーハンドリング
+  useEffect(() => {
+    const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
+      console.error('Unhandled promise rejection:', event.reason);
+      trackError('Unhandled Promise Rejection', event.reason?.toString());
+    };
+
+    const handleError = (event: ErrorEvent) => {
+      console.error('Global error:', event.error);
+      trackError('Global Error', `${event.message} at ${event.filename}:${event.lineno}:${event.colno}`);
+    };
+
+    window.addEventListener('unhandledrejection', handleUnhandledRejection);
+    window.addEventListener('error', handleError);
+
+    return () => {
+      window.removeEventListener('unhandledrejection', handleUnhandledRejection);
+      window.removeEventListener('error', handleError);
+    };
+  }, []);
+
+  return (
+    <ErrorBoundary>
+      {/* 既存のプロバイダー構造 */}
+    </ErrorBoundary>
+  );
+}
+```
+
+## ✅ 修正後の効果
+
+### 1. 正確なログイン追跡
+- ✅ 実際のユーザーログインのみが `userLogin` イベントとして追跡される
+- ✅ ページリロード・セッション復元は新規ユーザーとしてカウントされない
+- ✅ 新規登録とログインが適切に区別される
+
+### 2. 詳細なランキング分析
+- ✅ `rating_current_season`, `rating_all_time`, `voter_current_season`, `voter_all_time` で詳細追跡
+- ✅ ユーザーのランキング利用パターンを詳細分析可能
+
+### 3. 包括的なエラー追跡
+- ✅ Reactコンポーネントエラーの自動追跡
+- ✅ 未処理Promise拒否の追跡
+- ✅ グローバルJavaScriptエラーの追跡
+
+## 🧪 検証方法
+
+### 開発環境での確認
+1. ブラウザコンソールで `GA [DEV]:` ログを確認
+2. ログインフローでの `Login event would be tracked` ログ確認
+3. ページリロード時にログインイベントが発火しないことを確認
+
+### 本番環境での確認
+1. GA4リアルタイムレポートでイベント確認
+2. ユーザープロパティの設定確認
+3. エラーレポートの確認
+
+## 📊 追跡されるイベント一覧
+
+### ユーザー関連
+- `register` (ユーザー登録)
+- `login` (ユーザーログイン) - 修正済み
+- `logout` (ユーザーログアウト)
+- `view_profile` (プロフィール閲覧)
+- `edit_profile` (プロフィール編集)
+
+### バトル関連
+- `view_active_battle` (アクティブバトル閲覧)
+- `view_archived_battle` (アーカイブバトル閲覧)
+- `vote_battle` (バトル投票) - 重複防止済み
+- `share_battle` (バトル共有)
+
+### 投稿関連
+- `submit_video` (動画投稿) - 成功時のみ
+- `upload_video` (動画アップロード)
+
+### ナビゲーション関連
+- `view_ranking` (ランキング閲覧) - 詳細化済み
+- `search` (検索実行)
+- `click_link` (リンククリック)
+- `change_language` (言語変更)
+
+### システム関連
+- `error` (エラー発生) - 新規追加
+- `timing_complete` (パフォーマンス計測)
+- 自動ページビュー追跡
+
+## 🔄 今後の保守・拡張
+
+### 定期的な確認事項
+1. GA4レポートでイベント発火数の確認
+2. エラーレポートの定期レビュー
+3. 新機能追加時のイベント追跡実装
+
+### 拡張予定
+1. コンバージョン追跡（サブスクリプション等）
+2. 詳細なユーザー行動分析
+3. A/Bテスト対応
+
+## 📝 関連ドキュメント
+
+- [GoogleAnalytics実装仕様書.md](../docs/GoogleAnalytics実装仕様書.md) - 作成済み
+- [BeatNexus.mdc](../docs/BeatNexus.mdc) - 全体仕様
+
+---
+
+**注意**: この修正により、ログイン追跡の精度が大幅に向上しました。今後の機能追加時も、適切なイベント追跡の実装を心がけてください。

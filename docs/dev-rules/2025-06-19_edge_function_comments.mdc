@@ -1,0 +1,125 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# 📝 Edge Function コメント明示化実装ログ
+
+## 📅 実装日
+2025-06-19
+
+## 🎯 概要
+アカウント削除Edge Functionにおける関数バージョンの混乱を解消。
+safe_delete_user_account が内部で v4 を呼び出すことをコメントで明示し、
+将来の開発者による誤解や不適切な「修正」を防止。
+
+## 🔍 発見された問題
+### 関数名とバージョンの不一致による混乱
+- **要件定義書**: `safe_delete_user_account_v4` を使用すべきと記載
+- **実際のコード**: `safe_delete_user_account` を呼び出し（v4って書いてない）
+- **実際のDB**: `safe_delete_user_account` は内部で `safe_delete_user_account_v4` を呼ぶラッパー
+- **結果**: 機能的には正しいが、コードだけ見ると古いバージョンに見える
+
+## 📝 実装内容
+
+### ✅ ファイルヘッダーコメント追加
+**ファイル**: `supabase/functions/delete-user-account/index.ts`
+
+```typescript
+/**
+ * 🗑️ BeatNexus ユーザーアカウント削除 Edge Function
+ * 
+ * 【v4完全メール解放システム対応】
+ * この関数は safe_delete_user_account を呼び出しますが、
+ * 内部では safe_delete_user_account_v4 が実行され、以下の最新機能が動作します：
+ * 
+ * ✅ 動画ファイル物理削除（Storageから完全削除）
+ * ✅ auth.identities完全削除（メール即座解放）
+ * ✅ バトル履歴に応じた適切な削除方式選択
+ * ✅ 完全匿名化とプライバシー保護
+ * ✅ 削除後の同メールアドレス即座再登録対応
+ * 
+ * 要件定義書（BeatNexus.mdc）記載のv4仕様と機能的に同一です。
+ */
+```
+
+### ✅ 関数呼び出し部分の詳細コメント
+```typescript
+// 🔄 注意: safe_delete_user_account は内部で safe_delete_user_account_v4 を呼び出す
+// ラッパー関数です。以下のv4の全機能が動作します：
+// - 動画ファイル物理削除（delete_user_videos_from_storage）
+// - auth.identities完全削除によるメール即座解放
+// - バトル履歴に応じたソフト削除/物理削除の自動判定
+// - タイムスタンプ付き一意匿名化メール生成
+// 機能的には要件定義書記載のv4仕様と完全に同一です。
+const { data, error } = await supabaseClient.rpc('safe_delete_user_account', {
+  p_user_id: userId
+});
+```
+
+## 🔧 技術詳細
+
+### 解決アプローチの選択理由
+- **コメント追加方式**を採用（関数名直接変更ではなく）
+- **理由**: 動作に影響を与えない安全な方法
+- **効果**: コードの理解性向上、将来の混乱防止
+
+### データベース側の実装構造
+```sql
+-- ラッパー関数（呼び出される）
+CREATE FUNCTION safe_delete_user_account(p_user_id uuid)
+BEGIN
+  RETURN safe_delete_user_account_v4(p_user_id);  -- v4を内部呼び出し
+END;
+
+-- 実際の処理関数（内部で実行される）
+CREATE FUNCTION safe_delete_user_account_v4(p_user_id uuid)
+BEGIN
+  -- v4の全機能を実装
+END;
+```
+
+## 🎯 解決された問題
+1. **開発者の混乱防止**: 古いバージョンと誤解されることがなくなる
+2. **保守性向上**: 将来の開発者が「古いから更新しなきゃ」と誤修正することを防止
+3. **ドキュメント整合性**: 要件書とコードの見た目の不一致を説明
+4. **レビュー効率化**: PR時に「なぜv4じゃないの？」という質問を削減
+
+## 📊 影響範囲
+- **Edge Function**: コメント追加のみ、動作変更なし
+- **機能**: 既存の動作を完全に維持
+- **理解性**: 大幅に向上
+- **保守性**: 将来の誤修正リスクを削減
+
+## 🚀 今後の運用指針
+
+### 類似ケースでの対応
+- 他のラッパー関数でも同様のコメント追加を検討
+- 新しい関数作成時は明確なバージョニング戦略を採用
+
+### ドキュメント管理
+- 要件定義書と実装の乖離が生じた場合は、コメントで橋渡し
+- 定期的なドキュメント・実装整合性レビューの実施
+
+## ✅ 検証項目
+- [x] コメント追加による動作への影響なし
+- [x] Edge Function正常動作確認
+- [x] v4機能（メール解放、動画削除）正常動作
+- [ ] 新規開発者によるコードレビューでの理解度確認
+
+## 🔗 関連ファイル・機能
+- `supabase/functions/delete-user-account/index.ts` - 更新されたEdge Function
+- `supabase/migrations/20250619170000_add_missing_functions.sql` - v4関数定義
+- `.cursor/rules/dev-rules/BeatNexus.mdc` - 要件定義書（v4仕様記載）
+
+## 🔄 代替案との比較
+| 方式 | メリット | デメリット | 採用理由 |
+|------|----------|-----------|----------|
+| 関数名を直接v4に変更 | 完全な名前一致 | 動作変更リスク | ❌ リスクが高い |
+| コメントで明示 | 安全、理解しやすい | 根本的な名前不一致は残る | ✅ 安全で効果的 |
+| 要件書を実装に合わせる | 不一致解消 | 仕様ドキュメントの変更 | ❌ ドキュメント後退 |
+
+---
+**実装者**: AI Assistant  
+**レビュー**: 要レビュー  
+**ステータス**: コメント追加完了、動作確認済み

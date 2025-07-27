@@ -1,0 +1,163 @@
+# 🔧 本番環境レーティング・シーズンポイント更新問題修正ログ
+
+## 📅 実装日
+2025-07-14
+
+## 🎯 概要
+本番環境でバトル終了時にレーティングとシーズンポイントが全く変動しない重大な問題を解決。
+開発環境では正常動作していたため、開発環境の関数定義を本番環境に同期して修正。
+
+## 🔍 発見された問題
+### 根本原因
+1. **関数の不足**: 本番環境に`get_k_factor_by_format`と`calculate_elo_rating_change`関数が存在しない
+2. **関数定義の不整合**: 開発環境と本番環境で関数定義が異なる
+3. **エラーハンドリング不足**: 関数が存在しない場合の適切なエラー表示なし
+
+### 症状
+- バトル終了後、`player1_rating_change`と`player2_rating_change`が0
+- `player1_final_rating`と`player2_final_rating`がnull
+- プレイヤーの`rating`と`season_points`が更新されない
+- `updated_at`タイムスタンプが古いまま
+
+## 📝 実装内容
+
+### ✅ 不足関数の追加
+**マイグレーション**: `20250714180000_add_missing_rating_helper_functions.sql`
+
+#### 1. get_k_factor_by_format関数（2バージョン）
+```sql
+-- TEXT版
+CREATE OR REPLACE FUNCTION public.get_k_factor_by_format(battle_format text)
+-- ENUM版  
+CREATE OR REPLACE FUNCTION public.get_k_factor_by_format(battle_format battle_format)
+```
+- **MAIN_BATTLE**: K=32
+- **MINI_BATTLE**: K=24
+- **THEME_CHALLENGE**: K=20
+- **未知形式**: K=32（デフォルト）
+
+#### 2. calculate_elo_rating_change関数
+```sql
+CREATE OR REPLACE FUNCTION public.calculate_elo_rating_change(
+  player_rating integer, 
+  opponent_rating integer, 
+  result numeric, 
+  k_factor integer DEFAULT 32
+)
+```
+- **期待勝率計算**: `1.0 / (1.0 + POWER(10.0, (opponent_rating - player_rating) / 400.0))`
+- **レーティング変動**: `ROUND(k_factor * (result - expected_score))`
+
+### ✅ 関数定義の同期
+**マイグレーション**: `20250714180000_sync_dev_rating_functions_to_prod.sql`
+
+#### 同期された関数
+1. **`update_battle_ratings_safe`**: 削除ユーザー対応の安全なレーティング更新
+2. **`update_season_points_after_battle`**: シーズンポイント専用更新関数
+3. **`complete_battle_with_video_archiving`**: 動画URL保存付きバトル完了処理
+4. **`process_expired_battles`**: 期限切れバトルの自動処理
+
+### ✅ 機能統合
+- **削除ユーザー処理**: アクティブユーザーのみレーティング更新
+- **勝利ボーナス**: 削除ユーザーとの対戦時は半分Kファクターボーナス
+- **最低レーティング**: 1100以下にならない制限
+- **シーズン対応**: アクティブシーズンでのポイント管理
+
+## 🔧 技術詳細
+
+### 修正前の問題のあるフロー
+```sql
+process_expired_battles() → complete_battle_with_video_archiving() 
+  → update_battle_ratings_safe() → get_k_factor_by_format() ❌ 関数不存在エラー
+```
+
+### 修正後の正常フロー
+```sql
+process_expired_battles() → complete_battle_with_video_archiving() 
+  → update_battle_ratings_safe() → get_k_factor_by_format() ✅ 正常動作
+  → calculate_elo_rating_change() ✅ 正常動作
+  → profiles.rating/season_points 更新 ✅ 正常動作
+```
+
+### 修正検証結果
+#### テストケース: バトルID `362c2c97-8497-4885-adf0-60257129b6e7`
+- **勝者**: Harunori (87cece4e-24a3-4915-84fb-b613eccd7eaf)
+- **修正前**: rating=1216, season_points=1216, updated_at=2025-07-08
+- **修正後**: rating=1232, season_points=1232, updated_at=2025-07-14 ✅
+
+#### レーティング変動
+- **Player1 (Harunori)**: +16ポイント（勝利）
+- **Player2**: -16ポイント（敗北）
+- **Kファクター**: 32 (MAIN_BATTLE)
+- **バトル形式**: MAIN_BATTLE
+
+## 🎯 解決された問題
+1. **レーティング更新**: 本番環境でも正常にレーティングが変動
+2. **シーズンポイント**: シーズンポイントが同期して更新
+3. **データ整合性**: archived_battlesテーブルに正しいレーティング変動が保存
+4. **プロフィール更新**: updated_atタイムスタンプが正しく更新
+5. **開発環境同期**: 開発環境と本番環境の関数定義が統一
+
+## 📊 影響範囲
+- **レーティングシステム**: 全面的に復旧
+- **シーズンシステム**: 正常なポイント変動開始
+- **ランキング**: 正確な順位反映
+- **ユーザー体験**: バトル結果が即座にレーティングに反映
+- **データ分析**: 正確なレーティング履歴データ
+
+## 🚀 今後の対策
+
+### 環境間同期の強化
+1. **定期的な関数差分チェック**: 開発環境と本番環境の関数定義比較
+2. **マイグレーション前の依存関係確認**: 必要な関数の存在チェック
+3. **統合テスト強化**: バトル完了フローのエンドツーエンドテスト
+
+### モニタリング強化
+1. **レーティング更新監視**: バトル完了後のレーティング変動チェック
+2. **エラーログ監視**: 関数実行時のエラー検出と通知
+3. **データ整合性チェック**: archived_battlesのレーティング変動検証
+
+### ドキュメント改善
+1. **関数依存関係図**: バトル処理に必要な全関数の関係図作成
+2. **デプロイチェックリスト**: 必須関数の存在確認項目追加
+3. **トラブルシューティングガイド**: 類似問題の対処法整備
+
+## ✅ 検証項目
+- [x] 不足関数の本番環境への追加
+- [x] 関数定義の開発環境との同期
+- [x] レーティング更新の正常動作確認
+- [x] シーズンポイント更新の正常動作確認
+- [x] archived_battlesテーブルのデータ整合性確認
+- [x] プレイヤープロフィールの更新確認
+- [ ] 新規バトル完了時の自動処理確認
+- [ ] pg_cronによる定期処理の正常動作確認
+
+## 🔗 関連ファイル・機能
+- `supabase/migrations/20250714180000_add_missing_rating_helper_functions.sql` - 不足関数追加
+- `supabase/migrations/20250714180000_sync_dev_rating_functions_to_prod.sql` - 関数定義同期
+- `get_k_factor_by_format()` - バトル形式別Kファクター取得
+- `calculate_elo_rating_change()` - Eloレーティング変動計算
+- `update_battle_ratings_safe()` - 安全なレーティング更新
+- `update_season_points_after_battle()` - シーズンポイント更新
+- `complete_battle_with_video_archiving()` - バトル完了処理
+- `process_expired_battles()` - 自動バトル処理
+
+## 🔄 修正の流れ
+| ステップ | 内容 | 結果 |
+|---------|------|------|
+| 1. 問題調査 | レーティング変動が0になる原因特定 | ❌ 関数不存在エラー発見 |
+| 2. 環境比較 | 開発環境と本番環境の関数定義比較 | ❌ 不足関数2つ発見 |
+| 3. 関数追加 | 不足している関数を本番環境に追加 | ✅ get_k_factor_by_format等追加 |
+| 4. 関数同期 | 開発環境の関数定義を本番環境に同期 | ✅ 4つの主要関数を更新 |
+| 5. 動作検証 | 手動でバトルのレーティング更新テスト | ✅ レーティング+16/-16正常動作 |
+| 6. データ確認 | プレイヤーのレーティングとシーズンポイント確認 | ✅ 1232/1232に正常更新 |
+
+---
+**実装者**: AI Assistant  
+**レビュー**: 要レビュー  
+**ステータス**: 修正完了、動作確認済み  
+**重要度**: 🔥 緊急修正（システム根幹機能）
+description:
+globs:
+alwaysApply: false
+---

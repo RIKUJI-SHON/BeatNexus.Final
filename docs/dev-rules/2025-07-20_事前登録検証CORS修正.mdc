@@ -1,0 +1,38 @@
+# 実装ログ
+
+## 概要
+事前登録検証Edge Function のCORSエラーを修正。`x-client-version` ヘッダーがCORS設定で許可されていなかった問題を解決。
+
+## 実行ステップ
+1. CORSエラーの原因特定：`x-client-version` ヘッダーが `Access-Control-Allow-Headers` に含まれていない
+2. `validate-preregistration/index.ts` のCORSヘッダー設定を修正
+3. 開発環境（wdttluticnlqzmqmfvgt）にEdge Functionをデプロイ（v2）
+4. 本番環境（qgqcjtjxaoplhxurbpis）にEdge Functionをデプロイ（v2）
+
+## 修正内容
+```typescript
+// 修正前
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+}
+
+// 修正後
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, x-client-version, apikey, content-type',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS'
+}
+```
+
+## 最終成果物
+- 開発環境: Edge Function v2 デプロイ完了
+- 本番環境: Edge Function v2 デプロイ完了
+- CORSエラー解決
+
+## 課題対応
+- Supabase JS クライアントが送信する `x-client-version` ヘッダーをCORS設定で許可
+- `Access-Control-Allow-Methods` も明示的に設定
+
+## 注意点・改善提案
+- 今後Edge Functionを作成する際は、Supabase JS クライアントの標準ヘッダーを考慮したCORS設定を最初から含める

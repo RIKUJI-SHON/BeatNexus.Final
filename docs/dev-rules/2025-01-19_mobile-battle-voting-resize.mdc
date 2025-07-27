@@ -1,0 +1,60 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# 📱 モバイル版バトル視聴ページ投票コンポーネントサイズ調整実装ログ
+
+## 📅 実装日
+2025-01-19
+
+## 🎯 概要
+バトル視聴ページ（BattleView）のモバイル版で投票コンポーネントが画面に収まらない問題を解決。
+レスポンシブデザインを適用し、モバイル版では投票ボタンや投票カウンターを小さく表示するよう調整。
+
+## 🔍 発見された問題
+### モバイル版での表示問題
+- **投票ボタン**: 60px x 50px で大きすぎてモバイル画面で収まらない
+- **投票カウンター**: パディング16px、フォントサイズ3xlで大きすぎる
+- **コンポーネント間隔**: gap-12（48px）で画面幅を超過
+- **キャンセルボタン**: 28px x 28px でモバイルには大きすぎる
+- **参加者コンソール**: マージン48px（mx-12）で画面幅圧迫
+
+## 📝 実装内容
+
+### ✅ BattleView.tsx の調整
+
+#### 1. 投票コンポーネント間隔の調整
+```typescript
+// 変更前: gap-12 (48px)
+<div className="flex items-center justify-center gap-12">
+
+// 変更後: モバイル16px, デスクトップ48px
+<div className="flex items-center justify-center gap-4 md:gap-12">
+```
+
+#### 2. 投票カウンターのサイズ調整
+```typescript
+// パディング調整
+className={`bg-gray-800 rounded-xl p-2 md:p-4 border shadow-lg...`}
+
+// フォントサイズ調整
+className={`text-xl md:text-3xl font-bold...`}
+
+// チェックマーク調整
+className="absolute -top-2 -right-2 w-4 h-4 md:w-6 md:h-6..."
+```
+
+#### 3. 参加者コンソールマージン調整
+```typescript
+// マージン調整: モバイル16px, デスクトップ48px
+<div className="mx-4 md:mx-12 flex flex-col items-center">
+
+// パディング調整
+<div className="bg-gray-900 rounded-2xl p-4 md:p-6 border...">
+```
+
+---
+**実装者**: AI Assistant  
+**レビュー**: 要レビュー  
+**ステータス**: 実装完了、テスト待ち

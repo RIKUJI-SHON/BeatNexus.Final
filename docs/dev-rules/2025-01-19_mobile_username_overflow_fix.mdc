@@ -1,0 +1,114 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# 📱 モバイル版バトルカード ユーザー名表示修正実装ログ
+
+## 📅 実装日
+2025-01-19
+
+## 🎯 概要
+BattlesPageのバトルカードで、モバイル版表示時に長いユーザー名がカードの枠からはみ出る問題を解決。
+適切な幅制限とツールチップ機能を追加し、レスポンシブ対応を強化。
+
+## 🔍 発見された問題
+### モバイル画面でのユーザー名表示問題
+- **症状**: 長いユーザー名がバトルカードの枠からはみ出す
+- **原因**: `grid grid-cols-[1fr_auto_1fr]`レイアウトで`1fr`が全スペース使用
+- **影響範囲**: SimpleBattleCard/SpecialBattleCardの両方
+
+## 📝 実装内容
+
+### ✅ ユーザー名表示部分の改修
+
+#### SimpleBattleCard.tsx
+```tsx
+// 修正前
+<h3 className="text-xl font-bold text-white mb-2 truncate">
+  {battle.contestant_a?.username || t('battleCard.unknownUser')}
+</h3>
+
+// 修正後
+<h3 
+  className="text-xl font-bold text-white mb-2 truncate max-w-[120px] md:max-w-[140px] mx-auto" 
+  title={battle.contestant_a?.username || t('battleCard.unknownUser')}
+>
+  {battle.contestant_a?.username || t('battleCard.unknownUser')}
+</h3>
+```
+
+#### SpecialBattleCard.tsx（PlayerDisplayコンポーネント内）
+```tsx
+// 修正前
+<h3 className="text-xl font-bold text-white mb-2 truncate">
+  {player?.username || t('battleCard.unknownUser')}
+</h3>
+
+// 修正後
+<h3 
+  className="text-xl font-bold text-white mb-2 truncate max-w-[120px] md:max-w-[140px] mx-auto" 
+  title={player?.username || t('battleCard.unknownUser')}
+>
+  {player?.username || t('battleCard.unknownUser')}
+</h3>
+```
+
+## 🔧 技術詳細
+
+### レスポンシブ幅制限
+- **モバイル**: `max-w-[120px]` - 120pxの最大幅制限
+- **デスクトップ**: `md:max-w-[140px]` - 640px以上の画面で140px制限
+- **中央配置**: `mx-auto` - テキストを中央に配置
+
+### UX改善
+- **ツールチップ**: `title`属性で省略された場合にフルネーム表示
+- **省略処理**: `truncate`クラスで文字切り詰め（...表示）
+- **一貫性**: 両方のバトルカードで同じ制限値を適用
+
+### 設定値の根拠
+- **120px（モバイル）**: 典型的なスマートフォン画面で3分割レイアウト時の適切な幅
+- **140px（デスクトップ）**: より広い画面での少し余裕のある表示
+- **中央配置**: `text-center`クラスとの一貫性維持
+
+## 🎯 解決された問題
+1. **はみ出し防止**: 長いユーザー名がカード枠を超えることを防止
+2. **レスポンシブ対応**: モバイル/デスクトップでの適切な表示制限
+3. **ユーザビリティ**: ツールチップによる省略文字の確認機能
+4. **デザイン統一**: 両方のバトルカードでの一貫した対応
+
+## 📊 影響範囲
+- **コンポーネント**: SimpleBattleCard.tsx, SpecialBattleCard.tsx
+- **UI表示**: プレイヤーA/Bの両方のユーザー名表示
+- **レスポンシブ**: モバイル/デスクトップの両方で改善
+- **UX**: 省略されたユーザー名のホバー表示機能追加
+
+## 🚀 今後の運用指針
+
+### 類似問題の予防
+- 新しいカードコンポーネント作成時は幅制限を考慮
+- 長いテキスト表示時は`max-w-*`クラスの明示的設定
+- ツールチップ機能の積極的活用
+
+### テスト確認項目
+- 長いユーザー名（20文字以上）でのモバイル表示
+- 異なる画面サイズでのレスポンシブ対応
+- ホバー時のツールチップ表示機能
+
+## ✅ 検証項目
+- [x] SimpleBattleCardでの幅制限適用
+- [x] SpecialBattleCardでの幅制限適用
+- [x] ツールチップ機能の実装
+- [x] レスポンシブ対応の統一
+- [ ] 実際のモバイル画面での表示確認
+- [ ] 長いユーザー名でのテスト
+
+## 🔗 関連ファイル
+- `src/components/battle/SimpleBattleCard.tsx` - ユーザー名表示部分の修正
+- `src/components/battle/SpecialBattleCard.tsx` - PlayerDisplayコンポーネント内の修正
+- `src/pages/BattlesPage.tsx` - バトルカード表示画面（影響範囲）
+
+---
+**実装者**: AI Assistant  
+**レビュー**: 要レビュー  
+**ステータス**: 実装完了、動作確認待ち

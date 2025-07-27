@@ -1,0 +1,180 @@
+# UserInfoCard プロフィールカード化改善ログ
+
+## 実装日
+2025-01-23
+
+## 実装概要
+UserInfoCardを未認証ユーザー非表示、auth.user_metadata除外、プロフィールカード風デザインに大幅改善しました。
+
+## 変更内容
+### 1. 未認証ユーザー対応
+**Before**: 未認証時でも空のカードを表示
+**After**: 未認証時は完全に非表示（early return）
+
+#### 実装詳細
+```tsx
+// 未認証ユーザーには何も表示しない
+if (!user) {
+  return null;
+}
+```
+
+### 2. ユーザー名表示の厳格化
+**Before**: 
+```tsx
+{userProfile?.username || user.user_metadata?.username || user.email?.split('@')[0] || 'ユーザー'}
+```
+
+**After**: 
+```tsx
+{userProfile?.username || user.email?.split('@')[0] || 'ユーザー'}
+```
+
+- `user.user_metadata?.username`を完全に削除
+- profilesテーブルの情報のみ使用
+- デバッグ情報も削除
+
+### 3. プロフィールカード風デザインへの変更
+#### レイアウト構造
+```
+┌─────────────────────┐
+│   プロフィールアイコン   │ ← 中央配置、大きめ（16x16）
+│      ユーザー名       │ ← 中央配置
+│     参加日情報       │ ← 中央配置
+├─────────────────────┤
+│   シーズン情報エリア   │ ← ランキング・ポイント
+├─────────────────────┤
+│   基本統計（2x1）     │ ← 投稿数・勝利数
+└─────────────────────┘
+```
+
+#### ビジュアル改善
+- **プロフィールアイコン**: 12x12 → 16x16に拡大
+- **中央配置**: すべての要素を`text-center`で統一
+- **階層構造**: 明確なセクション分け
+
+### 4. シーズン情報の改善
+#### アクティブシーズンがある場合
+```tsx
+{hasActiveSeasonData ? (
+  <div className="bg-slate-900/80 backdrop-blur-sm rounded-xl p-4 border border-slate-600 mb-4">
+    <div className="text-center">
+      <div className="flex items-center justify-center gap-2 mb-3">
+        <Trophy className="h-5 w-5 text-yellow-400" />
+        <span className="text-sm font-medium text-slate-300">現在のシーズン</span>
+      </div>
+      
+      {/* ランキング */}
+      <div className="mb-3">
+        <div className="text-2xl font-bold text-yellow-400">
+          #{userStats.rank}
+        </div>
+        <div className="text-xs text-slate-400">ランキング</div>
+      </div>
+      
+      {/* ポイント */}
+      <div>
+        <div className="text-xl font-bold text-cyan-400">
+          {userStats.current_season_points}
+        </div>
+        <div className="text-xs text-slate-400">ポイント</div>
+      </div>
+    </div>
+  </div>
+) : (
+  /* アクティブなシーズンがない場合の専用UI */
+)}
+```
+
+#### シーズン未参加時の専用UI
+```tsx
+<div className="bg-slate-900/50 rounded-xl p-4 border border-slate-600 mb-4">
+  <div className="text-center">
+    <div className="w-12 h-12 bg-slate-700/50 rounded-full flex items-center justify-center mx-auto mb-3">
+      <Trophy className="h-6 w-6 text-slate-500" />
+    </div>
+    <h4 className="font-medium text-slate-400 mb-2">シーズン未参加</h4>
+    <p className="text-sm text-slate-500">
+      バトルに参加してシーズンランキングに挑戦しよう！
+    </p>
+  </div>
+</div>
+```
+
+### 5. 統計情報の簡素化
+**Before**: 4つの統計（投稿、勝利、投票獲得、勝率）
+**After**: 2つの基本統計（投稿、勝利）
+
+#### 表示項目の最適化
+- 重要度の高い「投稿数」「勝利数」のみ表示
+- 投票獲得数、勝率、バトル戦績詳細を削除
+- よりシンプルで分かりやすいレイアウト
+
+### 6. ローディング状態の改善
+**Before**: 横並びレイアウトのスケルトン
+**After**: 中央配置のプロフィールカード風スケルトン
+
+```tsx
+<div className="animate-pulse text-center">
+  <div className="w-16 h-16 bg-slate-700 rounded-full mx-auto mb-4"></div>
+  <div className="h-4 bg-slate-700 rounded w-3/4 mx-auto mb-2"></div>
+  <div className="h-3 bg-slate-700 rounded w-1/2 mx-auto mb-4"></div>
+  <div className="space-y-2">
+    <div className="h-3 bg-slate-700 rounded"></div>
+    <div className="h-3 bg-slate-700 rounded w-2/3 mx-auto"></div>
+  </div>
+</div>
+```
+
+## デザイン改善点
+### セキュリティと信頼性
+1. **認証情報の分離**: auth.user_metadataを完全に排除
+2. **データソースの一元化**: profilesテーブルのみ使用
+3. **未認証対応**: 適切な非表示処理
+
+### ユーザビリティ向上
+1. **プロフィールカード風**: 直感的で親しみやすいレイアウト
+2. **情報の整理**: 重要な情報に焦点を当てた簡潔な表示
+3. **シーズン参加促進**: 未参加時の適切なガイダンス
+
+### 視覚的改善
+1. **中央配置**: 統一感のあるレイアウト
+2. **アイコンサイズ**: より目立つプロフィールアイコン
+3. **色彩統一**: yellow（ランキング）、cyan（ポイント）の一貫した使用
+
+## 技術的な詳細
+### 条件判定ロジック
+```tsx
+const hasActiveSeasonData = userStats && userStats.rank > 0 && userStats.current_season_points > 0;
+```
+
+### React Hooks順序の遵守
+- useEffectを先に実行
+- 条件分岐によるearly returnはuseEffect後に実行
+
+### 表示名の決定
+```tsx
+const displayName = userProfile?.username || user.email?.split('@')[0] || 'ユーザー';
+```
+
+## 影響範囲
+- BattlesPageサイドバーでのユーザー体験向上
+- 認証情報とプロフィール情報の適切な分離
+- シーズン参加促進効果の期待
+
+## テスト項目
+- [ ] 未認証時の非表示確認
+- [ ] プロフィール情報のみの表示確認
+- [ ] シーズン参加時の表示確認
+- [ ] シーズン未参加時の表示確認
+- [ ] ローディング状態の確認
+- [ ] レスポンシブデザインの確認
+
+## 今後の改善可能性
+- プロフィール画像のアップロード機能連携
+- シーズン未参加時のクイックアクション追加
+- より詳細な統計情報の展開表示機能
+
+## 関連ファイル
+- `src/components/ui/UserInfoCard.tsx`: 実装対象ファイル
+- `src/pages/BattlesPage.tsx`: 使用箇所

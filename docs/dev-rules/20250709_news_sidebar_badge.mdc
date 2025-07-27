@@ -1,0 +1,39 @@
+# 📰 ニュースサイドバー・タイトルバッジ実装ログ
+
+## 📅 実装日
+2025-07-09
+
+## 🎯 概要
+Battlezページ左サイドバーの空きスペースに「LATEST NEWS」タイトルバッジを配置し、ニュース一覧エリアのベースを作成しました。
+
+## 🔍 実装内容
+1. **NewsSidebar コンポーネント追加**
+   - `src/components/ui/NewsSidebar.tsx` を新規作成。
+   - `public/images/LATEST NEWS.png`（※スペースは `%20` エンコード）を表示。
+   - 今後ニュース項目を下に追加できるよう `space-y-4` のラッパー配置。
+
+2. **BattlesPage に組み込み**
+   - 左サイドバー (`aside`) に `NewsSidebar` を配置。
+   - グリッドを常に `lg:grid-cols-5` に固定し、ログイン有無に関係なくニュースを表示。
+
+3. **レイアウト調整**
+   - 既存の `sticky-sidebar` クラスを再利用。
+   - 画像は `object-contain` で横幅いっぱいに表示。
+
+## 📊 影響範囲
+- **フロントエンド**: `BattlesPage.tsx`、新規 `NewsSidebar.tsx`
+- **UI**: ダークテーマに合わせたバッジ表示。機能的変化はなく、パフォーマンス影響も軽微。
+
+## 📝 今後のタスク
+- Supabase に `site_news` テーブルを作成し、ニュースデータバインドを実装。
+- Realtime またはポーリングでの自動更新処理追加。
+- i18n対応ニュース表示・翻訳キー整備。
+
+---
+**実装者**: AI Assistant
+**レビュー**: 要レビュー
+**ステータス**: バッジ表示のみ完了、ニュース取得実装待ち
+description:
+globs:
+alwaysApply: false
+---

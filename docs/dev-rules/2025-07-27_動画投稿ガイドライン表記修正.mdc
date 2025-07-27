@@ -1,0 +1,64 @@
+# 2025-07-27_動画投稿ガイドライン表記修正
+
+## 実装概要
+動画投稿ページのガイドラインにおいて、「ノーカット編集撮影」の表記を「音声と映像の同時撮影」に修正しました。
+
+## 修正理由
+- 「ノーカット撮影」という表記が誤解を招く可能性があったため
+- パフォーマンスを分けた編集でつなぎ合わせることは禁止だが、映像と音声が同時に録音されていれば問題ないことを明確化
+- より正確で理解しやすい表現に変更
+
+## 修正内容
+
+### 日本語版 (ja.json)
+**修正前:**
+```json
+"performanceFormat": {
+  "title": "パフォーマンス形式：",
+  "value": "ノーカット撮影",
+  "description": "映像と音声は同時に録画・録音してください。パフォーマンスをカット編集で繋ぎ合わせることは禁止です。"
+}
+```
+
+**修正後:**
+```json
+"performanceFormat": {
+  "title": "パフォーマンス形式：",
+  "value": "音声と映像の同時撮影",
+  "description": "映像と音声は同時に録画・録音してください。パフォーマンスをカット編集で繋ぎ合わせることは禁止です。"
+}
+```
+
+### 英語版 (en.json)
+**修正前:**
+```json
+"performanceFormat": {
+  "title": "Performance Format: ",
+  "value": "One-shot recording",
+  "description": "Video and audio must be recorded simultaneously. Connecting performances with cut editing is prohibited."
+}
+```
+
+**修正後:**
+```json
+"performanceFormat": {
+  "title": "Performance Format: ",
+  "value": "Simultaneous Audio-Video Recording",
+  "description": "Video and audio must be recorded simultaneously. Connecting performances with cut editing is prohibited."
+}
+```
+
+## 変更されたファイル
+- `src/i18n/locales/ja.json`
+- `src/i18n/locales/en.json`
+
+## ユーザーへの影響
+- より正確で理解しやすいガイドライン表記
+- 動画投稿時の混乱を軽減
+- 投稿ルールの意図がより明確に伝わる
+
+## 実装者
+GitHub Copilot
+
+## 実装日時
+2025年7月27日

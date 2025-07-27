@@ -1,0 +1,64 @@
+# ランキングページ投票者ランキング色修正ログ
+
+**実装日**: 2025-07-20  
+**修正内容**: 投票者ランキングのポイント数字の視認性改善
+
+## 問題
+
+投票者ランキングページにおいて、投票数の数字の色が背景色と近く、視認性が悪い状況でした。
+
+### 修正前の色設定
+```typescript
+const getVoteCountColor = (voteCount: number) => {
+  if (voteCount >= 50) return 'text-red-400';
+  if (voteCount >= 25) return 'text-green-400';
+  if (voteCount >= 10) return 'text-yellow-400';
+  if (voteCount >= 5) return 'text-gray-400';  // 背景と近い色
+  return 'text-gray-500';                      // 背景と近い色
+};
+```
+
+## 解決策
+
+ダークテーマの背景に対してより視認性の高い色に変更しました。
+
+### 修正後の色設定
+```typescript
+const getVoteCountColor = (voteCount: number) => {
+  if (voteCount >= 50) return 'text-red-400';    // 高投票数（50以上）
+  if (voteCount >= 25) return 'text-green-400';  // 良い投票数（25以上）
+  if (voteCount >= 10) return 'text-yellow-400'; // 中程度投票数（10以上）
+  if (voteCount >= 5) return 'text-blue-400';    // 低投票数（5以上）- 青に変更
+  return 'text-slate-300';                       // 最小投票数（5未満）- slate-300に変更
+};
+```
+
+## 変更点
+
+1. **5票以上の色**: `text-gray-400` → `text-blue-400`
+2. **5票未満の色**: `text-gray-500` → `text-slate-300`
+
+## 視認性向上の理由
+
+- **text-blue-400**: ダークテーマ背景に対して十分なコントラストを持つ青色
+- **text-slate-300**: ダークテーマでも見やすいライトグレー
+
+## 影響範囲
+
+- **ファイル**: `src/pages/RankingPage.tsx`
+- **対象**: 投票者ランキングの投票数表示
+- **機能**: 視認性向上のみ、機能的な変更なし
+
+## デザイン仕様書更新
+
+`docs/design-specification.md`に投票数カラー定義を追加し、今後の開発での一貫性を確保。
+
+## テスト
+
+- ダークテーマでの視認性確認
+- 各投票数レベルでの色の確認
+- レスポンシブデザインでの表示確認
+
+---
+
+**完了**: ✅ 投票者ランキングの数字が見やすくなりました。

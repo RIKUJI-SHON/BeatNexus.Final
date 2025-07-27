@@ -1,0 +1,121 @@
+# サイドバーレイアウト変更実装ログ
+
+## 実装日時
+2025年1月23日
+
+## 変更概要
+BattlesPageのサイドバーレイアウトを変更：
+- 左サイドバーの`NewsSidebar`コンポーネントを削除
+- 右サイドバーの`MonthlyLimitCard`（血管投稿制限）コンポーネントを左サイドバーに移動
+
+## 変更ファイル
+- `src/pages/BattlesPage.tsx`
+
+## 具体的な変更内容
+
+### 1. 左サイドバーの変更
+**変更前:**
+```tsx
+{/* Left Sidebar - ニュース */}
+<aside className="lg:col-span-1 space-y-6 sticky-sidebar hidden lg:block">
+    <NewsSidebar />
+</aside>
+```
+
+**変更後:**
+```tsx
+{/* Left Sidebar - Monthly Limit */}
+<aside className="lg:col-span-1 space-y-6 sticky-sidebar hidden lg:block">
+  {user && (
+    <div className="w-full">
+      <MonthlyLimitCard />
+    </div>
+  )}
+</aside>
+```
+
+### 2. 右サイドバーの変更
+**変更前:**
+```tsx
+{/* Right Sidebar */}
+<aside className="lg:col-span-1 space-y-6 sticky-sidebar-extended hidden lg:block">
+  {/* Top Rankings with Tabs */}
+  <TabbedRanking 
+    maxItems={5}
+    showViewAllButton={true}
+  />
+
+  {/* Monthly Limit Card - ランキングの下に配置 */}
+  {user && (
+    <div className="w-full hidden lg:block">
+      <MonthlyLimitCard />
+    </div>
+  )}
+</aside>
+```
+
+**変更後:**
+```tsx
+{/* Right Sidebar */}
+<aside className="lg:col-span-1 space-y-6 sticky-sidebar-extended hidden lg:block">
+  {/* Top Rankings with Tabs */}
+  <TabbedRanking 
+    maxItems={5}
+    showViewAllButton={true}
+  />
+</aside>
+```
+
+### 3. モバイルレイアウトの変更
+**変更前:**
+```tsx
+{/* Mobile News Sidebar - モバイル版でのみ表示 */}
+<div className="lg:hidden mt-6 w-full">
+  <div className="w-full px-4 sm:px-6">
+    <NewsSidebar />
+  </div>
+</div>
+
+{/* Mobile Monthly Limit Card - モバイル版でのみ表示、コンテナの外に配置 */}
+{user && (
+  <div className="lg:hidden mt-6 w-full">
+    <div className="w-full px-4 sm:px-6">
+      <MonthlyLimitCard />
+    </div>
+  </div>
+)}
+```
+
+**変更後:**
+```tsx
+{/* Mobile Monthly Limit Card - モバイル版でのみ表示、コンテナの外に配置 */}
+{user && (
+  <div className="lg:hidden mt-6 w-full">
+    <div className="w-full px-4 sm:px-6">
+      <MonthlyLimitCard />
+    </div>
+  </div>
+)}
+```
+
+### 4. 不要なimportの削除
+```tsx
+// 削除
+import NewsSidebar from '../components/ui/NewsSidebar';
+```
+
+## 変更結果
+- 左サイドバーに血管投稿制限（MonthlyLimitCard）コンポーネントが表示
+- 右サイドバーには TabbedRanking のみ表示
+- NewsSidebar コンポーネントは完全に削除
+- モバイル版でも同様のレイアウト変更が適用
+
+## 技術的な確認事項
+- ビルドエラーなし
+- TypeScript警告は既存のもので、今回の変更に影響なし
+- 開発サーバー正常動作（localhost:3003）
+
+## 注意点
+- ユーザーがログインしていない場合、左サイドバーは空になる
+- News機能はトップのNewsCarouselのみで表示される
+- MonthlyLimitCardはユーザーログイン時のみ表示される

@@ -1,0 +1,239 @@
+# バトル視聴ページのフレンドリーURL実装仕様書
+
+## 概要
+
+バトル視聴ページのURLを現在の `/battle/:id` から `PlayerA-vs-PlayerB-battleID` 形式のSEO friendlyなURLに変更する機能を実装します。
+
+## 背景・目的
+
+- **SEO改善**: プレイヤー名を含むURLでよりわかりやすく
+- **シェア効果向上**: URLからバトル内容が推測できる
+- **ユーザビリティ向上**: 直感的で覚えやすいURL
+
+## 現在の構造
+
+```
+アクティブバトル: /battle/:battleId
+アーカイブバトル: /battle-replay/:battleId
+```
+
+## 新しいURL形式
+
+```
+アクティブバトル: /battle/PlayerA-vs-PlayerB-battleId
+アーカイブバトル: /battle-replay/PlayerA-vs-PlayerB-battleId
+```
+
+### URL生成ルール
+
+1. **基本形式**: `{playerA}-vs-{playerB}-{battleId}`
+2. **ユーザー名の正規化**:
+   - 英数字のみ許可（日本語・記号は削除）
+   - 大文字小文字は小文字に統一
+   - 連続するハイフンは1つに統合
+   - 前後のハイフンを削除
+   - 空文字の場合は "player" に置換
+3. **最大長制限**: 各プレイヤー名は20文字まで
+4. **重複回避**: battleIdを末尾に必ず含めることで一意性を保証
+
+### URL生成例
+
+```typescript
+// 通常ケース
+generateBattleUrl("TakumiBeats", "RyujiFlow", "abc123")
+// → "takumibeats-vs-ryujiflow-abc123"
+
+// 特殊文字含む
+generateBattleUrl("Takumi🎵Beats", "Ryuji-Flow_2024", "abc123")  
+// → "takumibeats-vs-ryujiflow-abc123"
+
+// 日本語ユーザー名
+generateBattleUrl("田中太郎", "山田花子", "abc123")
+// → "player-vs-player-abc123"
+
+// 長いユーザー名
+generateBattleUrl("VeryLongUserNameThatExceedsLimit", "Short", "abc123")
+// → "verylongusernameth-vs-short-abc123"
+```
+
+## 技術実装
+
+### 1. URL生成ユーティリティ
+
+```typescript
+// src/utils/battleUrl.ts
+
+/**
+ * ユーザー名をURL安全な形式に正規化
+ */
+export function sanitizeUsername(username: string | null | undefined): string {
+  if (!username) return 'player';
+  
+  return username
+    .toLowerCase()
+    .replace(/[^a-z0-9-]/g, '') // 英数字とハイフンのみ許可
+    .replace(/-+/g, '-') // 連続するハイフンを1つに
+    .replace(/^-|-$/g, '') // 前後のハイフンを削除
+    .substring(0, 20) // 最大20文字
+    .replace(/^$/, 'player'); // 空文字の場合はplayerに
+}
+
+/**
+ * バトルURLを生成
+ */
+export function generateBattleUrl(
+  playerA: string | null | undefined,
+  playerB: string | null | undefined, 
+  battleId: string
+): string {
+  const sanitizedA = sanitizeUsername(playerA);
+  const sanitizedB = sanitizeUsername(playerB);
+  return `${sanitizedA}-vs-${sanitizedB}-${battleId}`;
+}
+
+/**
+ * バトルURLからバトルIDを抽出
+ */
+export function extractBattleIdFromUrl(battlePath: string): string | null {
+  const match = battlePath.match(/-([a-f0-9-]{36})$/);
+  return match ? match[1] : null;
+}
+
+/**
+ * 既存のUUID形式か判定
+ */
+export function isLegacyBattleUrl(battlePath: string): boolean {
+  const uuidRegex = /^[a-f0-9-]{36}$/;
+  return uuidRegex.test(battlePath);
+}
+```
+
+### 2. 新しいルーティング
+
+```typescript
+// src/App.tsx - Routes追加
+<Route path="/battle/:battlePath" element={<BattleViewPage />} />
+<Route path="/battle-replay/:battlePath" element={<BattleReplayPage />} />
+```
+
+### 3. バトルデータ取得の改良
+
+```typescript
+// src/pages/BattleViewPage.tsx
+const BattleViewPage: React.FC = () => {
+  const { battlePath } = useParams<{ battlePath: string }>();
+  
+  const battleId = useMemo(() => {
+    if (!battlePath) return null;
+    
+    // 既存のUUID形式の場合はそのまま使用
+    if (isLegacyBattleUrl(battlePath)) {
+      return battlePath;
+    }
+    
+    // 新形式からバトルIDを抽出
+    return extractBattleIdFromUrl(battlePath);
+  }, [battlePath]);
+  
+  // 以下既存のロジック
+};
+```
+
+### 4. OGP Edge Function の更新
+
+```typescript
+// supabase/functions/ogp-page/index.ts
+serve(async (req) => {
+  const { searchParams } = new URL(req.url);
+  let battleId = searchParams.get("battle_id");
+  
+  // 新形式のURLの場合、バトルIDを抽出
+  if (battleId && !isLegacyBattleUrl(battleId)) {
+    battleId = extractBattleIdFromUrl(battleId);
+  }
+  
+  if (!battleId) return new Response("battle_id query param required", { status: 400 });
+  
+  // 既存のロジック
+});
+```
+
+### 5. バトルカード・シェア機能の更新
+
+```typescript
+// src/components/battle/BattleCard.tsx
+const BattleCard: React.FC<{ battle: Battle }> = ({ battle }) => {
+  const battleUrl = useMemo(() => {
+    return generateBattleUrl(
+      battle.contestant_a?.username,
+      battle.contestant_b?.username,
+      battle.id
+    );
+  }, [battle]);
+  
+  return (
+    <Link to={`/battle/${battleUrl}`}>
+      {/* カード内容 */}
+    </Link>
+  );
+};
+```
+
+## 互換性とマイグレーション
+
+### 既存URLのサポート
+
+- 既存の `/battle/:uuid` 形式のURLは引き続きサポート
+- `isLegacyBattleUrl()` 関数で形式を判定し、適切に処理
+- 新規生成されるURLは全て新形式を使用
+
+### リダイレクト戦略
+
+1. **Edge Function レベル**: OGP生成時に新旧両形式に対応
+2. **フロントエンド レベル**: レガシーURLも正常に動作
+3. **将来的**: レガシーURLアクセス時に新URLへのリダイレクトを検討
+
+## テスト計画
+
+### 単体テスト
+
+1. `sanitizeUsername()` の各種入力パターン
+2. `generateBattleUrl()` の組み合わせテスト
+3. `extractBattleIdFromUrl()` の抽出精度
+4. `isLegacyBattleUrl()` の判定精度
+
+### 統合テスト
+
+1. 新形式URLでのバトル表示
+2. 既存形式URLでの後方互換性
+3. OGP生成の動作確認
+4. シェア機能の動作確認
+
+### エッジケーステスト
+
+1. 特殊文字を含むユーザー名
+2. 非常に長いユーザー名
+3. 空・null・undefinedのユーザー名
+4. 同一プレイヤー同士のバトル
+5. 削除されたユーザーのバトル
+
+## 実装優先度
+
+1. **Phase 1**: URL生成ユーティリティの実装とテスト
+2. **Phase 2**: ルーティングとページコンポーネントの更新
+3. **Phase 3**: バトルカード・リンク生成の更新
+4. **Phase 4**: OGP Edge Function の更新
+5. **Phase 5**: 統合テストと最終調整
+
+## 注意事項
+
+- ユーザー名変更時の旧URLの動作（旧URLでもアクセス可能な設計）
+- 特殊文字・絵文字を含むユーザー名への対応
+- バトルID部分は必ずUUIDを保持し一意性を確保
+- 既存のシェア機能・ブックマーク等への影響を最小化
+
+---
+
+**実装日**: 2025-07-24  
+**担当者**: システム開発チーム  
+**関連機能**: バトル視聴、OGP生成、URL生成、シェア機能

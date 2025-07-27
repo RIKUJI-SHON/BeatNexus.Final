@@ -1,0 +1,119 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# 📊 Google Analytics投票イベント統一化実装ログ
+
+## 📅 実装日
+2025-01-19
+
+## 🎯 概要
+Google Analyticsの投票イベントトラッキングにおいて、Player AとPlayer Bへの投票を区別していた実装を統一し、投票先に関係なく同一の「投票」イベントとして記録するように修正。
+
+## 🔍 問題
+### 修正前の課題
+- `battleVote`関数がPlayer AとPlayer Bの投票を別々のイベントラベルとして記録
+- 投票の統計分析が複雑化（A投票とB投票を合計する必要）
+- Google Analyticsのレポートで投票全体の傾向把握が困難
+
+### 修正前の実装
+```typescript
+battleVote: (battleId: string, vote: 'A' | 'B') => trackEvent('vote_battle', 'battle', `${battleId}_${vote}`)
+```
+
+## 📝 実装内容
+
+### ✅ analytics.ts修正
+**ファイル**: `src/utils/analytics.ts`
+
+**修正内容**:
+```typescript
+// 修正前
+battleVote: (battleId: string, vote: 'A' | 'B') => trackEvent('vote_battle', 'battle', `${battleId}_${vote}`)
+
+// 修正後  
+battleVote: (battleId: string) => trackEvent('vote_battle', 'battle', battleId)
+```
+
+### ✅ BattleView.tsx修正
+**ファイル**: `src/components/battle/BattleView.tsx`
+
+**修正内容**:
+```typescript
+// 修正前
+trackBeatNexusEvents.battleVote(battle.id, player);
+
+// 修正後
+trackBeatNexusEvents.battleVote(battle.id);
+```
+
+## 🔧 技術詳細
+
+### 関数シグネチャ変更
+- **変更前**: `battleVote(battleId: string, vote: 'A' | 'B')`
+- **変更後**: `battleVote(battleId: string)`
+- **削除パラメータ**: 投票先（A/B）情報
+- **保持パラメータ**: バトルID（イベントラベルとして使用）
+
+### Google Analyticsイベント構造
+- **Action**: `vote_battle`（変更なし）
+- **Category**: `battle`（変更なし）
+- **Label**: バトルIDのみ（投票先情報を削除）
+
+## 🎯 解決された問題
+1. **統計の簡素化**: 投票総数の把握が単純なイベント数カウントで可能
+2. **レポートの明確化**: Google Analyticsで投票パターンの分析が簡単
+3. **データ整合性**: 投票先による重複カウント問題の解消
+4. **保守性向上**: イベントトラッキングロジックの簡素化
+
+## 📊 分析への影響
+
+### Google Analyticsでの見え方
+- **修正前**: `battleId_A`と`battleId_B`として別々にカウント
+- **修正後**: `battleId`として統一カウント（投票総数が正確に把握可能）
+
+### 取得可能なデータ
+- ✅ バトル別投票総数
+- ✅ 投票の時系列トレンド
+- ✅ ユーザー別投票活動
+- ❌ 投票先の分析（A vs B）
+
+### データ分析の改善点
+1. **投票率計算**: バトル表示数に対する投票率の正確な計算
+2. **ユーザーエンゲージメント**: 投票機能の利用状況把握
+3. **バトル人気度**: 投票数によるバトルランキング作成
+
+## 🚀 今後の拡張可能性
+
+### 詳細分析が必要な場合
+投票先（A/B）の分析が必要になった場合は、以下の方法で対応可能：
+1. **カスタムディメンション**: GA4のカスタムディメンションで投票先を記録
+2. **別イベント**: `vote_battle_A`, `vote_battle_B`として分離
+3. **イベントパラメータ**: `vote_target`パラメータで投票先を記録
+
+### 他の統計との整合性
+- データベースの投票データとGA4データの整合性確保
+- リアルタイム投票数表示との同期
+
+## ✅ 検証項目
+- [x] TypeScriptコンパイルエラーなし
+- [x] `battleVote`呼び出し箇所の修正完了
+- [ ] 実際の投票動作テスト
+- [ ] Google Analyticsでのイベント記録確認
+- [ ] 開発環境でのログ出力確認
+
+## 🔗 関連ファイル
+- `src/utils/analytics.ts` - 投票イベント関数修正
+- `src/components/battle/BattleView.tsx` - 関数呼び出し修正
+
+## 📈 期待される効果
+1. **データ分析効率**: 投票統計の取得・分析が簡素化
+2. **レポート品質**: Google Analyticsレポートの理解しやすさ向上
+3. **開発生産性**: イベントトラッキングロジックの保守性向上
+4. **ユーザー理解**: 投票機能の利用パターン把握改善
+
+---
+**実装者**: AI Assistant  
+**レビュー**: 要確認  
+**ステータス**: 実装完了、動作テスト待ち

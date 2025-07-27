@@ -1,0 +1,135 @@
+# 2025-07-24 フレンドリーバトルURL実装ログ
+
+## 実装概要
+**目標**: バトル視聴ページのURLを `PlayerA-vs-PlayerB-battleID` 形式に変更してSEO向上とユーザビリティ改善
+
+## 実装完了項目
+
+### ✅ 1. コアユーティリティ実装 (`src/utils/battleUrl.ts`)
+- `sanitizeUsername()`: ユーザー名から特殊文字除去・URL安全化
+- `generateBattleUrl()`: PlayerA-vs-PlayerB-battleID 形式のURL生成
+- `extractBattleIdFromUrl()`: フレンドリーURLからバトルID抽出
+- `getBattleIdFromPath()`: レガシー対応統合関数
+- `isLegacyBattleUrl()`: レガシーUUID形式判定
+
+### ✅ 2. ルーティング更新 (`App.tsx`)
+- `/battle/:battlePath` への変更（`:id` → `:battlePath`）
+- `/battle-replay/:battlePath` への変更
+- 後方互換性維持（レガシーURL対応）
+
+### ✅ 3. ページコンポーネント更新
+- `BattleViewPage.tsx`: フレンドリーURL対応
+- `BattleReplayPage.tsx`: アーカイブページもフレンドリーURL対応
+- `useMemo`でバトルID抽出処理を最適化
+
+### ✅ 4. バトルカードコンポーネント更新
+- `SimpleBattleCard.tsx`: フレンドリーURL生成
+- `SpecialBattleCard.tsx`: フレンドリーURL生成
+- `BattleCard.tsx`: 既存実装済み確認
+
+### ✅ 5. シェア機能全体更新
+- `BattleView.tsx`: バトル中のシェア機能
+- `BattleMatchedModal.tsx`: マッチング完了時のシェア・バトル閲覧ボタン
+- `BattleResultModal.tsx`: 結果表示時のシェア・アーカイブ閲覧ボタン
+- `ShareBattleButton.tsx`: 汎用シェアボタン（実装済み確認）
+
+### ✅ 6. Edge Function更新
+- `ogp-battle-card/index.ts`: フレンドリーURLからのバトルID抽出対応
+- `ogp-page/index.ts`: 既存実装済み確認
+- フレンドリーURL → UUID抽出ロジック追加
+
+## 技術実装詳細
+
+### URL変換例
+```
+従来: /battle/550e8400-e29b-41d4-a716-446655440000
+新機能: /battle/testuser1-vs-testuser2-550e8400-e29b-41d4-a716-446655440000
+```
+
+### 主要関数
+```typescript
+generateBattleUrl(playerA: string, playerB: string, battleId: string): string
+extractBattleIdFromUrl(battlePath: string): string | null
+isLegacyBattleUrl(battlePath: string): boolean
+```
+
+### 後方互換性
+- レガシーUUID形式（`550e8400-e29b-41d4-a716-446655440000`）継続サポート
+- `isLegacyBattleUrl()`で自動判定・分岐処理
+
+### セキュリティ対応
+- `sanitizeUsername()`: XSS対策・URL安全化
+- 特殊文字自動除去・英数字ハイフンのみ許可
+
+## Edge Function デプロイ状況
+
+### 🟡 要対応: Edge Function デプロイ
+- **ogp-battle-card**: フレンドリーURL対応版をデプロイ必要
+- **開発環境** (`wdttluticnlqzmqmfvgt`): デプロイ試行中（内部エラー発生）
+- **本番環境** (`qgqcjtjxaoplhxurbpis`): デプロイ待機中
+
+### Edge Function 更新点
+```typescript
+// フレンドリーURLまたはレガシーUUIDからバトルIDを抽出
+let battleId: string;
+if (isLegacyBattleUrl(battleIdParam)) {
+  battleId = battleIdParam;
+} else {
+  const extracted = extractBattleIdFromUrl(battleIdParam);
+  if (!extracted) {
+    return new Response("invalid battle path", { status: 400 });
+  }
+  battleId = extracted;
+}
+```
+
+## テスト結果
+
+### ✅ 単体テスト（ローカル実行）
+- URL生成・抽出ロジック正常動作確認
+- レガシー形式互換性確認
+- エッジケース（特殊文字・空文字）対応確認
+
+### ✅ 開発サーバー起動確認
+- Vite開発サーバー正常起動（Port 3001）
+- TypeScriptコンパイルエラーなし
+- 基本的なlintエラーのみ（未使用import等）
+
+## 今後のタスク
+
+### 🔄 次回対応必要
+1. **Edge Function デプロイ完了**
+   - ogp-battle-cardのフレンドリーURL対応版デプロイ
+   - 開発環境・本番環境両方への適用
+
+2. **実機テスト**
+   - フレンドリーURL生成・抽出の実機動作確認
+   - OGP画像生成の動作確認
+   - シェア機能のURL正常性確認
+
+3. **パフォーマンス最適化**
+   - URL抽出処理のメモ化検討
+   - 大量バトルでの処理速度確認
+
+## 実装品質評価
+
+### ✅ 良好な点
+- 完全な後方互換性維持
+- TypeScript型安全性確保
+- コンポーネント分離・再利用性
+- セキュリティ配慮（XSS対策等）
+
+### 💡 改善点
+- Edge Functionデプロイの安定化
+- より詳細な単体テスト追加
+- エラーハンドリングの充実
+
+## 完了日時
+**2025年7月24日 16:30（JST）** - フロントエンド実装完了
+**Edge Function デプロイ**: 対応中
+
+---
+
+**実装者**: GitHub Copilot  
+**レビュー対象**: フレンドリーバトルURL全システム  
+**総作業時間**: 約2時間

@@ -1,0 +1,151 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# 🥊 テスト用バトル作成実装ログ
+
+## 📅 実装日
+2025-01-19
+
+## 🎯 概要
+ユーザーからの要求「RIKUJIとどれか一つのdeleted userでテスト用にマッチングさせて、バトルカードを作成してください」に応じて、RIKUJIユーザーと`deleted-user-7d682ff5`でテスト用のアクティブなバトルを作成した。
+
+## 🔍 作業背景
+### 目的
+- テスト用のバトルカード作成
+- RIKUJIユーザーとdeleted userのマッチング検証
+- バトルシステムの動作確認
+
+### 対象ユーザー選定
+- **Player 1**: RIKUJI (cb9eac31-2403-4aed-a03c-92f71baddd03)
+  - Rating: 1200
+  - Status: 通常アクティブユーザー
+- **Player 2**: deleted-user-7d682ff5 (7d682ff5-2336-4000-ab3c-0ae0e89cedeb)
+  - Rating: 1200
+  - Status: 削除済みユーザー (is_deleted: true)
+
+## 📝 実装手順
+
+### ✅ 1. データベース状態確認
+- プロジェクト: BEATNEXUS-CURSOR (qgqcjtjxaoplhxurbpis)
+- 既存のアクティブバトル: なし
+- 対象ユーザーの既存submission: 確認済み
+
+### ✅ 2. 新規Submission作成
+
+#### RIKUJI用Submission
+```sql
+INSERT INTO submissions (
+  id: a350d279-a587-4605-adf9-f81cfac6784a,
+  user_id: cb9eac31-2403-4aed-a03c-92f71baddd03,
+  video_url: https://example.com/test-rikuji-battle-video.mp4,
+  status: WAITING_OPPONENT,
+  rank_at_submission: 1200,
+  battle_format: MAIN_BATTLE
+)
+```
+
+#### deleted-user-7d682ff5用Submission
+```sql
+INSERT INTO submissions (
+  id: 6157431f-f98b-49b2-8f1d-ab6d9474eac9,
+  user_id: 7d682ff5-2336-4000-ab3c-0ae0e89cedeb,
+  video_url: https://example.com/test-deleted-user-battle-video.mp4,
+  status: WAITING_OPPONENT,
+  rank_at_submission: 1200,
+  battle_format: MAIN_BATTLE
+)
+```
+
+### ✅ 3. アクティブバトル作成
+```sql
+INSERT INTO active_battles (
+  id: ff9b3f49-7798-492b-a926-3e5f328fd3cd,
+  player1_submission_id: a350d279-a587-4605-adf9-f81cfac6784a,
+  player2_submission_id: 6157431f-f98b-49b2-8f1d-ab6d9474eac9,
+  player1_user_id: cb9eac31-2403-4aed-a03c-92f71baddd03,
+  player2_user_id: 7d682ff5-2336-4000-ab3c-0ae0e89cedeb,
+  status: ACTIVE,
+  votes_a: 0,
+  votes_b: 0,
+  battle_format: MAIN_BATTLE,
+  end_voting_at: 2025-07-01 09:13:34.807549+00
+)
+```
+
+### ✅ 4. Submissionステータス更新
+- 両submissionのstatusを`MATCHED_IN_BATTLE`に更新
+- `active_battle_id`フィールドに作成されたバトルIDを設定
+
+## 🔧 技術詳細
+
+### ENUMステータス確認
+- **submission_status**: WAITING_OPPONENT, MATCHED_IN_BATTLE, BATTLE_ENDED, WITHDRAWN
+- **battle_status**: ACTIVE, COMPLETED, PROCESSING_RESULTS
+
+### バトル設定
+- **形式**: MAIN_BATTLE
+- **投票期間**: 7日間（2025-07-01まで）
+- **初期投票数**: Player A: 0票, Player B: 0票
+
+### データ整合性確保
+- Foreign key制約: submissionsとactive_battlesの関連付け
+- ステータス同期: submissionとbattleの状態が一致
+
+## 🎯 作成されたバトル詳細
+
+### バトル基本情報
+- **Battle ID**: ff9b3f49-7798-492b-a926-3e5f328fd3cd
+- **Status**: ACTIVE
+- **Format**: MAIN_BATTLE
+- **Created**: 2025-06-24 09:13:34
+- **Voting Ends**: 2025-07-01 09:13:34
+
+### 参加者情報
+| Player | Username | Rating | Video URL |
+|--------|----------|--------|-----------|
+| A | RIKUJI | 1200 | https://example.com/test-rikuji-battle-video.mp4 |
+| B | deleted-user-7d682ff5 | 1200 | https://example.com/test-deleted-user-battle-video.mp4 |
+
+### 投票状況
+- **Player A (RIKUJI)**: 0票
+- **Player B (deleted-user)**: 0票
+- **総投票数**: 0票
+
+## 📊 検証項目
+- [x] Submissionの正常作成
+- [x] Active battleの正常作成
+- [x] ユーザー間の関連付け
+- [x] ステータス整合性
+- [x] Foreign key制約の適用
+- [ ] フロントエンドでのバトルカード表示確認
+- [ ] 投票機能の動作確認
+
+## 🚀 期待される動作
+1. **BattlesPage**: 新しいバトルカードが表示される
+2. **投票機能**: ユーザーがPlayer AまたはPlayer Bに投票可能
+3. **詳細ページ**: `/battle/ff9b3f49-7798-492b-a926-3e5f328fd3cd`でアクセス可能
+4. **削除ユーザー表示**: deleted-userが適切に匿名化表示される
+
+## 🔗 関連データベースオブジェクト
+- **Tables**: submissions, active_battles, profiles
+- **ENUMs**: submission_status, battle_status, battle_format
+- **Views**: 各種ランキングビューに影響
+
+## 🔄 今後の作業
+1. フロントエンドでのバトルカード表示確認
+2. 投票機能のテスト実行
+3. deleted-userの表示確認
+4. バトル終了処理のテスト
+5. 必要に応じてテストデータの追加作成
+
+## ⚠️ 注意事項
+- テスト用データのため、実際のビデオファイルではなくプレースホルダーURLを使用
+- deleted-userは削除済みユーザーのため、実際の動作で匿名化表示されることを確認
+- 投票期間は7日間に設定されているため、長期テストが可能
+
+---
+**実装者**: AI Assistant  
+**作成方法**: Supabase MCP Toolsを使用した直接DB操作  
+**ステータス**: バトル作成完了、フロントエンド表示確認待ち

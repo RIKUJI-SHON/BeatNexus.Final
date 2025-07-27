@@ -1,0 +1,40 @@
+# 実行結果報告
+
+## 概要
+シーズン終了関数とランキングビューの修正を本番環境に適用し、バトル経験者と投票経験者のみがランキングに表示されるよう修正しました。
+
+## 実行ステップ
+1. **本番環境テーブル構造確認** - season_rankings, season_voter_rankings の列名確認
+2. **シーズン終了関数修正** - end_current_season() 関数でバトル経験者のみアーカイブ
+3. **投票者ランキングビュー修正** - voter_rankings_view, season_voter_rankings_view で投票経験者のみ表示
+4. **動作確認** - 修正後のビューが正常に動作することを確認
+
+## 最終成果物
+### 修正されたシーズン終了関数
+- **バトルランキング**: 勝利数 + 敗北数 >= 1 の条件で正しくフィルタリング
+- **投票者ランキング**: season_vote_points >= 1 の条件で正しくフィルタリング
+- **1200ポイント基準を使用せず**、実際の参加経験で判定
+
+### 修正されたランキングビュー
+- **voter_rankings_view**: vote_count >= 1 でフィルタリング
+- **season_voter_rankings_view**: season_vote_points >= 1 でフィルタリング
+
+## 課題対応
+- ✅ 開発環境でのテスト成功
+- ✅ 本番環境への適用完了
+- ✅ 投票者ランキングビューも修正
+- ✅ 1200ポイント基準問題の解決
+
+## 注意点・改善提案
+- 今後のシーズン終了時は、バトル未経験者が大量にアーカイブされることがなくなります
+- 既存の不正アーカイブデータ（バトル未経験の1200ポイント記録）のクリーンアップを検討
+- 次回シーズン終了時の動作を監視することを推奨
+
+## 適用済みマイグレーション
+### 開発環境 (wdttluticnlqzmqmfvgt)
+- `20250720110000_fix_end_current_season_require_battle_experience.sql`
+- `20250720105000_update_voter_rankings_require_vote_experience.sql`
+
+### 本番環境 (qgqcjtjxaoplhxurbpis)
+- `20250720115000_fix_end_current_season_prod_battle_experience.sql`
+- `20250720120000_fix_voter_rankings_prod_vote_experience.sql`

@@ -1,0 +1,130 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# 📊 投票者ランキング現在シーズン表示実装ログ
+
+## 📅 実装日
+2025-01-19
+
+## 🎯 概要
+BattlesPageのTabbedRankingコンポーネントで表示される投票者ランキングを、通算ランキングから現在シーズンランキングに変更。
+シーズン機能の完全活用により、ユーザーが現在のシーズンでの投票貢献度を確認できるように改善。
+
+## 🔍 要求内容
+- **対象**: Battlesページのランキングコンポーネント内の投票者ランキング
+- **変更**: 通算投票者ランキング → 現在シーズン投票者ランキング
+- **目的**: current seasonでの投票活動を反映したランキング表示
+
+## 📝 実装内容
+
+### ✅ TabbedRankingコンポーネント修正
+**ファイル**: `src/components/ui/TabbedRanking.tsx`
+
+#### 1. インポートとストア使用の変更
+```typescript
+// 追加インポート
+import { getRankFromRating } from '../../utils/rankUtils';
+
+// ストアから取得するデータの変更
+const { 
+  rankings, 
+  seasonVoterRankings, // 通算 → シーズン投票者ランキング
+  loading: rankingsLoading, 
+  seasonVoterLoading, // 対応するローディング状態
+  fetchRankings, 
+  fetchSeasonVoterRankings // シーズンデータ取得関数
+} = useRankingStore();
+```
+
+#### 2. データ取得処理の更新
+```typescript
+useEffect(() => {
+  fetchRankings();
+  fetchSeasonVoterRankings(); // シーズン投票者ランキング取得
+}, [fetchRankings, fetchSeasonVoterRankings]);
+```
+
+#### 3. データ表示ロジックの修正
+```typescript
+const currentData = activeTab === 'player' 
+  ? rankings.slice(0, maxItems) 
+  : seasonVoterRankings.slice(0, maxItems); // シーズンデータ使用
+
+const currentLoading = activeTab === 'player' 
+  ? rankingsLoading 
+  : seasonVoterLoading; // 対応するローディング状態
+```
+
+#### 4. renderVoterRanking関数の型・実装更新
+```typescript
+const renderVoterRanking = (entry: SeasonVoterRankingEntry) => {
+  // レーティングからランク情報を動的計算
+  const rankInfo = getRankFromRating(entry.rating);
+  
+  return (
+    // UIは同様だが、rankInfo.colorを使用してランク色を表示
+  );
+};
+```
+
+#### 5. 型キャストの修正
+```typescript
+{activeTab === 'player'
+  ? (currentData as RankingEntry[]).map(renderPlayerRanking)
+  : (currentData as SeasonVoterRankingEntry[]).map(renderVoterRanking) // 正しい型
+}
+```
+
+## 🔧 技術詳細
+
+### データベース構造確認
+- **シーズンテーブル**: 現在のシーズン「2025-S1」が`active`状態で存在
+- **ビュー**: `season_voter_rankings_view`でシーズン投票者ランキングデータ提供
+- **データ**: `season_vote_points`を基準とした現在シーズンでの投票貢献度
+
+### ランク情報計算
+- **rank_name/rank_color**: データベースビューには含まれていない
+- **解決方法**: フロントエンドで`getRankFromRating`ユーティリティを使用して動的計算
+- **利点**: データベース負荷軽減、柔軟なランク表示制御
+
+### 型安全性の確保
+- **SeasonVoterRankingEntry型**: 既存の型定義を活用
+- **TypeScriptチェック**: エラーなしで実装完了
+- **データ構造**: `vote_count`は`season_vote_points`の値として正常に動作
+
+## 🎯 解決された問題
+1. **現在シーズン重視**: 投票者が今シーズンでの貢献度を確認可能
+2. **シーズン機能活用**: 実装済みシーズンシステムの完全活用
+3. **データ整合性**: 既存のシーズンデータ構造との完全互換性
+4. **UI一貫性**: 表示方法は従来と同様、データソースのみ変更
+
+## 📊 影響範囲
+- **BattlesPage**: 投票者ランキングタブでシーズンデータ表示
+- **RankingPage**: 影響なし（独自のタブシステムで既にシーズン対応済み）
+- **データベース**: 変更なし（既存ビューとデータを活用）
+- **型定義**: 変更なし（既存の型を活用）
+
+## 🚀 今後の改善案
+1. **ビュー改善**: `rank_name`と`rank_color`をデータベースビューに追加
+2. **パフォーマンス**: フロントエンドランク計算のメモ化検討
+3. **UI強化**: 「Current Season」ラベル表示の検討
+
+## ✅ 検証項目
+- [x] TypeScriptコンパイルエラー解消
+- [x] シーズンデータの正常取得確認
+- [ ] ブラウザでの動作確認
+- [ ] 投票者ランキングの正確な表示確認
+- [ ] ランク色の正常表示確認
+
+## 🔗 関連ファイル
+- `src/components/ui/TabbedRanking.tsx` - メイン修正ファイル
+- `src/store/rankingStore.ts` - シーズンデータ取得ロジック
+- `src/utils/rankUtils.ts` - ランク計算ユーティリティ
+- `src/types/index.ts` - SeasonVoterRankingEntry型定義
+
+---
+**実装者**: AI Assistant  
+**レビュー**: 要レビュー  
+**ステータス**: 実装完了、動作確認待ち

@@ -1,0 +1,61 @@
+# UserInfoCard プロフィール取得修正実装ログ
+
+## 実装日時
+2025年7月25日
+
+## 実装概要
+UserInfoCardコンポーネントでプロフィール情報が正しく取得されない問題を修正し、ユーザー名が適切に表示されるよう改善
+
+## 発見された問題
+1. `fetchUserProfile`で`.eq('user_id', user.id)`を使用していたが、profilesテーブルのprimary keyは`id`
+2. `seasonal_rankings`テーブル名が間違っており、正しくは`season_rankings`
+3. プロフィール情報が取得できないため、メールアドレスの@より前の部分がフォールバック表示されていた
+
+## 修正内容
+
+### 1. プロフィール取得クエリ修正
+```typescript
+// 修正前
+.eq('user_id', user.id)
+
+// 修正後  
+.eq('id', user.id)
+```
+
+### 2. UserProfileインターフェース拡張
+```typescript
+interface UserProfile {
+  username: string;
+  bio: string | null;
+  avatar_url: string | null;
+  season_points: number; // 追加
+}
+```
+
+### 3. シーズンポイント取得の簡素化
+- `season_rankings`テーブルからの取得を停止
+- `profiles`テーブルの`season_points`カラムを直接使用
+- 統計取得の順序を調整（プロフィール取得完了後に統計取得）
+
+### 4. 表示ロジック改善
+- ランキング表示を一時的に非表示（データソース統一後に再実装予定）
+- シーズンポイント表示に変更
+- `hasActiveSeasonData`の判定条件を`current_season_points > 0`のみに簡素化
+
+## データベース構造確認結果
+- `profiles`テーブル: primary key = `id`, usernameカラム存在
+- `season_rankings`テーブル: `user_id`カラム使用
+- 対象ユーザー(`rikujiogino@gmail.com`)のusername: "RIKUJI"
+
+## ファイル変更
+- `src/components/ui/UserInfoCard.tsx`: プロフィール取得クエリ修正、シーズンポイント取得方法変更
+
+## 期待される結果
+- ユーザー名が"rikujiogino"ではなく"RIKUJI"として正しく表示される
+- プロフィール情報の取得が正常に動作する
+- シーズンポイントが適切に表示される
+
+## 今後の改善点
+- season_rankingsテーブルからのランキング取得再実装
+- エラーハンドリングの強化
+- データ取得の最適化

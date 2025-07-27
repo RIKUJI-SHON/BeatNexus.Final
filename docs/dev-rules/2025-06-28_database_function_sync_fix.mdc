@@ -1,0 +1,170 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# 🔧 データベース関数内容同期実装ログ
+
+## 📅 実装日
+2025-06-28
+
+## 🎯 概要
+データベースダンプから作成したコピー先プロジェクト（ID: `wdttluticnlqzmqmfvgt`）と、元のプロジェクト（ID: `qgqcjtjxaoplhxurbpis`）間において、関数名は同じでも内容（コード）が異なる関数を特定し、元プロジェクトの正しい定義で完全に上書き同期。
+
+## 🔍 発見された問題
+
+PostgreSQLの`pg_get_functiondef()`とMD5ハッシュ化による精密比較で、以下の関数に内容の差異を発見：
+
+### 1. 🟥 完全にロジックが異なる関数
+- **`handle_new_user`**: 
+  - **元**: Username フォールバック処理、`search_path`設定あり
+  - **コピー**: `avatar_url`含む、フォールバック処理なし
+- **`call_edge_function`**:
+  - **元**: 正しいプロジェクトURL (`qgqcjtjxaoplhxurbpis`)
+  - **コピー**: 間違ったプロジェクトURL (`wdttluticnlqzmqmfvgt`)
+
+### 2. 🟨 微細な実装差異がある関数
+- **`cancel_vote`**: 投票キャンセル時のユーザー`vote_count`減算処理
+- **`get_user_vote`**: ユーザー投票状態取得の戻り値構造
+- **`vote_battle`**: 投票時のユーザー`vote_count`増加処理とエラーメッセージ
+
+## 📝 実装内容
+
+### ✅ 1. 関数内容の完全比較システム
+
+```sql
+-- 全関数のハッシュ値比較による差異検出
+SELECT 
+    p.proname,
+    LENGTH(pg_get_functiondef(p.oid)) as definition_length,
+    md5(pg_get_functiondef(p.oid)) as definition_hash
+FROM pg_proc p
+JOIN pg_namespace n ON p.pronamespace = n.oid
+WHERE n.nspname = 'public' 
+    AND p.proname NOT LIKE 'pg_%'
+    AND p.proname NOT LIKE 'sql_%'
+ORDER BY p.proname;
+```
+
+### ✅ 2. 差異関数の元定義での上書き
+
+差異が発見された5つの関数について、元プロジェクトから正確な定義を取得し、`CREATE OR REPLACE FUNCTION`でコピー先を完全上書き：
+
+#### `call_edge_function` 修正
+```sql
+CREATE OR REPLACE FUNCTION public.call_edge_function(function_name text, payload jsonb)
+ RETURNS void
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+AS $function$
+DECLARE
+  edge_function_url text;
+BEGIN
+  -- 正しいプロジェクトURLに修正
+  edge_function_url := 'https://qgqcjtjxaoplhxurbpis.supabase.co/functions/v1/' || function_name;
+  -- ... 以下省略
+END;
+$function$
+```
+
+#### `handle_new_user` 修正
+```sql
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+ RETURNS trigger
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'public'
+AS $function$
+BEGIN
+  INSERT INTO public.profiles (id, username, email)
+  VALUES (
+    NEW.id,
+    COALESCE(NEW.raw_user_meta_data->>'username', 'user_' || substring(NEW.id::text, 1, 8)),
+    NEW.email
+  );
+  RETURN NEW;
+END;
+$function$
+```
+
+#### その他3関数の修正
+- `cancel_vote`: ユーザー投票数減算処理の正確な実装
+- `get_user_vote`: 投票状態取得の正しい戻り値構造
+- `vote_battle`: 投票処理とユーザー投票数増加の正確な実装
+
+### ✅ 3. MD5ハッシュによる完全一致確認
+
+修正後、全71個の関数について再度ハッシュ値を比較し、元プロジェクトとの完全一致を確認。
+
+## 🔧 技術詳細
+
+### 比較手法
+- **PostgreSQL関数定義抽出**: `pg_get_functiondef(p.oid)`
+- **ハッシュ化差異検出**: `md5()`によるバイト単位の比較
+- **文字数比較**: `LENGTH()`による長さチェック
+
+### 修正方式
+- **非破壊的上書き**: `CREATE OR REPLACE FUNCTION`
+- **権限保持**: `SECURITY DEFINER`等の属性維持
+- **依存関係安全**: 関数間の依存関係を保持
+
+### 検証方式
+- **ハッシュ値完全一致**: 修正前後での元プロジェクトとのハッシュ比較
+- **関数数整合性**: 全71個の関数数の一致確認
+
+## 🎯 解決された問題
+
+1. **Edge Function呼び出しエラー解消**: 正しいプロジェクトURLへの修正
+2. **新規ユーザー登録処理の正常化**: Username フォールバック処理の復元
+3. **投票システムの完全性**: 投票・キャンセル時のユーザー統計更新の正確性
+4. **データ整合性の保証**: 元プロジェクトと完全に同一のビジネスロジック
+
+## 📊 影響範囲
+
+- **データベース関数**: 71個すべてが元プロジェクトと完全一致
+- **フロントエンド**: 関数呼び出しの正常動作保証
+- **バックエンドロジック**: ビジネスルールの完全性確保
+- **ユーザー体験**: 投票、ユーザー登録等の機能正常化
+
+## 🚀 今後の運用指針
+
+### 関数同期の定期確認
+```bash
+# 定期的なハッシュ値比較の実行
+SELECT proname, md5(pg_get_functiondef(oid)) 
+FROM pg_proc p JOIN pg_namespace n ON p.pronamespace = n.oid 
+WHERE n.nspname = 'public' ORDER BY proname;
+```
+
+### デプロイメント後の検証
+- 新環境作成時の関数内容完全性チェック
+- マイグレーション後の関数定義検証
+
+## ✅ 検証項目
+
+- [x] 全71個の関数ハッシュ値が元プロジェクトと完全一致
+- [x] Edge Function呼び出しURL修正確認
+- [x] 新規ユーザー登録処理正常動作確認
+- [x] 投票システム統計更新正常動作確認
+- [x] データベース関数依存関係保持確認
+
+## 🔗 関連ファイル・リソース
+
+- **元プロジェクト**: `qgqcjtjxaoplhxurbpis.supabase.co`
+- **コピー先プロジェクト**: `wdttluticnlqzmqmfvgt.supabase.co`
+- **関連実装ログ**: `2025-06-28_edge_function_sync_fix.mdc`
+
+## 🔄 修正対象関数一覧
+
+| 関数名 | 問題内容 | 修正内容 | ハッシュ一致 |
+|-------|---------|---------|------------|
+| `call_edge_function` | 間違ったプロジェクトURL | 正しいURL設定 | ✅ |
+| `handle_new_user` | フォールバック処理欠落 | 元ロジック復元 | ✅ |
+| `cancel_vote` | 投票数減算処理差異 | 正確な処理復元 | ✅ |
+| `get_user_vote` | 戻り値構造差異 | 正しい構造復元 | ✅ |
+| `vote_battle` | 投票数増加処理差異 | 正確な処理復元 | ✅ |
+
+---
+**実装者**: AI Assistant  
+**レビュー**: 要レビュー  
+**ステータス**: 関数内容同期完了、完全一致確認済み

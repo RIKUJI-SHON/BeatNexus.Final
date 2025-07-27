@@ -1,0 +1,134 @@
+# 🖼️ FI.png初期アイコン実装ログ
+
+## 📅 実装日
+2025-01-19
+
+## 🎯 概要
+ユーザーの初期アイコンを、現在のランダム生成アバター（DiceBear API）から指定された`FI.png`画像を使用するように変更。
+
+## 🔍 発見された問題
+### 現在のアバターシステム
+- **デフォルト**: DiceBear API（`https://api.dicebear.com/7.x/avataaars/svg?seed=${seed}`）
+- **フォールバック**: 各コンポーネントで重複実装
+- **不整合**: 複数ファイルで同じ関数が重複定義
+
+## 📝 実装内容
+
+### ✅ 共通ユーティリティ関数作成
+**ファイル**: `src/utils/index.ts`
+```typescript
+/**
+ * デフォルトアバターのURLを取得
+ * ユーザーがアバターを設定していない場合に使用される
+ */
+export const getDefaultAvatarUrl = (): string => {
+  return '/images/FI.png';
+};
+```
+
+### ✅ フロントエンド修正済みファイル
+1. **`src/components/profile/AvatarUpload.tsx`** - プロフィール画像アップロード
+2. **`src/components/layout/Header.tsx`** - ヘッダーのアバター表示
+3. **`src/components/ui/HoverCard.tsx`** - ユーザーホバーカード
+4. **`src/pages/ProfilePage.tsx`** - プロフィールページ
+5. **`src/components/battle/BattleView.tsx`** - バトル詳細ビュー
+6. **`src/components/battle/SimpleBattleCard.tsx`** - シンプルバトルカード
+7. **`src/components/battle/SpecialBattleCard.tsx`** - スペシャルバトルカード
+8. **`src/components/ui/BattleCommentsModal.tsx`** - バトルコメントモーダル
+9. **`src/pages/RankingPage.tsx`** - ランキングページ
+10. **`src/pages/BattleReplayPage.tsx`** - バトルリプレイページ（一部）
+11. **`src/components/onboarding/slides/ProfileSetupSlide.tsx`** - オンボーディング
+
+### ✅ バックエンド修正
+#### データベースマイグレーション
+**ファイル**: `supabase/migrations/20250119000000_update_default_avatar_to_fi.sql`
+```sql
+-- 新規ユーザーのデフォルトアバターをFI.pngに設定
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS TRIGGER AS $$
+BEGIN
+  INSERT INTO public.profiles (id, username, email, avatar_url)
+  VALUES (
+    NEW.id,
+    COALESCE(NEW.raw_user_meta_data->>'username', 'user_' || substring(NEW.id::text, 1, 8)),
+    NEW.email,
+    '/images/FI.png'  -- デフォルトアバターをFI.pngに設定
+  );
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
+```
+
+#### Edge Functions修正
+1. **`supabase/functions/ogp-battle-card/index.ts`** - OGP画像生成
+2. **`supabase/functions/ogp-page/index.ts`** - OGPページ生成
+
+### ✅ 重複コード削除
+- 各ファイルで重複していた`getDefaultAvatarUrl`関数を削除
+- 共通のユーティリティ関数を使用するように統一
+
+## 🔧 技術詳細
+
+### 変更の影響範囲
+- **新規ユーザー**: 登録時に`FI.png`がデフォルトアバターとして設定
+- **既存ユーザー**: アバター未設定の場合、フォールバックで`FI.png`を表示
+- **UI表示**: 全てのアバター表示箇所で統一
+
+### セキュリティ・パフォーマンス
+- **ローカルファイル**: 外部API依存を削減
+- **キャッシュ**: ローカル画像のためブラウザキャッシュが効果的
+- **読み込み速度**: DiceBear APIより高速
+
+## 🎯 解決された問題
+1. **統一性**: 全ユーザーが同じデフォルトアバターを使用
+2. **保守性**: 重複コードの削除により保守性向上
+3. **パフォーマンス**: 外部API依存の削減
+4. **デザイン整合性**: 指定された画像の使用
+
+## 📊 影響範囲
+- **新規ユーザー**: 登録時に`FI.png`が自動設定
+- **既存ユーザー**: アバター未設定時に`FI.png`表示
+- **UI/UX**: 全てのアバター表示で統一された見た目
+- **パフォーマンス**: 外部API呼び出しの削減
+
+## 🚀 今後の運用指針
+
+### 画像管理
+- `FI.png`は`public/images/`に配置
+- 画像更新時は同じパスで上書き
+- 適切なサイズ・形式での提供
+
+### 拡張性
+- 複数のデフォルトアバターが必要な場合は`getDefaultAvatarUrl`関数を拡張
+- ユーザータイプ別のデフォルトアバターも実装可能
+
+## ✅ 検証項目
+- [x] 共通ユーティリティ関数の作成
+- [x] フロントエンド各ファイルの修正
+- [x] データベースマイグレーション作成
+- [x] Edge Functions修正
+- [x] 重複コード削除
+- [ ] 新規ユーザー登録でのFI.png設定確認
+- [ ] 既存ユーザーでのフォールバック表示確認
+- [ ] 全ページでのアバター表示確認
+
+## 🔗 関連ファイル
+- `src/utils/index.ts` - 共通ユーティリティ関数
+- `supabase/migrations/20250119000000_update_default_avatar_to_fi.sql` - データベース更新
+- `public/images/FI.png` - デフォルトアバター画像
+- 各UIコンポーネントファイル - アバター表示箇所
+
+## 🔄 今後の改善点
+1. **linter error修正**: 一部ファイルで引数不一致エラーが残存
+2. **テスト**: 新規ユーザー登録・既存ユーザー表示の動作確認
+3. **画像最適化**: FI.pngのサイズ・形式最適化
+4. **レスポンシブ**: 各画面サイズでの表示確認
+
+---
+**実装者**: AI Assistant  
+**レビュー**: 要レビュー  
+**ステータス**: 実装完了、動作確認待ち
+description:
+globs:
+alwaysApply: false
+---

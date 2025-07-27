@@ -1,0 +1,221 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# 🌐 言語設定の競合解決実装ログ
+
+## 📅 実装日
+2025-01-19
+
+## 🎯 概要
+WebブラウザとデータベースのDual言語設定システムの競合を解決。
+ログイン前はブラウザ設定、ログイン後はDB設定を優先し、設定変更が永続化されるように修正。
+
+## 🔍 発見された問題
+### 言語設定の競合と上書き問題
+- **現象**: ユーザーが設定で日本語に変更してもリロード時に英語に戻る
+- **原因**: AuthProviderが常にブラウザ言語をDBに上書きしていた
+- **結果**: ユーザー設定が保存されない・無視される
+
+### 不適切な言語設定フロー
+1. ログイン時: AuthProviderがブラウザ言語をDBに強制上書き
+2. 設定変更: SettingsPageでDB言語を更新
+3. リロード時: またブラウザ言語でDBが上書きされる
+4. 結果: 設定が永続化されない
+
+## 📝 実装内容
+
+### ✅ 新しい言語設定フロー設計
+
+#### 🔄 フロー概要
+```
+ログイン前: ブラウザ設定 → i18n
+新規登録: ブラウザ設定 → DB初期化
+ログイン後: DB設定 → i18n（ブラウザ設定無視）
+```
+
+#### 📋 ケース別処理
+
+| 状態 | 参照元 | 処理内容 |
+|------|-------|---------|
+| 未ログイン | ブラウザ | navigator.languages検出 |
+| 新規登録時 | ブラウザ → DB | 初回のみDB初期化 |
+| ログイン中 | DB専用 | ブラウザ設定完全無視 |
+| 設定変更後 | DB更新 | 即座にi18n反映 |
+
+### ✅ 共通ユーティリティ関数の実装
+**ファイル**: `src/lib/utils.ts`
+
+#### 🔧 言語検証・正規化関数
+```typescript
+export const validateLanguageCode = (language: string): string => {
+  if (language === 'ja' || language === 'en') {
+    return language;
+  }
+  console.warn('Unexpected language value:', language);
+  return 'en'; // デフォルトは英語
+};
+```
+
+#### 🌐 ブラウザ言語検出関数
+```typescript
+export const detectBrowserLanguage = (): string => {
+  const browserLanguages = navigator.languages || [navigator.language];
+  
+  for (const lang of browserLanguages) {
+    const normalizedLang = lang.toLowerCase();
+    if (normalizedLang.startsWith('ja')) return 'ja';
+    if (normalizedLang.startsWith('en')) return 'en';
+  }
+  return 'en'; // デフォルト
+};
+```
+
+### ✅ useLanguageInitialization フック更新
+**ファイル**: `src/hooks/useLanguageInitialization.ts`
+
+#### 🎯 新しいロジック
+- **ログイン前**: `detectBrowserLanguage()` → `i18n.changeLanguage()`
+- **ログイン後**: DB取得 → `validateLanguageCode()` → `i18n.changeLanguage()`
+- **エラー時**: ブラウザ言語をフォールバック
+
+```typescript
+if (user) {
+  // ログインユーザー：データベースの言語設定を取得
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('language')
+    .eq('id', user.id)
+    .single();
+    
+  const userLanguage = data?.language ? 
+    validateLanguageCode(data.language) : 
+    detectBrowserLanguage();
+    
+  if (i18n.language !== userLanguage) {
+    i18n.changeLanguage(userLanguage);
+  }
+} else {
+  // ログインしていない場合：ブラウザの言語設定を使用
+  const detectedLanguage = detectBrowserLanguage();
+  if (i18n.language !== detectedLanguage) {
+    i18n.changeLanguage(detectedLanguage);
+  }
+}
+```
+
+### ✅ AuthProvider修正
+**ファイル**: `src/components/auth/AuthProvider.tsx`
+
+#### 🚫 削除された問題処理
+- 既存ユーザーログイン時の言語上書き処理を削除
+- 初期セッション取得時の言語設定処理をスキップ
+
+#### ✅ 新規登録時のみの処理
+```typescript
+const initializeLanguageForNewUser = async (userId: string, eventType: string) => {
+  // 新規登録時のみブラウザ言語をデータベースに設定
+  if (eventType === 'signup') {
+    const browserLanguage = detectBrowserLanguage();
+    await supabase.from('profiles')
+      .update({ language: browserLanguage })
+      .eq('id', userId);
+  }
+};
+```
+
+### ✅ SettingsPage更新
+**ファイル**: `src/pages/SettingsPage.tsx`
+
+#### 🔧 共通化
+- `validateLanguageCode` 関数を `utils.ts` に移動
+- 重複コードを削減
+
+## 🔧 技術詳細
+
+### 言語設定の優先順位
+1. **最高優先**: ユーザー設定（Settings画面での変更）
+2. **中優先**: DB保存済み設定（ログイン時復元）
+3. **最低優先**: ブラウザ設定（未ログイン時 & 初回登録時のみ）
+
+### データフロー
+```
+┌─────────────┐    ┌──────────────┐    ┌─────────────┐
+│ ブラウザ設定  │───▶│ 新規登録時のみ │───▶│ DB初期化     │
+└─────────────┘    └──────────────┘    └─────────────┘
+                                              │
+┌─────────────┐    ┌──────────────┐    ┌─────▼─────┐
+│ 設定画面変更  │───▶│ DB即座更新   │───▶│ i18n適用   │
+└─────────────┘    └──────────────┘    └───────────┘
+                                              │
+┌─────────────┐    ┌──────────────┐    ┌─────▼─────┐
+│ ログイン時   │───▶│ DB読み込み   │───▶│ i18n復元   │
+└─────────────┘    └──────────────┘    └───────────┘
+```
+
+### エラーハンドリング
+- DB接続エラー時: ブラウザ設定でフォールバック
+- 無効な言語コード: 'en'でデフォルト化
+- ネットワークエラー: graceful degradation
+
+## 🎯 解決された問題
+1. **設定永続化**: ユーザー変更した言語がリロード後も維持
+2. **競合解決**: ブラウザ vs DB設定の優先順位明確化
+3. **UX向上**: 設定変更が即座に反映＆永続化
+4. **コード重複削除**: 言語関連処理の共通化
+
+## 📊 影響範囲
+- **フロントエンド**: 言語設定フローの完全変更
+- **UX**: 設定変更の永続化実現
+- **保守性**: 共通化による重複コード削減
+- **信頼性**: エラーハンドリング強化
+
+## 🚀 動作パターン
+
+### 📱 ユーザーシナリオ
+
+#### シナリオ1: 新規ユーザー（日本語ブラウザ）
+1. サイト訪問 → 日本語表示（ブラウザ検出）
+2. アカウント作成 → DB言語='ja'で初期化
+3. ログイン状態維持 → 日本語継続
+4. リロード → DB='ja'読み込み → 日本語維持
+
+#### シナリオ2: 既存ユーザー（設定変更）
+1. ログイン → DB='ja'読み込み → 日本語表示
+2. 設定で英語に変更 → DB='en'更新 → 英語即座表示
+3. リロード → DB='en'読み込み → 英語維持
+4. ブラウザが日本語でも英語維持（DB優先）
+
+#### シナリオ3: ログアウト状態
+1. ログアウト → ブラウザ言語検出
+2. 日本語ブラウザ → 日本語表示
+3. 別デバイス（英語） → 英語表示
+4. ログイン → DB設定で元の言語復元
+
+## ✅ 検証項目
+- [x] 新規登録時のブラウザ言語初期化
+- [x] ログイン時のDB言語設定読み込み
+- [x] 設定変更の即座反映と永続化
+- [x] リロード時の設定維持
+- [x] ログアウト時のブラウザ言語復帰
+- [ ] 複数デバイス間での設定同期テスト
+- [ ] ネットワークエラー時のフォールバック動作
+- [ ] 無効なDB言語値の処理テスト
+
+## 🔗 関連ファイル
+- `src/hooks/useLanguageInitialization.ts` - 言語初期化メインロジック
+- `src/components/auth/AuthProvider.tsx` - 認証時の言語設定
+- `src/pages/SettingsPage.tsx` - ユーザー言語設定UI
+- `src/lib/utils.ts` - 共通言語ユーティリティ
+- `src/i18n/index.ts` - 国際化設定
+
+## 🔄 今後の課題
+- 言語切り替えアニメーション追加検討
+- より多言語対応時の拡張性確保
+- パフォーマンス最適化（キャッシュ戦略）
+
+---
+**実装者**: AI Assistant  
+**レビュー**: 要レビュー  
+**ステータス**: 実装完了、動作テスト推奨

@@ -1,0 +1,61 @@
+# 実装ログ
+
+## 概要
+Googleフォームで収集した事前登録者38件のメールアドレスをSupabaseの`pre_registered_users`テーブルに登録。
+
+## 実行ステップ
+1. マイグレーションファイル `20250720100000_insert_google_form_preregistered_users.sql` を作成
+2. 開発環境（wdttluticnlqzmqmfvgt）でマイグレーション適用・検証
+3. 本番環境（qgqcjtjxaoplhxurbpis）でマイグレーション適用
+4. 両環境で41件のメールアドレス登録を確認
+
+## 最終成果物
+- マイグレーションファイル: `supabase/migrations/20250720100000_insert_google_form_preregistered_users.sql`
+- 開発環境: 41件登録完了
+- 本番環境: 41件登録完了
+
+## 登録されたメールアドレス（38件）
+- runesurucurephiaings@gmail.com
+- damenmingguwu@gmail.com
+- maajo222@gmail.com
+- uwanoata8@gmail.com
+- fjitajin@yahoo.co.jp
+- yuito040309@gmail.com
+- iwayoshi0801@gmail.com
+- aru2004g2@gmail.com
+- myojin0829@gmail.com
+- upedyoucheng@icloud.com
+- kenta.suga0113@gmail.com
+- tomo.ue.yks@gmail.com
+- sa1proto0707@gmail.com
+- senafever0423@gmail.com
+- msk1845@icloud.com
+- amam50409@gmail.com
+- yuki20010315@gmail.com
+- s0u084000@gmail.com
+- tai.sdbh1201@gmail.com
+- 4lterego422@gmail.com
+- ag25110@shibaura-it.ac.jp
+- itsutaka311@gmail.com
+- tikyugi.mt@gmail.com
+- tleebeatboxer232@gmail.com
+- ilibeinfukuoka@gmail.com
+- rainykaxi@gmail.com
+- 7tktk4@gmail.com
+- shion11.05.314@gmail.com
+- ilibeinfukuoa@gmail.com
+- munisepo0728@gmail.com
+- haru07030890@icloud.com
+- 1amdyin9@gmail.com
+- zhenshilichuan@gmail.com
+- yyyttt.nee.777@gmail.com
+- tarikihongandamashii@gmail.com
+- 888exas@gmail.com
+- tabasco115115@gmail.com
+- rikujiogino@gmail.com
+
+## 課題対応
+- ON CONFLICT (email) DO NOTHING により重複登録を防止
+
+## 注意点・改善提案
+- 今後追加の事前登録者がある場合は、新しいマイグレーションファイルを作成して同様の手順で追加可能

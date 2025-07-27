@@ -1,0 +1,111 @@
+# 2025-07-26_file-size-limit-update-and-compression-estimation.mdc
+
+## 実装概要
+ファイルサイズ制限を2GBに変更し、圧縮前のサイズ推定機能を実装しました。
+
+## 実装詳細
+
+### 1. ファイルサイズ制限の変更 (1GB → 2GB)
+
+#### 変更ファイル:
+- `src/pages/PostPage.tsx`: MAX_FILE_SIZE を 2GB に変更
+- `src/hooks/useVideoProcessor.ts`: CONFIG.MAX_FILE_SIZE は既に 2GB だった
+- `src/i18n/locales/ja.json`: エラーメッセージとFAQの制限値を2048MBに更新
+- `src/i18n/locales/en.json`: 英語版エラーメッセージとFAQも2048MBに更新
+
+#### 変更内容:
+```typescript
+// PostPage.tsx
+const MAX_FILE_SIZE = 2 * 1024 * 1024 * 1024; // 2GB
+
+// ja.json
+"fileTooBig": "ファイルサイズが制限を超えています。現在: {{current}}MB（制限: 2048MB）"
+"answer": "MP4、WebM、MOVの形式に対応しています。ファイルサイズは2GB以下に制限されています。"
+
+// en.json  
+"fileTooBig": "File size exceeds limit. Current: {{current}}MB (Limit: 2048MB)"
+"answer": "We support MP4, WebM, and MOV formats. File size must be under 2GB."
+```
+
+### 2. 圧縮サイズ推定機能の実装
+
+#### 新機能:
+- `estimateCompressedSize()`: CRF値、解像度、動画長に基づくサイズ推定
+- `getVideoMetadata()`: 動画ファイルからメタデータ（解像度、長さ）を取得
+- `estimateCompressionSize()`: 圧縮前の推定サイズ計算（公開API）
+
+#### 推定ロジック:
+```typescript
+// CRF値による基本圧縮率
+const crfCompressionRates = {
+  '22': 0.3,  // 高品質: 約30%に圧縮
+  '28': 0.15, // 中品質: 約15%に圧縮  
+  '30': 0.1,  // 低品質: 約10%に圧縮
+};
+
+// 解像度による追加圧縮率
+const resolutionCompressionRates = {
+  '1920:-1': 1.0,      // フルHD: 圧縮率変化なし
+  'scale=1280:-1': 0.6, // HD: 60%に削減
+  'scale=960:-1': 0.35, // SD: 35%に削減  
+};
+
+// 動画長による調整（長い動画ほど圧縮効果が高い）
+const durationFactor = Math.min(1.0, Math.max(0.7, duration / 60));
+```
+
+#### 返り値:
+```typescript
+{
+  estimatedSize: number;    // 推定圧縮後サイズ（バイト）
+  compressionRatio: number; // 圧縮率（0.1 = 10%に圧縮）
+  willCompress: boolean;    // 圧縮が実行されるかどうか
+}
+```
+
+### 3. 使用方法
+
+```typescript
+const { estimateCompressionSize } = useVideoProcessor();
+
+// 圧縮前にサイズを推定
+const estimation = await estimateCompressionSize(videoFile);
+console.log(`推定サイズ: ${(estimation.estimatedSize / 1024 / 1024).toFixed(1)}MB`);
+console.log(`圧縮率: ${(estimation.compressionRatio * 100).toFixed(1)}%`);
+```
+
+## 技術的考慮事項
+
+### 推定精度について:
+- CRF値と解像度による基本的な推定
+- 動画の内容（複雑さ、動きの多さ）は考慮されていない
+- 実際の圧縮率は±20-30%程度の誤差が予想される
+
+### メモリ使用量:
+- 2GBファイルの処理により、ブラウザのメモリ使用量が大幅に増加
+- FFmpegのメモリ制限に注意が必要
+
+### パフォーマンス:
+- メタデータ取得は高速（数秒以内）
+- 推定計算は即座に完了
+
+## 今後の改善案
+
+1. **動的推定精度向上**: 実際の圧縮結果を学習データとして蓄積
+2. **プログレッシブ推定**: FFmpeg処理中の中間結果から動的に推定を調整
+3. **メモリ管理強化**: 大容量ファイル処理時のメモリ最適化
+4. **UI統合**: 推定結果をユーザーに分かりやすく表示
+
+## 動作確認項目
+
+- [ ] 2GBファイルのアップロード可能確認
+- [ ] 推定サイズの精度確認（複数のファイルサイズで検証）
+- [ ] エラーメッセージの表示確認
+- [ ] 多言語対応の確認
+- [ ] メモリ使用量の監視
+
+## 注意事項
+
+- 2GBファイルの処理には相当な時間とメモリが必要
+- ブラウザの制限により、実際の処理可能なサイズは環境に依存
+- 推定値はあくまで目安であり、実際の圧縮結果とは差が生じる可能性がある

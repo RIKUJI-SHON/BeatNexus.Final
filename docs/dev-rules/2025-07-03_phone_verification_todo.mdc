@@ -1,0 +1,68 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# 📋 電話番号認証機能 ToDo リスト
+
+## 📅 作成日
+2025-07-03
+
+---
+
+### Phase 0: 調査
+- [ ] Supabase Phone Auth の仕様確認 (サポート国・料金)。
+- [ ] Twilio の SMS 料金と電話番号購入可能国を確認。
+- [ ] 既存認証 UI (`AuthModal.tsx`) と `AuthProvider.tsx` のコード調査。
+
+### Phase 1: 開発環境設定
+- [ ] Supabase 開発プロジェクト (`wdttluticnlqzmqmfvgt`) で Phone Auth を有効化。
+- [ ] Twilio アカウント作成 & 電話番号購入。
+  - [ ] Twilio Messaging Service 作成。
+  - [ ] サンドボックスモードでテスト SMS 送信。
+- [ ] `.env.local` に Twilio 資格情報 (`TWILIO_*`) を追加。
+- [ ] GitHub Secrets に dev 用クレデンシャルを登録 (CI 用)。
+
+### Phase 2: データベースマイグレーション
+- [ ] `20250703150000_add_phone_columns_to_profiles.sql` を作成し、`phone_number` と `phone_verified` を追加。
+- [ ] `mcp_supabase_apply_migration` で開発 DB に適用。
+- [ ] `src/types/database.types.ts` を自動生成して型を同期。
+
+### Phase 3: バックエンド
+- [ ] Supabase Auth Webhook: `sign_up` イベントでプロフィール行を作成し電話番号を保存。
+- [ ] Edge Function `phone-otp-rate-limit` (任意) で OTP 送信回数を制御。
+
+### Phase 4: フロントエンド
+- [ ] `AuthModal` に電話番号入力フォームを追加。
+- [ ] OTP 入力ステップ UI を実装 (再送信ボタン含む)。
+- [ ] `authStore` を拡張し `phoneNumber`, `phoneVerified` を保持。
+- [ ] i18n 翻訳キーを `en.json` / `ja.json` に追加。
+- [ ] バリデーション (例: 日本の電話番号フォーマット) を実装。
+
+### Phase 5: テスト
+- [ ] 新規ユーザー登録フロー (電話番号 → OTP) を手動テスト。
+- [ ] OTP 期限切れ / 間違いコード時のエラー表示テスト。
+- [ ] 既存ユーザーでのログイン確認。
+- [ ] OTP 送信 rate-limit (5 回/日) が機能するか確認。
+
+### Phase 6: ドキュメント
+- [ ] `README.md` に Twilio 設定手順と環境変数例を追記。
+- [ ] `.cursor/rules/dev-rules` に実装ログ (yyyy-mm-dd_phone_verification_impl.mdc) を追加。
+
+### Phase 7: 本番適用
+- [ ] 本番 DB にマイグレーションを適用 (`mcp_supabase_apply_migration`)。
+- [ ] Supabase 本番プロジェクトで Phone Auth を有効化。
+- [ ] Twilio 本番用電話番号を購入し、Messaging Service を本番モードに切替。
+- [ ] `.env.production` / Vercel 環境変数に Twilio 資格情報を設定。
+- [ ] 低トラフィック時間帯にローンチし、リアルタイムで Supabase / Twilio ログを監視。
+
+### Phase 8: Post-Launch
+- [ ] メトリクス収集 (新規登録数, SMS 失敗率)。
+- [ ] CS からのフィードバックを確認し、改善チケットを作成。
+
+---
+
+### 💡 重要メモ
+- Twilio 送信国別許可リストを設定しないと SMS がブロックされる可能性あり。
+- Twilio コンソールで料金上限アラートを設定し、予期せぬコストを防止。
+- `.env` ファイルをリポジトリにコミットしないこと (セキュリティ厳守)。

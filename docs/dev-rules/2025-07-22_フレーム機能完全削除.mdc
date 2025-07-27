@@ -1,0 +1,201 @@
+# フレーム機能完全削除ログ
+
+**実装日**: 2025年7月22日  
+**課題**: フレーム機能の完全削除（フロントエンド + データベース）
+
+## 修正概要
+
+ユーザーの要求に応じて、アイコンフレーム機能を完全に削除しました。フロントエンドのコンポーネント、フック、型定義、およびデータベースのテーブル・カラムまで全て削除し、バッジのみのシンプルなシステムに変更しました。
+
+## 実行した修正
+
+### 1. フロントエンドコンポーネントの削除
+
+#### 削除されたファイル
+- `src/components/rewards/FrameCard.tsx` - フレーム表示カード
+- `src/components/rewards/FrameCard_clean.tsx` - クリーンバージョン
+- `src/hooks/useFrames.ts` - フレーム管理フック
+
+#### CollectionPage.tsxの修正
+```typescript
+// 削除されたimport
+- import FrameCard from './FrameCard';
+- import { useFrames } from '../../hooks/useFrames';
+
+// 削除された機能
+- const { equipFrame, unequipFrame } = useFrames(isOwnProfile ? userId : undefined);
+- フレーム装備・解除ボタン
+- フレームカード表示ロジック
+
+// 修正されたフィルター
+- filterType: 'all' | 'badge' | 'frame' → 'all' | 'badge'
+- フレームフィルターオプション削除
+```
+
+#### BattleResultModal.tsxの修正
+```typescript
+// 削除されたimport
+- import { calculateRankProgress } from '../../lib/rankUtils';
+
+// 削除された機能
+- rankProgress計算
+- currentRankDisplay表示
+- シェアテキストからランク情報削除
+```
+
+### 2. 型定義の修正
+
+#### rewards.tsの修正
+```typescript
+// Rewardインターフェース修正
+- type: 'badge' | 'frame' → type: 'badge'
+
+// CollectionStats修正
+interface CollectionStats {
+  totalBadges: number;
+  earnedBadges: number;
+  // 削除: totalFrames, earnedFrames
+}
+```
+
+### 3. EmptyCollectionStateの修正
+```typescript
+// Props修正
+- type?: 'all' | 'badges' | 'frames' → type?: 'all' | 'badges'
+
+// フレーム関連UI削除
+- Shield アイコン削除
+- フレーム関連メッセージ削除
+- フレーム獲得方法の説明削除
+```
+
+### 4. データベースマイグレーションの実行
+
+#### 実行されたマイグレーション: `20250722000002_remove_frame_functionality.sql`
+
+```sql
+-- フレーム関連データの削除
+DELETE FROM user_rewards 
+WHERE reward_id IN (
+  SELECT id FROM rewards WHERE type = 'frame'
+);
+
+DELETE FROM rewards WHERE type = 'frame';
+
+-- プロフィールテーブルからフレーム関連カラム削除
+ALTER TABLE profiles DROP COLUMN IF EXISTS equipped_frame_id;
+
+-- インデックス・ポリシー削除
+DROP INDEX IF EXISTS idx_profiles_equipped_frame;
+DROP POLICY IF EXISTS "Users can update own equipped frame" ON profiles;
+
+-- バッジのみの制約追加
+ALTER TABLE rewards ADD CONSTRAINT check_reward_type_badge_only CHECK (type = 'badge');
+```
+
+#### データベース変更の詳細
+- **削除されたレコード**: フレームタイプの全てのrewardsとuser_rewards
+- **削除されたカラム**: profiles.equipped_frame_id
+- **削除されたインデックス**: idx_profiles_equipped_frame
+- **削除されたポリシー**: フレーム装備権限ポリシー
+- **追加された制約**: バッジタイプのみ許可する制約
+
+## UI/UXの変更
+
+### CollectionPageの簡素化
+**修正前**:
+- バッジとフレームの2タイプ表示
+- フレーム装備・解除機能
+- 「全て」「バッジ」「フレーム」フィルター
+
+**修正後**:
+- バッジのみ表示
+- 「全て」「バッジ」フィルター
+- フレーム機能完全削除
+
+### プロフィール機能への影響
+- アイコンフレーム装備機能の削除
+- プロフィール画像装飾機能の削除
+- フレーム選択UI完全削除
+
+### バトル結果表示の簡素化
+- ランク進捗バー削除（前回実装）
+- ランク情報表示削除
+- シェア機能からランク情報削除
+
+## 削除された機能
+
+### フレーム管理機能
+- フレーム装備・解除
+- フレームプレビュー
+- フレーム選択UI
+- フレームコレクション表示
+
+### フレーム関連データ
+- フレーム画像表示
+- フレーム獲得履歴
+- フレーム装備状態管理
+- フレーム統計情報
+
+### データベース機能
+- equipped_frame_id管理
+- フレーム関連RLS
+- フレーム付与システム
+
+## システム簡素化の効果
+
+### パフォーマンス向上
+- フレーム関連クエリの削除
+- DOM要素数の削減
+- 不要なstate管理の削除
+
+### 開発・保守性向上
+- コンポーネント数の削減
+- 複雑なフレーム装備ロジック削除
+- データベーススキーマの簡素化
+
+### バンドルサイズ削減
+- FrameCardコンポーネント削除
+- useFramesフック削除
+- 関連する依存関係削除
+
+## 今後の考慮事項
+
+### バッジ機能の強化
+- バッジデザインの改善
+- バッジ獲得条件の多様化
+- 特別なバッジの追加
+
+### 代替カスタマイズ機能
+- プロフィール背景カスタマイズ
+- バッジ表示位置のカスタマイズ
+- その他の視覚的カスタマイズ要素
+
+### データベース最適化
+- 不要なカラム・テーブルの定期的な見直し
+- インデックス最適化
+- クエリパフォーマンスの改善
+
+## テスト結果
+
+### TypeScriptコンパイル
+- ✅ CollectionPage.tsx エラーなし
+- ✅ EmptyCollectionState.tsx エラーなし  
+- ✅ BattleResultModal.tsx エラーなし
+- ✅ rewards.ts エラーなし
+
+### データベースマイグレーション
+- ✅ 開発環境での実行成功
+- ✅ フレーム関連データ完全削除
+- ✅ 制約追加によるデータ整合性確保
+
+### ファイル削除確認
+- ✅ FrameCard関連ファイル削除完了
+- ✅ useFrames.ts削除完了
+- ✅ PowerShellコマンドによる安全な削除
+
+---
+
+**修正者**: AI Assistant  
+**検証状況**: TypeScriptエラー完全解決、データベースマイグレーション成功  
+**ユーザー要求**: フレーム機能完全削除 ✅

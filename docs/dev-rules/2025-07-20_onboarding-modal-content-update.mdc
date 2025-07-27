@@ -1,0 +1,124 @@
+# 2025-07-20_onboarding-modal-content-update.mdc
+
+## 概要
+ガイドモーダル（オンボーディングモーダル）の内容を指定された5枚構成に変更し、各スライドのコンテンツを新しい仕様に更新しました。
+
+## 変更内容
+
+### 構成変更
+- **変更前**: 6枚構成（Welcome → ProfileSetup → BioSetup → BattleGuide → VotingGuide → GetStarted）
+- **変更後**: 5枚構成（Welcome → BattleGuide → VotingGuide → ProfileSetup → GetStarted）
+
+### スライド内容の変更
+
+#### 1枚目: WelcomeSlide（ようこそ、伝説の舞台へ）
+```tsx
+// 上部：ようこそ、BeatNexusへ。（大）
+<h2 className="text-3xl font-bold text-white">
+  ようこそ、BeatNexusへ。
+</h2>
+
+// 中央：BeatNexusのロゴ
+<img src="/images/BEATNEXUS-WORDMARK.png" alt="BeatNexus Logo" className="h-16 object-contain" />
+
+// 下部：ここは、世界中のビートボクサーが、そのスキルと魂をぶつけ合う、新たな伝説の舞台です。（小）
+<p className="text-gray-300 text-sm leading-relaxed">
+  ここは、世界中のビートボクサーが、そのスキルと魂をぶつけ合う、新たな伝説の舞台です。
+</p>
+```
+
+#### 2枚目: BattleGuideSlide（バトルの基本フロー）
+```tsx
+// 上部：戦い方は、驚くほどシンプル。（大）
+<h2 className="text-3xl font-bold text-white">
+  戦い方は、驚くほど<br />シンプル。
+</h2>
+
+// 中央：動画埋め込み
+<video controls className="w-full max-w-[280px] h-40 object-cover rounded-lg shadow-lg" poster="/images/onboarding/Slide2.png">
+  <source src="/images/onboarding/Onboarding_video.mp4" type="video/mp4" />
+</video>
+
+// 下部：動画を投稿すれば、システムが自動で対戦相手をマッチング。勝敗は、コミュニティの投票によって決まります。（小）
+<p className="text-gray-300 text-sm leading-relaxed">
+  動画を投稿すれば、システムが自動で対戦相手をマッチング。勝敗は、コミュニティの投票によって決まります。
+</p>
+```
+
+#### 3枚目: VotingGuideSlide（栄光への二つの道）
+```tsx
+// 上部：栄光への道は、一つじゃない。（大）
+<h2 className="text-3xl font-bold text-white">
+  栄光への道は、<br />一つじゃない。
+</h2>
+
+// 中央：左右に画像配置
+<div className="flex justify-center gap-4 mb-6">
+  <div className="flex-1 text-center">
+    <img src="/images/Tournaments.png" alt="Tournaments" className="w-full h-20 object-contain rounded-lg" />
+  </div>
+  <div className="flex-1 text-center">
+    <img src="/images/Offivial judge.png" alt="Official Judge" className="w-full h-20 object-contain rounded-lg" />
+  </div>
+</div>
+
+// 下部：プレイヤーとしてランキングの頂点を目指す道。そして、優れた審美眼で勝敗を決める「公式ジャッジ」を目指す道。あなたは、どちらの伝説を刻みますか？（小）
+<p className="text-gray-300 text-sm leading-relaxed">
+  プレイヤーとしてランキングの頂点を目指す道。そして、優れた審美眼で勝敗を決める「公式ジャッジ」を目指す道。あなたは、どちらの伝説を刻みますか？
+</p>
+```
+
+#### 4枚目: ProfileSetupSlide（既存のプロフィール設定融合）
+- 既存の`ProfileSetupSlide`をそのまま使用
+- アバター画像アップロードと自己紹介文入力が統合されたページ
+
+#### 5枚目: GetStartedSlide（さあ、始めよう）
+```tsx
+// 上部：準備は、整った。
+<h2 className="text-3xl font-bold text-white">
+  準備は、整った。
+</h2>
+
+// 中央：バトルスタートアイコンボタン
+<div className="bg-gradient-to-br from-cyan-500 to-blue-600 p-6 rounded-full shadow-lg hover:scale-105 transition-transform cursor-pointer">
+  <Upload className="w-12 h-12 text-white" />
+</div>
+
+// 下部：あなたの最初の戦いが、今、始まります。
+<p className="text-gray-300 text-lg font-medium">
+  あなたの最初の戦いが、今、始まります。
+</p>
+```
+
+### 技術的変更
+- **OnboardingModal.tsx**: スライド構成を6枚から5枚に変更
+- **プログレスインジケーター**: ドット数を6個から5個に変更
+- **完了条件**: currentSlide === 5 から currentSlide === 4 に変更
+- **BioSetupSlide**: 削除（ProfileSetupSlideに統合済み）
+
+### ファイル使用状況
+- ✅ `/images/BEATNEXUS-WORDMARK.png`: 1枚目のロゴ表示
+- ✅ `/images/onboarding/Onboarding_video.mp4`: 2枚目の動画
+- ✅ `/images/onboarding/Slide2.png`: 動画のポスター画像
+- ✅ `/images/Tournaments.png`: 3枚目左側画像
+- ✅ `/images/Offivial judge.png`: 3枚目右側画像
+
+## 期待される動作
+1. **1枚目**: ブランドイメージとコンセプト紹介
+2. **2枚目**: バトルシステムの説明（動画付き）
+3. **3枚目**: プレイヤーとジャッジの二つの道の説明
+4. **4枚目**: プロフィール設定（画像+自己紹介）
+5. **5枚目**: バトル開始への導線
+
+## 注意事項
+- すべてのファイルリソースは存在確認済み
+- レスポンシブデザインを維持
+- 既存のスタイルクラス（onboarding-card、onboarding-content）を継続使用
+- 日本語コンテンツで統一（多言語対応は後で追加可能）
+
+## 動作確認項目
+- [ ] 各スライドが正しく表示される
+- [ ] プログレスインジケーターが5個表示される
+- [ ] 動画が正常に再生される
+- [ ] 画像が正しく表示される
+- [ ] 最後のスライドで完了処理が実行される

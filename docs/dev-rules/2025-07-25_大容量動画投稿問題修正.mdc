@@ -1,0 +1,100 @@
+# 大容量動画投稿問題修正ログ
+
+## 修正日時
+2025年7月25日
+
+## 問題
+- 900MB以上の動画投稿時に進捗が10%で停止
+- ログが全く表示されない
+- FFmpeg圧縮処理が完了しない
+
+## 原因分析
+1. **ファイルサイズ制限の矛盾**: PostPage(200MB) vs useVideoProcessor(2GB)
+2. **メモリ不足**: 大容量ファイルのArrayBuffer生成でブラウザメモリ限界
+3. **FFmpeg設定不適切**: ultrafast設定では大容量ファイル処理に不適切
+4. **タイムアウト不備**: 長時間処理への対応不足
+5. **デバッグ情報不足**: エラーの特定が困難
+
+## 実装した修正
+
+### 1. ファイルサイズ制限の統一
+- PostPage: `200MB → 500MB`
+- 圧縮しきい値: `200MB → 300MB`
+
+### 2. FFmpeg圧縮設定の最適化
+```typescript
+// 段階的圧縮設定
+const isLargeFile = videoFile.size > 500 * 1024 * 1024; // 500MB
+const isVeryLargeFile = videoFile.size > 800 * 1024 * 1024; // 800MB
+
+// CRF値調整（圧縮強度）
+crf: isVeryLargeFile ? '30' : (isLargeFile ? '28' : '22')
+
+// 解像度調整
+scale: isVeryLargeFile ? '960:-1' : (isLargeFile ? '1280:-1' : '1920:-1')
+
+// プリセット調整
+preset: isVeryLargeFile ? 'fast' : (isLargeFile ? 'faster' : 'ultrafast')
+```
+
+### 3. タイムアウト対策
+- 通常ファイル: 5分
+- 超大容量ファイル: 10分
+
+### 4. メモリ管理強化
+- ファイルクリーンアップの確実な実行
+- ユニークファイル名生成
+- ArrayBuffer生成時のエラーハンドリング
+
+### 5. 詳細ログとデバッグ
+```typescript
+// プロセス全体のログ
+console.log('🎬 ProcessVideo called with file:', { name, size, type });
+console.log('📝 Writing file to FFmpeg memory...');
+console.log('🎛️ FFmpeg command:', ffmpegArgs.join(' '));
+console.log('🎉 Compression completed successfully:', { originalSize, compressedSize, compressionRatio });
+```
+
+## 修正ファイル
+- `src/hooks/useVideoProcessor.ts`: FFmpeg処理の最適化
+- `src/pages/PostPage.tsx`: ファイルサイズ制限とログ追加
+- `src/i18n/locales/ja.json`: エラーメッセージ更新
+- `src/i18n/locales/en.json`: エラーメッセージ更新
+
+## 追加修正 (2025年7月26日)
+
+### タイムアウト完全撤廃
+- **問題**: 946MBファイルで10分タイムアウトが発生
+- **解決**: タイムアウトを完全に無効化し、時間をかけても最後まで圧縮
+- **理由**: ユーザビリティ向上、再撮影の手間を回避
+
+### ファイルサイズ制限拡張
+- `500MB → 1GB` に拡張
+- 超大容量ファイルにも対応
+
+### 進捗表示の改善
+- FFmpegの詳細進捗を表示 (`動画を圧縮中... (45.3%)`)
+- 大容量ファイル専用の案内メッセージ追加
+- 時間表示をマイクロ秒から秒に変換して見やすく
+
+### ユーザー体験の向上
+- 「ブラウザを閉じずにお待ちください」メッセージ
+- 大容量ファイル検出時の専用メッセージ
+- システム中断エラーへの対応
+
+## 期待される効果
+- **946MB動画**: タイムアウトなしで完全処理
+- **進捗の透明性**: 詳細な進捗とメッセージでユーザー安心感向上
+- **競合優位性**: 他サービスにない大容量動画対応
+
+## テスト項目
+- [ ] 946MB動画での圧縮テスト
+- [ ] ブラウザコンソールでのログ確認
+- [ ] 圧縮後ファイルサイズ確認
+- [ ] タイムアウト機能のテスト
+- [ ] メモリ使用量の監視
+
+## 注意事項
+- 超大容量ファイル(800MB+)は解像度を960pに削減
+- 圧縮により画質は低下するが、ファイルサイズ削減を優先
+- タイムアウト時はユーザーにファイルサイズ削減を推奨

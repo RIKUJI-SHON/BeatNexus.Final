@@ -1,0 +1,199 @@
+# 🌟 BeatNexus OGP メタタグ & PNG 画像動的生成システム実装ログ
+
+## 📅 実装日
+2025-07-05
+
+## 🎯 概要
+BeatNexusのバトルページ用OGP画像を動的生成し、SNS（Twitter/X等）でカード画像が正しく表示されるシステムを構築。
+SPA特有のmeta タグ問題を解決し、resvg_wasm による高品質PNG画像生成を実現。
+
+## 🔍 解決した課題
+### 1. Twitter がSVG画像非対応
+- **問題**: Twitter はSVGを画像として認識しない
+- **解決**: resvg_wasm でSVG→PNG変換を実装
+
+### 2. SPA（React）のmeta タグ制限
+- **問題**: クローラはJavaScript実行後のmeta タグを読めない
+- **解決**: OGP専用HTMLページをEdge Functionで生成
+
+### 3. Edge Function のJWT認証問題
+- **問題**: デフォルトのJWT検証でクローラからアクセス不可
+- **解決**: `--no-verify-jwt` フラグで公開アクセス許可
+
+## 📝 実装内容
+
+### ✅ Edge Function: `ogp-battle-card` (PNG生成エンジン)
+**ファイル**: `supabase/functions/ogp-battle-card/index.ts`
+
+#### 主要機能
+- **動的アバター取得**: active_battles/archived_battles からプレイヤー情報取得
+- **SVG画像生成**: 1200x630のバトルカード画像をSVGで組み立て
+- **PNG変換**: resvg_wasm で高品質PNG出力
+- **フォーマット対応**: `?format=png` または `?format=svg` パラメータ
+
+#### resvg_wasm 統合
+```typescript
+// resvg_runtime.js - 動的import でモジュール解決
+let mod;
+export async function render(svg, options = {}) {
+  if (!mod) {
+    mod = await import("https://deno.land/x/resvg_wasm@0.10.0/mod.ts");
+  }
+  return mod.render(svg, options);
+}
+```
+
+#### 設定
+```toml
+[functions.ogp-battle-card]
+verify_jwt = false
+static_files = ["./supabase/functions/ogp-battle-card/*.wasm"]
+```
+
+### ✅ Edge Function: `ogp-page` (メタタグ + リダイレクト)
+**ファイル**: `supabase/functions/ogp-page/index.ts`
+
+#### 主要機能
+- **メタタグHTML生成**: battle_id ベースのOGP meta タグ付きHTML返却
+- **PNG プロキシ**: `?image=1` 時は ogp-battle-card へリバースプロキシ
+- **自動リダイレクト**: HTML内で即座にフロントエンドページへリダイレクト
+
+#### 生成されるmeta タグ
+```html
+<meta property="og:title" content="BeatNexus Battle" />
+<meta property="og:description" content="あなたの一票で勝敗が決まります！BeatNexusで投票しよう。" />
+<meta property="og:image" content="${SUPABASE_URL}/functions/v1/ogp-battle-card?battle_id=${battleId}" />
+<meta property="og:url" content="${SITE_BASE_URL}/battle/${battleId}" />
+<meta name="twitter:card" content="summary_large_image" />
+```
+
+#### プロキシ実装（resvg_wasm エラー回避）
+```typescript
+if (imageOnly) {
+  // 既存のPNG生成Edge Functionを呼び出してリバースプロキシ
+  const pngUrl = `${SUPABASE_URL}/functions/v1/ogp-battle-card?battle_id=${battleId}&format=png`;
+  const upstream = await fetch(pngUrl);
+  const body = new Uint8Array(await upstream.arrayBuffer());
+  return new Response(body, { headers: { "Content-Type": "image/png" } });
+}
+```
+
+### ✅ フロントエンド統合
+**ファイル**: `src/components/battle/BattleView.tsx`, `src/pages/BattleViewPage.tsx` 等
+
+#### React Helmet での静的meta タグ
+```tsx
+<Helmet>
+  <meta property="og:image" content={`${VITE_SUPABASE_URL}/functions/v1/ogp-battle-card?battle_id=${battle.id}`} />
+  <meta property="og:url" content={`${window.location.origin}/battle/${battle.id}`} />
+  <meta name="twitter:card" content="summary_large_image" />
+</Helmet>
+```
+
+#### 共有ボタンのURL変更
+```typescript
+// OGP専用ページへのリンクに変更
+const shareUrl = `${VITE_SUPABASE_URL}/functions/v1/ogp-page?battle_id=${battleId}`;
+```
+
+## 🔧 技術詳細
+
+### データフロー
+```
+1. SNSクローラ → ogp-page?battle_id=xxx
+2. ogp-page → meta タグ付きHTML返却
+3. クローラ → og:image URL (ogp-battle-card) アクセス
+4. ogp-battle-card → DB検索 → アバター取得 → SVG生成 → PNG変換
+5. クローラ → 画像付きカード表示
+```
+
+### デプロイコマンド
+```bash
+# JWT検証無効化が必須
+npx supabase@latest functions deploy ogp-battle-card --project-ref qgqcjtjxaoplhxurbpis --no-verify-jwt
+npx supabase@latest functions deploy ogp-page --project-ref qgqcjtjxaoplhxurbpis --no-verify-jwt
+```
+
+### バトルID検索ロジック
+```typescript
+// active_battles → archived_battles.original_battle_id → archived_battles.id の順で検索
+let { data } = await admin.from("active_battles").select("player1_user_id, player2_user_id").eq("id", battleId).maybeSingle();
+if (!data) {
+  let res = await admin.from("archived_battles").select("player1_user_id, player2_user_id").eq("original_battle_id", battleId).maybeSingle();
+  data = res.data;
+  if (!data) {
+    res = await admin.from("archived_battles").select("player1_user_id, player2_user_id").eq("id", battleId).maybeSingle();
+    data = res.data;
+  }
+}
+```
+
+## 🎯 解決された問題
+
+### resvg_wasm の動的import エラー
+- **問題**: Edge Runtime で `await import()` 時にモジュール未検出エラー
+- **解決**: ogp-page では独自PNG生成せず、ogp-battle-card へのプロキシ方式を採用
+- **メリット**: コード重複なし、既存の動作確認済み機能を再利用
+
+### JWT認証の公開アクセス問題
+- **問題**: デフォルトでJWT検証有効→クローラからアクセス不可
+- **解決**: `--no-verify-jwt` フラグでデプロイ、config.toml設定も併用
+
+### バトルID の複数テーブル検索
+- **問題**: active_battles, archived_battles の両方でIDが存在
+- **解決**: 段階的検索ロジックで全パターンカバー
+
+## 📊 検証結果
+
+### Twitter Card Validator 結果 ✅
+```
+INFO:  Page fetched successfully
+INFO:  8 metatags were found  
+INFO:  twitter:card = summary_large_image tag found
+INFO:  Card loaded successfully
+```
+
+### 対応URL形式
+- **OGP HTML**: `https://qgqcjtjxaoplhxurbpis.supabase.co/functions/v1/ogp-page?battle_id=xxx`
+- **直接PNG**: `https://qgqcjtjxaoplhxurbpis.supabase.co/functions/v1/ogp-page?battle_id=xxx&image=1`
+- **従来PNG**: `https://qgqcjtjxaoplhxurbpis.supabase.co/functions/v1/ogp-battle-card?battle_id=xxx&format=png`
+
+## 🚀 今後の運用
+
+### SNS共有での利用
+- **投稿時**: OGP専用URL（`ogp-page?battle_id=xxx`）をシェア
+- **画像表示**: 自動的にバトル参加者のアバター付きカードが表示
+- **リダイレクト**: クリック時は自動的にフロントエンドの実際のバトルページへ
+
+### メンテナンス
+- **アバター更新**: リアルタイムでDB参照、キャッシュなし
+- **デザイン変更**: `buildSvg()` 関数の修正のみ
+- **新バトル形式**: 既存ロジックで自動対応
+
+## ✅ 検証項目
+- [x] PNG画像の動的生成（resvg_wasm）
+- [x] Twitter Card Validator での画像表示確認  
+- [x] OGP meta タグの正常検出
+- [x] active_battles / archived_battles 両対応
+- [x] JWT認証無効化による公開アクセス
+- [x] フロントエンド共有ボタンの統合
+- [x] 自動リダイレクト機能
+
+## 🔗 関連ファイル
+- `supabase/functions/ogp-battle-card/index.ts` - PNG生成エンジン
+- `supabase/functions/ogp-battle-card/resvg_runtime.js` - resvg_wasm ラッパ
+- `supabase/functions/ogp-page/index.ts` - OGP専用ページ生成
+- `supabase/config.toml` - Edge Function設定
+- `src/pages/BattleViewPage.tsx` - React Helmet統合
+- `src/components/battle/BattleView.tsx` - 共有ボタン統合
+
+---
+**実装者**: AI Assistant  
+**レビュー**: 完了  
+**ステータス**: ✅ **本番運用開始** - Twitter Card Validator で動作確認済み
+
+**🎵 BeatNexus のバトルがSNSで美しく共有できるようになりました！ 🎵**
+description:
+globs:
+alwaysApply: false
+---

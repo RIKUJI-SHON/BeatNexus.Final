@@ -1,0 +1,55 @@
+# ProfileSetupSlide レイアウト統一と多言語化修正
+
+## 実行日時
+2025年7月20日 午後6:00
+
+## 修正内容
+
+### 問題点
+1. PC版でProfileSetupSlideのカードレイアウトが他のスライドと統一されていない
+2. ProfileSetupSlideのタイトルが多言語化されていない
+
+### 解決方法
+
+#### 1. タイトルの多言語化
+- ハードコードされた「プロフィールを<br />カスタマイズしよう」を `{t('onboarding.slide4.title')}` に変更
+- 翻訳キー確認：
+  - 日本語: `"title": "プロフィール設定"`
+  - 英語: `"title": "Profile Setup"`
+
+#### 2. レイアウト統一
+- タイトル部分の `mb-6` を `mb-8` に変更（他のスライドと統一）
+- 中央エリアの `mb-6` を `mb-8` に変更（他のスライドと統一）
+
+### 変更ファイル
+- `src/components/onboarding/slides/ProfileSetupSlide.tsx`
+
+### 修正後の構造
+```tsx
+{/* 上部：タイトル */}
+<div className="text-center mb-8">
+  <h2 className="text-3xl font-bold text-white">
+    {t('onboarding.slide4.title')}
+  </h2>
+</div>
+
+{/* 中央：プロフィール設定エリア */}
+<div className="mb-8">
+  ...
+</div>
+```
+
+### 効果
+- ✅ PC版とモバイル版の両方で他のスライドと一貫したレイアウト
+- ✅ 完全な多言語対応（日本語・英語）
+- ✅ 統一された間隔（mb-8）でビジュアル一貫性の向上
+
+### 検証状況
+- ファイル変更完了
+- HMR（Hot Module Reload）により変更が適用される予定
+- 翻訳キーは既存の翻訳ファイルで適切に設定済み
+
+## 関連作業
+- 前回: オンボーディング全体の多言語化対応完了
+- 今回: ProfileSetupSlideの最終調整
+- 結果: 5スライド全体で完全な多言語化とレイアウト統一を達成

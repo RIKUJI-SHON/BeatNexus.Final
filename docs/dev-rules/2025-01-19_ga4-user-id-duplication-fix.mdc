@@ -1,0 +1,160 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# 🔧 GA4 User ID重複計測問題修正実装ログ
+
+## 📅 実装日
+2025-01-19
+
+## 🎯 概要
+Google Analytics 4でUser IDの重複設定により、ログインするたびにユーザー数が増加する問題を修正。
+User IDの設定タイミングを厳密に制御し、同一ユーザーの重複計測を防止。
+
+## 🔍 発見された問題
+### ログイン時のUser ID重複設定問題
+- **現象**: ログインするたびにGA4のユーザー数が増加
+- **原因1**: `setUserProperties`関数が`setUser`時に毎回呼ばれていた
+- **原因2**: AuthProviderでの認証状態変更時にも`setUser`が実行されていた
+- **原因3**: セッション復元時とログイン時の区別ができていなかった
+- **結果**: 同一ユーザーが複数のユーザーとして計測されていた
+
+## 📝 実装内容
+
+### ✅ User ID重複設定防止機能追加
+**ファイル**: `src/utils/analytics.ts`
+
+#### 重複設定防止ロジック
+```typescript
+// User IDの重複設定を防ぐためのトラッキング
+let currentSetUserId: string | null = null;
+let sessionStartTime: number | null = null;
+
+export const setUserProperties = (userId: string, isNewLogin: boolean = false): void => {
+  // 同じUser IDが既に設定されている場合はスキップ
+  if (currentSetUserId === userId) {
+    console.log(`GA: User ID already set for user ${userId}, skipping duplicate setting`);
+    return;
+  }
+
+  // セッション開始から短時間内（10秒以内）での重複設定を防ぐ
+  const now = Date.now();
+  if (sessionStartTime && (now - sessionStartTime) < 10000) {
+    console.log(`GA: Preventing duplicate User ID setting within session start period`);
+    return;
+  }
+
+  // User ID設定とログインイベント処理
+  if (!isDevelopment) {
+    ReactGA.set({ user_id: userId });
+    currentSetUserId = userId;
+    sessionStartTime = now;
+    
+    // 新規ログインの場合のみログインイベントを発火
+    if (isNewLogin) {
+      trackBeatNexusEvents.userLogin(true);
+    }
+  }
+};
+```
+
+#### ログアウト時のクリア機能
+```typescript
+export const clearUserProperties = (): void => {
+  currentSetUserId = null;
+  sessionStartTime = null;
+  if (!isDevelopment) {
+    ReactGA.set({ user_id: undefined });
+    console.log('GA: User properties cleared (logged out)');
+  }
+};
+```
+
+### ✅ ログインイベントの重複防止
+**変更前**: 
+- `signIn`関数でログインイベント発火
+- `setUser`でもUser ID設定
+
+**変更後**: 
+- ログインイベントは`setUserProperties`で一元管理
+- `isNewLogin`フラグで実際のログインと区別
+
+### ✅ AuthProviderとAuthStoreの分離
+**ファイル**: `src/store/authStore.ts`
+
+```typescript
+interface AuthState {
+  setUser: (user: User | null) => void;        // 実際のログイン用
+  setUserFromAuth: (user: User | null) => void; // AuthProvider用
+}
+```
+
+- `setUser`: 実際のログインアクション（ログインイベント付き）
+- `setUserFromAuth`: セッション復元やAuthProvider呼び出し（ログインイベントなし）
+
+### ✅ AuthProviderの修正
+**ファイル**: `src/components/auth/AuthProvider.tsx`
+
+- 認証状態変更監視で`setUserFromAuth`を使用
+- セッション復元時にはログインイベントを発火しない
+- ログアウト時に`clearUserProperties`を呼び出し
+
+## 🔧 技術詳細
+
+### User ID設定の制御機能
+1. **重複設定防止**: 同一User IDの再設定をブロック
+2. **時間制御**: セッション開始から10秒以内の重複設定を防止
+3. **状態管理**: 現在設定されているUser IDとセッション開始時間を追跡
+
+### ログインイベント管理
+- **実際のログイン**: `isNewLogin=true`でログインイベント発火
+- **セッション復元**: `isNewLogin=false`でログインイベントなし
+- **ログアウト**: User IDクリアとログアウトイベント発火
+
+## 🎯 解決された問題
+1. **ユーザー数の正確性**: 同一ユーザーの重複計測を防止
+2. **ログインイベントの精度**: 実際のログインアクションのみを記録
+3. **セッション管理**: ページ遷移やリロード時の不適切なイベント発火を防止
+4. **開発環境対応**: 開発時のテストデータ汚染を継続して防止
+
+## 📊 期待される効果
+- **ユーザー数の正規化**: 実際のユニークユーザー数（約8人）を正確に反映
+- **ログインイベントの精度向上**: 不要なログインイベントの削減
+- **データ品質向上**: より正確なユーザー行動分析が可能
+
+## 🚀 今後の運用指針
+
+### 検証項目
+- [ ] ログイン時のユーザー数増加が停止することを確認
+- [ ] 既存ユーザーの再ログイン時にユーザー数が増加しないことを確認
+- [ ] ログインイベントが適切なタイミングでのみ発火することを確認
+
+### 監視ポイント
+- GA4ユーザー数の推移
+- ログインイベント数とアクティブユーザー数の比率
+- User Explorer での重複ユーザーID表示
+
+## ✅ 検証結果
+- [x] 重複設定防止機能の実装完了
+- [x] ログインイベント制御機能の実装完了
+- [x] AuthProvider/AuthStore分離完了
+- [ ] 本番環境での動作確認待ち
+- [ ] ユーザー数正規化の確認待ち
+
+## 🔗 関連ファイル
+- `src/utils/analytics.ts` - User ID重複防止機能追加
+- `src/store/authStore.ts` - setUser/setUserFromAuth分離
+- `src/components/auth/AuthProvider.tsx` - setUserFromAuth使用に変更
+
+## 🔄 今回の学び
+GA4のUser ID設定は非常にセンシティブで、以下の注意が必要：
+1. **一度だけ設定**: セッション中に複数回設定すると重複ユーザーになる可能性
+2. **適切なタイミング**: ログイン時のみ設定し、セッション復元時は設定しない
+3. **ログアウト時のクリア**: 適切にUser IDをクリアしないと次のユーザーと混在する
+4. **開発環境対策**: 本番データ汚染を防ぐ強固な仕組みが必要
+
+---
+**実装者**: AI Assistant  
+**レビュー**: 要レビュー  
+**ステータス**: 実装完了、本番検証待ち

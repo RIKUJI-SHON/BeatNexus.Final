@@ -1,0 +1,67 @@
+# MonthlyLimitCard - PostPage実装ログ
+
+## 実装日
+2025-01-23
+
+## 実装概要
+月間投稿制限のコンポーネント（MonthlyLimitCard）をPostPageの左カラムに追加しました。
+
+## 変更内容
+### 1. インポートの追加
+- `MonthlyLimitCard`コンポーネントを`../components/ui/SubmissionCooldownCard`からインポート
+
+### 2. コンポーネントの配置
+- PostPageの左カラム（メインの投稿エリア）の下部に配置
+- 既存の`Card`コンポーネントの後、右カラムの前に挿入
+
+## 技術的な詳細
+### 配置場所
+- ファイルパス: `src/pages/PostPage.tsx`
+- 配置位置: 左カラムの最下部（line 825付近）
+- グリッドレイアウト: `lg:grid-cols-2`の左側
+
+### コンポーネント階層
+```
+PostPage
+├── 左カラム
+│   ├── メインの投稿Card
+│   └── MonthlyLimitCard ← 新規追加
+└── 右カラム
+    └── ガイドラインCard
+```
+
+## UI/UX上の改善点
+### Before
+- MonthlyLimitCardはBattlesPageのサイドバーにのみ表示
+- モバイルではサイドバーが見えないため、月間制限情報が非表示
+
+### After
+- PostPage（実際の投稿ページ）に表示
+- ユーザーが投稿しようとする際に制限情報が見える
+- デスクトップ・モバイル両方で表示される
+
+## 実装における配慮点
+1. **レスポンシブ対応**: 既存のグリッドレイアウトを活用
+2. **視覚的な一貫性**: 既存のCardコンポーネントと同じスタイリング
+3. **機能の重複回避**: 既存のsubmission restriction cardとは異なる情報を表示
+
+## 影響範囲
+- PostPageのレイアウトに小さな変更
+- MonthlyLimitCardの再利用による一貫した表示
+- ユーザビリティの向上（投稿時に制限情報が見える）
+
+## テスト項目
+- [ ] デスクトップでの表示確認
+- [ ] モバイルでの表示確認  
+- [ ] MonthlyLimitCardの機能動作確認
+- [ ] 既存の投稿フローに影響がないか確認
+
+## 今後の改善可能性
+- モバイル専用の配置最適化
+- 制限達成時のより詳細な案内表示
+- アニメーション効果の追加
+
+## 関連ファイル
+- `src/pages/PostPage.tsx`: 実装対象ファイル
+- `src/components/ui/SubmissionCooldownCard.tsx`: MonthlyLimitCardの定義
+- `src/pages/BattlesPage.tsx`: 元の配置場所（併存）

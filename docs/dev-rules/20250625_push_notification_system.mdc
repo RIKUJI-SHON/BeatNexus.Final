@@ -1,0 +1,124 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# 🛎️ Push Notification System 要件定義 & 実装計画
+
+## 📅 日付
+2025-06-25
+
+## 🎯 目的
+PWA 化済みの BeatNexus で Web Push 通知を実装し、以下のイベント発生時にユーザーへリアルタイム通知を送信する。
+
+1. **マッチングバトル成立時** – バトルが作成され、参加者が確定した瞬間。
+2. **投票発生時** – 参加中バトルに誰かが投票した瞬間（自分・相手どちらに投票されたかは問わない）。
+3. **バトル結果確定時** – 投票期間終了後、勝敗が決定した瞬間。
+
+---
+
+## 📝 機能要件
+### 通知タイミング詳細
+| イベント | 監視対象テーブル/ビュー | 条件 | 受信者 |
+|-----------|-------------------------|------|--------|
+| バトル成立 | `battles` | `status = 'ACTIVE'` へ遷移 | `battles.player1_id`, `battles.player2_id` |
+| 投票発生 | `votes` | `INSERT` | `battles.player1_id`, `battles.player2_id` |
+| 結果確定 | `battles` | `status` が `COMPLETED` へ更新 | `battles.player1_id`, `battles.player2_id` |
+
+### 通知内容例
+| イベント | title | body |
+|----------|-------|------|
+| バトル成立 | "🥊 バトルが始まりました！" | "対戦相手: {{opponentName}} とマッチしました。今すぐ確認！" |
+| 投票発生 | "🗳️ 新しい投票が入りました" | "{{voterName}} があなたのバトルに投票しました。" |
+| 結果確定 | "🏁 バトルの結果が出ました" | "結果を確認してください！" |
+
+### UX 要件
+- 通知クリックで該当バトルページへ遷移する。
+- ユーザーが通知をオプトアウトできる設定 UI を提供（後続タスク）。
+
+---
+
+## 🔧 技術要件
+1. **Web Push API (VAPID)**
+   - `pnpm web-push` パッケージで鍵ペア生成。
+   - `.env` へ `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY` を保存。
+2. **Service Worker 拡張**
+   - 既存 `public/sw.js` に `self.addEventListener('push', ...)` と `notificationclick` ハンドラを追加。
+3. **Push 購読管理**
+   - 新テーブル `push_subscriptions` で購読情報(JSON)を保存。
+   ```sql
+   create table public.push_subscriptions (
+     id uuid primary key default uuid_generate_v4(),
+     user_id uuid references auth.users(id) on delete cascade,
+     subscription jsonb not null,
+     created_at timestamptz default now()
+   );
+   grant select, insert, delete on public.push_subscriptions to authenticated;
+   ```
+4. **Edge Functions**
+   - `send_web_push` 汎用送信関数（Web Push 実装）。
+   - イベント別関数: `notify_battle_created`, `notify_vote_cast`, `notify_battle_completed` が `send_web_push` をラップ。
+5. **DB トリガー / リスナー**
+   - Postgres `AFTER INSERT` / `AFTER UPDATE` トリガーが `http_post`(supabase) で Edge Function 呼び出し。
+6. **フロントエンド**
+   - 初回ログイン時に `Notification.requestPermission()` → `serviceWorkerRegistration.pushManager.subscribe()`。
+   - サブスクリプションを Supabase へ保存 (`insert push_subscriptions`).
+
+---
+
+## 🗺️ シーケンス図 (Mermaid)
+```mermaid
+sequenceDiagram
+  participant User
+  participant SW as ServiceWorker
+  participant FE as FrontEnd
+  participant DB as Postgres
+  participant EF as EdgeFunction
+  User->>FE: 許可ダイアログ
+  FE->>SW: subscribe()
+  SW-->>FE: PushSubscription
+  FE->>DB: save subscription
+  Note over DB: イベント待ち…
+  DB-->>EF: Trigger (例: 投票発生)
+  EF->>DB: fetch subscriptions
+  EF->>SW: webpush.send()
+  SW-->>User: Push 通知表示
+  User->>SW: click
+  SW->>FE: clients.openWindow('/battles/:id')
+```
+
+---
+
+## 🚀 実装ステップ
+1. **テーブル・マイグレーション** – `supabase/migrations/20250625120000_create_push_subscriptions.sql` を追加。
+2. **VAPID 鍵生成** – `pnpm web-push generate-vapid-keys`。
+3. **Service Worker 更新** – `public/sw.js` に push & click ハンドラ実装。
+4. **フロントエンド** – `usePushNotification.ts` フック作成、購読登録処理。
+5. **Edge Functions** – `_shared/send_web_push.ts` + 3 つの Wrapper Edge Function。
+6. **DB トリガー関数** – `supabase/migrations/20250625121000_add_push_triggers.sql`。
+7. **テスト** – ローカル & ステージングで各イベントをシミュレート。
+
+---
+
+## ✅ 検証項目
+- [ ] 通知権限ダイアログが表示される
+- [ ] 購読情報が `push_subscriptions` に保存される
+- [ ] バトル成立時に両ユーザーへ通知が届く
+- [ ] 投票発生時に両ユーザーへ通知が届く
+- [ ] 結果確定時に両ユーザーへ通知が届く
+- [ ] 通知クリックで対象バトルページへ遷移
+
+---
+
+## 📊 影響範囲
+- **フロントエンド**: 追加フック & Service Worker 修正
+- **バックエンド**: 新規テーブル・Edge Functions・トリガー
+- **DevOps**: 環境変数 (VAPID)
+
+---
+
+## 💬 メモ / 今後の課題
+- オフライン時の通知重複対策として TTL 設定を検討。
+- 通知設定 UI (オン/オフ) を別タスクで実装。
+- Service Worker バージョニング戦略を決定。
+

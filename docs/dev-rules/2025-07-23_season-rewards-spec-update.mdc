@@ -1,0 +1,79 @@
+# シーズン報酬システム仕様書修正・βバッジデータ挿入ログ
+
+**実施日**: 2025年7月23日  
+**対象機能**: シーズン報酬システム（rewards テーブル）
+
+## 実施内容
+
+### 1. 仕様書修正
+- **対象ファイル**: `docs/シーズン報酬システム仕様書.md`
+- **修正内容**: 実装済みテーブル構造に合わせて仕様書を更新
+  - `rarity` カラムを削除（実装されていないため）
+  - レアリティ関連の機能説明を削除
+  - 初期データ例の修正
+
+### 2. データベース挿入
+- **マイグレーションファイル**: `20250723031000_insert_beta_badges_to_rewards.sql`
+- **挿入データ**: βシーズン関連の4つのバッジ
+
+#### 挿入したバッジ一覧
+
+1. **The Founder's Crest**
+   - 対象: βテスト参加者全員
+   - 条件: rank_requirement = NULL, min_battles = 0
+   - 説明: 創設メンバーの証
+
+2. **β Champion**
+   - 対象: プレイヤーランキング1位
+   - 条件: rank_requirement = 1, min_battles = 5
+   - 説明: 最初の王者の証
+
+3. **β Top 8**
+   - 対象: プレイヤーランキングTOP8
+   - 条件: rank_requirement = 8, min_battles = 5
+   - 説明: 歴史の最初の1ページを刻んだ証
+
+4. **β Judge**
+   - 対象: 投票者ランキングTOP20
+   - 条件: rank_requirement = 20, min_battles = 0
+   - 説明: コミュニティ貢献の証
+
+### 3. 確認済み事項
+- ✅ rewardsテーブルに4つのバッジが正常に挿入
+- ✅ 全てのバッジが `type = 'badge'`, `is_limited = true`, `is_active = true`
+- ✅ 画像URLは既存のStorageパスを使用
+- ✅ 重複データなし
+
+## 技術詳細
+
+### テーブル構造（確認済み）
+```sql
+rewards テーブル:
+- id (uuid, PK)
+- name (text, NOT NULL)
+- description (text)
+- type (text, NOT NULL)
+- image_url (text, NOT NULL)
+- season_id (uuid)
+- rank_requirement (integer)
+- min_battles (integer, DEFAULT 0)
+- is_limited (boolean, DEFAULT true)
+- is_active (boolean, DEFAULT true)
+- created_at (timestamptz, DEFAULT now())
+- updated_at (timestamptz, DEFAULT now())
+```
+
+### 変更点
+- `rarity` カラムは存在しないため、仕様書から削除
+- レアリティ関連のインデックス、フィルター機能説明を削除
+- 翻訳キーからレアリティ関連項目を削除
+
+## 次のステップ
+1. コレクションページでのバッジ表示確認
+2. user_rewards テーブルへの実際の付与テスト
+3. フロントエンドでの表示確認
+
+## 注意事項
+- βシーズンのバッジは season_id = NULL（永続的な報酬として設定）
+- rank_requirement は投票者ランキング用も同じフィールドを使用
+- 画像URLは暫定的に同じものを使用（後で個別画像に差し替え予定）

@@ -1,0 +1,65 @@
+# ランキングページ修正 - デバッグ情報削除
+実施日: 2025-07-20
+
+## 修正内容
+
+### 1. TopThreePodium表示条件の緩和
+- **問題**: TopThreePodiumが `topThree.length === 3` でのみ表示されるため、データが2件の場合表示されない
+- **解決**: `topThree.length > 0` に変更してデータが1〜2件でも表示されるよう修正
+
+### 2. デバッグ情報の完全削除
+- **問題**: 開発中に追加したconsole.logとデバッグUIが残っている
+- **解決**: 以下のすべてのデバッグコードを削除
+  - useEffect内のconsole.log
+  - handleRankingTypeChange内のconsole.log
+  - getCurrentData内のconsole.log
+  - メイン処理部分のconsole.log
+  - getDropdownOptions内のconsole.log
+  - 開発環境でのデバッグUI表示
+
+### 3. 投票者ランキングの色修正（前回修正済み）
+- **問題**: 投票数の文字色が背景と近い色で見づらい
+- **解決**: text-gray-400/500 → text-blue-400/slate-300に変更
+
+## 技術詳細
+
+### 修正ファイル
+- `src/pages/RankingPage.tsx`
+- `src/i18n/locales/ja.json` (noDataキー追加)
+- `src/i18n/locales/en.json` (noDataキー追加)
+
+### 主要な変更点
+```typescript
+// TopThreePodium表示条件の修正
+// 修正前
+{!currentLoading && topThree.length === 3 && (
+
+// 修正後  
+{!currentLoading && topThree.length > 0 && (
+
+// デバッグログの削除（例）
+// 修正前
+console.log('[DEBUG] getCurrentData called with:', {...});
+
+// 修正後
+// 削除済み
+```
+
+### 残存問題
+- JSX構文エラーが残っており、開発サーバーでコンパイルエラーが発生中
+- 具体的には801行目付近の条件分岐の括弧が正しく閉じられていない
+
+## 今後の対応
+1. **緊急**: 構文エラーの修正が必要
+2. ブラウザでの動作確認
+3. 通算ランキングが正常に表示されることの確認
+
+## 効果
+- 少ないデータでも適切にランキングが表示される
+- デバッグ情報が本番環境に残らずクリーンなコード
+- 投票数の視認性が向上
+
+## 学習ポイント
+- デバッグ情報は開発完了後すぐに削除する習慣をつける
+- UIの表示条件は様々なデータ量で検証する必要がある
+- 構文エラーを防ぐために小さな変更を段階的に行う

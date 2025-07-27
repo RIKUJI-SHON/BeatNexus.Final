@@ -1,0 +1,76 @@
+---
+description: オンボーディングガイドモーダルの内容修正
+date: 2025-07-20
+type: feature-update
+status: completed
+---
+
+# オンボーディングガイドモーダル内容修正
+
+## 概要
+既存の5枚構成オンボーディングガイドモーダルの内容を指定仕様に従って修正
+
+## 実施内容
+
+### 1枚目（WelcomeSlide）
+- **上部**: 「ようこそ」+ 「BeatNexusへ。」（大）
+- **中央**: BeatNexusロゴ (`/images/BEATNEXUS-WORDMARK.png`)
+- **下部**: 説明文（伝説の舞台について）
+
+### 2枚目（BattleGuideSlide）
+- **上部**: 「戦い方は、驚くほどシンプル。」（大）
+- **中央**: 動画 (`/images/onboarding/① 動画を投稿.mp4`)
+- **下部**: バトルフローの説明
+
+### 3枚目（VotingGuideSlide）
+- **上部**: 「栄光への道は一つじゃない。」（大）
+- **中央**: 左に「Tournaments.png」、右に「judge.png」
+- **下部**: プレイヤーと公式ジャッジの道についての説明
+
+### 4枚目（ProfileSetupSlide）
+- **機能**: 既存のプロフィール設定機能（画像+紹介文）をそのまま利用
+- プロフィール画像アップロード機能
+- 自己紹介テキスト入力・保存機能
+
+### 5枚目（GetStartedSlide）
+- **上部**: 「準備は整った。」
+- **中央**: バトルスタートアイコン（`/images/VS.png`）- Battles pageと統一
+- **下部**: 「あなたの最初の戦いが、今、始まります。」
+
+## 修正ファイル
+
+### コンポーネント
+- `src/components/onboarding/slides/WelcomeSlide.tsx`
+- `src/components/onboarding/slides/BattleGuideSlide.tsx`
+- `src/components/onboarding/slides/VotingGuideSlide.tsx`
+- `src/components/onboarding/slides/GetStartedSlide.tsx`
+- `src/components/onboarding/OnboardingModal.tsx`
+
+### ストア
+- `src/store/onboardingStore.ts`
+
+## 技術詳細
+
+### スライド数調整
+- PC版・モバイル版のプログレスインジケーターを5枚構成で統一
+- `onboardingStore.ts`の`nextSlide`制限を4に修正（0-4で5スライド）
+
+### 画像・動画ファイル
+- 必要ファイルの存在確認済み
+- 動画ファイルパスを更新（`① 動画を投稿.mp4`）
+- バトルスタートアイコンを`VS.png`に変更（Battles pageと統一）
+
+### プロフィール設定統合
+- 既存の`ProfileSetupSlide`にアバターアップロード + 自己紹介機能が実装済み
+- 新規コンポーネント作成不要
+
+## 注意事項
+- プロフィール設定機能はSupabaseとの連携で動作
+- 動画ファイルは手動配置が必要
+- オンボーディング完了後、次回ログイン時は表示されない
+
+## 関連機能
+- BeatNexusロゴ表示
+- プロフィール画像アップロード
+- 自己紹介保存
+- オンボーディング完了状態管理

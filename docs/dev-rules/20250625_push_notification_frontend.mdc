@@ -1,0 +1,307 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# 🛎️ フロントエンド Push通知システム実装ログ
+
+## 📅 実装日
+2025-06-25
+
+## 🎯 概要
+BeatNexusのフロントエンド側にWeb Push通知システムを実装。
+ユーザーが設定画面から通知許可をリクエストし、バトル関連の通知を受信できるUI・UXを完成。
+
+## 🚀 実装内容
+
+### ✅ 1. 設定画面への通知セクション追加
+**ファイル**: `src/pages/SettingsPage.tsx`
+
+**変更内容**:
+- 「プッシュ通知」セクションを Preferences に追加
+- `PushNotificationSetup` コンポーネントを統合
+- 設定完了時のトースト通知表示
+- ダークテーマに適合したレイアウト
+
+**UIの特徴**:
+```typescript
+{/* Push Notification Setting */}
+<div>
+  <h3 className="text-lg font-medium text-gray-100 mb-2">プッシュ通知</h3>
+  <p className="text-sm text-gray-400 mb-4">バトルの更新やマッチング通知を受け取る設定を管理します。</p>
+  <div className="bg-gray-800 border border-gray-700 rounded-lg p-4">
+    <PushNotificationSetup 
+      onSetupComplete={(isSubscribed) => {
+        if (isSubscribed) {
+          toast.success('設定完了', 'プッシュ通知が有効になりました')
+        } else {
+          toast.info('設定変更', 'プッシュ通知が無効になりました')
+        }
+      }}
+    />
+  </div>
+</div>
+```
+
+### ✅ 2. PushNotificationSetup コンポーネント作成
+**ファイル**: `src/components/ui/PushNotificationSetup.tsx`
+
+**主要機能**:
+- **ブラウザサポート判定**: Service Worker、Push Manager、Notification API の対応確認
+- **通知許可ステータス表示**: 許可済み/拒否済み/未設定をバッジで視覚化
+- **購読管理**: 有効化/無効化ボタンによるワンクリック操作
+- **エラーハンドリング**: 詳細なエラーメッセージとユーザーガイダンス
+- **ブラウザ設定案内**: 拒否時の再設定手順を表示
+
+**通知タイミングの説明**:
+```tsx
+<ul className="list-disc list-inside ml-4 space-y-1">
+  <li>🥊 バトルのマッチングが成立した時</li>
+  <li>🗳️ あなたのバトルに投票が入った時</li>
+  <li>🏆 バトルの結果が確定した時</li>
+</ul>
+```
+
+**状態管理**:
+- 購読済み: 緑色の成功状態表示
+- 未購読: 有効化ボタン表示
+- 拒否済み: ブラウザ設定変更の案内表示
+
+### ✅ 3. usePushNotification カスタムフック実装
+**ファイル**: `src/hooks/usePushNotification.ts`
+
+**核心機能**:
+
+#### VAPID公開鍵管理
+```typescript
+const VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY || 'BIqUQJtbziGnenLraVzJ0Du0TA5_RXchfdbKL0BsSjPWbuyNYkNnCw7bRVbolMW-hXpxKZwuWoWpgX2WjO9P0xk'
+
+function urlBase64ToUint8Array(base64String: string): Uint8Array {
+  // VAPID鍵をブラウザ用のUint8Arrayに変換
+}
+```
+
+#### 状態管理
+```typescript
+interface PushSubscriptionState {
+  isSupported: boolean        // ブラウザサポート状況
+  permission: NotificationPermission  // 通知許可状態
+  isSubscribed: boolean       // 購読状況
+  subscription: PushSubscription | null  // 購読オブジェクト
+  isLoading: boolean          // 処理中フラグ
+  error: string | null        // エラーメッセージ
+}
+```
+
+#### 主要メソッド
+- **`requestPermission()`**: ブラウザの通知許可リクエスト
+- **`subscribe()`**: Push通知購読とSupabaseへの登録
+- **`unsubscribe()`**: 購読解除とデータベースクリーンアップ
+- **`refreshSubscription()`**: 購読状況の最新化
+
+#### Supabaseとの同期
+```typescript
+const subscriptionData = {
+  user_id: user.id,
+  subscription: subscription.toJSON(),
+  user_agent: navigator.userAgent
+}
+
+const { error: dbError } = await supabase
+  .from('push_subscriptions')
+  .upsert(subscriptionData, {
+    onConflict: 'user_id, (subscription->\'endpoint\')'
+  })
+```
+
+### ✅ 4. Service Worker拡張
+**ファイル**: `public/sw.js`
+
+**追加機能**:
+
+#### Push通知受信処理
+```javascript
+self.addEventListener('push', (event) => {
+  let notificationData = {
+    title: 'BeatNexus 通知',
+    body: 'プッシュ通知を受信しました',
+    icon: '/bn_icon_192.png',
+    badge: '/bn_icon_192.png',
+    data: {}
+  };
+
+  // ペイロード解析とEdge Functionからのデータ処理
+  if (event.data) {
+    const payload = event.data.json();
+    notificationData = { ...notificationData, ...payload };
+  }
+});
+```
+
+#### 通知クリック処理
+```javascript
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  
+  const notificationData = event.notification.data || {};
+  const targetUrl = notificationData.url || '/';
+  
+  // 既存タブの確認と新規タブ作成
+  event.waitUntil(
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true })
+      .then((clients) => {
+        const targetClient = clients.find(client => /* URL matching */);
+        return targetClient ? targetClient.focus() : self.clients.openWindow(fullUrl);
+      })
+  );
+});
+```
+
+#### 購読情報変更対応
+```javascript
+self.addEventListener('pushsubscriptionchange', (event) => {
+  // 購読情報が変更された時の自動再登録
+  event.waitUntil(
+    self.registration.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: 'BIqUQJtbziGnenLraVzJ0Du0TA5_RXchfdbKL0BsSjPWbuyNYkNnCw7bRVbolMW-hXpxKZwuWoWpgX2WjO9P0xk'
+    })
+  );
+});
+```
+
+## 🔧 技術詳細
+
+### Web Push API フロー
+1. **サポート判定**: `'serviceWorker' in navigator && 'PushManager' in window`
+2. **通知許可**: `Notification.requestPermission()`
+3. **Service Worker登録**: `navigator.serviceWorker.ready`
+4. **Push購読**: `pushManager.subscribe({ userVisibleOnly: true, applicationServerKey })`
+5. **データベース保存**: Supabase `push_subscriptions` テーブル
+
+### VAPID認証システム
+- **公開鍵**: フロントエンドでブラウザ購読時に使用
+- **秘密鍵**: Edge FunctionでPush Service認証に使用
+- **Base64URL→Uint8Array変換**: ブラウザ互換性のための形式変換
+
+### エラーハンドリング戦略
+- **ブラウザ非対応**: 明確なメッセージと代替手段提示
+- **許可拒否**: ブラウザ設定変更手順の詳細ガイダンス
+- **購読失敗**: ネットワーク、認証、データベースエラーの区別
+- **Service Worker障害**: 自動復旧とフォールバック
+
+## 🎯 ユーザー体験 (UX)
+
+### 初回利用フロー
+1. **設定画面アクセス**: メニューからSettings選択
+2. **プッシュ通知セクション**: 視覚的に分かりやすい説明
+3. **「通知を有効にする」クリック**: ワンクリックで開始
+4. **ブラウザ許可ダイアログ**: 標準のブラウザUI
+5. **成功フィードバック**: トースト通知で完了確認
+
+### 状態別UI
+- **有効状態**: 緑バッジ「有効」+ 無効化ボタン
+- **無効状態**: グレーバッジ「未設定」+ 有効化ボタン
+- **拒否状態**: 赤バッジ「拒否済み」+ 設定変更案内
+
+### 通知受信体験
+- **即座表示**: リアルタイムでブラウザ通知
+- **適切なアイコン**: BeatNexusブランドアイコン使用
+- **クリック遷移**: 関連ページへの直接アクセス
+
+## 📊 実装範囲と制限
+
+### ✅ 実装済み機能
+- 通知許可リクエスト
+- Push購読管理（有効化/無効化）
+- データベース同期
+- Service Worker通知処理
+- 設定画面UI
+- エラーハンドリング
+- ブラウザサポート判定
+
+### 🔄 今後の拡張予定
+- 通知カテゴリ別設定（バトル/投票/結果の個別ON/OFF）
+- 通知履歴の保存・表示
+- サイレント時間帯設定
+- プッシュ通知のA/Bテスト機能
+
+### 🚫 技術的制限
+- **iOS Safari**: Web Push対応は限定的
+- **通知許可拒否**: ブラウザ設定変更が必要
+- **Service Worker**: HTTPSドメインでのみ動作
+- **バッテリー最適化**: 端末設定による通知制限
+
+## 🔗 関連システム連携
+
+### バックエンド連携
+- **Edge Functions**: プッシュ送信処理（既実装）
+- **データベーストリガー**: 自動通知発火（既実装）
+- **VAPID認証**: 環境変数での鍵管理（設定済み）
+
+### フロントエンド統合
+- **認証システム**: ユーザーログイン状態と連携
+- **トースト通知**: 設定変更フィードバック
+- **ルーティング**: 通知クリック時のページ遷移
+
+## ✅ テスト項目
+
+### 機能テスト
+- [ ] 通知許可リクエストの動作
+- [ ] 購読有効化・無効化の確認
+- [ ] データベース同期の検証
+- [ ] Service Worker通知表示
+- [ ] 通知クリック時の遷移
+
+### ユーザビリティテスト
+- [ ] 初回ユーザーの設定完了率
+- [ ] エラー状況での回復フロー
+- [ ] ブラウザ横断での動作確認
+
+### セキュリティテスト
+- [ ] VAPID認証の正当性
+- [ ] 購読情報の適切な管理
+- [ ] 不正アクセス防止
+
+## 🚀 デプロイ・運用指針
+
+### 本番環境チェックリスト
+- [x] VAPID環境変数設定（Supabaseダッシュボード）
+- [x] Edge Functions デプロイ完了
+- [x] データベースマイグレーション適用
+- [ ] 本番ドメインでのHTTPS確認
+- [ ] 複数ブラウザでの動作検証
+
+### モニタリング指標
+- 通知許可率（permission grant rate）
+- 購読継続率（subscription retention）
+- 通知配信成功率（delivery success rate）
+- クリックスルー率（click-through rate）
+
+### トラブルシューティング
+- **購読失敗**: ブラウザコンソールログ確認
+- **通知未受信**: Service Worker状態確認
+- **データベースエラー**: Supabaseログ監視
+- **VAPID認証失敗**: 環境変数設定確認
+
+---
+
+## 📝 実装者ノート
+
+### 成功要因
+- **段階的実装**: バックエンド→フロントエンドの順序
+- **包括的エラーハンドリング**: ユーザーフレンドリーなメッセージ
+- **既存UI統合**: 設定画面への自然な組み込み
+- **PWA連携**: Service Worker基盤の活用
+
+### 学習ポイント
+- **Web Push API**: VAPID認証とブラウザ購読管理
+- **Service Worker**: プッシュイベント処理とライフサイクル
+- **React Hook パターン**: 状態管理とライフサイクル最適化
+- **UX設計**: 段階的オンボーディングとフィードバック
+
+---
+
+**実装者**: AI Assistant  
+**レビュー**: 要レビュー  
+**ステータス**: フロントエンド実装完了、テスト準備完了

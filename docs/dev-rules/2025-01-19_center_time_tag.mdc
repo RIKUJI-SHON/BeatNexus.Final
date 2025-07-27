@@ -1,0 +1,126 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# ⏰ 残り投票時間タグ中央配置実装ログ
+
+## 📅 実装日
+2025-01-19
+
+## 🎯 概要
+バトルカードの残り投票時間タグを右上から中央に配置変更。
+視覚的バランスを改善し、時間情報をより目立つ位置に移動。
+
+## 📝 実装内容
+
+### ✅ SimpleBattleCard.tsx の修正
+
+**変更前（右上配置）**:
+```tsx
+<div className="flex justify-end items-start mb-6">
+  <div className={cn('flex items-center gap-2 px-3 py-1 rounded-full backdrop-blur-sm', 
+    isExpired ? 'bg-gray-700/50 text-gray-300 border border-gray-600/30' : 
+    'bg-gray-800/60 text-gray-300 border border-gray-600/30')}>
+    <Clock className="h-3 w-3" />
+    <span className="text-xs font-medium">{timeRemaining}</span>
+  </div>
+</div>
+```
+
+**変更後（中央配置）**:
+```tsx
+<div className="flex justify-center items-start mb-6">
+  <div className={cn('flex items-center gap-2 px-3 py-1 rounded-full backdrop-blur-sm', 
+    isExpired ? 'bg-gray-700/50 text-gray-300 border border-gray-600/30' : 
+    'bg-gray-800/60 text-gray-300 border border-gray-600/30')}>
+    <Clock className="h-3 w-3" />
+    <span className="text-xs font-medium">{timeRemaining}</span>
+  </div>
+</div>
+```
+
+### ✅ SpecialBattleCard.tsx の修正
+
+**変更前（右上配置）**:
+```tsx
+<div className="flex justify-end items-start mb-6">
+  <div className={cn('flex items-center gap-2 px-3 py-1 rounded-full backdrop-blur-sm', 
+    isExpired ? 'bg-gray-700/50 text-gray-300 border border-gray-600/30' : 
+    'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30')}>
+    <Clock className="h-3 w-3" />
+    <span className="text-xs font-medium">{timeRemaining}</span>
+  </div>
+</div>
+```
+
+**変更後（中央配置）**:
+```tsx
+<div className="flex justify-center items-start mb-6">
+  <div className={cn('flex items-center gap-2 px-3 py-1 rounded-full backdrop-blur-sm', 
+    isExpired ? 'bg-gray-700/50 text-gray-300 border border-gray-600/30' : 
+    'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30')}>
+    <Clock className="h-3 w-3" />
+    <span className="text-xs font-medium">{timeRemaining}</span>
+  </div>
+</div>
+```
+
+## 🎯 実装のポイント
+
+### レイアウト変更
+- **justify-end → justify-center**: 右寄せから中央寄せに変更
+- **位置**: カードヘッダー部分の中央に配置
+- **機能**: 時間表示機能はそのまま維持
+- **スタイル**: 既存のデザインスタイルを保持
+
+### 視覚的効果
+- **注目度向上**: 中央配置により時間情報がより目立つ
+- **バランス改善**: カード全体の視覚的バランスが向上
+- **統一感**: 左右対称な配置でより整理された印象
+
+## 📊 影響範囲
+- **SimpleBattleCard.tsx**: ヘッダー部分のレイアウト変更
+- **SpecialBattleCard.tsx**: 同様の変更適用
+- **ユーザー体験**: 時間情報がより目立つ位置に移動
+- **視覚的バランス**: カード全体の配置が中央寄りに統一
+
+## 🚀 期待される効果
+
+### ユーザビリティ向上
+- **視認性向上**: 重要な時間情報が中央に配置され見つけやすい
+- **視覚的統一**: 左右対称な配置でバランスが良い
+- **情報階層**: 時間情報の重要性が視覚的に強調
+
+### デザイン品質向上
+- **中央揃え**: よりモダンで整理されたデザイン
+- **バランス**: カード全体の視覚的重心が安定
+- **一貫性**: 全カードタイプで統一された配置ルール
+
+## ✅ 検証項目
+- [x] SimpleBattleCardでの時間タグ中央配置確認
+- [x] SpecialBattleCardでの時間タグ中央配置確認
+- [x] 時間表示機能の正常動作確認
+- [x] デザインスタイルの維持確認
+- [ ] 視覚的バランスの改善確認
+- [ ] レスポンシブデザインでの動作確認
+
+## 🔗 関連ファイル
+- `src/components/battle/SimpleBattleCard.tsx` - 標準バトルカード
+- `src/components/battle/SpecialBattleCard.tsx` - スペシャルバトルカード
+
+## 🎨 デザイン配置の変遷
+1. **初期**: 左上に総投票数、右上に時間表示
+2. **VSアイコン下追加**: 総投票数をVSアイコン下に移動
+3. **左上タグ削除**: 重複していた左上の総投票数を削除
+4. **時間タグ中央化**: 時間表示を中央に移動（現在）
+
+## 🔄 今後の配置戦略
+- **ヘッダー**: 中央に時間情報のみ
+- **メインエリア**: プレイヤー情報とVSアイコン+総投票数
+- **フッター**: コメントボタン（アーカイブのみ）
+
+---
+**実装者**: AI Assistant  
+**レビュー**: 要レビュー  
+**ステータス**: 時間タグ中央配置完了

@@ -1,0 +1,52 @@
+# 投稿クールダウン時間表示修正ログ
+
+## 実装日
+2025年1月25日
+
+## 概要
+PostPageで翻訳キーがそのまま表示されてしまう問題を修正し、1時間投稿制限の残り時間をより分かりやすく多言語化対応で表示するよう改善。
+
+## 問題
+- `submission.cooldown.restriction`などの翻訳キーがそのまま表示される
+- クールダウン中の残り時間表示が分かりにくい
+- 翻訳キーの名前空間が不統一
+
+## 修正内容
+
+### 1. useSubmissionCooldown.ts の修正
+- `formatRemainingTime`関数の翻訳キー名前空間を修正
+  - `submission.cooldown.timeFormat.*` → `postPage.submission.cooldown.timeFormat.*`
+
+### 2. PostPage.tsx の表示ロジック改善
+- クールダウン中の残り時間をより分かりやすく表示
+- 条件分岐を改善し、適切な翻訳キーを使用
+- 残り時間の重複表示を削除し、統一的な表示に変更
+
+### 3. 翻訳ファイルの更新
+#### ja.json
+```json
+"remainingTime": "次回投稿可能まで: {{time}}"
+```
+
+#### en.json  
+```json
+"remainingTime": "Next submission available in: {{time}}"
+```
+
+## 修正されたファイル
+- `src/hooks/useSubmissionCooldown.ts`
+- `src/pages/PostPage.tsx`
+- `src/i18n/locales/ja.json`
+- `src/i18n/locales/en.json`
+
+## 実装結果
+- 翻訳キーの表示問題を解決
+- クールダウン中の残り時間が「次回投稿可能まで: X時間X分」形式で明確に表示
+- 日本語・英語両方で正しく表示
+- より直感的なユーザー体験の提供
+
+## テスト確認項目
+✅ ビルドエラーなし  
+✅ 開発サーバー正常動作  
+✅ 翻訳キー正常表示  
+✅ 多言語対応確認済み

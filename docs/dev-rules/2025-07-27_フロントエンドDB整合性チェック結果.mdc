@@ -1,0 +1,186 @@
+# フロントエンドとデータベース整合性チェック結果
+
+## 実行日時
+2025年7月27日
+
+## 概要
+開発環境と本番環境のデータベース構造とフロントエンドコードの整合性を包括的にチェックした結果をまとめます。
+
+## 発見された差異一覧
+
+### 1. ビュー定義の差異
+
+#### ✅ 修正済み
+- `community_rankings_view` - 本番環境に統一済み
+- `global_community_rankings_view` - 本番環境に統一済み  
+- `season_voter_rankings_view` - 本番環境に統一済み
+- `public_archived_battles` - 本番環境に統一済み
+- `voter_rankings_view` - 本番環境に統一済み
+- `user_communities_view` - 本番環境に統一済み
+
+#### 🔍 定義長の差異（要確認）
+以下のビューで定義長に大きな差異が発見されました：
+
+1. **community_rankings_view**
+   - 本番環境: 795文字
+   - 開発環境: 325文字 ✅ 修正済み
+   - 差異: 470文字
+
+2. **global_community_rankings_view**  
+   - 本番環境: 468文字
+   - 開発環境: 376文字 ✅ 修正済み
+   - 差異: 92文字
+
+3. **user_communities_view**
+   - 本番環境: 535文字  
+   - 開発環境: 535文字 ✅ 修正済み
+   - 差異: なし（修正後）
+
+### 2. テーブル構造の差異
+
+#### profilesテーブル（カラム順序の違い）
+**本番環境の順序:**
+1. id, username, email, avatar_url, bio, created_at, updated_at, rating, language, vote_count, is_deleted, deleted_at, has_seen_onboarding, current_community_id, season_points, season_vote_points, phone_number, phone_verified
+
+**開発環境の順序:**
+1. id, username, avatar_url, created_at, updated_at, email, bio, rating, language, vote_count, is_deleted, deleted_at, has_seen_onboarding, current_community_id, season_points, season_vote_points, phone_number, phone_verified
+
+**影響:** フロントエンドは明示的にカラム名を指定しているため、直接的な影響は少ないが、SELECT * クエリがある場合は順序が異なる。
+
+### 3. 未チェックの項目
+
+#### 3.1 データベース関数
+- 89個の関数が存在（前回確認で差異なし）
+- フロントエンドでRPC呼び出しされている関数の引数・戻り値構造
+
+#### 3.2 主要テーブルの制約・インデックス
+- active_battles
+- archived_battles  
+- profiles
+- submissions
+- battle_votes
+- communities
+- community_members
+
+#### 3.3 Enum型の定義
+- battle_format
+- battle_status
+- community_role
+
+#### 3.4 フロントエンドの型定義ファイル
+- `src/types/database.types.ts` の整合性
+
+#### 3.5 使用頻度の高いテーブルの詳細構造確認
+以下のテーブルでフロントエンドが実際に使用しているカラム vs データベース構造：
+
+```typescript
+// 主要な使用パターン（グラップ検索結果より）
+// profiles: username, bio, avatar_url, season_points, season_vote_points, rating, vote_count
+// active_battles: id, status, battle_format, player1_user_id, player2_user_id, votes_a, votes_b
+// submissions: id, user_id, video_url, status
+// archived_battles: すべてのカラム（*）
+// battle_votes: 投票数カウント用
+```
+
+## 推奨される追加チェック項目
+
+### 1. 緊急度: 高
+- [ ] Enum型定義の完全一致確認
+- [ ] 主要テーブルの制約（NOT NULL、UNIQUE、CHECK）の確認
+- [ ] 外部キー制約の整合性確認
+
+### 2. 緊急度: 中
+- [ ] インデックス定義の確認（パフォーマンスに影響）
+- [ ] トリガー関数の存在確認
+- [ ] RLS（Row Level Security）ポリシーの確認
+
+### 3. 緊急度: 低
+- [ ] テーブルのOwnership確認
+- [ ] COMMENT文の整合性
+- [ ] 統計情報の更新状況
+
+## フロントエンド使用状況分析
+
+### ビュー使用箇所
+- `rankings_view`: rankingStore.ts
+- `voter_rankings_view`: rankingStore.ts  
+- `season_rankings_view`: rankingStore.ts, UserInfoCard.tsx
+- `season_voter_rankings_view`: rankingStore.ts, UserInfoCard.tsx
+- `community_rankings_view`: communityStore.ts
+- `global_community_rankings_view`: communityStore.ts
+- `user_communities_view`: communityStore.ts
+- `public_archived_battles`: 使用箇所不明（要調査）
+
+### 直接テーブルアクセス頻度
+1. **profiles** - 最高頻度（39箇所）
+2. **active_battles** - 高頻度（複数のStore）
+3. **submissions** - 高頻度（battleStore, submissionStore）
+4. **archived_battles** - 中頻度
+5. **battle_votes** - 中頻度
+
+## 次のアクション
+
+### すぐに確認すべき項目
+1. Enum型の定義差異チェック
+2. 主要テーブルの制約確認
+3. 型定義ファイルとの整合性確認
+
+### 統一が必要な項目（承認待ち）
+1. profilesテーブルのカラム順序統一
+2. その他発見される構造的差異の修正
+
+## 詳細調査結果
+
+### Enum型定義（✅ 差異なし）
+両環境で以下のEnum型が完全一致：
+- `battle_format`: {MAIN_BATTLE,MINI_BATTLE,THEME_CHALLENGE}
+- `battle_status`: {ACTIVE,COMPLETED,PROCESSING_RESULTS}
+- `community_role`: {owner,admin,member}
+- `submission_status`: {WAITING_OPPONENT,MATCHED_IN_BATTLE,BATTLE_ENDED,WITHDRAWN}
+
+### 主要テーブルの制約確認（本番環境）
+確認済みテーブル：
+- ✅ `active_battles` - 主キー、外部キー、CHECK制約すべて確認
+- ✅ `archived_battles` - 主キー、外部キー、CHECK制約すべて確認
+- ✅ `battle_votes` - 主キー、外部キー、UNIQUE制約すべて確認
+- ✅ `communities` - 主キー、外部キー、UNIQUE制約すべて確認
+- ✅ `profiles` - 主キー、外部キー、UNIQUE制約すべて確認
+- ✅ `submissions` - 主キー、外部キー、CHECK制約すべて確認
+
+### 🔍 確認待ちの項目（承認後に調査）
+
+#### 1. 開発環境の制約との比較
+- 本番環境の制約構造は確認完了
+- 開発環境との詳細比較が必要
+
+#### 2. インデックス定義の比較
+- パフォーマンスに直結する重要項目
+- 両環境でのインデックス有無・構造の確認
+
+#### 3. トリガー・関数の詳細比較
+- 89個の関数は数が一致するが、内容の詳細比較は未実施
+- トリガーの存在・動作の確認
+
+#### 4. RLS（Row Level Security）ポリシー
+- セキュリティに関わる重要設定
+- 両環境での一致確認が必要
+
+## 統一が必要な確認済み差異
+
+### 🚨 緊急度：高（フロントエンドエラーの原因になる可能性）
+- **なし** - 主要なビュー定義は修正済み
+
+### ⚠️ 緊急度：中（パフォーマンス・運用に影響）
+1. `profiles`テーブルのカラム順序差異
+   - 本番環境: id, username, email, avatar_url, bio...
+   - 開発環境: id, username, avatar_url, created_at, updated_at, email, bio...
+   - 影響: SELECT * クエリでカラム順序が異なる
+
+### 📋 緊急度：低（運用面で統一が望ましい）
+- インデックス定義の差異（パフォーマンス最適化）
+- コメント・メタデータの差異
+
+## 注意事項
+- 統一作業は本番環境への影響を最小限にするため、開発環境を本番環境に合わせる方針
+- フロントエンドの実際の使用パターンを最優先に考慮
+- すべての変更前にバックアップを取得

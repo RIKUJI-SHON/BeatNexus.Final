@@ -1,0 +1,155 @@
+# 🔧 1GB以上ファイル圧縮問題修正実装ログ
+
+## 📅 実装日
+2025-01-15
+
+## 🎯 概要
+1GB以上の動画ファイルが6MB程度まで過度に圧縮される問題を修正し、適切に30-50MB範囲に圧縮されるよう改善。
+
+## 🔍 発見された問題
+### 1. 最低ビットレート設定が低すぎる
+- **問題**: `MIN_VIDEO_BITRATE = 600000` (0.6Mbps) が設定されていた
+- **影響**: 1GB以上のファイルでは計算されたビットレートが最低値まで下がり、6MB程度の出力になる
+- **原因**: 大きなファイルサイズに対して最低ビットレートが不適切
+
+### 2. フレームレート削減が過度
+- **問題**: 1GB以上のファイルで `frameRate = 20` に設定
+- **影響**: さらなる圧縮強化により、目標サイズを大幅に下回る結果
+- **原因**: 過度なフレームレート削減による品質劣化
+
+### 3. 1GB以上ファイル用の特別処理不足
+- **問題**: 300MBファイルと同じ計算ロジックを適用
+- **影響**: 大きなファイルサイズに適した調整が行われない
+- **原因**: ファイルサイズ別の最適化不足
+
+## 📝 実装内容
+
+### ✅ 最低ビットレート大幅引き上げ
+```typescript
+// 修正前
+const MIN_VIDEO_BITRATE = 600000;  // 0.6Mbps
+const MAX_VIDEO_BITRATE = 3500000; // 3.5Mbps
+
+// 修正後
+const MIN_VIDEO_BITRATE = 2000000;  // 2.0Mbps - 1GB+ファイル用最低品質保証
+const MAX_VIDEO_BITRATE = 4000000; // 4.0Mbps - 最高品質上限
+```
+
+### ✅ フレームレート調整の緩和
+```typescript
+// 修正前
+if (fileSizeMB > 1024) {
+  frameRate = 20; // 過度な削減
+}
+
+// 修正後
+if (fileSizeMB > 1024) {
+  frameRate = 25; // 適度な削減（過度な圧縮を防止）
+}
+```
+
+### ✅ 1GB以上ファイル専用処理追加
+```typescript
+// 🔧 1GB+ファイル用の特別な調整
+if (fileSizeMB > 1024) {
+  // 目標サイズを少し上げて品質を確保
+  adjustedTargetSize = Math.min(50, TARGET_SIZE_MB + 5); // 最大50MBまで
+  
+  // 調整後のビットレートを使用
+  const finalBitrate = Math.max(2500000, Math.min(4000000, adjustedCalculatedBitrate)); // 2.5-4.0Mbps
+  
+  return {
+    videoBitsPerSecond: Math.round(finalBitrate),
+    audioBitsPerSecond: AUDIO_BITRATE,
+    frameRate: 25,
+    shouldCompress: true,
+    targetSizeMB: adjustedTargetSize,
+    strategy: 'maximum-quality',
+    actualDuration: ACTUAL_DURATION
+  };
+}
+```
+
+### ✅ デバッグログ追加
+```typescript
+// 🔍 デバッグ用ログ（1GB以上のファイルの場合）
+if (fileSizeMB > 1024) {
+  console.log('🔧 1GB+ファイル圧縮設定:', {
+    originalSize: `${fileSizeMB.toFixed(1)}MB`,
+    targetSize: `${TARGET_SIZE_MB}MB`,
+    duration: `${ACTUAL_DURATION}s`,
+    videoBitrate: `${(videoBitrate / 1000000).toFixed(1)}Mbps`,
+    audioBitrate: `${(AUDIO_BITRATE / 1000).toFixed(0)}kbps`,
+    frameRate: `${frameRate}fps`,
+    strategy: strategy,
+    calculatedBitrate: `${(CALCULATED_VIDEO_BITRATE / 1000000).toFixed(1)}Mbps`,
+    finalBitrate: `${(videoBitrate / 1000000).toFixed(1)}Mbps`
+  });
+}
+```
+
+## 🎯 修正による改善効果
+
+### 修正前の問題（1GB、90秒動画の場合）
+- **計算されたビットレート**: 約3.3Mbps
+- **適用されたビットレート**: 0.6Mbps（最低値制限）
+- **フレームレート**: 20fps
+- **結果**: 約6MB（過度な圧縮）
+
+### 修正後の期待値（1GB、90秒動画の場合）
+- **計算されたビットレート**: 約3.8Mbps（調整後）
+- **適用されたビットレート**: 2.5-4.0Mbps（適切な範囲）
+- **フレームレート**: 25fps
+- **結果**: 約40-45MB（適切な圧縮）
+
+## 📊 影響範囲
+- **1GB以上のファイル**: 6MB→30-50MB範囲への改善
+- **300MB程度のファイル**: 既存の20-30MB圧縮を維持
+- **500MB-1GB**: 軽微な改善（フレームレート26fps）
+- **デバッグ**: 1GB以上ファイルの詳細情報をコンソール出力
+
+## 🔧 技術詳細
+
+### 圧縮戦略の階層化
+1. **30MB以下**: 圧縮なし
+2. **30-200MB**: 軽い圧縮（30fps）
+3. **200-300MB**: 標準圧縮（30fps）
+4. **300-500MB**: 中程度圧縮（28fps）
+5. **500MB-1GB**: 積極的圧縮（26fps）
+6. **1GB以上**: 最高品質圧縮（25fps、特別処理）
+
+### ビットレート制御
+- **最低保証**: 2.0Mbps（従来の0.6Mbpsから大幅向上）
+- **最高上限**: 4.0Mbps（従来の3.5Mbpsから向上）
+- **1GB以上専用**: 2.5-4.0Mbps（より高品質な範囲）
+
+## ✅ 検証項目
+- [ ] 1GB以上ファイルの圧縮結果が30-50MB範囲内
+- [ ] 300MB程度ファイルの既存動作維持
+- [ ] デバッグログの正常出力
+- [ ] 音質256kbps維持
+- [ ] 処理時間の妥当性確認
+
+## 🔗 関連ファイル
+- `src/pages/PostPage.tsx` - 圧縮設定関数`getCompressionSettings`を修正
+
+## 🚀 今後の改善点
+### 継続的な最適化
+- 実際の圧縮結果に基づくビットレート調整
+- ファイルサイズ別の最適化パラメータ調整
+- ユーザーフィードバックに基づく品質改善
+
+### 監視・分析
+- 圧縮結果の統計収集
+- 品質評価指標の導入
+- 処理時間の最適化
+
+---
+**実装者**: AI Assistant  
+**レビュー**: 要レビュー  
+**ステータス**: 1GB以上ファイル圧縮問題修正完了、テスト待ち
+description:
+globs:
+alwaysApply: false
+---
+ 

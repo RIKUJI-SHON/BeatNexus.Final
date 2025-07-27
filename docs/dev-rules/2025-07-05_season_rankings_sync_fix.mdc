@@ -1,0 +1,140 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# 🔄 シーズンランキング同期・修正実装ログ
+
+## 📅 実装日
+2025-07-05
+
+## 🎯 概要
+「完了したシーズンのシーズンポイントが0で表示される」問題と「フロントエンドのドロップダウンで通算ランキングしか表示されない」問題を解決。開発環境と本番環境のシーズンランキング設計不整合を修正し、フロントエンドでのシーズン選択機能を復旧。
+
+## 🔍 発見された問題
+
+### 1. シーズンランキングビューの設計不整合
+- **本番環境**: リアルタイムランキング（`profiles.season_points`ベース）
+- **開発環境**: 過去のスナップショット（`season_rankings`テーブルベース）
+- **結果**: 完了したシーズンのポイントが0で表示される
+
+### 2. get_all_seasons関数の型不整合
+- **定義**: 7つのカラムを返すと宣言（`id`, `name`, `start_at`, `end_at`, `status`, `created_at`, `updated_at`）
+- **実装**: 5つのカラムしか選択（`created_at`, `updated_at`が欠如）
+- **結果**: フロントエンドでシーズンデータ取得失敗、ドロップダウンに「通算」のみ表示
+
+## 📝 実装内容
+
+### ✅ Phase 1: シーズンランキングビュー同期
+**ファイル**: `supabase/migrations/20250705160000_sync_season_rankings_view_with_prod.sql`
+
+#### 修正内容
+```sql
+-- 1. 既存ビューを削除
+DROP VIEW IF EXISTS public.season_rankings_view;
+DROP VIEW IF EXISTS public.season_voter_rankings_view;
+
+-- 2. 本番環境仕様でビューを再作成
+CREATE VIEW public.season_rankings_view AS
+SELECT 
+  p.id AS user_id,
+  p.username,
+  p.avatar_url,
+  p.season_points,  -- ← リアルタイムのポイント
+  p.rating,
+  get_rank_from_rating(p.rating) AS rank_name,
+  get_rank_color_from_rating(p.rating) AS rank_color,
+  0 AS battles_won,
+  0 AS battles_lost,
+  0.0 AS win_rate,
+  p.created_at,
+  p.updated_at,
+  ROW_NUMBER() OVER (ORDER BY p.season_points DESC, p.created_at) AS position
+FROM profiles p
+WHERE p.is_deleted IS NOT TRUE 
+  AND p.season_points > 0;
+
+-- 3. SECURITY INVOKER設定
+ALTER VIEW public.season_rankings_view SET (security_invoker = true);
+```
+
+### ✅ Phase 2: get_all_seasons関数修正
+**ファイル**: `supabase/migrations/20250705170000_fix_get_all_seasons_function.sql`
+
+#### 修正内容
+```sql
+CREATE OR REPLACE FUNCTION public.get_all_seasons()
+RETURNS TABLE(
+  id uuid, 
+  name text, 
+  start_at timestamp with time zone, 
+  end_at timestamp with time zone, 
+  status text, 
+  created_at timestamp with time zone,  -- ← 追加
+  updated_at timestamp with time zone   -- ← 追加
+)
+AS $$
+BEGIN
+  RETURN QUERY
+  SELECT 
+    s.id,
+    s.name,
+    s.start_at,
+    s.end_at,
+    s.status,
+    s.created_at,    -- ← 追加
+    s.updated_at     -- ← 追加
+  FROM seasons s
+  ORDER BY s.start_at DESC;
+END;
+$$;
+```
+
+## 🔧 技術詳細
+
+### シーズンランキングシステムの統一
+- **現在のシーズン**: `season_rankings_view`でリアルタイム表示
+- **完了したシーズン**: `get_season_rankings_by_id`関数でスナップショット表示
+- **データソース**: 現在は`profiles.season_points`、過去は`season_rankings`テーブル
+
+### セキュリティ設定
+- 全ビューを`SECURITY INVOKER`に設定（実行者権限で動作）
+- `get_all_seasons`関数は`SECURITY DEFINER`を維持（管理者権限が必要）
+
+## 🎯 解決された問題
+1. **シーズンポイント表示**: 現在のシーズンでリアルタイムポイントが正しく表示
+2. **ドロップダウン機能**: 「通算」「現在のシーズン」「過去のシーズン」が選択可能
+3. **データ整合性**: 本番環境と開発環境のシーズンランキング仕様統一
+4. **関数エラー**: `get_all_seasons`の型不整合解消
+
+## 📊 影響範囲
+- **開発環境**: シーズンランキングビューの定義変更、`get_all_seasons`関数修正
+- **フロントエンド**: RankingPageでのシーズン選択機能復旧
+- **本番環境**: 影響なし（既に正しい仕様で動作中）
+
+## 🚀 今後の対応
+1. **本番環境への適用**: 必要に応じて修正マイグレーションを本番適用
+2. **動作確認**: フロントエンドでのシーズン切り替え機能テスト
+3. **監視**: シーズンランキングデータの正確性継続監視
+
+## ✅ 検証項目
+- [x] 開発環境での`get_all_seasons`関数正常動作
+- [x] シーズンランキングビューの本番環境同期
+- [ ] フロントエンドでのドロップダウン機能動作確認
+- [ ] シーズン切り替え時のランキング表示確認
+
+## 🔗 関連ファイル・機能
+- `supabase/migrations/20250705160000_sync_season_rankings_view_with_prod.sql` - ビュー同期
+- `supabase/migrations/20250705170000_fix_get_all_seasons_function.sql` - 関数修正
+- `src/pages/RankingPage.tsx` - フロントエンドランキングページ
+- `src/store/rankingStore.ts` - ランキング状態管理
+
+## 🔄 技術的学習ポイント
+- PostgreSQL関数の戻り値型定義と実際のクエリの一致が必須
+- ビューの列構造変更時は`CREATE OR REPLACE`ではなく`DROP → CREATE`が必要
+- 開発環境と本番環境のスキーマ差分は定期的な同期チェックが重要
+
+---
+**実装者**: AI Assistant  
+**レビュー**: 要レビュー  
+**ステータス**: 開発環境修正完了、フロントエンド動作確認待ち

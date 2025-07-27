@@ -1,0 +1,237 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# 🏆 ランキングページティア表示削除実装ログ
+
+## 📅 実装日
+2025-01-19
+
+## 🎯 概要
+ランキングページのランキングコンポーネントからintermediate等のティア表示を削除。
+プレイヤーランキングとボーターランキング両方のティア/レベル表示を除去し、よりシンプルなレイアウトに変更。
+
+## 🔍 要求された変更
+### 削除対象
+- **プレイヤーランキング**: Tier（intermediate, advanced, expert等のバッジ表示）
+- **ボーターランキング**: Level（Expert, Advanced, Regular, Active, Beginner等のレベル表示）
+
+### 要求仕様
+- ティア表示の完全除去
+- レイアウトの最適化
+- 不要なコードの整理
+
+## 📝 実装内容
+
+### ✅ ヘッダー部分の修正
+**ファイル**: `src/pages/RankingPage.tsx` Line 390-396
+
+**変更前**:
+```typescript
+<div className="grid grid-cols-12 gap-4 text-xs font-medium text-gray-300 uppercase tracking-wider">
+  <div className="col-span-2 text-center">Rank</div>
+  <div className="col-span-6">{activeTab === 'player' ? 'Player' : 'Voter'}</div>
+  <div className="col-span-2 text-center">{activeTab === 'player' ? 'Rating' : 'Votes'}</div>
+  <div className="col-span-2 text-center">{activeTab === 'player' ? 'Tier' : 'Level'}</div>
+</div>
+```
+
+**変更後**:
+```typescript
+<div className="grid grid-cols-10 gap-4 text-xs font-medium text-gray-300 uppercase tracking-wider">
+  <div className="col-span-2 text-center">Rank</div>
+  <div className="col-span-6">{activeTab === 'player' ? 'Player' : 'Voter'}</div>
+  <div className="col-span-2 text-center">{activeTab === 'player' ? 'Rating' : 'Votes'}</div>
+</div>
+```
+
+### ✅ リスト表示部分の修正
+**ファイル**: `src/pages/RankingPage.tsx` Line 415-458
+
+**変更前**:
+```typescript
+<div className="grid grid-cols-12 gap-4 items-center">
+  {/* ランク */}
+  <div className="col-span-2 text-center">
+    {getPositionDisplay(entry.position)}
+  </div>
+  
+  {/* ユーザー情報 */}
+  <div className="col-span-6 flex items-center gap-3 min-w-0">
+    {/* ...ユーザー情報... */}
+  </div>
+
+  {/* レーティング/投票数 */}
+  <div className="col-span-2 text-center">
+    {/* ...レーティング表示... */}
+  </div>
+  
+  {/* ティア/レベル */}
+  <div className="col-span-2 text-center">
+    {activeTab === 'player' ? (
+      getTierBadge(entry.rank_name || 'Unranked', entry.rank_color || 'gray')
+    ) : (
+      <span className="text-xs font-medium text-purple-400 bg-purple-500/10 px-2 py-1 rounded-md">
+        {contributionLevel}
+      </span>
+    )}
+  </div>
+</div>
+```
+
+**変更後**:
+```typescript
+<div className="grid grid-cols-10 gap-4 items-center">
+  {/* ランク */}
+  <div className="col-span-2 text-center">
+    {getPositionDisplay(entry.position)}
+  </div>
+  
+  {/* ユーザー情報 */}
+  <div className="col-span-6 flex items-center gap-3 min-w-0">
+    {/* ...ユーザー情報... */}
+  </div>
+
+  {/* レーティング/投票数 */}
+  <div className="col-span-2 text-center">
+    {/* ...レーティング表示... */}
+  </div>
+</div>
+```
+
+### ✅ 不要な関数削除
+**削除された関数**:
+
+```typescript
+// 削除: ティアバッジ生成関数
+const getTierBadge = (rankName: string, rankColor: string) => {
+  const { bgColor, textColor } = getRankColorClasses(rankColor);
+  return (
+    <Badge variant="secondary" className={`${bgColor} ${textColor} text-xs px-2 sm:px-3 py-1 font-medium`}>
+      {rankName}
+    </Badge>
+  );
+};
+
+// 削除: ボーターレベル判定関数
+const getContributionLevel = (voteCount: number) => {
+  if (voteCount > 100) return 'Expert';
+  if (voteCount > 50) return 'Advanced';
+  if (voteCount > 25) return 'Regular';
+  if (voteCount > 10) return 'Active';
+  return 'Beginner';
+};
+```
+
+### ✅ 変数削除
+**ファイル**: `src/pages/RankingPage.tsx` Line 400
+
+**変更前**:
+```typescript
+const isTopThree = entry.position <= 3;
+const contributionLevel = activeTab === 'voter' ? getContributionLevel(getVoteCount(entry)) : '';
+```
+
+**変更後**:
+```typescript
+const isTopThree = entry.position <= 3;
+```
+
+### ✅ 不要インポート削除
+**ファイル**: `src/pages/RankingPage.tsx` Line 4-8
+
+**変更前**:
+```typescript
+import { Badge } from '../components/ui/Badge';
+import { useRankingStore } from '../store/rankingStore';
+import { useTranslation } from 'react-i18next';
+import { getRankColorClasses } from '../utils/rankUtils';
+```
+
+**変更後**:
+```typescript
+import { useRankingStore } from '../store/rankingStore';
+import { useTranslation } from 'react-i18next';
+```
+
+## 🔧 技術詳細
+
+### レイアウト変更
+- **Grid System**: 12列システム → 10列システム
+- **列配分**: 
+  - ランク: col-span-2 (2/10 = 20%)
+  - ユーザー情報: col-span-6 (6/10 = 60%)
+  - レーティング/投票数: col-span-2 (2/10 = 20%)
+
+### 削除されたコンポーネント
+1. **Badge Component**: ティア表示用バッジ
+2. **getRankColorClasses**: ランクカラー取得ユーティリティ
+3. **ティア判定ロジック**: ランク名・カラーによる分類
+4. **レベル判定ロジック**: 投票数による貢献度分類
+
+### パフォーマンス改善
+- **計算処理削減**: ティア・レベル判定の計算が不要
+- **レンダリング負荷軽減**: バッジコンポーネントの描画が不要
+- **メモリ使用量削減**: 不要な変数・関数の除去
+
+## 🎯 解決された問題
+1. **UI簡素化**: 不要な情報表示を除去してシンプルに
+2. **視認性向上**: 重要な情報（ランク、ユーザー名、スコア）に集中
+3. **保守性向上**: ティア関連ロジックのメンテナンス不要
+4. **パフォーマンス**: 不要な計算とレンダリングを削減
+
+## 📊 影響範囲
+- **UI/UX**: よりシンプルで見やすいランキング表示
+- **データ表示**: ティア情報削除、本質的情報に集中
+- **保守性**: ティア関連ロジックの削除で複雑性軽減
+- **パフォーマンス**: 不要な処理削除で軽量化
+
+## 🚀 レイアウト比較
+
+### Before（変更前）
+```
+┌──────┬────────────────┬────────┬─────────────┐
+│ Rank │ Player         │ Rating │ Tier        │
+├──────┼────────────────┼────────┼─────────────┤
+│ #1   │ Player1        │ 1800   │ Advanced    │
+│ #2   │ Player2        │ 1650   │ Intermediate│
+│ #3   │ Player3        │ 1500   │ Beginner    │
+└──────┴────────────────┴────────┴─────────────┘
+```
+
+### After（変更後）
+```
+┌──────┬────────────────┬────────┐
+│ Rank │ Player         │ Rating │
+├──────┼────────────────┼────────┤
+│ #1   │ Player1        │ 1800   │
+│ #2   │ Player2        │ 1650   │
+│ #3   │ Player3        │ 1500   │
+└──────┴────────────────┴────────┘
+```
+
+## ✅ 検証項目
+- [x] プレイヤーランキングのティア表示削除
+- [x] ボーターランキングのレベル表示削除
+- [x] グリッドレイアウトの適切な調整
+- [x] 不要な関数・変数の完全削除
+- [x] インポートの整理
+- [x] リンターエラーの解消
+- [ ] 実際のランキングページでの表示確認
+
+## 🔗 関連ファイル・機能
+- `src/pages/RankingPage.tsx` - ランキングページメインファイル
+- `src/components/ui/Badge.tsx` - 使用停止したバッジコンポーネント
+- `src/utils/rankUtils.ts` - 使用停止したランクユーティリティ
+
+## 📏 設計原則準拠
+- **简约性**: 不要な要素を削除してシンプルに
+- **可読性**: 重要な情報に集中して見やすく
+- **保守性**: 複雑なロジックを削除して管理しやすく
+- **パフォーマンス**: 不要な処理を削除して軽量化
+
+---
+**実装者**: AI Assistant  
+**レビュー**: 要レビュー  
+**ステータス**: ティア表示削除完了、シンプル化達成

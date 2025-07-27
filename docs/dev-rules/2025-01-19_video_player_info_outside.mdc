@@ -1,0 +1,156 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# 🎬 動画外プレイヤー情報表示実装ログ
+
+## 📅 実装日
+2025-01-19
+
+## 🎯 概要
+動画コンポーネント上のユーザー情報オーバーレイを動画枠外の上部に移動し、投票数を非表示にしてアイコンと名前のみのシンプルな表示に変更。
+
+## 🔍 改善前の問題
+### 動画視認性の阻害
+- **動画上のオーバーレイ**: ユーザー情報が動画コンテンツに重なって表示
+- **情報の過多**: アイコン、名前、投票数が全て表示されて情報過多
+- **視聴体験の低下**: 動画の重要部分が隠れる可能性
+
+## 📝 実装内容
+
+### ✅ プレイヤー情報の動画外配置
+**ファイル**: `src/components/battle/BattleView.tsx`
+
+#### 🆕 動画上部にプレイヤー名配置
+```typescript
+{/* Player Names - Above Videos */}
+<div className="grid grid-cols-1 lg:grid-cols-[1fr_auto_1fr] gap-6 items-center mb-4">
+  {/* Player A Name */}
+  <div className="flex items-center gap-3">
+    <div 
+      className="w-10 h-10 rounded-full p-1 flex-shrink-0"
+      style={{ background: `linear-gradient(135deg, ${playerColorA}, ${playerColorA}80)` }}
+    >
+      <img
+        src={battle.contestant_a?.avatar_url || getDefaultAvatarUrl(battle.player1_user_id)}
+        alt={battle.contestant_a?.username}
+        className="w-full h-full rounded-full border border-gray-900 object-cover"
+      />
+    </div>
+    <div className="text-white font-bold text-lg">
+      {battle.contestant_a?.username || 'Player A'}
+    </div>
+  </div>
+
+  {/* Center Space */}
+  <div></div>
+
+  {/* Player B Name */}
+  <div className="flex items-center gap-3 lg:justify-end">
+    <div className="text-white font-bold text-lg">
+      {battle.contestant_b?.username || 'Player B'}
+    </div>
+    <div 
+      className="w-10 h-10 rounded-full p-1 flex-shrink-0"
+      style={{ background: `linear-gradient(135deg, ${playerColorB}, ${playerColorB}80)` }}
+    >
+      <img
+        src={battle.contestant_b?.avatar_url || getDefaultAvatarUrl(battle.player2_user_id)}
+        alt={battle.contestant_b?.username}
+        className="w-full h-full rounded-full border border-gray-900 object-cover"
+      />
+    </div>
+  </div>
+</div>
+```
+
+#### 🗑️ 動画オーバーレイの削除
+```typescript
+// 削除されたオーバーレイ部分
+{/* Player A Overlay - Top Left */}
+<div className="absolute top-4 left-4">
+  <div className="flex items-center gap-3">
+    {/* ユーザー情報と投票数表示 */}
+  </div>
+</div>
+```
+
+## 🎨 UIデザイン詳細
+
+### プレイヤー情報レイアウト
+- **配置**: 動画の真上、グリッドレイアウト使用
+- **アイコンサイズ**: `w-10 h-10` (40px × 40px)
+- **フォントサイズ**: `text-lg font-bold` (18px 太字)
+- **間隔**: `gap-3` でアイコンと名前を適度に配置
+- **レスポンシブ**: `lg:justify-end` でデスクトップ時の右寄せ
+
+### 削除された要素
+- **投票数表示**: `{votesA}`, `{votesB}` の表示を完全削除
+- **"Vote to See Results"メッセージ**: 投票前の案内メッセージ削除
+- **背景コンポーネント**: オーバーレイ用の背景やドロップシャドウ削除
+
+### 動画の改善
+- **完全な視認性**: 動画コンテンツが全画面で表示可能
+- **勝利バッジのみ残存**: 重要な勝利表示は動画右上に維持
+
+## 🔧 技術詳細
+
+### レイアウト構造の変更
+- **新規セクション追加**: プレイヤー名用のグリッドレイアウト
+- **既存オーバーレイ削除**: `absolute` 配置のオーバーレイ要素を削除
+- **マージン調整**: `mb-4` で動画との適切な間隔を確保
+
+### Player B の配置工夫
+- **デスクトップ**: `lg:justify-end` で右寄せ配置
+- **モバイル**: 左寄せで統一（レスポンシブ対応）
+- **アイコン順序**: 名前→アイコンの順序で右側配置に最適化
+
+## 🎯 解決された問題
+1. **動画視認性の大幅向上**: オーバーレイがなくなり動画が完全に見える
+2. **情報の簡潔化**: 必要最小限のアイコンと名前のみ表示
+3. **レイアウトの整理**: 動画外に情報を移動してクリーンな構成
+4. **視聴体験の改善**: 動画コンテンツに集中できる環境
+
+## 📊 影響範囲
+- **フロントエンド表示**: バトル視聴ページのレイアウト大幅変更
+- **ユーザー体験**: 動画の視認性とコンテンツ集中度向上
+- **情報設計**: 投票結果と動画視聴の分離
+- **レスポンシブ**: モバイル・デスクトップ両対応
+
+## 🚀 今後の改善提案
+
+### 追加機能の検討
+- プレイヤー情報のホバー効果追加
+- 勝利時の特別な表示エフェクト
+- プレイヤー名のクリッカブル化（プロフィール画面へ）
+
+### デザインの微調整
+- アイコンの枠線やグラデーション強化
+- プレイヤー名のタイポグラフィ調整
+- レスポンシブ時の配置最適化
+
+## ✅ 検証項目
+- [x] 動画上部にプレイヤー名配置
+- [x] 動画オーバーレイの完全削除
+- [x] 投票数表示の非表示化
+- [x] デスクトップでの左右配置確認
+- [x] レスポンシブデザイン動作確認
+- [x] 勝利バッジの正常表示確認
+- [ ] 実際のユーザーによる視聴体験テスト
+
+## 🔗 関連ファイル・機能
+- `src/components/battle/BattleView.tsx` - メイン実装ファイル
+- 動画表示システム全般
+- プレイヤー情報表示システム
+- レスポンシブデザインシステム
+
+## 🔄 関連する過去の実装
+- [2025-01-19] 色の一貫性修正 - プレイヤー固定色の実装
+- [2025-01-19] プレイヤー名表示修正 - 実際のユーザー名表示
+- [2025-01-19] 投票前投票数表示改善 - 投票ボタン周辺の表示制御
+
+---
+**実装者**: AI Assistant  
+**レビュー**: 要レビュー  
+**ステータス**: 実装完了、動作確認待ち

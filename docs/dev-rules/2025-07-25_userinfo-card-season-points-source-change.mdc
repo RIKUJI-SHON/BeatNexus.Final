@@ -1,0 +1,123 @@
+# UserInfoCard シーズンポイント取得源変更実装ログ
+
+## 実装日時
+2025年7月25日
+
+## 実装概要
+UserInfoCardのシーズンポイント取得を、profilesテーブルから`season_rankings_view`に変更し、ランキングページと完全に同じデータソースに統一
+
+## 発見された問題
+- **データソースの不整合**: シーズンポイントがprofilesテーブル（アーカイブされた古いデータ）から取得されていた
+- **ランキングページとの乖離**: 表示されるポイントがランキングページと異なる可能性
+
+## 修正内容
+
+### 1. fetchUserRankの拡張
+```typescript
+// 修正前（順位のみ取得）
+.select('position')
+
+// 修正後（順位とシーズンポイントを同時取得）
+.select('position, season_points')
+```
+
+### 2. シーズンポイントの更新処理追加
+```typescript
+// ランキングデータ取得時にシーズンポイントも更新
+setUserRank(rankData?.position || 0);
+
+setUserStats(prev => prev ? {
+  ...prev,
+  current_season_points: rankData?.season_points || 0
+} : null);
+```
+
+### 3. profilesテーブル依存の削除
+```typescript
+// 修正前（profilesテーブルから取得）
+const seasonPoints = userProfile?.season_points || 0;
+
+// 修正後（fetchUserRankで設定される）
+current_season_points: 0, // fetchUserRankで設定される
+```
+
+### 4. データ取得順序の最適化
+```typescript
+// 修正前
+fetchUserRank(); // 独立して実行
+
+// 修正後
+fetchUserStats().then(() => {
+  fetchUserRank(); // ユーザー統計の後にランキングデータを取得
+});
+```
+
+## データソースの統一
+
+### season_rankings_view から取得するデータ
+- **position**: ユーザーの現在の順位
+- **season_points**: 現在のシーズンポイント
+- **その他**: バトル統計、レーティング等（今後利用可能）
+
+### メリット
+1. **データ整合性**: ランキングページと完全に同じ値を表示
+2. **リアルタイム性**: 最新のシーズン状況を正確に反映
+3. **パフォーマンス**: 1回のクエリで順位とポイントを同時取得
+4. **メンテナンス性**: データソースの統一による管理の簡素化
+
+## 表示される情報の変更
+
+### シーズンランキングに参加している場合
+- **順位**: season_rankings_view.position
+- **シーズンポイント**: season_rankings_view.season_points
+- **投票ポイント**: profiles.season_vote_points × 100
+
+### シーズンランキングに参加していない場合
+- **順位**: --（表示なし）
+- **シーズンポイント**: 0（デフォルト値）
+- **投票ポイント**: profiles.season_vote_points × 100
+
+## 技術的詳細
+
+### 非同期処理の順序制御
+```typescript
+fetchUserProfile().then(() => {
+  fetchUserStats().then(() => {
+    fetchUserRank(); // 最後に実行してポイントを更新
+  });
+});
+```
+
+### エラーハンドリング
+- season_rankings_viewにデータがない場合: PGRST116エラーを適切に処理
+- デフォルト値: position = 0, season_points = 0
+
+### 状態管理
+- userRankとuserStats.current_season_pointsを連携して更新
+- setUserStats使用時の既存データ保持（スプレッド演算子活用）
+
+## ファイル変更
+- `src/components/ui/UserInfoCard.tsx`: シーズンポイント取得源を`season_rankings_view`に変更
+
+## 期待される効果
+1. **データ精度**: ランキングページと同じ正確なシーズンポイントを表示
+2. **一貫性**: システム全体でのデータ整合性確保
+3. **信頼性**: ユーザーが見る情報の正確性向上
+4. **将来性**: season_rankings_viewの追加データも利用可能
+
+## 検証項目
+- [ ] プレイヤーランキングに参加しているユーザーで正しいシーズンポイントが表示される
+- [ ] ランキングページの同じユーザーと同じポイント数が表示される
+- [ ] バトル未参加ユーザーでシーズンポイント0が表示される
+- [ ] 投票ポイントは従来通りprofilesテーブルから正しく取得される
+- [ ] データ取得順序が適切で、ポイントが正しく更新される
+
+## 今後の改善点
+- season_rankings_viewから追加の統計情報（勝率等）も取得可能
+- リアルタイム更新の仕組み追加検討
+- バトル結果反映時の即座更新機能
+
+## 注意事項
+- profilesテーブルのseason_pointsは今後使用されないが、互換性のため残存
+- 投票ポイントは引き続きprofilesテーブルから取得（仕様通り）
+- season_rankings_viewに存在しないユーザーは適切にフォールバック処理

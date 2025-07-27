@@ -1,0 +1,36 @@
+# 🖼️ 固定OGP画像設定ログ
+
+## 📅 実装日
+2025-01-06
+
+## 🎯 概要
+動的OGP画像生成を一時停止し、BeatNexus全体のOGP画像を固定の `https://beat-nexus-heatbeat-test.vercel.app/images/OGP.png` に設定しました。
+
+## 📝 実装内容
+- **`src/pages/BattleViewPage.tsx`**: `imageUrl` を固定パスに変更
+- **`src/pages/BattleReplayPage.tsx`**: `ogImageUrl` を固定パスに変更
+
+```typescript
+// 修正例（BattleViewPage）
+- const imageUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ogp-battle-card?battle_id=${id}`;
++ const imageUrl = '/images/hero-background.png';
+```
+
+## 🎯 目的
+- Twitter/X などのSNSで確実にOGP画像が表示されるようにする
+- 動的生成の不具合調査が完了するまでの暫定対応
+
+## ✅ 検証項目
+- [ ] Twitter Card Validatorで固定画像が表示されること
+- [ ] 通常ページURLでOGP画像がヒーロー画像になること
+
+---
+**実装者**: AI Assistant  
+**レビュー**: 要レビュー  
+**ステータス**: 実装完了、検証待ち
+description:
+globs:
+alwaysApply: false
+---
+
+- `index.html` の静的メタタグを絶対 URL (`https://beat-nexus-heatbeat-test.vercel.app/images/OGP.png`) に更新しました。

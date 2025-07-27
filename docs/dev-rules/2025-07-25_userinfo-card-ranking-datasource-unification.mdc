@@ -1,0 +1,134 @@
+# UserInfoCard ランキングデータソース統一実装ログ
+
+## 実装日時
+2025年7月25日
+
+## 実装概要
+UserInfoCardのランキング取得をランキングページと同じデータソースに統一し、投票者ランキングも考慮した表示ロジックを実装
+
+## 発見された問題
+1. **データソースの不整合**: UserInfoCardが`season_rankings`テーブル（過去のアーカイブ）を参照していた
+2. **投票者ランキングの未考慮**: バトル未参加でも投票者として活動しているユーザーの情報が表示されない
+
+## ランキングページでの実際のデータソース確認
+
+### 現在のシーズンランキング
+- **プレイヤーランキング**: `season_rankings_view`
+- **投票者ランキング**: `season_voter_rankings_view`
+
+### 過去のシーズンランキング
+- **プレイヤーランキング**: `season_rankings`テーブル（アーカイブ）
+- **投票者ランキング**: `season_voter_rankings`テーブル（アーカイブ）
+
+## 修正内容
+
+### 1. プレイヤーランキング取得の修正
+```typescript
+// 修正前（過去のアーカイブテーブル）
+const { data: rankData, error } = await supabase
+  .from('season_rankings')
+  .select('rank')
+  .eq('user_id', user.id)
+  .eq('season_id', activeSeason.id)
+
+// 修正後（現在のシーズンビュー）
+const { data: rankData, error } = await supabase
+  .from('season_rankings_view')
+  .select('position')
+  .eq('user_id', user.id)
+```
+
+### 2. 投票者ランキング取得の追加
+```typescript
+const fetchVoterRank = async () => {
+  const { data: voterData, error } = await supabase
+    .from('season_voter_rankings_view')
+    .select('position')
+    .eq('user_id', user.id)
+    .single();
+    
+  setVoterRank(voterData?.position || 0);
+};
+```
+
+### 3. 表示条件の拡張
+```typescript
+// 修正前（バトル参加者のみ表示）
+{hasActiveSeasonData ? (
+
+// 修正後（バトル参加者 OR 投票者で表示）
+{hasActiveSeasonData || hasVoterRank ? (
+```
+
+### 4. ランキング表示の改善
+```typescript
+{/* プレイヤーランキングまたは投票者ランキング */}
+{(userRank > 0 || voterRank > 0) && (
+  <div className="mb-3">
+    <div className="text-xl font-bold text-yellow-400">
+      {userRank > 0 ? `#${userRank}` : `#${voterRank}`}
+      {voterRank > 0 && userRank === 0 && (
+        <span className="text-xs text-slate-400 ml-1">(投票者)</span>
+      )}
+    </div>
+    <div className="text-xs text-slate-400">
+      {userRank > 0 ? '順位' : '投票者順位'}
+    </div>
+  </div>
+)}
+```
+
+## データソースの詳細
+
+### season_rankings_view の特徴
+- 現在のシーズンのプレイヤーランキング
+- `season_points`による順位付け
+- バトル経験者のみ表示（`battles_won + battles_lost >= 1`）
+- `position`カラムでリアルタイム順位
+
+### season_voter_rankings_view の特徴
+- 現在のシーズンの投票者ランキング
+- `season_vote_points`による順位付け
+- `position`カラムでリアルタイム順位
+- 投票活動のあるユーザーのみ表示
+
+## 表示ロジックの改善
+
+### ケース1: バトル参加者（プレイヤーランキング有り）
+- プレイヤー順位を優先表示
+- シーズンポイントと投票ポイントの両方表示
+
+### ケース2: バトル未参加だが投票者（投票者ランキング有り）
+- 投票者順位を表示（「(投票者)」マーク付き）
+- シーズンポイント0、投票ポイント表示
+- 「投票者順位」ラベル
+
+### ケース3: どちらにも参加していない
+- 「シーズン未参加」メッセージ
+- 「バトルに参加または投票して...」の案内
+
+## データ取得タイミングの最適化
+- アクティブシーズン依存を削除
+- ユーザー情報取得時に並行してランキング情報も取得
+- より高速な表示が可能
+
+## ファイル変更
+- `src/components/ui/UserInfoCard.tsx`: ランキングデータソース統一、投票者ランキング対応
+
+## 期待される効果
+1. **データ整合性**: ランキングページと同じ情報を表示
+2. **包括性**: バトル未参加でも投票者は適切に表示
+3. **リアルタイム性**: 現在のランキング状況を正確に反映
+4. **パフォーマンス**: アクティブシーズン依存の削除による高速化
+
+## 検証項目
+- [ ] プレイヤーランキングのユーザーで正しい順位が表示される
+- [ ] バトル未参加で投票者ランキングのみのユーザーで投票者順位が表示される
+- [ ] 投票者順位に「(投票者)」マークが付く
+- [ ] シーズンポイント0でも投票ポイントが正しく表示される
+- [ ] ランキングページと同じ順位が表示される
+
+## 今後の改善点
+- ランキング変動の通知機能
+- 複数シーズンでの順位履歴表示
+- ランキング上昇/下降の視覚的表現

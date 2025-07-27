@@ -1,0 +1,176 @@
+---
+description: "ニュースカルーセル機能実装ログ"
+date: "2025-07-23"
+status: "完了"
+---
+
+# ニュースカルーセル実装ログ
+
+## 実装概要
+BattlesPageにお知らせ・ニュースを表示するカルーセル機能を実装しました。
+
+## 実装内容
+
+### 1. データベース設計・マイグレーション
+- **対象テーブル**: `site_news`
+- **実行環境**: 開発環境 (wdttluticnlqzmqmfvgt) & 本番環境 (qgqcjtjxaoplhxurbpis)
+
+#### 追加カラム
+```sql
+content_type text default 'link' check (content_type in ('link', 'article')),
+article_content text,
+meta_description text,
+tags text[],
+is_featured boolean default false,
+is_published boolean default true,
+display_order integer default 0
+```
+
+#### インデックス作成
+```sql
+CREATE INDEX idx_site_news_display_order ON public.site_news(display_order, published_at DESC);
+CREATE INDEX idx_site_news_published ON public.site_news(is_published, published_at DESC);
+CREATE INDEX idx_site_news_featured ON public.site_news(is_featured, published_at DESC);
+CREATE INDEX idx_site_news_content_type ON public.site_news(content_type, published_at DESC);
+```
+
+#### RLSポリシー
+- 読み取り: 全ユーザー許可
+- 書き込み: 認証ユーザーのみ
+
+### 2. フロントエンド実装
+
+#### ファイル構成
+```
+src/
+├── types/news.ts              # 型定義（拡張済み）
+├── hooks/useNews.ts           # データ取得フック（拡張済み）
+├── components/
+│   ├── battle/NewsCarousel.tsx    # カルーセルコンポーネント（拡張済み）
+│   └── ui/ArticleModal.tsx        # 記事詳細モーダル（新規作成）
+└── pages/BattlesPage.tsx      # カルーセル配置済み
+```
+
+#### 主要機能
+1. **固定How-to Guideパネル**: 最初のスライドは常にガイド表示
+2. **動的ニュースパネル**: Supabaseから取得したニュースを表示順序で表示
+3. **コンテンツタイプ対応**:
+   - `link`: 外部リンクへ遷移
+   - `article`: アプリ内で記事詳細モーダル表示
+4. **レスポンシブデザイン**: デスクトップ〜モバイル対応
+5. **手動スライド操作**: 左右矢印ボタン、スワイプ対応
+
+### 3. 実装の特徴
+
+#### データ取得・表示ロジック
+- 公開状態フィルタリング（`is_published = true`）
+- 表示順序ソート（`display_order ASC, published_at DESC`）
+- エラーハンドリング・ローディング状態管理
+
+#### UIデザイン
+- 背景グラデーション・画像表示
+- コンテンツタイプ別アイコン表示
+- タグ・注目記事バッジ表示
+- ホバーエフェクト・トランジション
+
+### 4. 検証結果
+- ✅ データベースマイグレーション成功（開発・本番両環境）
+- ✅ サンプルデータでのカルーセル表示確認
+- ✅ How-to Guideパネル正常動作
+- ✅ 外部リンク・記事詳細モーダル動作確認
+- ✅ レスポンシブデザイン動作確認
+
+### 5. 今後の運用
+
+#### コンテンツ投稿方法
+1. Supabase Dashboard → Table Editor → site_news
+2. 記事データ入力（title, body, content_type等）
+3. `is_published = true`で公開
+
+#### 表示制御
+- `display_order`: 小さい数値ほど優先表示
+- `is_featured`: 注目記事バッジ表示
+- `is_published`: 公開/非公開制御
+
+### 6. 技術債務・今後の改善点
+- [ ] 管理画面UI実装（現在はSupabase Dashboard依存）
+- [ ] 画像アップロード機能
+- [ ] 多言語対応
+- [ ] Analytics実装
+- [ ] キャッシュ最適化
+
+## 完了日時
+2025年7月23日
+
+## 追加更新: コンテンツタイプを記事のみに統一 (2025年7月23日)
+- **データベース変更**: content_type制約をarticleのみに変更
+- **フロントエンド簡素化**: 外部リンク処理を削除、全て記事モーダル表示に統一
+- **UI改善**: コンテンツタイプインジケーターを記事タイプのみに変更
+- **型定義更新**: ContentTypeをarticleのみに変更、article_contentを必須に変更
+
+## 追加更新: 新しいベータシーズン開幕告知追加 (2025年7月23日)
+- **新マイグレーション作成**: `20250723030000_insert_beta_season_announcement.sql`
+- **新ニュース記事追加**: 「【お知らせ】BeatNexus β Season 0、本日開幕！」
+  - より詳細な開催期間と参加方法の説明
+  - 2段階参加フロー（事前登録→一般公開）の詳細
+  - 限定報酬（プレイヤーTOP8、投票者TOP20）の詳細説明
+  - フィードバック協力依頼とベータ版注意事項
+  - 開発チームからの挑戦メッセージ
+- **表示設定**: display_order=1, is_featured=true, 2025年7月23日3:00公開
+
+## 追加更新: パスエイリアス問題の全面修正 (2025年7月23日)
+- **useNews.ts修正**: @/lib/supabaseと@/types/newsを相対パスに変更
+- **ArticleModal.tsx修正**: @/types/newsを相対パスに変更
+- **全体的なパスエイリアス統一**: @エイリアス依存を相対パスで統一
+- **開発環境安定化**: すべてのインポートエラーを解決、HMR正常動作
+
+## 追加更新: インポートエラー修正とカスタム矢印ボタン実装 (2025年7月23日)
+- **インポートエラー修正**: @パスエイリアスエラーを相対パスで解決
+- **カスタム矢印ボタン**: shadcn/ui Carousel依存の矢印ボタンをカスタム実装に変更
+  - 直接的なapi.scrollPrev()/scrollNext()呼び出し
+  - 独自のスタイリングとホバーエフェクト
+  - アクセシビリティ対応のaria-label
+- **型エラー解決**: ButtonSizeとvariant型の不整合を解決
+- **依存関係最適化**: 不要なCarouselPrevious/CarouselNextを削除
+
+## 追加更新: βシーズン開幕告知ニュース作成 (2025年7月23日)
+- **既存データクリア**: テスト用ニュースデータを全削除
+- **ベータシーズン告知記事**: ベータシーズン仕様書に基づく正式な開幕告知を作成
+  - タイトル: 「🚀 BeatNexus β Season 0 開幕告知！」
+  - 内容: 2段階参加フロー、シーズン報酬、ビジョンフォワード告知を含む包括的な記事
+  - メタデータ: 適切なタグとSEO対応のメタディスクリプション
+  - 表示設定: is_featured=true, display_order=0で最優先表示
+
+## 追加更新: 手動スライドボタン修正 (2025年7月23日)
+- **イベントハンドリング修正**: CarouselPrevious/NextのカスタムonClickを削除、pointerDownイベントで手動操作検出
+- **ボタン配置修正**: z-10追加でボタンが他要素に隠れない仕様に変更
+- **TypeScript修正**: Carouselボタンのchildrenエラーを解決、不要なArrowRightインポート削除
+- **自動スライド制御**: 手動操作時の一時停止・再開ロジックを改善
+
+## 追加更新: 自動スライド機能の追加 (2025年7月23日)
+- **自動スライド機能**: 8秒間隔でゆっくりとした自動スライドを実装
+- **インタラクション対応**: 
+  - マウスホバー時に自動スライドを一時停止
+  - 矢印ボタンクリック時に自動スライドを一時停止（5秒後に再開）
+  - ドットインジケータークリック時に自動スライドを一時停止（5秒後に再開）
+- **UX改善**: ドットインジケーターをクリック可能なボタンに変更、ホバーエフェクト追加
+- **ArticleModal改善**: モバイルでのスクロール問題を修正
+  - Flexboxレイアウトによる適切な高さ制御
+  - タッチスクロール最適化
+  - レスポンシブ対応の強化
+- **テストデータ追加**: 開発環境に5件の多様なニュース記事を追加
+  - BeatNexus v2.0リリース（注目記事）
+  - グランドトーナメント開催（注目記事）
+  - モバイルアプリベータテスト
+  - AI Beat生成アシスタント
+  - コミュニティ機能アップデート
+- **UI簡素化**: NewsCarouselから以下を削除
+  - 記事タイプインジケーター（「記事」バッジ）
+  - タグ表示機能
+  - アクションインジケーター（右上のアイコン）
+- **クリーンなデザイン**: よりシンプルで見やすいカルーセル表示を実現
+
+## 関連ファイル
+- 仕様書: `docs/お知らせカルーセル実装仕様書（Supabaseベース）.md`
+- マイグレーション: `supabase/migrations/20250722120000_create_site_news_table.sql`
+- 拡張マイグレーション: `supabase/migrations/20250723000000_extend_site_news_table.sql`

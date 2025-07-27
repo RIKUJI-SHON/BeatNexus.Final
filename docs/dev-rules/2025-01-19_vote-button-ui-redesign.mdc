@@ -1,0 +1,203 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# 🗳️ 投票ボタンUIリデザイン実装ログ
+
+## 📅 実装日
+2025-01-19
+
+## 🎯 概要
+ユーザーからの要求「バトル視聴のページの投票のコンポーネントですが投票のボタンのUIを以下のものに変更してください。その際既存の赤と青の色の振り分けは変えないでください」に応じて、BattleViewページの投票ボタンのUIを指定されたCSSデザインに変更した。
+
+## 🔍 作業背景
+### 要求内容
+- 指定されたCSSデザインの投票ボタンに変更
+- 既存の赤と青の色の振り分けを維持（Player A=青、Player B=赤/ピンク）
+- 3D押し込み効果のあるモダンなボタンデザイン
+
+### 現在の問題
+- 従来の投票ボタンはフラットなデザイン
+- より視覚的に魅力的で操作感のあるUIが求められている
+
+## 📝 実装内容
+
+### ✅ 1. BattleViewコンポーネント修正 (`src/components/battle/BattleView.tsx`)
+
+#### Player A ボタンの変更
+```diff
+- <button 
+-   onClick={() => setShowVoteModal('A')} 
+-   disabled={isVoting || !!hasVoted || isUserParticipant}
+-   className="w-20 h-20 rounded-full bg-gradient-to-br from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 border-3 border-cyan-400 flex items-center justify-center shadow-xl shadow-cyan-500/50 transform hover:scale-110 hover:shadow-cyan-500/70 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed group active:scale-95"
+- >
+-   <ThumbsUp className="h-8 w-8 text-white group-hover:scale-110 transition-transform duration-200" />
+- </button>
++ <button 
++   onClick={() => setShowVoteModal('A')} 
++   disabled={isVoting || !!hasVoted || isUserParticipant}
++   className="vote-btn-player-a"
++ >
++   <div className="back"></div>
++   <div className="front">
++     <ThumbsUp className="h-5 w-5" />
++   </div>
++ </button>
+```
+
+#### Player B ボタンの変更
+```diff
+- <button 
+-   onClick={() => setShowVoteModal('B')} 
+-   disabled={isVoting || !!hasVoted || isUserParticipant}
+-   className="w-20 h-20 rounded-full bg-gradient-to-br from-pink-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 border-3 border-pink-400 flex items-center justify-center shadow-xl shadow-pink-500/50 transform hover:scale-110 hover:shadow-pink-500/70 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed group active:scale-95"
+- >
+-   <ThumbsUp className="h-8 w-8 text-white group-hover:scale-110 transition-transform duration-200" />
+- </button>
++ <button 
++   onClick={() => setShowVoteModal('B')} 
++   disabled={isVoting || !!hasVoted || isUserParticipant}
++   className="vote-btn-player-b"
++ >
++   <div className="back"></div>
++   <div className="front">
++     <ThumbsUp className="h-5 w-5" />
++   </div>
++ </button>
+```
+
+#### 投票済み状態の変更
+```diff
+- <div className="w-20 h-20 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 border-3 border-green-400 flex items-center justify-center shadow-xl shadow-green-500/50 animate-pulse">
+-   <ThumbsUp className="h-8 w-8 text-white" />
+- </div>
++ <button className="vote-btn-player-a vote-btn-voted">
++   <div className="back"></div>
++   <div className="front">
++     <ThumbsUp className="h-5 w-5" />
++   </div>
++ </button>
+```
+
+### ✅ 2. CSSスタイル追加 (`src/tailwind.extensions.css`)
+
+#### Player A（青系）ボタン
+```css
+.vote-btn-player-a {
+  --primary: 59, 130, 246; /* Blue for Player A */
+  --secondary: 30, 64, 175;
+  width: 60px;
+  height: 50px;
+  border: none;
+  outline: 10px solid rgb(var(--primary), .5);
+  border-radius: 100%;
+  position: relative;
+  transition: .3s;
+}
+
+.vote-btn-player-a .back {
+  background: rgb(var(--secondary));
+  border-radius: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.vote-btn-player-a .front {
+  background: linear-gradient(0deg, rgba(var(--primary), .6) 20%, rgba(var(--primary)) 50%);
+  box-shadow: 0 .5em 1em -0.2em rgba(var(--secondary), .5);
+  border-radius: 100%;
+  position: absolute;
+  border: 1px solid rgb(var(--secondary));
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transform: translateY(-15%);
+  transition: .15s;
+  color: white;
+}
+
+.vote-btn-player-a:active .front {
+  transform: translateY(0%);
+  box-shadow: 0 0;
+}
+```
+
+#### Player B（赤/ピンク系）ボタン
+```css
+.vote-btn-player-b {
+  --primary: 255, 90, 120; /* Pink/Red for Player B */
+  --secondary: 150, 50, 60;
+  /* 同様の構造でピンク/赤系の色を適用 */
+}
+```
+
+#### 投票済み状態
+```css
+.vote-btn-voted {
+  --primary: 34, 197, 94; /* Green for voted state */
+  --secondary: 22, 101, 52;
+  animation: pulse 2s infinite;
+}
+```
+
+## 🔧 技術詳細
+
+### 3D押し込み効果の実装
+- **`.back`**: 背景の影部分
+- **`.front`**: 前面のボタン部分（3D効果用）
+- **`transform: translateY(-15%)`**: ボタンの浮き上がり効果
+- **`:active`時の`translateY(0%)`**: 押し込み効果
+
+### 色分けの維持
+- **Player A**: 青系色（`--primary: 59, 130, 246`）
+- **Player B**: 赤/ピンク系色（`--primary: 255, 90, 120`）
+- **投票済み**: 緑系色（`--primary: 34, 197, 94`）
+
+### アクセシビリティ対応
+- `disabled`状態でのopacity調整
+- `cursor: not-allowed`の適用
+- キーボードナビゲーション対応
+
+## 🎯 実装結果
+
+### UI改善点
+- **3D効果**: 押し込み感のあるリアルなボタン操作感
+- **視覚的魅力**: モダンでプロフェッショナルな外観
+- **インタラクティブ**: クリック時の即座なフィードバック
+- **一貫性**: 既存の色分けルールを完全に維持
+
+### ユーザー体験向上
+- より直感的な操作感
+- 視覚的なフィードバックの向上
+- アクセシブルな設計
+
+## 📊 影響範囲
+- **BattleViewコンポーネント**: 投票ボタンUIの完全リニューアル
+- **CSSスタイル**: 新しい3Dボタンクラスの追加
+- **ユーザー体験**: より魅力的な投票インターフェース
+
+## ✅ 検証項目
+- [ ] Player A（青）ボタンの正常動作確認
+- [ ] Player B（赤/ピンク）ボタンの正常動作確認
+- [ ] 投票済み状態の視覚表示確認
+- [ ] 3D押し込み効果の動作確認
+- [ ] disabled状態の適切な表示確認
+- [ ] レスポンシブデザインでの表示確認
+
+## 🔗 関連ファイル
+- `src/components/battle/BattleView.tsx` - 投票ボタンコンポーネント
+- `src/tailwind.extensions.css` - 新しいボタンスタイル
+- `.cursor/rules/dev-rules/BeatNexus.mdc` - プロジェクト仕様書
+
+---
+**実装者**: AI Assistant  
+**レビュー**: 要レビュー  
+**ステータス**: UI実装完了、動作確認待ち

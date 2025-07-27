@@ -1,0 +1,48 @@
+# UserInfoCardシーズン表示修正実装ログ
+
+## 実装日
+2025年1月27日
+
+## 問題概要
+BattlesページのサイドバーにあるUserInfoCardコンポーネントで、アクティブなシーズンがない場合に「アクティブなシーズンがない」と表示するべきところが「現在のシーズン」と表示されていた問題。
+
+## 根本原因
+`UserInfoCard.tsx`の283行目で、以下のロジックが問題だった：
+```tsx
+{activeSeason?.name || t('userInfoCard.currentSeason')}
+```
+
+アクティブなシーズンがない場合（`activeSeason`が`null`）、フォールバック値として`t('userInfoCard.currentSeason')`が表示されていた。
+
+## 修正内容
+
+### 1. UserInfoCard.tsxの修正
+- **ファイル**: `src/components/ui/UserInfoCard.tsx`
+- **修正箇所**: 283行目のシーズン名表示ロジック
+- **修正前**:
+  ```tsx
+  {activeSeason?.name || t('userInfoCard.currentSeason')}
+  ```
+- **修正後**:
+  ```tsx
+  {activeSeason ? activeSeason.name : t('userInfoCard.noActiveSeason')}
+  ```
+
+### 2. 日本語翻訳の改善
+- **ファイル**: `src/i18n/locales/ja.json`
+- **修正箇所**: 348行目、658行目
+- **修正前**: `"noActiveSeason": "シーズンがアクティブではありません"`
+- **修正後**: `"noActiveSeason": "アクティブなシーズンがありません"`
+
+## 動作確認方法
+1. 本番環境でアクティブなシーズンがない状態を確認
+2. Battlesページにアクセスしてログイン
+3. 左サイドバーのUserInfoCardでシーズン情報が正しく表示されることを確認
+
+## 影響範囲
+- BattlesPageのUserInfoCardコンポーネント
+- 日本語・英語の両方の翻訳で対応
+
+## 注意事項
+- アクティブなシーズンが存在する場合は従来通りシーズン名が表示される
+- 既存の条件分岐ロジック（シーズン参加状況による表示切り替え）には影響なし

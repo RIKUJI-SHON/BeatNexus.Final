@@ -1,0 +1,95 @@
+# MCPサーバーによるSupabaseマイグレーション実行ログ
+
+## 実行日時
+2025年1月23日
+
+## 実行概要
+site_newsテーブルの拡張マイグレーションをMCPサーバーを使用して開発環境・本番環境に実行
+
+## 実行内容
+
+### 1. 開発環境（wdttluticnlqzmqmfvgt）でのマイグレーション実行
+- **マイグレーション名**: extend_site_news_enhanced
+- **実行結果**: ✅ 成功
+
+#### 追加されたカラム
+- `content_type` (text): コンテンツタイプ（link/article）
+- `article_content` (text): 記事本文
+- `meta_description` (text): SEO用メタディスクリプション
+- `tags` (text[]): タグ配列
+- `is_featured` (boolean): 注目記事フラグ
+- `is_published` (boolean): 公開状態
+- `display_order` (integer): 表示順序
+
+#### 作成されたインデックス
+- `idx_site_news_display_order`: 表示順序・公開日時
+- `idx_site_news_published`: 公開状態・公開日時
+- `idx_site_news_featured`: 注目記事・公開日時
+- `idx_site_news_content_type`: コンテンツタイプ・公開日時
+
+### 2. 開発環境でのサンプルデータ挿入
+- BeatNexus ver.2.0アップデート記事（article型）
+- 新春キャンペーン告知（link型）
+- コミュニティ機能のお知らせ（article型）
+
+### 3. 本番環境（qgqcjtjxaoplhxurbpis）でのテーブル作成
+- **マイグレーション名**: create_site_news_table_prod
+- **実行結果**: ✅ 成功
+- 注意: 本番環境にはsite_newsテーブルが存在しなかったため、新規作成
+
+#### RLSポリシー設定
+- Public read access: 誰でも読み取り可能
+- Authenticated users can insert/update/delete: 認証ユーザーのみ書き込み可能
+
+### 4. 本番環境でのサンプルデータ挿入
+- BeatNexus正式リリース記事（article型）
+
+## 技術的詳細
+
+### マイグレーションファイル
+- `20250123120000_extend_site_news_enhanced.sql`: 開発環境用拡張マイグレーション
+- 本番環境は既存マイグレーションファイルを使用せず、直接SQL実行
+
+### MCPコマンド実行例
+```
+mcp_supabase_apply_migration
+- name: extend_site_news_enhanced
+- project_id: wdttluticnlqzmqmfvgt
+- query: [SQLクエリ]
+```
+
+## 検証結果
+
+### データベース構造確認
+開発環境でのカラム一覧取得により、以下を確認：
+- id (uuid)
+- title (text)
+- body (text)
+- image_url (text)
+- link_url (text)
+- published_at (timestamptz)
+- created_at (timestamptz)
+- updated_at (timestamptz)
+- **content_type (text)** ← 新規追加
+- **article_content (text)** ← 新規追加
+- **meta_description (text)** ← 新規追加
+- **tags (ARRAY)** ← 新規追加
+- **is_featured (boolean)** ← 新規追加
+- **is_published (boolean)** ← 新規追加
+- **display_order (integer)** ← 新規追加
+
+### 次のステップ
+1. フロントエンド側の型定義更新（src/types/news.ts）
+2. useNewsフックの拡張（src/hooks/useNews.ts）
+3. NewsCarouselコンポーネントの機能拡張
+4. ArticleModalコンポーネントの実装
+
+## エラー・課題
+- 本番環境にsite_newsテーブルが存在しなかった点
+→ 新規作成で対応済み
+
+## 成果
+✅ 開発環境・本番環境両方でテーブル拡張完了
+✅ サンプルデータ投入完了
+✅ インデックス・RLS設定完了
+✅ フロントエンド実装の準備完了

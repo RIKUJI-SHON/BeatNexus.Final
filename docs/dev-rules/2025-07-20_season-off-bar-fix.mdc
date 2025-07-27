@@ -1,0 +1,104 @@
+# 2025-07-20 シーズンオフバー表示修正
+
+## 概要
+PostPageでシーズンオフバーが表示されない問題を調査・修正
+
+## 問題の詳細
+- ユーザーから報告：「投稿の画面でアクティブなシーズンが無い場合にシーズンオフとしてのシーズンオフバーを作成したはずなんですが表示されません」
+- 実際にはPostPage.tsx内にシーズンオフバー表示の実装が存在していた
+- `useSubmissionStatus`フックと`get_submission_status`SQL関数が使用されている
+
+## 根本原因
+`get_submission_status`関数内のロジック不具合：
+- `NOT FOUND`条件の判定が正しく動作していない
+- アクティブなシーズンが存在するにも関わらず、`reason`が`'SEASON_OFF'`になってしまう
+
+## 修正内容
+
+### 1. get_submission_status関数の修正
+**Before:**
+```sql
+IF NOT FOUND THEN
+    v_reason := 'SEASON_OFF';
+    v_next_season_start_date := v_upcoming_season.start_at;
+```
+
+**After:**
+```sql
+IF v_active_season.id IS NULL THEN
+    v_reason := 'SEASON_OFF';
+    v_next_season_start_date := v_upcoming_season.start_at;
+```
+
+### 2. 条件分岐の改善
+- `NOT FOUND`の代わりに`v_active_season.id IS NULL`を使用
+- より明確で確実な条件判定に変更
+
+## 検証結果
+
+### テスト1: アクティブシーズン存在時
+```sql
+SELECT get_submission_status();
+```
+結果: `{"can_submit":true,"reason":null,"active_season":{...},"next_season_start_date":null}`
+✅ 正常：reasonがnullで投稿可能
+
+### テスト2: シーズンオフ状態
+```sql
+-- テスト用にシーズンを一時的に終了状態に変更
+UPDATE seasons SET status = 'ended' WHERE id = 'abc1b83f-6c1e-4763-8554-ec6c0e8d708c';
+SELECT get_submission_status();
+```
+結果: `{"can_submit":false,"reason":"SEASON_OFF","active_season":null,"next_season_start_date":null}`
+✅ 正常：SEASON_OFFが正しく検出
+
+## 実装されている表示ロジック
+
+### PostPage.tsx の条件
+```tsx
+{(!canSubmit || (submissionStatus && !submissionStatus.canSubmit)) && (cooldownInfo || submissionStatus) && (
+  <div className="mb-6 bg-orange-500/10 border border-orange-500/30 rounded-lg p-4">
+    <div className="flex items-center gap-2 mb-3">
+      <AlertCircle className="h-5 w-5 text-orange-400" />
+      <h3 className="font-medium text-white">
+        {submissionStatus && !submissionStatus.canSubmit 
+          ? t('postPage.seasonOff.title', 'シーズン外投稿制限')
+          : t('postPage.cooldown.title', '投稿制限中')
+        }
+      </h3>
+    </div>
+    <p className="text-sm text-orange-200 mb-3">
+      {submissionStatus && !submissionStatus.canSubmit 
+        ? submissionStatus.message
+        : cooldownInfo?.message
+      }
+    </p>
+    ...
+  </div>
+)}
+```
+
+### useSubmissionStatus フック
+- `get_submission_status()`関数を呼び出し
+- `SEASON_OFF`時にメッセージを日本語で生成
+- 投稿制限の理由を適切に表示
+
+## 適用環境
+- 開発環境（wdttluticnlqzmqmfvgt）: ✅ 適用済み
+- 本番環境（qgqcjtjxaoplhxurbpis）: ✅ 適用済み
+
+## 実装完了状況
+✅ SQL関数修正完了
+✅ 両環境への適用完了
+✅ 動作検証完了
+✅ シーズンオフバーの表示条件確認完了
+
+## 注意事項
+- 現在はアクティブなシーズン（2025-S4）が存在するため、シーズンオフバーは表示されない（正常動作）
+- シーズンオフ期間中には適切にバーが表示されるはず
+- 修正により、適切なタイミングでシーズンオフバーが表示されるようになった
+
+## 関連ファイル
+- `src/pages/PostPage.tsx`: シーズンオフバー表示UI
+- `src/hooks/useSubmissionStatus.ts`: 投稿状態管理フック
+- `supabase/migrations/`: get_submission_status関数修正マイグレーション

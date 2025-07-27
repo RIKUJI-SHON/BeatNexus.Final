@@ -1,0 +1,132 @@
+# UserInfoCard シーズン表示機能拡張実装ログ
+
+## 実装日時
+2025年7月25日
+
+## 実装概要
+UserInfoCardコンポーネントのシーズン情報表示を拡張し、アクティブシーズン名、ユーザー順位、投票ポイント（VP）表示を追加
+
+## 実装内容
+
+### 1. データ取得の拡張
+
+#### ProfilesテーブルからのVP取得
+```typescript
+.select('username, bio, avatar_url, season_points, season_vote_points')
+```
+- `season_vote_points`を追加取得
+
+#### ランキング取得機能追加
+```typescript
+const fetchUserRank = async () => {
+  // season_rankingsテーブルからuser_idとseason_idでランキング取得
+}
+```
+
+### 2. インターフェース拡張
+```typescript
+interface UserProfile {
+  season_vote_points: number; // 追加
+}
+
+const [userRank, setUserRank] = useState<number>(0); // 順位管理
+```
+
+### 3. 表示機能の改善
+
+#### アクティブシーズン名表示
+```tsx
+<span className="text-sm font-medium text-slate-300">
+  {activeSeason?.name || '現在のシーズン'}
+</span>
+```
+- トロフィーアイコンの隣にアクティブシーズンの実際の名前を表示
+
+#### ユーザー順位表示
+```tsx
+{userRank > 0 && (
+  <div className="mb-3">
+    <div className="text-xl font-bold text-yellow-400">#{userRank}</div>
+    <div className="text-xs text-slate-400">順位</div>
+  </div>
+)}
+```
+- アクティブシーズンがあり、順位データがある場合のみ表示
+
+#### ポイント表示の二分割レイアウト
+```tsx
+<div className="flex items-center justify-center gap-4">
+  {/* シーズンポイント */}
+  <div className="text-center">
+    <div className="text-xl font-bold text-cyan-400">{userStats.current_season_points}</div>
+    <div className="text-xs text-slate-400">シーズンポイント</div>
+  </div>
+  
+  {/* 縦線区切り */}
+  <div className="w-px h-12 bg-slate-600"></div>
+  
+  {/* 投票ポイント */}
+  <div className="text-center">
+    <div className="text-xl font-bold text-purple-400">
+      {userProfile ? (userProfile.season_vote_points * 100) : 0}VP
+    </div>
+    <div className="text-xs text-slate-400">投票ポイント</div>
+  </div>
+</div>
+```
+
+### 4. VP（投票ポイント）計算ロジック
+- **計算式**: `season_vote_points × 100 + "VP"`
+- **表示色**: `text-purple-400`（紫色）
+- **投票ランキングとの統一**: 同じフォーマットで表示
+
+### 5. 不要な統計表示削除
+- 投稿数（total_submissions）表示を削除
+- 勝利数（wins）表示を削除
+- grid表示のセクション全体を削除
+
+### 6. データ取得タイミング最適化
+```typescript
+useEffect(() => {
+  if (user && activeSeason) {
+    fetchUserRank();
+  }
+}, [activeSeason]);
+```
+- アクティブシーズンが取得された後にランキング取得
+
+## 表示条件ロジック
+
+### アクティブシーズンがある場合
+1. **シーズン名**: activeSeason.nameを表示
+2. **順位**: userRank > 0の場合のみ表示
+3. **ポイント**: シーズンポイント | 投票ポイントの2列表示
+
+### アクティブシーズンがない場合
+- 順位表示なし
+- 「シーズンがアクティブではありません」メッセージ
+
+## ファイル変更
+- `src/components/ui/UserInfoCard.tsx`: シーズン表示機能拡張
+
+## 技術仕様
+- **縦区切り線**: `w-px h-12 bg-slate-600`
+- **VP表示色**: `text-purple-400`
+- **順位表示色**: `text-yellow-400`
+- **レスポンシブ対応**: flexレイアウトで中央揃え
+
+## データソース
+- `profiles.season_vote_points`: 投票ポイントの基数
+- `season_rankings.rank`: アクティブシーズンでの順位
+- `seasons.name`: アクティブシーズンの名前
+
+## 期待される表示
+- シーズン名: "2025-S1" など
+- 順位: "#5" など（データがある場合のみ）
+- VP: "1200VP" など（season_vote_points × 100）
+- 縦線区切りでポイントが左右に分かれた表示
+
+## 今後の改善点
+- ランキング取得エラー時の適切なフォールバック
+- VP計算ロジックの最適化
+- シーズン切り替え時のデータ更新処理

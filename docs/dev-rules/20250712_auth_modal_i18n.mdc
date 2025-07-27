@@ -1,0 +1,29 @@
+## 2025-07-12 Auth Modal 多言語化対応
+
+### 概要
+- AuthModal コンポーネントのハードコード文字列を全て i18n 化。
+- 翻訳キーを `en.json` と `ja.json` に追加。
+- <Trans> コンポーネントでメール確認メッセージを多言語対応。
+
+### 変更ファイル
+- `src/components/auth/AuthModal.tsx`
+- `src/i18n/locales/en.json`
+- `src/i18n/locales/ja.json`
+
+### 影響範囲
+- サインイン / アカウント作成モーダル
+- 電話番号認証フロー
+- 確認メール送信モーダル
+
+### 検証項目
+- [ ] 言語切替でモーダル内テキストが英語/日本語で表示
+- [ ] サインイン・新規登録フローが正常動作
+- [ ] 電話番号 OTP フローが正常動作
+- [ ] 確認メールモーダルのテキストが多言語化される
+
+---
+実装者: AI Assistant
+description:
+globs:
+alwaysApply: false
+---

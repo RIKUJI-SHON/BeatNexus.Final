@@ -1,0 +1,131 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# 🗄️ アーカイブバトルコメント保持システム実装
+
+## 📅 実装期間
+2025-06-19
+
+## 🎯 目的
+アクティブバトル終了時にコメントが削除される問題を解決し、アーカイブバトルでもコメント履歴を閲覧可能にする。
+
+## 🏗️ システム構成
+
+### データベース層
+- **新テーブル**: `archived_battle_votes`
+  - UUID PK、archived_battle_id FK、user_id FK、vote、comment、created_at
+  - RLS有効、適切なインデックス設定
+
+- **自動コピー処理**: `process_expired_battles()`関数拡張
+  - バトル終了時に`battle_votes`から`archived_battle_votes`へコメント一括コピー
+
+- **統合RPC**: `get_battle_comments()`関数
+  - アクティブ/アーカイブ両対応、同一インターフェース
+
+### フロントエンド層
+- **BattleCommentsModal**: アーカイブ専用コメント表示モーダル
+- **バトルカード拡張**: アーカイブバトルに「コメントを見る」ボタン追加
+- **BattleReplayPage拡張**: ページ下部にコメントセクション統合
+
+## 🎨 UI/UXデザイン
+進行中バトル（BattleView）とアーカイブバトル（BattleReplayPage）のデザインを完全統一：
+
+- **Epic Background Effects**: 稲妻エフェクト + 光るオーブアニメーション
+- **統一カラーパレット**: 5パターンのプレイヤーカラーペア自動選択
+- **Battle Arena Layout**: 3カラムグリッド、統一されたPlayer Overlay
+- **3Dインタラクション**: ボタン、カード、モーダルの統一感
+
+## ✅ 実装完了機能
+
+### Day 1: データベース基盤
+- `archived_battle_votes`テーブル作成
+- RLS設定、インデックス追加
+
+### Day 2: バックエンド処理
+- `process_expired_battles()`にコメントコピー処理追加
+- バトル終了時の自動アーカイブ機能実装
+
+### Day 3: API拡張
+- `get_battle_comments()`をアーカイブ対応に拡張
+- TypeScript型定義同期
+
+### Day 4: フロントエンド統合
+- `BattleCommentsModal`新規作成
+- `SimpleBattleCard`、`SpecialBattleCard`にコメントボタン追加
+- `BattleReplayPage`にコメントセクション追加
+- 翻訳ファイル更新（ja/en）
+
+### Day 4+: デザイン統一
+- `BattleReplayPage`完全リデザイン（BattleViewスタイル適用）
+- `BattleCommentsModal`スタイル統一（VoteCommentModalベース）
+- レスポンシブ対応、アニメーション同期
+
+## 🧪 E2Eテスト結果
+
+### テストシナリオ
+1. アクティブバトルに3件のコメント付き投票追加
+2. `process_expired_battles()`実行でバトル強制終了
+3. `archived_battle_votes`テーブルにコメント正常保存確認
+4. `get_battle_comments()`でアーカイブコメント取得確認
+5. フロントエンドでコメント表示確認
+
+### 結果
+✅ 全機能正常動作確認  
+✅ データ整合性保持  
+✅ UI/UX統一感確認
+
+## 📊 技術仕様
+
+### データフロー
+```
+アクティブバトル終了
+     ↓
+process_expired_battles()実行
+     ↓
+battle_votes → archived_battle_votes (一括コピー)
+     ↓
+アーカイブバトルでコメント表示可能
+```
+
+### パフォーマンス
+- インデックス最適化済み
+- 削除済みユーザーのコメントも表示対応
+- 大量コメント時のスクロール対応
+
+## 🚀 プロダクション準備
+
+### 完了済み
+- [x] 全機能実装
+- [x] E2Eテスト
+- [x] デザイン統一
+- [x] レスポンシブ対応
+- [x] 翻訳対応（ja/en）
+
+
+## 🎯 結果
+
+アーカイブバトルコメント保持システムが完全実装され、ユーザーはバトル終了後もコメント履歴を閲覧可能に。進行中バトルとアーカイブバトルで統一されたUI/UX体験を提供。
+
+---
+**実装者**: AI Assistant  
+**期間**: 1日間（2025-06-19）  
+**ステータス**: ✅ 完全実装済み
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

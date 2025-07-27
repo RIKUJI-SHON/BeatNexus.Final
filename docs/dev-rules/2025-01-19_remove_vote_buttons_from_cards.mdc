@@ -1,0 +1,165 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# 🗳️ バトルカード投票ボタン削除実装ログ
+
+## 📅 実装日
+2025-01-19
+
+## 🎯 概要
+バトルカード（SimpleBattleCard.tsx、SpecialBattleCard.tsx）から投票ボタンを削除。
+UIをシンプル化し、投票はBattleViewページでのみ行うよう統一。
+
+## 🔍 削除された要素
+
+### SimpleBattleCard.tsx
+- **投票ボタン**: `投票する`/`Watch Replay`ボタンを削除
+- **不要な状態管理**: 
+  - `isAuthModalOpen`、`setIsAuthModalOpen`
+  - `error`、`setError`
+  - `authModalMode`、`setAuthModalMode`
+  - `user`（useAuthStore）
+  - `requireAuth`フック
+- **不要な関数**: `handleActionClick`
+- **不要なインポート**:
+  - `AuthModal`
+  - `useRequireAuth`
+  - `useAuthStore`
+  - `Button`
+  - `Vote`、`Video` アイコン
+
+### SpecialBattleCard.tsx
+- **同様の要素を削除**: SimpleBattleCardと同じ要素
+
+## 📝 実装内容
+
+### ✅ 投票ボタンの削除
+**変更前**:
+```tsx
+<div className={cn("flex justify-center", battle.is_archived ? "gap-3" : "")}>
+  <VoteButton onClick={handleActionClick} disabled={!battle.is_archived && isExpired} className="max-w-xs">
+    <div className="flex items-center gap-2">
+      {battle.is_archived ? <Video className="h-4 w-4" /> : <Vote className="h-4 w-4" />}
+      {battle.is_archived ? t('battleCard.watchReplay') : isExpired ? t('battleCard.votingEnded') : t('battleCard.voteNow')}
+    </div>
+  </VoteButton>
+  
+  {battle.is_archived && (
+    <VoteButton onClick={handleCommentsClick} className="max-w-xs bg-gray-700 hover:bg-gray-600 border-gray-800">
+      <div className="flex items-center gap-2">
+        <MessageSquare className="h-4 w-4" />
+        {t('battleCard.viewComments')}
+      </div>
+    </VoteButton>
+  )}
+</div>
+```
+
+**変更後**:
+```tsx
+{battle.is_archived && (
+  <div className="flex justify-center">
+    <VoteButton onClick={handleCommentsClick} className="max-w-xs bg-gray-700 hover:bg-gray-600 border-gray-800">
+      <div className="flex items-center gap-2">
+        <MessageSquare className="h-4 w-4" />
+        {t('battleCard.viewComments')}
+      </div>
+    </VoteButton>
+  </div>
+)}
+```
+
+### ✅ 状態管理のシンプル化
+**変更前**:
+```tsx
+const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+const [isCommentsModalOpen, setIsCommentsModalOpen] = useState(false);
+const [error, setError] = useState<string | null>(null);
+const [timeRemaining, setTimeRemaining] = useState<string>('');
+const [isExpired, setIsExpired] = useState(false);
+const navigate = useNavigate();
+const { user } = useAuthStore();
+const [authModalMode, setAuthModalMode] = useState<'login' | 'signup'>('login');
+
+const requireAuth = useRequireAuth({
+  showAuthModal: true,
+  setAuthModalOpen: setIsAuthModalOpen,
+  setAuthModalMode: setAuthModalMode,
+});
+```
+
+**変更後**:
+```tsx
+const [isCommentsModalOpen, setIsCommentsModalOpen] = useState(false);
+const [timeRemaining, setTimeRemaining] = useState<string>('');
+const [isExpired, setIsExpired] = useState(false);
+const navigate = useNavigate();
+```
+
+### ✅ インポートの最適化
+**変更前**:
+```tsx
+import { Button } from '../ui/Button';
+import { VoteButton } from '../ui/VoteButton';
+import { AuthModal } from '../auth/AuthModal';
+import { BattleCommentsModal } from '../ui/BattleCommentsModal';
+import { useRequireAuth } from '../../hooks/useRequireAuth';
+import { useAuthStore } from '../../store/authStore';
+import { Clock, Users, Vote, Crown, Video, MessageSquare, ThumbsUp } from 'lucide-react';
+```
+
+**変更後**:
+```tsx
+import { VoteButton } from '../ui/VoteButton';
+import { BattleCommentsModal } from '../ui/BattleCommentsModal';
+import { Clock, Users, Crown, MessageSquare, ThumbsUp } from 'lucide-react';
+```
+
+## 🎯 解決された問題
+1. **UIの統一**: 投票機能はBattleViewページでのみ提供
+2. **コード簡素化**: 不要な状態管理とロジックを削除
+3. **保守性向上**: コンポーネントの役割を明確化
+4. **パフォーマンス向上**: 不要なレンダリングとインポートを削除
+
+## 📊 影響範囲
+- **SimpleBattleCard.tsx**: 投票ボタン削除、状態管理簡素化
+- **SpecialBattleCard.tsx**: 同様の変更適用
+- **ユーザー体験**: カードはプレビュー専用、投票は詳細ページで実行
+- **バンドルサイズ**: 不要なインポート削除により軽量化
+
+## 🚀 期待される効果
+
+### ユーザー体験の向上
+- **明確な操作フロー**: カード→詳細ページ→投票の流れが明確
+- **誤操作防止**: カード上での意図しない投票を防止
+- **統一感**: 全ての投票操作が同じ場所で実行
+
+### 開発・保守性の向上
+- **コンポーネント責任の明確化**: カードは表示専用
+- **テスト容易性**: シンプルな状態管理
+- **バグ減少**: 複雑な認証フローを削除
+
+## ✅ 検証項目
+- [x] バトルカードでの投票ボタン削除確認
+- [x] アーカイブバトルのコメントボタン正常動作
+- [x] TypeScriptエラー解消
+- [x] 不要なインポート削除
+- [ ] カードクリック時の詳細ページ遷移確認
+- [ ] BattleViewページでの投票機能正常動作確認
+
+## 🔗 関連ファイル
+- `src/components/battle/SimpleBattleCard.tsx` - シンプルバトルカード
+- `src/components/battle/SpecialBattleCard.tsx` - スペシャルバトルカード
+- `src/components/battle/BattleView.tsx` - バトル詳細ページ（投票機能あり）
+
+## 🔄 運用方針
+- **投票機能**: BattleViewページでのみ提供
+- **カード機能**: プレビューとコメント閲覧のみ
+- **UI一貫性**: 今後のバトル関連UIでもこの方針を維持
+
+---
+**実装者**: AI Assistant  
+**レビュー**: 要レビュー  
+**ステータス**: 投票ボタン削除完了、動作確認待ち

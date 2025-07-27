@@ -1,0 +1,60 @@
+# 📝 動的OGP生成機能 要件定義
+
+## 📅 作成日
+2025-07-05
+
+## 🎯 目的
+Facebook / X 等でバトルページ URL を共有した際、対戦者のアバター2枚と VS ロゴを組み合わせたカスタム画像を OGP として表示する。
+
+## 🖼️ 表示イメージ
+ヒーロー背景( hero-background.png ) を全面に敷き、
+左: プレイヤーAの丸型アバター + シアン枠線
+中央: VS.png (160×160)
+右: プレイヤーBの丸型アバター + マゼンタ枠線
+
+## ✨ 機能概要
+1. Edge Function `ogp-battle-card` を新規作成。
+2. クエリ引数 `battle_id` を受け取り、DB から対戦者のアバター URL とユーザー名を取得。
+3. Satori で SVG レイアウトを構築 (1200×630)。
+4. Resvg で PNG 書き出し、`image/png` を返却。
+5. `BattleViewPage` の `<meta property="og:image">` / `<twitter:image>` を動的 URL に差し替え。
+6. VSロゴは `public/images/VS.png` を使用。
+7. 背景は `public/images/hero-background.png` を利用。
+
+## ✅ 受け入れ基準
+- バトルページをシェアした際、サムネイルが対戦者アバター + VS + 背景で表示される。
+- アバターが無い場合は `default.png` を利用。
+- 画像サイズは 1200×630。
+- Edge Function のレスポンスは `Content-Type: image/png`, ステータス 200。
+- 無効な `battle_id` では 404 or 400 エラー。
+
+## ⛏️ 技術選定
+- Satori v1.x
+- Resvg wasm v2.x
+- Supabase Edge Functions (Deno)
+
+## 🗂️ ファイル構成 (予定)
+```
+supabase/functions/ogp-battle-card/
+  ├─ deno.json
+  └─ index.ts
+```
+
+## 🏗️ タスク一覧
+- [ ] deno.json に imports 追加
+- [ ] Edge Function ベースコード作成
+- [ ] DB クエリ or RPC でアバターデータ取得
+- [ ] SVG レイアウト実装
+- [ ] PNG 変換処理
+- [ ] エラーハンドリング (invalid id, no avatars)
+- [ ] `BattleViewPage` metaタグ修正
+- [ ] テスト (`supabase functions serve` → SNS debugger)
+- [ ] ドキュメント & 実装ログ更新
+
+## 💬 メモ
+- 初期実装ではテキストを載せず、画像のみ。
+- 第二フェーズでバトルタイトルや投票締切を追加予定。
+description:
+globs:
+alwaysApply: false
+---

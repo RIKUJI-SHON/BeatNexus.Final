@@ -1,0 +1,106 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# 🔧 TypeScript型定義同期実装ログ
+
+## 📅 実装日
+2025-06-19
+
+## 🎯 概要
+データベースとフロントエンド型定義の不整合を解消。
+Supabase CLIの自動生成機能を使用してデータベースの最新スキーマをTypeScriptに反映。
+
+## 🔍 発見された不整合
+### User型に不足していたプロパティ
+- `current_community_id: string | null` - コミュニティ制限システムで追加されたカラム
+
+## 📝 実装内容
+
+### ✅ 自動型生成
+**コマンド**: `npx supabase@latest gen types typescript --project-id qgqcjtjxaoplhxurbpis --schema public`
+**出力**: `src/types/database.types.ts`
+
+### ✅ 既存型定義の更新
+**ファイル**: `src/types/index.ts`
+
+#### 更新されたUser型
+```typescript
+export interface User {
+  id: string;
+  username: string;
+  email: string;
+  avatar_url: string | null;
+  bio: string | null;
+  rating: number;
+  language: string;
+  vote_count: number;
+  has_seen_onboarding: boolean;
+  is_deleted?: boolean;
+  deleted_at?: string | null;
+  current_community_id: string | null; // ← 🆕 追加
+  created_at: string;
+  updated_at: string;
+}
+```
+
+### ✅ 型エクスポートの追加
+```typescript
+// 自動生成されたSupabaseデータベース型をエクスポート
+export type { Database } from './database.types';
+```
+
+## 🔧 技術詳細
+
+### 自動生成された型の特徴
+- **完全データベース同期**: 全テーブル、ビュー、関数、ENUMに対応
+- **型安全性**: Supabaseクライアントとの完全互換
+- **リレーション情報**: 外部キー制約も型として表現
+- **関数シグネチャ**: RPC関数の引数・戻り値型も含む
+
+### 生成された主要型
+- `Database['public']['Tables']['profiles']['Row']` - profilesテーブルの行型
+- `Database['public']['Enums']['community_role']` - コミュニティ役割ENUM
+- `Database['public']['Functions']` - 全RPC関数の型定義
+
+## 🎯 解決された問題
+1. **型エラー解消**: `current_community_id` プロパティアクセス時のTypeScriptエラー
+2. **IDE支援向上**: VS Codeでのコード補完・型チェック機能復活
+3. **ランタイムエラー防止**: 存在しないプロパティアクセスによるバグを事前検出
+4. **開発効率向上**: 型安全なデータベースアクセス
+
+## 📊 影響範囲
+- **フロントエンド型定義**: User型の完全性確保
+- **コード補完**: IDEでの`current_community_id`プロパティ認識
+- **型チェック**: ビルド時の型検証強化
+- **保守性**: データベース変更時の型同期プロセス確立
+
+## 🚀 今後の運用方針
+
+### 定期的な型同期
+```bash
+# データベース変更後に実行
+npx supabase gen types typescript --project-id qgqcjtjxaoplhxurbpis --schema public > src/types/database.types.ts
+```
+
+### CI/CDでの自動チェック
+- プルリクエスト時の型整合性検証
+- データベーススキーマ変更検出時の自動型生成
+
+## ✅ 検証項目
+- [x] User型での`current_community_id`アクセス可能
+- [x] TypeScriptコンパイルエラー解消
+- [x] VS Codeでのコード補完正常動作
+- [ ] 実際のコンポーネントでの動作確認
+- [ ] Supabaseクライアント型互換性確認
+
+## 🔗 関連ファイル
+- `src/types/database.types.ts` - 自動生成されたデータベース型
+- `src/types/index.ts` - 更新されたアプリケーション型定義
+- `supabase/migrations/20250131120000_single_community_per_user.sql` - current_community_id追加マイグレーション
+
+---
+**実装者**: AI Assistant  
+**レビュー**: 要レビュー  
+**ステータス**: 型定義同期完了、動作確認待ち

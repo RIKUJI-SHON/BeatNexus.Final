@@ -1,0 +1,89 @@
+# 2025-07-20_useOnboardingInitialization-hook-implementation.mdc
+
+## 概要
+`useOnboardingInitialization` フックが存在しないため発生していたインポートエラーを解決し、オンボーディング初期化機能を実装しました。
+
+## 実装内容
+
+### 1. 問題の分析
+- App.tsxで`useOnboardingInitialization`フックがインポートされているが、ファイルが存在しない
+- 139行目で実際に呼び出されているため、フックの実装が必要
+
+### 2. フック実装
+**ファイル**: `src/hooks/useOnboardingInitialization.ts`
+
+```typescript
+import { useEffect } from 'react';
+import { useAuthStore } from '../store/authStore';
+import { useOnboardingStore } from '../store/onboardingStore';
+
+/**
+ * オンボーディング状況を初期化するカスタムフック
+ * ログインユーザーの場合、データベースのオンボーディング状況を確認し、
+ * 必要に応じてオンボーディングモーダルを表示する
+ */
+export const useOnboardingInitialization = () => {
+  const { user, loading } = useAuthStore();
+  const { triggerOnboardingForNewUser } = useOnboardingStore();
+
+  useEffect(() => {
+    const initializeOnboarding = async () => {
+      // 認証状態のロードが完了するまで待機
+      if (loading) return;
+
+      if (user) {
+        // ログインユーザーの場合、オンボーディング状況をチェック
+        try {
+          console.log(`useOnboardingInitialization: Checking onboarding status for user ${user.id}`);
+          await triggerOnboardingForNewUser(user.id);
+        } catch (error) {
+          console.error('useOnboardingInitialization: Failed to initialize onboarding:', error);
+        }
+      }
+    };
+
+    initializeOnboarding();
+  }, [user, loading, triggerOnboardingForNewUser]);
+};
+```
+
+### 3. App.tsx の整理
+- 未使用のインポート `React`, `useOnboardingStore`, `useBattleStore` を削除
+- コンパイルエラーを全て解決
+
+## 機能概要
+
+### フックの役割
+1. **認証状態監視**: ユーザーのログイン状態とロード状態を監視
+2. **オンボーディング状況確認**: ログインユーザーのオンボーディング完了状況をデータベースから確認
+3. **モーダル表示判定**: 未完了の場合、オンボーディングモーダルを自動表示
+
+### 連携コンポーネント
+- `useAuthStore`: ユーザー認証状態の取得
+- `useOnboardingStore.triggerOnboardingForNewUser`: データベース確認とモーダル表示制御
+
+## 技術的な詳細
+
+### 依存関係
+- React useEffect: 副作用処理
+- Zustand stores: 状態管理
+- Supabase: データベース連携（onboardingStore経由）
+
+### エラーハンドリング
+- ネットワークエラー、データベースエラーに対する適切なログ出力
+- エラー時でもアプリケーションの動作を継続
+
+## 期待される動作
+1. 新規ユーザーがログイン → データベース確認 → オンボーディングモーダル自動表示
+2. 既存ユーザーがログイン → データベース確認 → モーダル表示なし
+3. 未ログインユーザー → 何も実行しない
+
+## 動作確認項目
+- [ ] 新規アカウント作成時にオンボーディングモーダルが表示される
+- [ ] 既存ユーザーログイン時にモーダルが表示されない
+- [ ] コンパイルエラーが発生しない
+- [ ] ブラウザコンソールにエラーログが出力されない
+
+## 注意事項
+- オンボーディングの表示/非表示制御は `onboardingStore.triggerOnboardingForNewUser` に依存
+- 認証状態のロード完了を適切に待機することで、不要な処理実行を防止

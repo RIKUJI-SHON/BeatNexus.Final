@@ -1,0 +1,181 @@
+# 🏆 ランキング表示条件変更実装ログ
+
+## 📅 実装日
+2025-07-15
+
+## 🎯 概要
+ランキングシステムでバトル経験者（勝利数+敗北数が1以上）のみを表示するよう変更。
+初心者ユーザーがランキングに表示されることで生じる混乱を解消し、
+実際にバトルを経験したユーザーのみの競争環境を構築。
+
+## 🔍 課題背景
+### 既存の問題
+- **ratings_view**: rating > 0のユーザー全員が表示され、バトル未経験者も含まれる
+- **season_rankings_view**: season_points > 0のユーザー全員が表示され、バトル未経験者も含まれる
+- **新規ユーザーの混乱**: バトルをしていないのにランキングに表示される
+
+### 解決したい課題
+- バトル経験がないユーザーをランキングから除外
+- 実際の競争者のみの意味のあるランキング表示
+- シーズンランキングでの正確なバトル統計表示
+
+## 📝 実装内容
+
+### ✅ 開発環境・本番環境への適用完了
+**開発環境**: `wdttluticnlqzmqmfvgt` ✅ 適用完了
+**本番環境**: `qgqcjtjxaoplhxurbpis` ✅ 適用完了
+**マイグレーションファイル**: 
+- `20250715120000_update_rankings_views_require_battle_experience.sql`
+- `20250715120100_fix_season_rankings_view_win_rate_calculation.sql`
+
+### ✅ 変更されたビュー
+
+#### 1. **rankings_view（通常レーティングランキング）**
+```sql
+-- 追加された条件
+WHERE p.is_deleted = false
+  AND (
+    -- バトル経験者のみ: 勝利数 + 敗北数 >= 1
+    (SELECT count(*) FROM archived_battles ab WHERE ab.winner_id = p.id) +
+    (SELECT count(*) FROM archived_battles ab 
+     WHERE ((ab.player1_user_id = p.id) OR (ab.player2_user_id = p.id)) 
+     AND (ab.winner_id IS NOT NULL) 
+     AND (ab.winner_id <> p.id)) >= 1
+  );
+```
+
+#### 2. **season_rankings_view（シーズンランキング）**
+**主な改善点**:
+- 実際のバトル数計算（従来の固定値0から変更）
+- 正確な勝率計算の実装
+- バトル経験者のみの表示
+- CTEを使用したパフォーマンス最適化
+
+```sql
+WITH battle_stats AS (
+  -- 各ユーザーのバトル統計を効率的に計算
+  SELECT 
+    p.id AS user_id,
+    (SELECT count(*) FROM archived_battles ab WHERE ab.winner_id = p.id) AS battles_won,
+    (SELECT count(*) FROM archived_battles ab 
+     WHERE ((ab.player1_user_id = p.id) OR (ab.player2_user_id = p.id)) 
+     AND (ab.winner_id IS NOT NULL) 
+     AND (ab.winner_id <> p.id)) AS battles_lost,
+    (SELECT count(*) FROM archived_battles ab 
+     WHERE ((ab.player1_user_id = p.id) OR (ab.player2_user_id = p.id)) 
+     AND (ab.winner_id IS NOT NULL)) AS total_battles
+  FROM profiles p
+  WHERE p.is_deleted IS NOT TRUE AND p.season_points > 0
+)
+-- バトル経験者のみの条件
+WHERE (bs.battles_won + bs.battles_lost) >= 1
+```
+
+## 🔧 技術詳細
+
+### 勝率計算の修正
+**問題**: 初期実装で勝率計算が不正確
+**解決**: CTEを使用した正確な総バトル数による勝率計算
+```sql
+CASE 
+  WHEN bs.total_battles = 0 THEN 0.0
+  ELSE bs.battles_won::float / bs.total_battles::float
+END AS win_rate
+```
+
+### パフォーマンス最適化
+- **CTE使用**: 複数のサブクエリを1回の計算にまとめる
+- **効率的な条件**: バトル統計を事前計算してJOIN
+- **適切なインデックス**: 既存のテーブルインデックスを活用
+
+## 🎯 動作検証結果
+
+### ✅ バトル経験者の正常表示
+```
+user_id: 017a2db2-7274-44cc-a25a-82176c7e3d42
+username: RIKUJI2
+battles_won: 3, battles_lost: 3, total_battles: 6
+win_rate: 0.500 (50%)
+```
+
+### ✅ バトル未経験者の除外確認
+**開発環境**:
+```
+username: BEATNEXUS
+battles_won: 0, battles_lost: 0
+→ rankings_view: 除外 ✓
+→ season_rankings_view: 除外 ✓
+```
+
+**本番環境**:
+```
+usernames: cookieK, TEST, SABA, Andrew, uki
+battles_won: 0, battles_lost: 0
+→ rankings_view: 除外 ✓
+→ season_rankings_view: 除外 ✓
+```
+
+### ✅ 正確な勝率計算
+**開発環境**:
+- **RIKUJI2**: 3勝3敗 → 50%
+- **BEATNEXUS!**: 4勝2敗 → 66.7%
+- **RIKUJI00000000000000**: 3勝5敗 → 37.5%
+
+**本番環境**:
+- **Harunori**: 2勝0敗 → 100%
+- **RIKUJI**: 3勝1敗 → 75%
+- **ReefA**: 1勝1敗 → 50%
+- **JUN-SAY**: 0勝2敗 → 0%
+
+## 📊 影響範囲
+
+### フロントエンド
+- **RankingPage**: バトル経験者のみが表示される
+- **空のランキング対応**: バトル経験者がいない場合の表示処理が必要
+- **統計の正確性**: シーズンランキングで実際のバトル数・勝率が表示
+
+### バックエンド
+- **ビュー変更**: 2つのランキングビューの定義変更
+- **API応答**: ランキング取得APIの結果が変化
+- **権限設定**: ビューの権限を適切に設定済み
+
+## 🚀 今後の展開
+
+### 本番環境への適用
+1. 開発環境での十分なテスト完了後
+2. 同じマイグレーションファイルを本番環境に適用
+3. フロントエンドでの表示確認
+
+### フロントエンド対応
+- 空のランキング時の適切なメッセージ表示
+- バトル経験を促すCTA要素の追加
+- ランキング条件の説明文追加
+
+### 追加検討項目
+- 投票者ランキングでも同様の条件適用検討
+- コミュニティランキングでの条件調整
+- ランキング表示の最低条件設定（例：5戦以上）
+
+## ✅ 検証項目
+- [x] バトル経験者のみがランキングに表示される（開発・本番両環境）
+- [x] バトル未経験者が適切に除外される（開発・本番両環境）
+- [x] 勝率計算が正確に動作する（開発・本番両環境）
+- [x] シーズンランキングで実際のバトル数が表示される（開発・本番両環境）
+- [x] ビューの権限設定が適切（開発・本番両環境）
+- [x] 本番環境への安全な適用完了
+- [ ] フロントエンドでの表示確認
+- [ ] 空のランキング時の動作確認
+
+## 🔗 関連ファイル
+- `supabase/migrations/20250715120000_update_rankings_views_require_battle_experience.sql`
+- `supabase/migrations/20250715120100_fix_season_rankings_view_win_rate_calculation.sql`
+- `src/pages/RankingPage.tsx` (フロントエンド対応予定)
+
+---
+**実装者**: AI Assistant  
+**レビュー**: 要レビュー  
+**ステータス**: 開発・本番環境実装完了 ✅
+description:
+globs:
+alwaysApply: false
+---

@@ -1,0 +1,83 @@
+# 🚨 緊急：本番・開発環境間の重大な関数差分レポート
+
+**日付**: 2025-01-16  
+**状況**: 本番環境(69関数) vs 開発環境(68関数)で重大な差分発見  
+**インパクト**: プロジェクト全体の機能停止リスク
+
+## 📊 発見された重大な差分
+
+### 1. 🔴 重要関数の定義長差分
+
+| 関数名 | 本番環境 | 開発環境 | 差分 | 影響度 |
+|--------|----------|----------|------|--------|
+| `calculate_elo_rating_with_format` | 1125文字 | 939文字 | **-186** | 🔴 高 |
+| `calculate_tie_rating_with_format` | 1014文字 | 844文字 | **-170** | 🔴 高 |
+| `get_user_vote` | 712文字 | 677文字 | **-35** | 🟡 中 |
+| `grant_season_rewards` | 964文字 | 978文字 | **+14** | 🟡 中 |
+
+### 2. 🔴 存在しない関数
+
+#### 開発環境のみ存在（本番環境に追加必要）
+- **なし（すべて同期済み）**
+
+#### 本番環境のみ存在（開発環境に追加必要）
+- `test_battle_completion_dry_run` (5934文字)
+- `test_battle_completion_with_virtual_data` (6890文字)  
+- `test_complete_battle_flow_dry_run` (3418文字)
+
+### 3. 🔴 致命的な不整合関数リスト
+
+```sql
+-- 以下の関数で実装が大きく異なる可能性
+- calculate_elo_rating_with_format
+- calculate_tie_rating_with_format  
+- complete_battle_with_season_update
+- vote_battle (vs vote_battle_fixed)
+- get_user_vote
+- grant_season_rewards
+```
+
+## 🚨 緊急対応必要項目
+
+### 1. バトル終了システム
+- `complete_battle_with_season_update`: **実装差分大**
+- 本番環境で正常にバトル終了処理ができない可能性
+
+### 2. 投票システム  
+- `vote_battle_fixed`: 開発環境にのみ存在（修正版）
+- 本番環境では旧版の`vote_battle`が動作中
+
+### 3. レーティング計算
+- ELO/引き分け計算関数で差分
+- レーティング更新に不整合の可能性
+
+## ✅ 実施済み対応
+
+1. **`vote_battle_fixed`関数を本番環境に追加** ✅
+2. **`end_current_season`関数の同期** ✅
+
+## 🔄 次のアクション
+
+1. 全関数の内容比較（詳細レベル）
+2. 差分のある関数の本番環境同期
+3. テスト関数（test_*）の開発環境への追加
+4. 機能テストによる検証
+
+## 📋 技術詳細
+
+**Supabase環境ID**:
+- 本番: `qgqcjtjxaoplhxurbpis` (69関数)
+- 開発: `wdttluticnlqzmqmfvgt` (68関数)
+
+**マイグレーション対象**:
+- 関数同期用マイグレーションファイル作成
+- 本番環境でのバックアップ実施後適用
+
+**検証方法**:
+- 各関数の定義取得・比較
+- 差分確認・修正版適用
+- 動作テスト実施
+
+---
+
+**⚠️ 警告**: この状況は即座に対応が必要です。本番環境で機能不全が発生している可能性があります。

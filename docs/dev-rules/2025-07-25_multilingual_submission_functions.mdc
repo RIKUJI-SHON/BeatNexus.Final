@@ -1,0 +1,150 @@
+# 多言語化対応実装ログ
+
+**実装日**: 2025年7月25日
+**機能**: 投稿制限関数の多言語化対応
+
+## 📋 実装概要
+
+データベース関数内でハードコードされていた日本語メッセージを多言語対応に変更しました。
+データベース関数では翻訳キーとパラメータを返し、フロントエンド側で翻訳する仕組みに変更。
+
+## 🔄 変更内容
+
+### 1. データベース関数の変更
+
+#### check_submission_cooldown関数
+**変更前**:
+```sql
+v_message := '投稿可能です';
+v_message := '1時間以内に投稿できるのは1本までです。残り時間: ' || ...;
+```
+
+**変更後**:
+```sql
+'message_key', 'submission.cooldown.canSubmit'
+'message_key', 'submission.cooldown.restriction'
+'message_params', json_build_object('hours', ..., 'minutes', ...)
+```
+
+#### create_submission_with_cooldown_check関数
+**変更前**:
+```sql
+'message', 'シーズン制限により投稿できません。'
+'message', '1時間以内に投稿できるのは1本までです。次回投稿可能まで: ...'
+```
+
+**変更後**:
+```sql
+'message_key', 'submission.error.seasonRestriction'
+'message_key', 'submission.error.cooldownActive'
+'message_params', json_build_object('hours', ..., 'minutes', ...)
+```
+
+### 2. 翻訳ファイルの追加
+
+#### 日本語 (ja.json)
+```json
+"submission": {
+  "cooldown": {
+    "canSubmit": "投稿可能です",
+    "restriction": "1時間以内に投稿できるのは1本までです。残り時間: {{hours}}時間{{minutes}}分",
+    "error": "クールダウンチェック中にエラーが発生しました: {{error}}"
+  },
+  "success": {
+    "created": "投稿が正常に作成されました。"
+  },
+  "error": {
+    "seasonRestriction": "シーズン制限により投稿できません。",
+    "cooldownActive": "1時間以内に投稿できるのは1本までです。次回投稿可能まで: {{hours}}時間{{minutes}}分",
+    "creationFailed": "投稿作成中にエラーが発生しました: {{error}}"
+  }
+}
+```
+
+#### 英語 (en.json)
+```json
+"submission": {
+  "cooldown": {
+    "canSubmit": "Submission available",
+    "restriction": "You can only submit one video per hour. Time remaining: {{hours}}h {{minutes}}m",
+    "error": "Error during cooldown check: {{error}}"
+  },
+  "success": {
+    "created": "Submission created successfully."
+  },
+  "error": {
+    "seasonRestriction": "Submission not allowed due to season restrictions.",
+    "cooldownActive": "You can only submit one video per hour. Next submission available in: {{hours}}h {{minutes}}m",
+    "creationFailed": "Error occurred during submission creation: {{error}}"
+  }
+}
+```
+
+### 3. フロントエンド側の対応
+
+#### useSubmissionCooldown hook
+- `useTranslation`フックを追加
+- `message_key`と`message_params`を使用した翻訳処理を実装
+- レガシーサポート（既存の`message`フィールド）も維持
+
+```typescript
+// 翻訳されたメッセージを生成
+let translatedMessage = '';
+if (cooldownInfo.message_key && cooldownInfo.message_params) {
+  translatedMessage = t(cooldownInfo.message_key, cooldownInfo.message_params);
+} else if (cooldownInfo.message) {
+  // レガシーサポート
+  translatedMessage = cooldownInfo.message;
+}
+```
+
+## 🚀 適用環境
+
+- ✅ **開発環境** (`wdttluticnlqzmqmfvgt`): 適用完了
+- ✅ **本番環境** (`qgqcjtjxaoplhxurbpis`): 適用完了
+
+## 🧪 テスト結果
+
+### データベース関数テスト
+```sql
+SELECT check_submission_cooldown('123e4567-e89b-12d3-a456-426614174000'::uuid);
+```
+
+**結果**:
+```json
+{
+  "can_submit": true,
+  "last_submission_time": null,
+  "hours_since_last": null,
+  "cooldown_remaining_minutes": 0,
+  "message_key": "submission.cooldown.canSubmit",
+  "message_params": {}
+}
+```
+
+✅ 翻訳キーが正しく返されることを確認
+
+## 📝 メリット
+
+1. **完全な多言語対応**: データベース関数から返されるメッセージも翻訳対象に
+2. **一貫性の向上**: 全てのメッセージが翻訳システムを通じて表示
+3. **保守性の向上**: 翻訳の変更がフロントエンドファイルのみで完結
+4. **レガシーサポート**: 既存のシステムとの互換性を維持
+
+## 🔮 今後の改善点
+
+1. 他のデータベース関数も同様に多言語化
+2. エラーメッセージの詳細化
+3. パラメータの型安全性向上
+
+## 🔗 関連ファイル
+
+- `supabase/migrations/20250725120000_multilingual_submission_functions.sql`
+- `src/i18n/locales/ja.json`
+- `src/i18n/locales/en.json`
+- `src/hooks/useSubmissionCooldown.ts`
+
+---
+**実装者**: AI Assistant
+**レビュー状況**: 未レビュー
+**次のアクション**: フロントエンド側の完全な動作確認

@@ -1,0 +1,79 @@
+# UserInfoCard アバター画像表示機能実装ログ
+
+## 実装日時
+2025年7月25日
+
+## 実装概要
+UserInfoCardコンポーネントにアバター画像表示機能を追加し、profilesテーブルのavatar_urlから実際のユーザー画像を表示するよう改善
+
+## 実装内容
+
+### 1. アバターエラーハンドリング状態追加
+```typescript
+const [avatarError, setAvatarError] = useState(false);
+```
+- 画像読み込み失敗時の状態管理
+- プロフィール更新時の自動リセット機能
+
+### 2. アバター表示ロジック実装
+```tsx
+{userProfile?.avatar_url && !avatarError ? (
+  <img
+    src={userProfile.avatar_url}
+    alt={`${displayName}のアバター`}
+    className="w-full h-full object-cover rounded-full"
+    onError={() => setAvatarError(true)}
+  />
+) : (
+  <User className="h-8 w-8 text-slate-400" />
+)}
+```
+
+### 3. 表示条件と優先度
+- **第1優先**: `userProfile.avatar_url`が存在し、読み込みエラーがない場合に実際の画像を表示
+- **フォールバック**: avatar_urlがない、または読み込みエラーの場合はデフォルトのUserアイコンを表示
+
+### 4. スタイリング調整
+- `overflow-hidden`を追加して画像が円形コンテナ内に収まるよう調整
+- `object-cover`で画像のアスペクト比を維持しながら円形表示
+- `w-full h-full`で16x16のコンテナサイズに合わせて画像サイズ調整
+
+### 5. エラーハンドリング強化
+- `onError`イベントでavatarErrorをtrueに設定
+- プロフィールデータ更新時に`setAvatarError(false)`でエラー状態をリセット
+- 画像読み込み失敗時の自動フォールバック機能
+
+### 6. アクセシビリティ対応
+- `alt`属性にユーザー名を含む適切な説明文を設定
+- 画像が表示できない場合の代替アイコン表示
+
+## ファイル変更
+- `src/components/ui/UserInfoCard.tsx`: アバター画像表示機能追加
+
+## 技術仕様
+- 画像サイズ: 64px × 64px (w-16 h-16)
+- 形状: 円形 (rounded-full)
+- 画像フィット: object-cover（アスペクト比維持）
+- エラーハンドリング: onErrorイベントによる自動フォールバック
+
+## データソース
+- Supabase profilesテーブルのavatar_urlカラム
+- 対象ユーザー例: `rikujiogino@gmail.com` のavatar_url確認済み
+
+## 期待される動作
+1. ユーザーにavatar_urlが設定されている場合、実際の画像を円形で表示
+2. 画像読み込みに失敗した場合、自動的にデフォルトのUserアイコンに切り替え
+3. プロフィール情報更新時、エラー状態がリセットされて再度画像読み込みを試行
+
+## 今後の拡張可能性
+- 画像の遅延読み込み（lazy loading）
+- 画像サイズの最適化
+- アバター画像のキャッシュ機能
+- プロフィール画像の編集機能との連携
+
+## 検証項目
+- [ ] avatar_urlが設定されているユーザーで画像が正しく表示される
+- [ ] avatar_urlが設定されていないユーザーでデフォルトアイコンが表示される
+- [ ] 画像読み込みエラー時にフォールバックが動作する
+- [ ] 円形表示が正しく適用される
+- [ ] 画像のアスペクト比が適切に維持される

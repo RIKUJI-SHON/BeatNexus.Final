@@ -1,0 +1,96 @@
+# 2025-07-27_動画冒頭挨拶ルール追加
+
+## 実装概要
+動画投稿ページのガイドラインに「動画冒頭の挨拶」という新規ルールを追加しました。パフォーマンス開始前にBeatNexusへの参加宣言を必須化することで、プラットフォームへの帰属意識を高め、コミュニティの一体感を向上させる狙いです。
+
+## 追加理由
+- プラットフォームへの帰属意識向上
+- コミュニティの一体感醸成
+- 動画の冒頭で明確にBeatNexus参加動画であることを示す
+- ユーザーのプラットフォーム愛着度向上
+
+## 追加内容
+
+### 日本語版 (ja.json)
+```json
+"greetingRule": {
+  "title": "動画冒頭の挨拶：",
+  "value": "必須",
+  "description": "パフォーマンスを始める前に、あなたの声でBeatNexusへの参加を宣言してください。必ず「BeatNexus」という単語を含めてください。",
+  "examples": {
+    "title": "例文：",
+    "list": [
+      "「BeatNexusに参加します、[あなたのプレイヤー名]です！」",
+      "「This is my video for BeatNexus.」",
+      "「Shout out to BeatNexus！」"
+    ],
+    "note": "言い方は自由ですが、必ず「BeatNexus」という単語を入れてください。"
+  }
+}
+```
+
+### 英語版 (en.json)
+```json
+"greetingRule": {
+  "title": "Opening Greeting: ",
+  "value": "Required",
+  "description": "Before starting your performance, declare your participation in BeatNexus with your voice. You must include the word 'BeatNexus'.",
+  "examples": {
+    "title": "Examples: ",
+    "list": [
+      "\"I'm joining BeatNexus, I'm [your player name]!\"",
+      "\"This is my video for BeatNexus.\"",
+      "\"Shout out to BeatNexus!\""
+    ],
+    "note": "You can say it however you like, but you must include the word 'BeatNexus'."
+  }
+}
+```
+
+## ルールの詳細
+- **必須要件**: 動画冒頭で必ず挨拶を行う
+- **必須単語**: 「BeatNexus」という単語を含める
+- **表現の自由**: 言い方は自由（例文を参考に）
+- **対象言語**: 日本語・英語両対応
+
+## 配置位置
+ガイドラインの最初の項目として配置し、パフォーマンス時間の前に表示されるよう構成しました。
+
+## 変更されたファイル
+- `src/i18n/locales/ja.json` - 日本語版ガイドライン翻訳キー追加
+- `src/i18n/locales/en.json` - 英語版ガイドライン翻訳キー追加
+- `src/pages/PostPage.tsx` - ガイドライン表示部分に新規ルール追加
+
+## UI実装詳細
+### PostPage.tsx での実装
+- **位置**: ガイドラインの最初の項目として配置
+- **デザインパターン**: 既存のガイドライン項目と統一されたデザイン
+- **カラー**: amber-400をアクセントカラーとして使用
+- **構造**:
+  - タイトルと必須表示
+  - 説明文
+  - 例文リストを含む専用ボックス
+  - 注釈文
+
+### 翻訳キーの使用
+- ハードコードを一切せず、すべて翻訳キーで実装
+- `t('postPage.guidelines.detailed.greetingRule.*')` の形式で統一
+- 例文リストは配列として動的レンダリング
+
+## ユーザーへの影響
+- 動画投稿時に新しいルールが表示される
+- プラットフォームへの帰属意識が向上
+- コミュニティの一体感が醸成される
+- 動画視聴者にとってもBeatNexus参加動画であることが明確
+- 視覚的に分かりやすい例文リストで理解が促進
+
+## 今後の検討事項
+- ルール遵守状況の監視方法
+- 挨拶なしの動画への対応方針
+- より多様な言語での例文追加
+
+## 実装者
+GitHub Copilot
+
+## 実装日時
+2025年7月27日

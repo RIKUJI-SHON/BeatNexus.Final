@@ -1,0 +1,87 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# ☎️ 電話番号認証機能 要件定義
+
+## 📅 作成日
+2025-07-03
+
+## 🎯 目的
+- 新規アカウント作成時に電話番号認証 (SMS OTP) を必須化し、スパムアカウントの作成を防止する。
+- 既存ユーザーは影響を受けず、電話番号登録は任意のままとする。
+
+## 🛠️ 対象範囲
+1. Supabase Auth 設定 (Phone Provider 有効化)
+2. フロントエンド UI (`AuthModal` など) の拡張
+3. バックエンド (Edge Function / RPC) 認証フロー
+4. データベースマイグレーション (`phone_number`, `phone_verified` カラム追加)
+5. 外部 SMS プロバイダー (Twilio) の設定
+6. CI/CD と `.env` シークレット管理
+
+## 🌐 対応環境
+| 環境 | プロジェクト ID | 備考 |
+|------|-----------------|------|
+| 開発 | wdttluticnlqzmqmfvgt | 先に実装 & テスト |
+| 本番 | qgqcjtjxaoplhxurbpis | 開発で検証後に適用 |
+
+## 📄 機能要件
+1. 新規ユーザーは「電話番号 + OTP」でサインアップ。
+2. Supabase が発行する 6 桁コードを SMS で送信し、5 分以内の入力を要求。
+3. 既存ユーザーはログイン時に追加認証を要求しない。
+4. プロファイル作成時に `phone_number` と `phone_verified = true` を保存。
+5. 1 つの電話番号につき 1 アカウント (UNIQUE 制約)。
+6. SMS 送信は Twilio Messaging Service 経由で行う。
+
+## 📄 非機能要件
+- OTP 無効化までの時間: 5 分。
+- 1 日あたりの OTP 送信上限: 5 回 / IP もしくは / 電話番号。
+- GDPR 遵守: 電話番号はユーザーが削除を希望した場合に削除できるようにする。
+- エラーメッセージは i18n 対応 (en / ja)。
+
+## 🔐 セキュリティ要件
+- RLS: `profiles.phone_number` は本人のみ read/write。
+- Supabase Auth webhook で `sign_up` 完了後にプロフィール行を作成。
+- Rate-limit 保護: Edge Function でリクエストヘッダをチェックし DoS 攻撃を防ぐ。
+
+## 📊 データベース設計
+```sql
+ALTER TABLE profiles
+  ADD COLUMN phone_number varchar UNIQUE,
+  ADD COLUMN phone_verified boolean DEFAULT false;
+```
+※ 既存ユーザーの `phone_verified` は `false` のままで問題なし。
+
+## 🏗️ アーキテクチャ概要
+- Supabase Auth (Phone Provider) + Twilio Messaging Service。
+- `AuthModal.tsx`: react-hook-form で電話番号入力→OTP 入力ステップを実装。
+- Zustand `authStore` 拡張で `phoneNumber` と `phoneVerified` 状態を保持。
+- Edge Function `phone-verification` (仮) で rate-limit や追加ロジックを実装予定。
+- 環境変数: `TWILIO_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_MESSAGING_SERVICE_SID` を使用。
+
+## 📚 参考ドキュメント
+- Supabase Docs: Phone Auth
+- Twilio Docs: Verify / Messaging Service
+
+## 📅 マイルストーン (想定)
+| フェーズ | 内容 | 目安日数 |
+|---------|------|--------|
+| 1 | フィージビリティ調査 | 0.5 日 |
+| 2 | Dev DB マイグレーション & Supabase Auth 設定 | 1 日 |
+| 3 | Twilio 設定 & 動作確認 | 1 日 |
+| 4 | フロント実装 | 1 日 |
+| 5 | 単体 / 結合テスト | 1 日 |
+| 6 | QA & セキュリティレビュー | 1 日 |
+| 7 | 本番反映 & 監視設定 | 1 日 |
+
+## 🛡️ 既存ユーザー対応
+- `phone_verified` が `false` のユーザーでも現行機能をブロックしない。
+- 設定ページで「電話番号を追加して二要素認証を有効化」オプションを後日提供予定 (スコープ外)。
+
+## ✅ 完了条件
+- 開発環境で新規ユーザーが SMS 認証のみで登録可能。
+- 既存ユーザーが問題なくログイン・サービス利用可能。
+- 本番環境へ安全に適用し、SMS が正しく送信される。
+- ドキュメント、マイグレーションファイル、UI 変更がリポジトリにコミットされている。
+

@@ -1,0 +1,120 @@
+# TabbedRankingコンポーネント修正実装ログ
+
+## 実装日
+2025年1月27日
+
+## 問題概要
+Battlesページの右サイドバーにあるTabbedRankingコンポーネントで、プレイヤーランキングの順位が間違っていた問題（1171ポイントの人が1位、1245ポイントの人が2位など）。
+
+## 根本原因
+TabbedRankingコンポーネントが以下の関数を使用していた：
+- `fetchRankings()` - 全時間のランキング（rankings_view）
+- `rankings` - 全時間のランキングデータ
+
+しかし、アクティブなシーズンのランキングを表示するべきなので、RankingPageと同じ関数を使用する必要があった：
+- `fetchSeasonRankings()` - アクティブシーズンのランキング（season_rankings_view）
+- `seasonRankings` - アクティブシーズンのランキングデータ
+
+## 修正内容
+
+### 1. データソースの変更
+**ファイル**: `src/components/ui/TabbedRanking.tsx`
+
+**修正前**:
+```typescript
+const { 
+  rankings, 
+  seasonVoterRankings,
+  loading: rankingsLoading, 
+  seasonVoterLoading,
+  fetchRankings, 
+  fetchSeasonVoterRankings 
+} = useRankingStore();
+```
+
+**修正後**:
+```typescript
+const { 
+  seasonRankings,
+  seasonVoterRankings,
+  seasonLoading,
+  seasonVoterLoading,
+  fetchSeasonRankings,
+  fetchSeasonVoterRankings 
+} = useRankingStore();
+```
+
+### 2. useEffectの修正
+**修正前**:
+```typescript
+useEffect(() => {
+  fetchRankings();
+  fetchSeasonVoterRankings();
+}, [fetchRankings, fetchSeasonVoterRankings]);
+```
+
+**修正後**:
+```typescript
+useEffect(() => {
+  fetchSeasonRankings();
+  fetchSeasonVoterRankings();
+}, [fetchSeasonRankings, fetchSeasonVoterRankings]);
+```
+
+### 3. データ表示の修正
+**修正前**:
+```typescript
+const currentData = activeTab === 'player' ? rankings.slice(0, maxItems) : seasonVoterRankings.slice(0, maxItems);
+const currentLoading = activeTab === 'player' ? rankingsLoading : seasonVoterLoading;
+```
+
+**修正後**:
+```typescript
+const currentData = activeTab === 'player' ? seasonRankings.slice(0, maxItems) : seasonVoterRankings.slice(0, maxItems);
+const currentLoading = activeTab === 'player' ? seasonLoading : seasonVoterLoading;
+```
+
+### 4. 型定義の修正
+**修正前**:
+```typescript
+const renderPlayerRanking = (entry: RankingEntry) => (
+  // ...
+  {activeTab === 'player'
+    ? (currentData as RankingEntry[]).map(renderPlayerRanking)
+    : (currentData as SeasonVoterRankingEntry[]).map(renderVoterRanking)
+  }
+```
+
+**修正後**:
+```typescript
+const renderPlayerRanking = (entry: SeasonRankingEntry) => (
+  // ...
+  {activeTab === 'player'
+    ? (currentData as SeasonRankingEntry[]).map(renderPlayerRanking)
+    : (currentData as SeasonVoterRankingEntry[]).map(renderVoterRanking)
+  }
+```
+
+### 5. 不要なimportの削除
+- `RankingEntry`, `VoterRankingEntry`: 使用しなくなったため削除
+- `getRankFromRating`: 使用しなくなったため削除  
+- `Trophy`, `Star`, `Vote`: 使用していないため削除
+
+## データベースの差異
+- `rankings_view`: 全時間のレーティングベースランキング（rating順）
+- `season_rankings_view`: アクティブシーズンのポイントベースランキング（season_points順）
+
+## 動作確認方法
+1. Battlesページにアクセス
+2. 右サイドバーのプレイヤーランキングタブを確認
+3. シーズンポイント（SP）の高い順に正しく表示されることを確認
+4. ランキングページの表示と一致することを確認
+
+## 影響範囲
+- BattlesPageの右サイドバーのTabbedRankingコンポーネント
+- モバイル版のTabbedRankingコンポーネント
+- プレイヤーランキングタブの表示（投票者ランキングタブは影響なし）
+
+## 注意事項
+- アクティブなシーズンがない場合の表示動作は要確認
+- ランキングページとの整合性を保つため、同じデータソースを使用

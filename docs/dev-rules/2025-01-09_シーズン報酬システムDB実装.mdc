@@ -1,0 +1,160 @@
+# シーズン報酬システム データベーステーブル実装ログ
+
+**実装日**: 2025年01月09日  
+**作業者**: AI Assistant  
+**フェーズ**: Phase 1 - データベース設計・実装  
+
+## 📝 実装内容
+
+### 主要テーブル作成
+1. **rewards テーブル** - 報酬（バッジ・フレーム）の定義
+2. **user_rewards テーブル** - ユーザーの報酬所有権管理
+3. **profiles テーブル拡張** - `equipped_frame_id` カラム追加
+
+### データベース機能
+- RLS（Row Level Security）による適切なアクセス制御
+- 報酬付与関数 `grant_season_rewards()` の実装
+- 自動更新トリガーの設定
+- サンプル報酬データの挿入
+
+## 🎯 実装詳細
+
+### 1. rewards テーブル
+```sql
+CREATE TABLE rewards (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name TEXT NOT NULL, -- 報酬名
+  description TEXT, -- 報酬の説明
+  type TEXT NOT NULL CHECK (type IN ('badge', 'frame')), -- バッジ or フレーム
+  rarity TEXT NOT NULL CHECK (rarity IN ('common', 'rare', 'epic', 'legendary')), -- レア度
+  image_url TEXT NOT NULL, -- 画像URL
+  season_id UUID REFERENCES seasons(id) ON DELETE CASCADE, -- 特定シーズン限定報酬
+  rank_requirement INTEGER, -- 必要ランク（1位, 2位, 3位など）
+  min_battles INTEGER DEFAULT 0, -- 最低バトル数
+  is_limited BOOLEAN DEFAULT true, -- 限定報酬かどうか
+  created_at TIMESTAMPTZ DEFAULT now(),
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
+```
+
+### 2. user_rewards テーブル
+```sql
+CREATE TABLE user_rewards (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+  reward_id UUID NOT NULL REFERENCES rewards(id) ON DELETE CASCADE,
+  earned_at TIMESTAMPTZ DEFAULT now(),
+  earned_season_id UUID REFERENCES seasons(id), -- 獲得時のシーズン
+  UNIQUE(user_id, reward_id) -- 重複獲得防止
+);
+```
+
+### 3. profiles テーブル拡張
+```sql
+ALTER TABLE profiles 
+ADD COLUMN equipped_frame_id UUID REFERENCES rewards(id) ON DELETE SET NULL;
+```
+
+### 4. RLS設定
+- **rewards**: 読み取り専用（誰でも閲覧可能）
+- **user_rewards**: 自分の報酬のみ参照可能
+- **profiles.equipped_frame_id**: 自分のみ更新可能
+
+### 5. 報酬付与関数
+```sql
+CREATE OR REPLACE FUNCTION grant_season_rewards(season_id_param UUID)
+RETURNS TABLE(user_id UUID, reward_count INTEGER)
+```
+シーズン終了時にランキング上位者に自動で報酬を付与する関数
+
+## 📋 サンプルデータ
+初期報酬として以下を作成：
+- シーズン1覇者（レジェンダリー バッジ）
+- シーズン1準優勝（エピック バッジ）
+- シーズン1三位（レア バッジ）
+- ゴールデンフレーム（レジェンダリー フレーム）
+- シルバーフレーム（エピック フレーム）
+- ブロンズフレーム（レア フレーム）
+
+## ✅ 検証結果
+
+### マイグレーション実行状況
+- **開発環境**: wdttluticnlqzmqmfvgt ✅ 完了
+- **本番環境**: qgqcjtjxaoplhxurbpis ⏳ 未実行
+
+### テーブル作成確認
+```bash
+# 実行済みマイグレーション
+20250109000001_create_season_rewards_system.sql
+```
+
+### データ確認
+- rewards テーブル: 6件のサンプル報酬データ挿入済み
+- user_rewards テーブル: 作成完了（データなし）
+- profiles.equipped_frame_id: カラム追加完了
+
+## 🚀 次のステップ
+
+### Phase 2: Reactコンポーネント開発
+1. **CollectionPage**: プロフィール内のコレクションタブ
+2. **BadgeCard**: バッジ表示コンポーネント
+3. **FrameCard**: フレーム選択・装備コンポーネント
+4. **Avatar拡張**: フレーム表示機能追加
+
+### Phase 3: バックエンド統合
+1. **grant_season_rewards関数**: シーズン終了時の自動実行
+2. **通知システム統合**: 報酬獲得通知
+3. **画像アセット**: 報酬用画像の準備
+
+## 📁 ファイル構成
+```
+supabase/migrations/
+├── 20250109000001_create_season_rewards_system.sql ✅
+docs/
+├── シーズン報酬システム仕様書.md ✅
+.cursor/rules/dev-rules/
+├── 2025-01-09_シーズン報酬システムDB実装.mdc ✅
+```
+
+## 🔧 重要な注意事項
+1. **本番環境への適用**: 開発環境での検証完了後、本番環境にも同じマイグレーションを適用する必要があります
+2. **画像URL**: サンプルデータの画像URLは仮のパスです。実際の画像ファイルを準備し、URLを更新してください
+3. **シーズンID**: 現在はNULLに設定していますが、実際のシーズンが開始されたら適切なシーズンIDに更新してください
+
+## 🎨 Design System Integration
+profiles画面の改善によりslateカラーパレットとグラデーション効果のデザインシステムが確立済みです。コレクション画面でも同じデザインガイドラインを適用予定です。
+
+---
+**実装ステータス**: 🟢 フェーズ1完了・🟢 フェーズ2進行中 - Reactコンポーネント開発開始  
+**次回作業**: フェーズ2継続 - BadgeCard・FrameCard・Avatar拡張の実装
+
+## 🎯 Phase 2 進捗更新 (2025-01-09)
+
+### ✅ 完了済み
+1. **プロフィールページタブ拡張**
+   - `ProfilePage.tsx` にコレクションタブを追加
+   - タブタイプを `'current' | 'history' | 'posts' | 'collection'` に拡張
+   - 翻訳キー追加 (`ja.json`, `en.json`)
+
+2. **型定義システム作成**
+   - `src/types/rewards.ts` - Reward, UserReward, CollectionStats インターフェース
+   - レア度とタイプの厳密な型定義
+
+3. **CollectionPageコンポーネント作成**
+   - `src/components/rewards/CollectionPage.tsx`
+   - 統計情報表示（獲得バッジ/フレーム数、レアリティ別集計）
+   - フィルター機能（タイプ・レアリティ別）
+   - レスポンシブグリッド表示
+   - 獲得済み・未獲得アイテムの差別化表示
+
+### 🎨 デザインシステム適用
+- slateカラーパレット (`bg-slate-800/50`, `border-slate-600/30`)
+- グラデーション背景とエフェクト
+- レアリティ別カラー（legendary: yellow-orange, epic: purple-pink, rare: blue-cyan, common: gray-slate）
+- ホバーアニメーション (`hover:scale-105`)
+
+### 🔧 技術実装詳細
+- Supabase クエリ（rewards + user_rewards JOIN）
+- 統計情報の動的計算
+- TypeScript厳密型定義
+- エラーハンドリング・ローディング状態管理

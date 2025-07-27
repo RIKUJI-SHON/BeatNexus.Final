@@ -1,0 +1,201 @@
+# 🖼️ Supabase Storage画像読み込み問題修正ログ
+
+## 📅 修正日
+2025-07-15
+
+## 🔍 問題概要
+開発環境でSupabase Storage上のアバター画像が表示されず、以下のエラーが発生：
+```
+GET https://wdttluticnlqzmqmfvgt.supabase.co/storage/v1/object/public/avatars/[user_id]/[filename].png 
+net::ERR_BLOCKED_BY_RESPONSE.NotSameOriginAfterDefaultedToSameOriginByCoep 200 (OK)
+```
+
+## 🎯 根本原因
+### COEP（Cross-Origin Embedder Policy）ヘッダーの設定問題
+開発環境のVite設定で`Cross-Origin-Embedder-Policy: require-corp`ヘッダーが設定されており、これがSupabase Storageからの画像読み込みを阻害していました。
+
+### 開発環境 vs 本番環境の差異
+- **開発環境**: ViteサーバーがCOEPヘッダーを付与 → 画像読み込み失敗
+- **本番環境**: Vercelデプロイ時はCOEPヘッダーなし → 画像読み込み成功
+
+## 📝 技術詳細
+
+### COEPとは
+**Cross-Origin Embedder Policy**は、SharedArrayBufferなどの強力な機能を安全に使用するためのセキュリティヘッダーです。
+
+```http
+Cross-Origin-Embedder-Policy: require-corp
+```
+
+この設定により、全てのクロスオリジンリソースに`Cross-Origin-Resource-Policy`ヘッダーが必要になります。
+
+### Supabase Storageの制約
+Supabase Storageは標準的なオブジェクトストレージサービスであり、`Cross-Origin-Resource-Policy`ヘッダーを自動付与しません。そのため、COEPが有効な環境では画像読み込みが阻害されます。
+
+### エラーメッセージの解析
+```
+ERR_BLOCKED_BY_RESPONSE.NotSameOriginAfterDefaultedToSameOriginByCoep
+```
+
+これは「COEPポリシーによってクロスオリジンリソースがブロックされた」ことを示しています。
+
+## 🔧 修正内容
+
+### 修正前（問題のあるvite.config.ts）
+```typescript
+server: {
+  port: 3000,
+  open: true,
+  host: 'localhost',
+  headers: {
+    'Cross-Origin-Opener-Policy': 'same-origin',
+    'Cross-Origin-Embedder-Policy': 'require-corp', // ← この設定が問題
+  },
+}
+```
+
+### 修正後（正常動作する設定）
+```typescript
+server: {
+  port: 3000,
+  open: true,
+  host: 'localhost',
+  // COEPヘッダーを削除してSupabase Storage画像の読み込みを可能にする
+  // headers: {
+  //   'Cross-Origin-Opener-Policy': 'same-origin',
+  //   'Cross-Origin-Embedder-Policy': 'require-corp',
+  // },
+}
+```
+
+## 🚀 代替解決策（参考）
+
+### 1. Supabase側での対応（制御不可）
+```http
+Cross-Origin-Resource-Policy: cross-origin
+```
+Supabaseがこのヘッダーを付与すれば解決しますが、ユーザー側では制御できません。
+
+### 2. プロキシ経由での画像配信
+```typescript
+// 開発専用のプロキシ設定
+server: {
+  proxy: {
+    '/api/storage': {
+      target: 'https://wdttluticnlqzmqmfvgt.supabase.co',
+      changeOrigin: true,
+      rewrite: (path) => path.replace(/^\/api\/storage/, '/storage'),
+    }
+  }
+}
+```
+
+### 3. 条件付きCOEP設定
+```typescript
+// 特定の機能が必要な場合のみCOEPを有効化
+const needsCOEP = process.env.VITE_ENABLE_SHARED_ARRAY_BUFFER === 'true';
+```
+
+## 📊 影響範囲と検証
+
+### 解決される問題
+- ✅ 開発環境でのアバター画像表示
+- ✅ プロフィール画像アップロード・変更機能
+- ✅ ランキング表示での画像読み込み
+- ✅ バトルページでの参加者画像表示
+
+### 機能への影響
+- **SharedArrayBuffer**: 使用不可（通常のWebアプリでは不要）
+- **WebAssembly threads**: 使用不可（FFmpegなど、別途対応が必要な場合）
+- **クロスオリジン画像**: 正常に読み込み可能
+
+### セキュリティ考慮事項
+- **本番環境**: Vercelの標準設定に依存（適切なセキュリティレベル）
+- **開発環境**: ローカル開発では問題なし
+- **代替セキュリティ**: CSP（Content Security Policy）で代替可能
+
+## 🔍 検証方法
+
+### 1. 開発環境での確認
+```bash
+# 開発サーバー起動
+pnpm dev
+
+# ブラウザで確認
+# - プロフィールページでアバター表示
+# - 画像アップロード機能
+# - ランキングページでの画像表示
+```
+
+### 2. ネットワークタブでの確認
+- Supabase Storage URLへのリクエストが成功（200 OK）
+- エラーログの消失
+- 画像の正常表示
+
+### 3. 本番環境での継続動作確認
+- 本番環境では元々正常動作
+- 設定変更による影響なし
+
+## 💡 今後の対応指針
+
+### 短期的対応
+- ✅ 開発環境でのCOEPヘッダー削除（完了）
+- 🔄 動作確認とテスト
+- 📝 チーム共有とドキュメント更新
+
+### 長期的検討
+- **CSP実装**: より適切なセキュリティポリシー設定
+- **CDN活用**: 画像配信の最適化
+- **Progressive Enhancement**: 必要な場合のみCOEP有効化
+
+### 注意事項
+- **SharedArrayBuffer使用時**: 別途COEPの再検討が必要
+- **WebWorkers**: 高度な並列処理が必要な場合の対応
+- **セキュリティ監査**: 本番環境のセキュリティレビュー
+
+## 🔗 関連リソース
+- [Cross-Origin Embedder Policy - MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cross-Origin-Embedder-Policy)
+- [Supabase Storage CORS Configuration](https://supabase.com/docs/guides/storage/cors)
+- [Vite Server Options](https://vitejs.dev/config/server-options.html)
+
+## 🔄 追加トラブルシューティング（2025-07-15）
+
+### 継続的なCOEPエラーの対応
+COEPヘッダー削除後も `net::ERR_BLOCKED_BY_RESPONSE.NotSameOriginAfterDefaultedToSameOriginByCoep` エラーが発生する場合の対応手順：
+
+#### 原因と対策
+1. **ブラウザキャッシュ**: Service Worker、HTTP キャッシュが古い設定を保持
+2. **セッションストレージ**: 前回の設定情報が残存
+3. **サービスワーカー**: 古いキャッシュポリシーが動作中
+
+#### 解決手順
+```bash
+# 1. 開発サーバー完全再起動
+pnpm dev
+
+# 2. ブラウザで以下を実行：
+# - F12 → Application → Storage → Clear All
+# - F12 → Application → Service Workers → Unregister（該当があれば）
+# - F12 → Network → Disable cache チェック
+# - Ctrl + Shift + R（強制リロード）
+```
+
+#### vite.config.ts の明確化
+COEPヘッダー設定を空のオブジェクトとして明示し、誤設定を防止：
+
+```typescript
+headers: {
+  // PWA機能に必要な場合のみコメントアウトを解除
+  // 'Cross-Origin-Opener-Policy': 'same-origin',
+  // 'Cross-Origin-Embedder-Policy': 'require-corp',
+},
+```
+
+---
+**修正者**: AI Assistant  
+**レビュー**: 要レビュー  
+**ステータス**: トラブルシューティング手順追加、継続対応中
+description:
+globs:
+alwaysApply: false
+---

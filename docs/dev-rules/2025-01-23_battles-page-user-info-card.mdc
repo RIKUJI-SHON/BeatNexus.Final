@@ -1,0 +1,144 @@
+# BattlesPage ユーザー情報カード実装ログ
+
+## 実装日
+2025-01-23
+
+## 実装概要
+BattlesPageのQuickActionsCardをユーザー情報表示用のUserInfoCardに変更し、ログインユーザーの統計情報や活動履歴を表示するようにしました。
+
+## 変更内容
+### 1. 新しいUserInfoCardコンポーネントの作成
+**ファイル**: `src/components/ui/UserInfoCard.tsx`
+
+#### 表示情報
+- **ユーザー基本情報**: アバター、ユーザー名、参加日
+- **シーズンランキング**: 現在の順位とポイント
+- **活動統計**: 投稿数、勝利数、投票獲得数、勝率
+- **バトル戦績**: 勝敗数の詳細表示
+
+#### データ取得機能
+- Supabaseから以下のデータを取得:
+  - 投稿数（submissions テーブル）
+  - 受け取った投票数（votes テーブル）
+  - バトル結果（battles テーブル）
+  - シーズンポイント・ランキング（seasonal_rankings テーブル）
+
+### 2. BattlesPageでの置き換え
+**ファイル**: `src/pages/BattlesPage.tsx`
+
+**Before**: 
+```tsx
+import { QuickActionsCard } from '../components/ui/QuickActionsCard';
+// ...
+<QuickActionsCard />
+```
+
+**After**: 
+```tsx
+import { UserInfoCard } from '../components/ui/UserInfoCard';
+// ...
+<UserInfoCard />
+```
+
+## UI/UXデザイン
+### デザインパターン
+- **メインコンテナー**: PostPageと統一した`bg-slate-950 border border-slate-700 shadow-2xl`
+- **内部セクション**: `bg-slate-900/80 backdrop-blur-sm`で階層化
+- **統計カード**: `bg-slate-800/50`で軽量な背景
+
+### 色彩設計
+- **ランキング**: `text-yellow-400`（トロフィーアイコン）
+- **シーズンポイント**: `text-cyan-400`（メインアクセント）
+- **投稿数**: `text-blue-400`
+- **勝利数**: `text-emerald-400`
+- **投票獲得**: `text-purple-400`
+- **勝率**: `text-orange-400`
+
+### レスポンシブ対応
+- デスクトップ: サイドバーに配置
+- モバイル: 非表示（`hidden lg:block`による制御）
+
+## 機能詳細
+### 統計データの計算
+1. **投稿数**: `submissions`テーブルから該当ユーザーの投稿をカウント
+2. **受け取った投票数**: そのユーザーの投稿に対する`votes`をカウント
+3. **勝利数/敗北数**: `battles`テーブルでwinner_id/loser_idを基に算出
+4. **勝率**: 勝利数 ÷ （勝利数 + 敗北数） × 100
+5. **シーズンデータ**: `seasonal_rankings`から現在のポイント・順位を取得
+
+### エラーハンドリング
+- データ取得エラー時はコンソールにログ出力
+- 未ログイン時は何も表示しない
+- ローディング中はスケルトンUIを表示
+
+### パフォーマンス最適化
+- `useEffect`でマウント時のみデータ取得
+- 非同期処理中のローディング状態管理
+- エラー時の適切な fallback 処理
+
+## UI/UX改善点
+### Before（QuickActionsCard）
+- バトル作成、ランキング、プロフィール、コミュニティへのクイックアクセス
+- アクション中心の設計
+- ユーザーの現在の状況が不明
+
+### After（UserInfoCard）
+- ユーザーの活動状況と成績を一目で把握可能
+- 個人の成長と進捗を視覚的に表示
+- モチベーション向上につながる情報提示
+- コミュニティ内での自分の位置を理解しやすい
+
+### ユーザー体験の向上
+1. **自己認識の促進**: 自分の活動レベルと成績を把握
+2. **競争意識の刺激**: ランキングと勝率の表示
+3. **継続モチベーション**: 投稿数や獲得投票数による成長実感
+4. **コミュニティ参加感**: 参加期間の表示による帰属意識
+
+## 技術的な詳細
+### TypeScript型定義
+```tsx
+interface UserStats {
+  total_submissions: number;
+  total_votes_received: number;
+  wins: number;
+  losses: number;
+  current_season_points: number;
+  rank: number;
+  join_date: string;
+}
+```
+
+### データベースクエリ
+- 効率的なJOINとフィルタリングを使用
+- エラーケースの適切な処理
+- NULL値の安全な処理
+
+### 状態管理
+- `useState`によるローカル状態管理
+- `useAuthStore`との連携
+- 非同期データの適切な処理
+
+## 影響範囲
+- BattlesPageの左サイドバーの機能変更
+- ユーザーエンゲージメントの向上予想
+- 個人統計データの可視化によるプラットフォーム利用促進
+
+## テスト項目
+- [ ] ログイン状態でのユーザー情報表示確認
+- [ ] 各統計データの正確性確認
+- [ ] ローディング状態の表示確認
+- [ ] エラーハンドリングの動作確認
+- [ ] レスポンシブデザインの確認
+- [ ] パフォーマンスの確認
+
+## 今後の改善可能性
+- より詳細な統計データの追加
+- チャート/グラフによる可視化
+- 期間別の成績推移表示
+- 他ユーザーとの比較機能
+- バッジ・実績システムとの連携
+
+## 関連ファイル
+- `src/components/ui/UserInfoCard.tsx`: 新規作成したユーザー情報カード
+- `src/pages/BattlesPage.tsx`: QuickActionsCard → UserInfoCard に変更
+- `src/components/ui/QuickActionsCard.tsx`: 今回は使用停止（削除はしない）

@@ -1,0 +1,280 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# 📱 ランキング・バトル視聴ページ ユーザー名表示修正実装ログ
+
+## 📅 実装日
+2025-01-19
+
+## 🎯 概要
+BattlesPageのランキングコンポーネント（TabbedRanking）とバトル視聴ページ（BattleView）で、モバイル版表示時に長いユーザー名がカードの枠からはみ出る問題を解決。
+バトルカードと同じ解決策（幅制限+ツールチップ）を適用し、UI全体の一貫性を向上。
+
+## 🔍 発見された問題
+### ランキングコンポーネントでのユーザー名表示問題
+- **症状**: 長いユーザー名がランキング表示領域からはみ出す
+- **影響範囲**: TabbedRankingコンポーネントのプレイヤー・投票者ランキング両方
+
+### バトル視聴ページでのユーザー名表示問題
+- **症状**: 長いユーザー名が各種表示領域からはみ出す
+- **影響範囲**: BattleViewコンポーネントの複数の表示箇所
+
+## 📝 実装内容
+
+### ✅ TabbedRanking.tsx - ランキング表示の改修
+
+#### プレイヤーランキング表示
+```tsx
+// 修正前
+<div className="font-medium text-white truncate text-sm group-hover:text-cyan-400 transition-colors">
+  {entry.username}
+</div>
+
+// 修正後
+<div 
+  className="font-medium text-white truncate text-sm group-hover:text-cyan-400 transition-colors max-w-[100px] md:max-w-[120px]" 
+  title={entry.username}
+>
+  {entry.username}
+</div>
+```
+
+#### 投票者ランキング表示
+```tsx
+// 修正前
+<div className="font-medium text-white truncate text-sm group-hover:text-purple-400 transition-colors">
+  {entry.username}
+</div>
+
+// 修正後
+<div 
+  className="font-medium text-white truncate text-sm group-hover:text-purple-400 transition-colors max-w-[100px] md:max-w-[120px]" 
+  title={entry.username}
+>
+  {entry.username}
+</div>
+```
+
+### ✅ BattleView.tsx - バトル視聴ページの改修
+
+#### Player A/B名前表示（複数箇所）
+```tsx
+// 修正前
+<div className="text-white font-bold text-xl">
+  {battle.contestant_a?.username || 'Player A'}
+</div>
+
+// 修正後
+<div 
+  className="text-white font-bold text-xl truncate max-w-[140px] md:max-w-[180px]" 
+  title={battle.contestant_a?.username || 'Player A'}
+>
+  {battle.contestant_a?.username || 'Player A'}
+</div>
+```
+
+#### Contestant A/B名前表示（バトルカード形式）
+```tsx
+// 修正前
+<h3 className="text-2xl font-bold text-white mb-1">
+  {battle.contestant_a?.username || 'Contestant A'}
+</h3>
+
+// 修正後
+<h3 
+  className="text-2xl font-bold text-white mb-1 truncate max-w-[180px] md:max-w-[220px]" 
+  title={battle.contestant_a?.username || 'Contestant A'}
+>
+  {battle.contestant_a?.username || 'Contestant A'}
+</h3>
+```
+
+## 🔧 技術詳細
+
+### レスポンシブ幅制限設定
+
+#### TabbedRanking（ランキング表示）
+- **モバイル**: `max-w-[100px]` - コンパクトなランキング表示に適応
+- **デスクトップ**: `md:max-w-[120px]` - やや余裕のある表示
+
+#### BattleView（バトル視聴ページ）
+- **Player名表示**: モバイル140px、デスクトップ180px
+- **Contestant名表示**: モバイル180px、デスクトップ220px（より大きなフォントサイズ用）
+
+### UX改善機能
+- **ツールチップ**: `title`属性で省略されたユーザー名のフル表示
+- **省略処理**: `truncate`クラスで文字切り詰め（...表示）
+- **ホバーエフェクト**: 既存のカラーアニメーション維持
+
+### 設定値の根拠
+- **ランキング表示**: 小さなアバターとともに表示されるため、コンパクトな幅制限
+- **バトル表示**: 主要コンテンツのため、やや余裕のある幅制限
+- **フォントサイズ対応**: text-xlとtext-2xlに応じた適切な幅調整
+
+## 🎯 解決された問題
+1. **ランキングはみ出し防止**: 長いユーザー名がランキング領域を超えることを防止
+2. **バトル表示統一**: 複数の表示箇所での一貫したユーザー名制限
+3. **レスポンシブ対応**: モバイル/デスクトップでの適切な表示制限
+4. **全体統一性**: バトルカードと同じ解決策でUI一貫性向上
+
+## 📊 影響範囲
+- **コンポーネント**: TabbedRanking.tsx, BattleView.tsx
+- **表示箇所**: ランキング（2箇所）、バトル視聴ページ（6箇所）
+- **UI統一**: バトルカード、ランキング、バトル視聴の3つで統一された対応
+- **UX**: 全ページでの一貫したツールチップ機能
+
+## 🚀 今後の運用指針
+
+### UI統一原則
+- **長いテキスト表示**: 必ず`max-w-*`クラスで明示的制限
+- **ツールチップ必須**: 省略される可能性がある場合は`title`属性追加
+- **レスポンシブ**: モバイル/デスクトップに応じた適切な幅設定
+
+### 設定値標準化
+- **小サイズ表示**: モバイル100-120px、デスクトップ120-140px
+- **中サイズ表示**: モバイル140-180px、デスクトップ180-220px
+- **大サイズ表示**: モバイル180-200px、デスクトップ220-260px
+
+### ✅ BattleView.tsx - 投票分布バータイトルの改修（追加）
+
+#### 投票分布バー上のプレイヤー名表示
+```tsx
+// 修正前
+<span className="font-medium">{battle.contestant_a?.username || 'Player A'}</span>
+
+// 修正後
+<span 
+  className="font-medium truncate max-w-[100px] md:max-w-[130px]" 
+  title={battle.contestant_a?.username || 'Player A'}
+>
+  {battle.contestant_a?.username || 'Player A'}
+</span>
+```
+
+#### レイアウト保護機能
+- **`min-w-0`**: コンテナの最小幅設定でレイアウト崩れ防止
+- **`flex-shrink-0`**: アイコンと%表示の縮小防止
+- **左右バランス**: 投票分布バーの左右に配置されるプレイヤー名の統一処理
+
+### ✅ BattleView.tsx - メインタイトルの改修（追加）
+
+#### メインバトルタイトル「プレイヤー名 VS プレイヤー名」
+```tsx
+// 修正前
+<h1 className="text-3xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-white to-pink-400 mb-4 drop-shadow-lg">
+  {battle.contestant_a?.username || 'Player A'}
+  <span className="text-gray-400 mx-4">VS</span>
+  {battle.contestant_b?.username || 'Player B'}
+</h1>
+
+// 修正後（v1: 基本対応）
+<h1 className="text-3xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-white to-pink-400 mb-4 drop-shadow-lg flex items-center justify-center flex-wrap gap-2">
+  <span 
+    className="truncate max-w-[120px] md:max-w-[200px] inline-block" 
+    title={battle.contestant_a?.username || 'Player A'}
+  >
+    {battle.contestant_a?.username || 'Player A'}
+  </span>
+  <span className="text-gray-400 mx-2 flex-shrink-0">VS</span>
+  <span 
+    className="truncate max-w-[120px] md:max-w-[200px] inline-block" 
+    title={battle.contestant_b?.username || 'Player B'}
+  >
+    {battle.contestant_b?.username || 'Player B'}
+  </span>
+</h1>
+
+// 修正後（v2: 実用性向上）
+<h1 className="text-2xl md:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-white to-pink-400 mb-4 drop-shadow-lg flex items-center justify-center flex-wrap gap-2">
+  <span 
+    className="truncate max-w-[180px] md:max-w-[280px] inline-block" 
+    title={battle.contestant_a?.username || 'Player A'}
+  >
+    {battle.contestant_a?.username || 'Player A'}
+  </span>
+  <span className="text-gray-400 mx-2 flex-shrink-0">VS</span>
+  <span 
+    className="truncate max-w-[180px] md:max-w-[280px] inline-block" 
+    title={battle.contestant_b?.username || 'Player B'}
+  >
+    {battle.contestant_b?.username || 'Player B'}
+  </span>
+</h1>
+
+// 修正後（v3: VS中央固定）
+<h1 className="text-2xl md:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-white to-pink-400 mb-4 drop-shadow-lg">
+  <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2 md:gap-4">
+    <div className="text-right">
+      <span 
+        className="truncate max-w-full inline-block" 
+        title={battle.contestant_a?.username || 'Player A'}
+      >
+        {battle.contestant_a?.username || 'Player A'}
+      </span>
+    </div>
+    <span className="text-gray-400 flex-shrink-0 whitespace-nowrap">VS</span>
+    <div className="text-left">
+      <span 
+        className="truncate max-w-full inline-block" 
+        title={battle.contestant_b?.username || 'Player B'}
+      >
+        {battle.contestant_b?.username || 'Player B'}
+      </span>
+    </div>
+  </div>
+</h1>
+```
+
+#### メインタイトル特有の機能
+- **Flexレイアウト**: h1要素にflexを適用し、要素の配置を制御
+- **グラデーション維持**: 既存のグラデーションテキストエフェクトを保持
+- **レスポンシブ改行**: `flex-wrap`で必要に応じて改行対応
+- **中央配置**: `justify-center`でタイトル全体の中央配置維持
+
+#### 実用性向上（v2調整）
+- **文字サイズ調整**: `text-3xl md:text-5xl` → `text-2xl md:text-4xl`（一段階縮小）
+- **幅制限緩和**: `max-w-[120px] md:max-w-[200px]` → `max-w-[180px] md:max-w-[280px]`（50%拡大）
+- **表示能力向上**: モバイルで約8-12文字、デスクトップで約15-20文字程度まで表示可能
+- **バランス調整**: タイトルとしての存在感を保ちつつ、実用性を大幅向上
+
+#### VS中央固定（v3調整）
+- **Grid レイアウト採用**: `flex` → `grid grid-cols-[1fr_auto_1fr]`（VS絶対中央固定）
+- **配置最適化**: 左プレイヤー名は右寄せ、右プレイヤー名は左寄せ
+- **幅制限最適化**: `max-w-[280px]` → `max-w-full`（Gridカラム内で最大活用）
+- **VS安定性**: `whitespace-nowrap`でVSの改行を完全防止
+- **レイアウト保証**: どんなユーザー名長でもVSが画面中央に固定表示
+
+## ✅ 検証項目
+- [x] TabbedRankingでのプレイヤーランキング幅制限
+- [x] TabbedRankingでの投票者ランキング幅制限
+- [x] BattleViewでのPlayer A/B名前表示制限（4箇所）
+- [x] BattleViewでのContestant A/B名前表示制限（2箇所）
+- [x] BattleViewでの投票分布バータイトル制限（2箇所）
+- [x] BattleViewでのメインタイトル「VS」制限（2箇所）
+- [x] メインタイトルの文字サイズ・幅制限バランス調整（v2）
+- [x] メインタイトルのVS中央固定レイアウト（v3）
+- [x] 全箇所でのツールチップ機能実装
+- [x] レスポンシブ対応の統一
+- [x] レイアウト保護機能の実装
+- [x] グラデーションテキストエフェクトの維持
+- [x] タイトルとしての存在感と実用性のバランス確保
+- [x] VS絶対中央固定（Grid レイアウト）
+- [ ] 実際のモバイル画面での表示確認
+- [ ] 長いユーザー名（20文字以上）での総合テスト
+
+## 🔗 関連ファイル
+- `src/components/ui/TabbedRanking.tsx` - ランキング表示の修正
+- `src/components/battle/BattleView.tsx` - バトル視聴ページの修正
+- `src/components/battle/SimpleBattleCard.tsx` - 前回修正（参考）
+- `src/components/battle/SpecialBattleCard.tsx` - 前回修正（参考）
+
+## 🔄 関連実装
+- **前回実装**: `2025-01-19_mobile_username_overflow_fix.mdc` - バトルカードの同様修正
+- **統一原則**: 3つのコンポーネント群で一貫したユーザー名表示制限を実現
+
+---
+**実装者**: AI Assistant  
+**レビュー**: 要レビュー  
+**ステータス**: 実装完了、動作確認待ち

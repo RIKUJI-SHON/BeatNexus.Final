@@ -1,0 +1,128 @@
+# PostPage ガイドライン デザイン改善ログ
+
+## 実装日
+2025-01-23
+
+## 実装概要
+PostPageの動画投稿ガイドラインセクションのデザインを改善し、カラフル過ぎる問題を解決して視認性を向上させました。
+
+## 変更内容
+### 1. 冠アイコン（Crown）の削除
+**Before**: `<Crown className="h-5 w-5 text-yellow-400" />`
+**After**: 完全に削除し、インポートからも除去
+
+### 2. ヘッダーデザインの簡素化
+**Before**: 
+```tsx
+<div className="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-yellow-500/10 to-amber-500/10 rounded-xl border border-yellow-500/30 backdrop-blur-sm">
+  <Crown className="h-5 w-5 text-yellow-400" />
+  <h3 className="text-xl font-semibold text-yellow-100">{t('postPage.guidelines.title')}</h3>
+</div>
+```
+
+**After**: 
+```tsx
+<div className="inline-flex items-center justify-center px-6 py-3 bg-slate-800/50 rounded-xl border border-slate-600 backdrop-blur-sm">
+  <h3 className="text-xl font-semibold text-slate-50">{t('postPage.guidelines.title')}</h3>
+</div>
+```
+
+### 3. ガイドライン項目の色彩統一
+**Before**: 各項目が異なる色を使用
+- パフォーマンス時間: `text-cyan-400`, `bg-cyan-400`
+- パフォーマンス形式: `text-purple-400`, `bg-purple-400`
+- 本人確認: `text-yellow-400`, `bg-yellow-400`
+- リップシンク禁止: `text-red-400`, `bg-red-400`
+- 音源: `text-green-400`, `bg-green-400`
+- サンプル使用禁止: `text-orange-400`, `bg-orange-400`
+
+**After**: 統一されたslate色系
+- すべての項目: `text-slate-300`, `bg-slate-400`
+- ヘッダー: `text-slate-50`
+- 説明文: `text-slate-400`
+
+### 4. 音声処理セクションの色彩統一
+**Before**: 
+- アイコン: `text-blue-400`
+- ヘッダー: `text-blue-400`
+- 許可項目: `text-green-400`, `text-green-300`
+- 禁止項目: `text-red-400`, `text-red-300`
+
+**After**: 
+- アイコン: `text-slate-400`
+- ヘッダー: `text-slate-300`
+- すべての項目: `text-slate-300`, `text-slate-50`
+
+### 5. 撮影・録音機材セクションの統一
+**Before**: 
+- アイコン: `text-emerald-400`
+- ヘッダー: `text-emerald-400`
+- 強調テキスト: `text-emerald-300`, `text-yellow-300`
+
+**After**: 
+- アイコン: `text-slate-400`
+- ヘッダー: `text-slate-300`
+- 強調テキスト: `text-slate-300`
+
+## デザイン改善のポイント
+### 課題解決
+1. **カラフル過ぎる問題**: 6色以上の異なる色を使用していたものを統一されたslate色系に変更
+2. **視認性の低下**: 各色が競合して情報の優先度が不明確だった問題を解決
+3. **デザインの一貫性欠如**: PostPageの他の要素との統一感を実現
+
+### 視覚的改善
+1. **統一されたカラーパレット**: slate色系による落ち着いたトーン
+2. **階層構造の明確化**: 
+   - メインヘッダー: `text-slate-50` (最も明るい)
+   - サブヘッダー: `text-slate-300` (中程度)
+   - 説明文: `text-slate-400` (控えめ)
+3. **不要な装飾の除去**: 冠アイコンとカラフルなグラデーション背景を削除
+
+## UI/UX上の改善点
+### Before
+- 各項目が異なる色で表示され、視覚的に混乱
+- 冠アイコンが内容と関係のない装飾として機能
+- カラフルなグラデーション背景が読みやすさを阻害
+- 情報の優先度が不明確
+
+### After
+- 統一されたデザイン言語による整理された表示
+- 装飾を排除し、内容に集中できるレイアウト
+- 適切なコントラストによる読みやすさの向上
+- 情報の階層構造が明確
+
+## 技術的な詳細
+### カラーパレットの統一
+```tsx
+// 統一されたslate色系パレット
+text-slate-50    // メインヘッダー（最も重要）
+text-slate-300   // サブヘッダー・強調テキスト
+text-slate-400   // 説明文・アイコン
+
+bg-slate-800/50  // ヘッダー背景
+bg-slate-400     // ブレットポイント
+```
+
+### レスポンシブ対応
+- 既存のレスポンシブ機能を維持
+- 簡素化されたデザインによりモバイルでの視認性も向上
+
+## 影響範囲
+- PostPageの右カラム・ガイドラインセクション全体
+- ユーザーの理解しやすさの大幅向上
+- アプリ全体のデザイン品質向上
+
+## テスト項目
+- [ ] デスクトップでのガイドライン表示確認
+- [ ] モバイルでの読みやすさ確認
+- [ ] 色覚異常ユーザーでの視認性確認
+- [ ] ダークテーマでの表示確認
+- [ ] 各セクションの階層構造確認
+
+## 今後の改善可能性
+- セクション間の視覚的区切りの最適化
+- より詳細なタイポグラフィ調整
+- アクセシビリティ対応の強化
+
+## 関連ファイル
+- `src/pages/PostPage.tsx`: 実装対象ファイル（右カラム・ガイドラインセクション）

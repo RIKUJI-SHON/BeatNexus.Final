@@ -1,0 +1,160 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# 🗳️ 投票前投票数表示改善実装ログ
+
+## 📅 実装日
+2025-01-19
+
+## 🎯 概要
+投票ボタン周辺の投票数表示UIを改善。投票前は個別プレイヤーの投票数を非表示にし、中央にトータル投票数を表示する仕様に変更。
+
+## 🔍 改善前の問題
+### 投票結果の早期公開による問題
+- **投票前でも個別投票数が表示**: プレイヤーAとプレイヤーBの投票数が常時表示
+- **投票行動への影響**: 現在の結果を見て投票行動が左右される可能性
+- **UI設計の一貫性**: 他の箇所では投票後に結果を表示する設計なのに不整合
+
+## 📝 実装内容
+
+### ✅ 条件分岐による表示制御
+**ファイル**: `src/components/battle/BattleView.tsx`
+
+#### 🔄 Player A/B投票数表示の制御
+```typescript
+{/* Player A Vote Counter - Only shown after voting or for archived battles */}
+{(hasVoted || isArchived) && (
+  <div className="flex flex-col items-center">
+    {/* PlayerA投票数表示UI */}
+  </div>
+)}
+```
+
+#### 🆕 中央トータル投票数表示
+```typescript
+{/* Central Total Votes Counter or Divider */}
+<div className="flex flex-col items-center">
+  {!hasVoted && !isArchived ? (
+    /* Show total votes counter when user hasn't voted yet */
+    <div className="bg-gray-800 rounded-xl p-2 md:p-4 border border-purple-500/30 shadow-lg transition-all duration-500">
+      <div className="text-xs font-bold mb-1 text-center text-purple-300">
+        TOTAL
+      </div>
+      <div className="text-center">
+        <div className="text-xl md:text-3xl font-bold text-purple-300">
+          {totalVotes}
+        </div>
+        <div className="text-xs mt-1 text-purple-400">
+          VOTES
+        </div>
+      </div>
+    </div>
+  ) : (
+    /* Show power indicator divider after voting */
+    <>
+      <div className="w-px h-8 bg-gradient-to-b from-transparent via-gray-500 to-transparent"></div>
+      <div className="w-3 h-3 rounded-full bg-gradient-to-r from-cyan-500 to-pink-500 animate-pulse shadow-md my-1"></div>
+      <div className="w-px h-8 bg-gradient-to-b from-transparent via-gray-500 to-transparent"></div>
+    </>
+  )}
+</div>
+```
+
+## 🎨 UIデザイン詳細
+
+### トータル投票数カウンター
+- **色系統**: パープル系（`purple-500/30`, `purple-300`, `purple-400`）
+- **レイアウト**: 既存のPlayerA投票数UIと同じ構造
+- **レスポンシブ**: `p-2 md:p-4`, `text-xl md:text-3xl`対応
+- **アニメーション**: `transition-all duration-500`で滑らかな表示切り替え
+
+### 表示切り替えロジック
+- **投票前**: 中央にトータル投票数のみ表示
+- **投票後**: 個別投票数を両端に表示 + 中央は仕切りライン
+- **アーカイブ**: 投票後と同じ表示（結果確認可能）
+
+## 🔧 技術詳細
+
+### 条件分岐の設計
+- `!hasVoted && !isArchived`: 投票前かつ非アーカイブ = トータル投票数表示
+- `hasVoted || isArchived`: 投票後またはアーカイブ = 個別投票数表示
+- 論理演算子の適切な使用で表示条件を明確化
+
+### レイアウトの一貫性
+- 既存のPlayerA投票数UIの構造をベースに色のみ変更
+- `border`, `shadow-lg`, `rounded-xl`等の統一されたスタイル
+- 中央配置とレスポンシブ対応の維持
+
+## 🎯 解決された問題
+1. **投票の公平性向上**: 投票前に結果が見えることによる投票行動への影響を排除
+2. **UI一貫性の確保**: 他の結果表示と同様に投票後表示の仕様に統一
+3. **ユーザー体験の改善**: 投票前はトータル投票数で盛り上がりを確認可能
+4. **視覚的バランス**: 中央への要素配置でUI全体のバランスを維持
+
+## 📊 影響範囲
+- **フロントエンド表示**: 投票ページでの投票数表示UI
+- **ユーザー行動**: より公平な投票環境の提供
+- **デザイン**: 統一感のあるUI表示の実現
+- **アクセシビリティ**: 情報の適切なタイミングでの開示
+
+## 🚀 今後の改善提案
+
+### 投票数の段階的開示
+- 投票数がある程度に達するまでは非表示
+- 段階的に情報開示レベルを調整する仕組み
+
+### アニメーション強化
+- 投票時の表示切り替えアニメーション追加
+- 投票数カウンターの更新時エフェクト
+
+## ✅ 検証項目
+- [x] 投票前にトータル投票数のみ表示
+- [x] 投票後に個別投票数表示切り替え
+- [x] アーカイブバトルで結果表示確認
+- [x] レスポンシブデザイン動作確認
+- [x] 動画間のトータル投票数UI削除
+- [ ] 実際のユーザーによる使用感テスト
+
+## 🔄 追加変更（2025-01-19）
+
+### 動画間トータル投票数UI削除
+**要因**: ユーザーリクエストにより、動画コンポーネント間のVS部分にあったトータル投票数表示を削除
+
+**変更内容**:
+```typescript
+// 削除前
+<div className="text-center bg-gray-800/50 px-4 py-2 rounded-xl backdrop-blur-sm border border-gray-600/30">
+  <div className="flex items-center gap-2 text-gray-400 mb-1">
+    <Users className="h-4 w-4" />
+    <span className="text-sm font-medium">Total Votes</span>
+  </div>
+  <div className="text-2xl font-bold text-white">
+    {totalVotes}
+  </div>
+</div>
+
+// 削除後
+<VSIcon className="w-12 h-12 md:w-16 md:h-16" />
+```
+
+**影響**:
+- VSIcon のみの表示でよりシンプルなデザインに
+- 投票ボタン周辺のトータル投票数表示は維持
+- 情報の重複を削減してUXを改善
+
+## 🔗 関連ファイル・機能
+- `src/components/battle/BattleView.tsx` - メイン実装ファイル
+- 投票結果表示システム全般
+- バトルアーカイブ機能
+- レスポンシブデザインシステム
+
+## 🔄 関連する過去の実装
+- [2025-01-19] 色の一貫性修正 - プレイヤー固定色の実装
+- [2025-01-19] プレイヤー名表示修正 - 実際のユーザー名表示
+
+---
+**実装者**: AI Assistant  
+**レビュー**: 要レビュー  
+**ステータス**: 実装完了、動作確認待ち
