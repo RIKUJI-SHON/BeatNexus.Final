@@ -107,7 +107,7 @@ alwaysApply: true
    - docs/BeatNexus.md
    - 常に上記のファイルを参照してください。
 
-   - docs/
+   - BEATNEXUS.R/docs/dev-rules
 
    - 新しい機能を実装する際、"docs/" ディレクトリに入っているの仕様書に書かれていることを守って実装してください。
 

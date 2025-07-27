@@ -12,6 +12,9 @@ alwaysApply: true
 - **投票者ランキング**: コミュニティ貢献度を評価する投票数ベースのランキング
 - **コミュニティシステム**: コミュニティ作成・参加、リアルタイムチャット、メンバー管理機能
 - **フォーラム機能**: リアルタイム通知、コメント、投稿機能
+- **シーズン報酬システム**: バッジ・アイコンフレーム付与による成果表彰制度
+- **ニュースカルーセル**: お知らせ・重要情報の動的表示システム
+- **事前登録制**: 限定ユーザーのみアクセス可能な先行リリース期間
 - **多言語対応**: 日本語・英語完全対応
 
 ## 🛠️ 技術スタック
@@ -19,6 +22,9 @@ alwaysApply: true
 - **バックエンド**: Supabase (PostgreSQL + Edge Functions + Storage + Auth)
 - **定期処理**: pg_cron（バトル終了処理5分間隔、マッチメイキング30分間隔・理想的な時間ベース緩やかなレート制限緩和）
 - **国際化**: react-i18next
+- **プッシュ通知**: Web Push API + Supabase Edge Functions
+- **セキュリティ**: XSS防止、URL検証、セキュリティ監査ログ
+- **事前登録システム**: 限定アクセス制御（pre_registered_users）
 - **デプロイ**: Supabase（プロジェクトID: 本番用`qgqcjtjxaoplhxurbpis`, 開発環境用 `wdttluticnlqzmqmfvgt`）
 
 ## 🧪 開発プロセス重要ルール
@@ -30,25 +36,38 @@ alwaysApply: true
 src/
 ├── components/          # UIコンポーネント
 │   ├── auth/           # 認証関連
-│   ├── battle/         # バトル関連（BattleCard, ArchivedBattleCard等）
-│   ├── community/      # コミュニティ関連（未実装）
+│   ├── battle/         # バトル関連（BattleCard, ArchivedBattleCard, NewsCarousel等）
+│   ├── community/      # コミュニティ関連（完全実装済み）
 │   ├── home/           # ホーム画面専用
 │   ├── layout/         # ヘッダー、フッター、背景
 │   ├── onboarding/     # オンボーディング関連（モーダル、スライド）
-│   └── ui/             # 汎用UI要素
-├── hooks/              # カスタムフック
+│   └── ui/             # 汎用UI要素（ArticleModal, TopThreePodium等）
+├── hooks/              # カスタムフック（useNews, useSEO, useSubmissionCooldown等）
 ├── i18n/               # 国際化設定
 │   └── locales/        # 翻訳ファイル（en.json, ja.json）
 ├── lib/                # 外部ライブラリ設定（supabase.ts）
 ├── pages/              # ページコンポーネント
-├── store/              # Zustand状態管理
-├── types/              # TypeScript型定義
-└── utils/              # ユーティリティ関数
+├── store/              # Zustand状態管理（battleStore, communityStore, rankingStore等）
+├── types/              # TypeScript型定義（news.ts等）
+└── utils/              # ユーティリティ関数（urlValidation.ts, securityTests.ts等）
 
 supabase/
-├── migrations/         # SQL マイグレーションファイル
+├── migrations/         # SQL マイグレーションファイル（180+ migrations）
 ├── functions/          # Edge Functions (Deno + TypeScript)
+│   ├── submission-webhook/     # マッチング処理
+│   ├── delete-user-account/    # アカウント削除
+│   └── validate-preregistration/ # 事前登録検証
 └── _shared/           # 共有設定（import_map.json）
+
+docs/
+├── BeatNexus.md                           # プロジェクト概要（このファイル）
+├── シーズン報酬システム仕様書.md             # 報酬システム仕様
+├── 重複バトル防止システム要件定義書.md       # 重複防止システム
+├── バトル終了・結果集計・レーティング計算システム仕様書.md
+├── マッチング・投稿機能仕様書.md
+├── 通知システム仕様書.md
+├── 電話番号認証システム改善仕様書.md
+└── dev-rules/                           # 実装ログディレクトリ（180+ files）
 ```
 
 ## 🎨 バトルカードシステム
@@ -81,7 +100,6 @@ supabase/
 profiles (
   id uuid PRIMARY KEY,
   username text UNIQUE NOT NULL,
-  email text UNIQUE NOT NULL,
   avatar_url text,
   bio text,
   created_at timestamptz DEFAULT now(),
@@ -139,6 +157,16 @@ battle_votes (
   season_id uuid -- ✅ シーズンID
 )
 
+-- アーカイブ投票（保存機能） ✅ NEW
+archived_battle_votes (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  archived_battle_id uuid NOT NULL REFERENCES archived_battles(id),
+  user_id uuid REFERENCES profiles(id),
+  vote char(1) CHECK (vote IN ('A', 'B')),
+  comment text,
+  created_at timestamptz DEFAULT now()
+)
+
 -- アーカイブバトル（完了済み）
 archived_battles (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -158,8 +186,8 @@ archived_battles (
   player2_rating_change integer DEFAULT 0,
   player1_final_rating integer,
   player2_final_rating integer,
-  player1_video_url text,
-  player2_video_url text,
+  player1_video_url text, -- ✅ 永続保存動画URL
+  player2_video_url text, -- ✅ 永続保存動画URL
   season_id uuid -- ✅ シーズンID
 )
 
@@ -191,11 +219,63 @@ notifications (
   user_id uuid NOT NULL REFERENCES profiles(id),
   title text NOT NULL,
   message text NOT NULL,
-  type varchar CHECK (type IN ('info', 'success', 'warning', 'battle_matched', 'battle_win', 'battle_lose', 'battle_draw')),
+  type varchar CHECK (type IN ('info', 'success', 'warning', 'battle_matched', 'battle_win', 'battle_lose', 'battle_draw', 'season_start')),
   is_read boolean DEFAULT false,
   related_battle_id uuid,
+  related_season_id uuid, -- ✅ シーズン関連通知
   created_at timestamptz DEFAULT now(),
   updated_at timestamptz DEFAULT now()
+)
+
+-- ✅ 事前登録システム（本番適用済み）
+-- 事前登録ユーザー
+pre_registered_users (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  email text UNIQUE NOT NULL,
+  created_at timestamptz DEFAULT now()
+)
+
+-- ✅ プッシュ通知システム
+-- プッシュ通知購読
+push_subscriptions (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id uuid NOT NULL REFERENCES auth.users(id),
+  subscription jsonb NOT NULL,
+  user_agent text,
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now()
+)
+
+-- ✅ サイトニュース・お知らせシステム（実装完了）
+-- サイトニュース
+site_news (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  title text NOT NULL,
+  body text NOT NULL,
+  image_url text,
+  link_url text,
+  content_type text DEFAULT 'article' CHECK (content_type = 'article'),
+  article_content text,
+  meta_description text,
+  tags text[],
+  is_featured boolean DEFAULT false,
+  is_published boolean DEFAULT true,
+  display_order integer DEFAULT 0,
+  published_at timestamptz DEFAULT now(),
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now()
+)
+
+-- ✅ セキュリティ監査ログ
+-- セキュリティ監査ログ
+security_audit_log (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  event_type text NOT NULL,
+  user_id uuid REFERENCES auth.users(id),
+  ip_address inet,
+  user_agent text,
+  event_data jsonb,
+  created_at timestamptz DEFAULT now()
 )
 
 -- ✅ コミュニティシステム（実装完了）
@@ -231,7 +311,7 @@ community_chat_messages (
   created_at timestamptz DEFAULT now()
 )
 
--- ✅ シーズンシステム (一部実装済み)
+-- ✅ シーズンシステム (実装完了)
 -- シーズン
 seasons (
   id uuid PRIMARY KEY,
@@ -245,26 +325,50 @@ seasons (
 
 -- シーズンランキング (スナップショット)
 season_rankings (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   season_id uuid NOT NULL REFERENCES seasons(id),
   user_id uuid NOT NULL REFERENCES profiles(id),
   rank integer NOT NULL,
   points integer NOT NULL,
-  created_at timestamptz DEFAULT now(),
-  PRIMARY KEY (season_id, user_id)
+  created_at timestamptz DEFAULT now()
 )
 
 -- シーズン投票者ランキング (スナップショット)
 season_voter_rankings (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   season_id uuid NOT NULL REFERENCES seasons(id),
   user_id uuid NOT NULL REFERENCES profiles(id),
   rank integer NOT NULL,
   votes integer NOT NULL,
-  created_at timestamptz DEFAULT now(),
-  PRIMARY KEY (season_id, user_id)
+  created_at timestamptz DEFAULT now()
 )
-```
 
-### ENUMタイプ
+-- ✅ シーズン報酬システム（完全実装）
+-- 報酬マスター
+rewards (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  name text NOT NULL,
+  description text,
+  type text CHECK (type = 'badge') DEFAULT 'badge',
+  image_url text NOT NULL,
+  season_id uuid REFERENCES seasons(id),
+  rank_requirement integer,
+  min_battles integer DEFAULT 0,
+  is_limited boolean DEFAULT true,
+  is_active boolean DEFAULT true,
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now()
+)
+
+-- ユーザー報酬所有
+user_rewards (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id uuid NOT NULL REFERENCES profiles(id),
+  reward_id uuid NOT NULL REFERENCES rewards(id),
+  earned_at timestamptz DEFAULT now(),
+  earned_season_id uuid REFERENCES seasons(id)
+)
+```### ENUMタイプ
 ```sql
 -- バトル形式
 battle_format: 'MAIN_BATTLE', 'MINI_BATTLE', 'THEME_CHALLENGE'
@@ -324,22 +428,27 @@ community_role: 'owner', 'admin', 'member'
    - **戻り値**: レーティング変動量を含むJSON形式で結果を返却
 
 ### 投票・ユーザー管理
-9. **`vote_battle(p_battle_id, p_vote)`**
-   - **機能**: 投票機能（'A' または 'B'）。通算投票数(`vote_count`)とシーズン投票ポイント(`season_vote_points`)を同時に加算する。
+9. **`vote_battle(p_battle_id, p_vote)`** ✅ **シンプル投票（+1pt）**
+   - **機能**: コメントなしの気軽な投票（'A' または 'B'）
+   - **ポイント**: +1ポイント（通算投票数・シーズン投票ポイント両方）
    
-10. **`get_user_vote(p_battle_id)`**
+10. **`vote_battle_with_comment(p_battle_id, p_vote, p_comment)`** ✅ **コメント付き投票（+3pt）**
+    - **機能**: コメント付きの詳細な投票（ボーナスポイント）
+    - **ポイント**: +3ポイント（通算投票数・シーズン投票ポイント両方）
+    
+11. **`get_user_vote(p_battle_id)`**
     - ユーザーの投票状況確認
     
-11. **`cancel_vote(p_battle_id)`**
-    - 投票取り消し機能
+12. **`cancel_vote(p_battle_id)`**
+    - **投票取り消し機能**: シンプル投票（-1pt）、コメント付き投票（-3pt）
    
-12. **`update_user_profile_details(p_user_id, p_username, p_bio)`**
+13. **`update_user_profile_details(p_user_id, p_username, p_bio)`**
     - プロフィール更新
 
-13. **`update_user_avatar(p_user_id, p_avatar_url)`**
+14. **`update_user_avatar(p_user_id, p_avatar_url)`**
     - アバター更新
 
-14. **`update_onboarding_status(p_user_id, p_has_seen)`** ✅ **オンボーディング管理**
+15. **`update_onboarding_status(p_user_id, p_has_seen)`** ✅ **オンボーディング管理**
     - **機能**: ユーザーのオンボーディング完了ステータス更新
     - **パラメータ**: ユーザーID、完了フラグ（boolean）
     - **セキュリティ**: RLS適用済み（本人のみ更新可能）
@@ -498,7 +607,7 @@ community_role: 'owner', 'admin', 'member'
     - **トリガー**: INSERT/DELETE時に自動実行
     - **一貫性**: データベースレベルでの整合性保証
 
-## ⚙️ Edge Functions（実装済み）
+## 🔧 Edge Functions（実装済み）
 ### `/submission-webhook` ✅ **マッチング処理の中核**
 - **呼び出し元**: フロントエンド PostPage.tsx
 - **処理フロー**:
@@ -517,6 +626,49 @@ community_role: 'owner', 'admin', 'member'
   4. メールアドレス完全解放
 - **権限**: 認証済みユーザーのみ
 - **レスポンス**: 削除方式、メール解放状況、動画削除結果
+
+### `/save-user-timezone` ✅ **タイムゾーン保存**
+- **機能**: ユーザーのタイムゾーン情報を自動保存
+- **処理**: `Intl.DateTimeFormat().resolvedOptions().timeZone`で取得
+- **用途**: 地域別の時間表示、季節・時間帯分析
+- **権限**: 認証済みユーザーのみ
+
+### ニュースシステム関連 ✅ **新規実装**
+### `/news-webhook` ✅ **ニュース記事自動取得**
+- **機能**: 外部APIからビートボクシング関連ニュースを自動収集
+- **処理フロー**:
+  1. NewsAPI（newsapi.org）からビートボクシング関連記事を検索
+  2. 重複チェック（URL・タイトルベース）
+  3. コンテンツフィルタリング（スパム・無関係記事除去）
+  4. `site_news`テーブルに自動保存
+- **スケジュール**: pg_cronで定期実行（日次）
+- **エラーハンドリング**: API制限・ネットワークエラー対応
+
+### 事前登録システム関連 ✅ **新規実装**
+### `/pre-register` ✅ **事前登録処理**
+- **機能**: サービス公開前の事前登録受付
+- **処理**:
+  1. メールアドレス・電話番号の重複チェック
+  2. `pre_registered_users`テーブルに保存
+  3. 登録完了メール自動送信（HTML/テキスト両対応）
+  4. 統計情報の更新
+- **バリデーション**: メール形式・電話番号形式チェック
+- **セキュリティ**: スパム対策・レート制限
+
+### 管理者システム関連 ✅
+### `/admin-news` ✅ **ニュース管理**
+- **機能**: 管理者によるニュース記事の手動作成・管理
+- **権限**: 管理者権限チェック必須
+- **処理**: CRUD操作（作成・読取・更新・削除）
+- **フィールド**: タイトル・内容・画像URL・公開状態
+
+### `/admin-pre-registration` ✅ **事前登録管理**
+- **機能**: 事前登録データの管理・エクスポート
+- **権限**: 管理者権限チェック必須
+- **処理**: 
+  1. 登録者一覧取得（フィルタリング・ソート対応）
+  2. CSV/JSON形式でのデータエクスポート
+  3. 登録統計の生成
 
 ### マッチメイキング戦略（二段階システム）
 ```javascript
@@ -638,7 +790,51 @@ mcp_supabase_get_logs(project_id, service)
 - **リダイレクト**: 既存所属ユーザーは一覧ページから詳細ページに自動転送
 - **データ同期**: トリガー関数による`profiles.current_community_id`の自動同期
 
-### 国際化（必須）
+### 最新機能の実装状況 ✅ **全て実装完了**
+
+### ニュースシステム ✅ **2025-07-23実装完了**
+- **自動ニュース収集**: NewsAPIを使用した外部記事の自動取得・分類
+- **カルーセル表示**: 最新3件の記事をスライダー形式で表示
+- **管理者機能**: 手動記事作成・編集・削除・公開制御
+- **レスポンシブ対応**: PC・モバイル両対応のUI/UX
+- **データベース**: `site_news`テーブルで記事情報管理
+- **セキュリティ**: 管理者権限チェック・コンテンツフィルタリング
+
+### 事前登録システム ✅ **2025-07-22実装完了**
+- **事前登録フォーム**: メール・電話番号による事前登録受付
+- **重複防止**: 同一メール・電話番号の重複登録防止
+- **自動メール送信**: 登録完了時のHTMLメール配信
+- **管理機能**: 登録者一覧・統計・データエクスポート
+- **データベース**: `pre_registered_users`テーブルで登録情報管理
+- **プライバシー**: 個人情報の適切な暗号化・保護
+
+### シーズン報酬システム ✅ **2025-07-22実装完了**
+- **自動報酬配布**: シーズン終了時のランク別報酬自動付与
+- **称号システム**: ランクに応じた称号・バッジの付与
+- **履歴管理**: 報酬取得履歴の永続化・表示
+- **ランクティア**: Bronze/Silver/Gold/Platinum/Diamond/Master/Grandmaster
+- **データベース**: `rewards`・`user_rewards`テーブルで報酬管理
+- **重複防止**: 同一シーズン・ユーザーの重複報酬防止
+
+### 投票システム強化 ✅ **2025-07-11実装完了**
+- **二段階投票**: シンプル投票（+1pt）・コメント付き投票（+3pt）
+- **ポイントシステム**: 投票種類に応じた差別化ポイント付与
+- **投票履歴**: アーカイブシステムによる投票履歴の永続保存
+- **取り消し機能**: 投票後の取り消し・ポイント適切な減算処理
+- **データベース**: `archived_battle_votes`テーブルで履歴管理
+
+### セキュリティ強化 ✅ **2025-07-26実装完了**
+- **セキュリティ監査**: 包括的なセキュリティホール調査・修正
+- **監査ログ**: `security_audit_log`テーブルでセキュリティイベント記録
+- **RLS強化**: 全テーブルでのRow Level Security強化
+- **SQL injection対策**: パラメータ化クエリの徹底実装
+- **権限管理**: 管理者権限の厳格な検証・制御
+
+### データ永続化システム ✅ **継続実装中**
+- **バトルアーカイブ**: 終了バトルの完全データ保存
+- **動画URL永続保存**: ストレージ移行による動画の永続アクセス
+- **投票履歴保存**: `archived_battle_votes`による全投票記録の保管
+- **統計データ**: レーティング変動・パフォーマンス履歴の長期保存
 - **翻訳関数**: `useTranslation`フック + `t`関数必須
 - **新規UI**: `en.json`と`ja.json`両方に翻訳キー追加
 - **フォーマット**: 日付・数値も言語設定に応じて表示
