@@ -106,7 +106,6 @@ alwaysApply: true
 
    - docs/BeatNexus.mdc
    - docs/デザインルールAtlassian/.md (デザインルールに関するドキュメント)
-   - docs/ランキングシステム仕様書.md (シーズンの仕様)
    - 上記ファイルのルールを厳守してください。
 
 ---

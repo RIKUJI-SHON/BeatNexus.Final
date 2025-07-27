@@ -181,7 +181,6 @@ export type Database = {
           created_at: string
           current_community_id: string | null
           deleted_at: string | null
-          email: string
           has_seen_onboarding: boolean
           id: string
           is_deleted: boolean | null
@@ -197,7 +196,6 @@ export type Database = {
           created_at?: string
           current_community_id?: string | null
           deleted_at?: string | null
-          email: string
           has_seen_onboarding?: boolean
           id: string
           is_deleted?: boolean | null
@@ -213,11 +211,9 @@ export type Database = {
           created_at?: string
           current_community_id?: string | null
           deleted_at?: string | null
-          email?: string
           has_seen_onboarding?: boolean
           id?: string
           is_deleted?: boolean | null
-          language?: string | null
           rating?: number
           updated_at?: string
           username?: string

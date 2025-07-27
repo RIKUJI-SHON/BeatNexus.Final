@@ -1689,6 +1689,11 @@
     "error": {
       "invalidPhone": "電話番号を入力してください",
       "verificationFailed": "電話番号認証に失敗しました: {{error}}",
+      "phoneAlreadyRegistered": "この電話番号は既に別のアカウントで使用されています。別の電話番号をお試しください。",
+      "systemError": "システムエラーが発生しました。しばらくしてからお試しください。",
+      "invalidOtpCode": "認証コードが正しくありません。",
+      "authenticationError": "認証エラーが発生しました。",
+      "recordError": "電話番号認証の記録に失敗しました。",
       "emailNotPreregistered": "このメールアドレスは登録されていません。招待されたメールアドレスを確認してください。",
       "preregistrationCheckFailed": "事前登録の確認に失敗しました。しばらく経ってから再度お試しください。"
     },

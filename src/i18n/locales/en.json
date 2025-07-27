@@ -1874,6 +1874,11 @@
     "error": {
       "invalidPhone": "Phone number is required",
       "verificationFailed": "Phone verification failed: {{error}}",
+      "phoneAlreadyRegistered": "This phone number is already registered with another account. Please try a different phone number.",
+      "systemError": "A system error occurred. Please try again later.",
+      "invalidOtpCode": "The verification code is incorrect.",
+      "authenticationError": "An authentication error occurred.",
+      "recordError": "Failed to record phone number verification.",
       "emailNotPreregistered": "This email address is not registered. Please check the email address you were invited with.",
       "preregistrationCheckFailed": "Failed to verify pre-registration. Please try again later."
     },

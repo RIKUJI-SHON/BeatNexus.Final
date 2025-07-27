@@ -57,6 +57,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   const { signIn, signUp } = useAuthStore();
   const navigate = useNavigate();
   const { t } = useTranslation();
+  
+  // Supabase設定取得
+  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+  const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
   useEffect(() => {
     setLocalMode(initialMode);
@@ -116,9 +120,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     setError(null);
   };
 
-  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-  const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
   const handleSendOtp = async () => {
     let formattedPhone = phoneNumber.trim().replace(/-/g, '').replace(/\s+/g, '');
     formattedPhone = `${selectedCountry.dial}${formattedPhone.replace(/^0+/, '')}`;
@@ -171,7 +172,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       if (data.success) {
         setPhoneVerified(true);
       } else {
-        setError(data.error || t('auth.error.verificationFailed', { error: '' }));
+        // エラーハンドリング
+        if (data.error === 'Invalid verification code') {
+          setError(t('auth.error.invalidOtpCode'));
+        } else {
+          setError(data.error || t('auth.error.verificationFailed', { error: '' }));
+        }
       }
     } catch (err) {
       setError(t('auth.error.verificationFailed', { error: (err as Error).message }));
