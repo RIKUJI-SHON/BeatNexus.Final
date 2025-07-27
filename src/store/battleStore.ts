@@ -145,74 +145,172 @@ export const useBattleStore = create<BattleState>((set, get) => ({
         loading: false 
       });
     }
+  },
+
   fetchActiveBattles: async () => {
     // fetchBattlesと重複するため、fetchBattlesを呼び出す
     await get().fetchBattles();
   },
 
   fetchArchivedBattles: async () => {
-        // Handle cases where battles might exist but have no valid submission IDs (should not happen in normal operation)
-        const transformedBattlesWithoutSubmissions = battlesData.map((battle: any) => ({
-          id: battle.id,
-          title: `${battle.battle_format} Battle`,
-          battle_format: battle.battle_format,
-          created_at: battle.created_at,
-          end_voting_at: battle.end_voting_at,
-          contestant_a_id: battle.player1_submission_id?.user_id || null, // Or handle as needed
-          contestant_b_id: battle.player2_submission_id?.user_id || null,
-          votes_a: battle.votes_a || 0,
-          votes_b: battle.votes_b || 0,
-          status: battle.status.toLowerCase(),
-          contestant_a: undefined,
-          contestant_b: undefined,
-          video_url_a: undefined,
-          video_url_b: undefined
-        }));
-        set({ activeBattles: transformedBattlesWithoutSubmissions, loading: false });
-        return;
+    set({ archiveLoading: true, error: null });
+    try {
+      const { data: battlesData, error: battlesError } = await supabase
+        .from('archived_battles')
+        .select(`
+          id,
+          original_battle_id,
+          winner_id,
+          final_votes_a,
+          final_votes_b,
+          archived_at,
+          player1_user_id,
+          player2_user_id,
+          player1_submission_id,
+          player2_submission_id,
+          created_at,
+          updated_at,
+          battle_format,
+          player1_rating_change,
+          player2_rating_change,
+          player1_final_rating,
+          player2_final_rating,
+          player1_video_url,
+          player2_video_url,
+          player1:profiles!player1_user_id(
+            id,
+            username,
+            avatar_url,
+            rating
+          ),
+          player2:profiles!player2_user_id(
+            id,
+            username,
+            avatar_url,
+            rating
+          )
+        `)
+        .order('archived_at', { ascending: false });
+
+      if (battlesError) {
+        console.error('Error fetching archived battles:', battlesError);
+        throw battlesError;
       }
 
-      // Step 3: Fetch submissions
+      const transformedBattles = battlesData?.map(battle => ({
+        id: battle.id,
+        original_battle_id: battle.original_battle_id,
+        winner_id: battle.winner_id,
+        final_votes_a: battle.final_votes_a,
+        final_votes_b: battle.final_votes_b,
+        archived_at: battle.archived_at,
+        player1_user_id: battle.player1_user_id,
+        player2_user_id: battle.player2_user_id,
+        player1_submission_id: battle.player1_submission_id,
+        player2_submission_id: battle.player2_submission_id,
+        created_at: battle.created_at,
+        updated_at: battle.updated_at,
+        battle_format: battle.battle_format,
+        player1_rating_change: battle.player1_rating_change,
+        player2_rating_change: battle.player2_rating_change,
+        player1_final_rating: battle.player1_final_rating,
+        player2_final_rating: battle.player2_final_rating,
+        player1_video_url: battle.player1_video_url,
+        player2_video_url: battle.player2_video_url,
+        contestant_a: battle.player1 ? {
+          id: battle.player1.id,
+          username: battle.player1.username,
+          avatar_url: battle.player1.avatar_url,
+          rating: battle.player1.rating
+        } : null,
+        contestant_b: battle.player2 ? {
+          id: battle.player2.id,
+          username: battle.player2.username,
+          avatar_url: battle.player2.avatar_url,
+          rating: battle.player2.rating
+        } : null
+      })) || [];
+
+      set({ 
+        archivedBattles: transformedBattles, 
+        archiveLoading: false 
+      });
+    } catch (error) {
+      console.error('Error in fetchArchivedBattles:', error);
+      set({ 
+        error: error instanceof Error ? error.message : 'アーカイブバトルの取得に失敗しました', 
+        archiveLoading: false 
+      });
+    }
+  },
+
+  fetchWaitingSubmissions: async () => {
+    set({ waitingLoading: true, error: null });
+    try {
       const { data: submissionsData, error: submissionsError } = await supabase
         .from('submissions')
-        .select('id, user_id, video_url')
-        .in('id', submissionIds);
+        .select(`
+          id,
+          video_url,
+          created_at,
+          battle_format,
+          user_id,
+          user:profiles!user_id(
+            id,
+            username,
+            avatar_url,
+            rating
+          )
+        `)
+        .eq('status', 'WAITING_OPPONENT')
+        .order('created_at', { ascending: false });
 
       if (submissionsError) {
-        console.error('Error fetching submissions for active battles:', submissionsError);
+        console.error('Error fetching waiting submissions:', submissionsError);
         throw submissionsError;
       }
 
-      // Step 4: Get user IDs from submissions
-      const userIds = submissionsData?.map(sub => sub.user_id).filter(id => id != null) as string[] || [];
+      const transformedSubmissions = submissionsData?.map(submission => ({
+        id: submission.id,
+        video_url: submission.video_url,
+        created_at: submission.created_at,
+        battle_format: submission.battle_format,
+        user_id: submission.user_id,
+        user: submission.user ? {
+          id: submission.user.id,
+          username: submission.user.username,
+          avatar_url: submission.user.avatar_url,
+          rating: submission.user.rating
+        } : null
+      })) || [];
 
-      let profilesData: any[] = [];
-      if (userIds.length > 0) {
-        // Step 5: Fetch profiles
-        const { data: fetchedProfilesData, error: profilesError } = await supabase
-          .from('profiles')
-          .select('id, username, avatar_url')
-          .in('id', userIds);
+      set({ 
+        waitingSubmissions: transformedSubmissions, 
+        waitingLoading: false 
+      });
+    } catch (error) {
+      console.error('Error in fetchWaitingSubmissions:', error);
+      set({ 
+        error: error instanceof Error ? error.message : '待機中の投稿の取得に失敗しました', 
+        waitingLoading: false 
+      });
+    }
+  },
 
-        if (profilesError) {
-          console.error('Error fetching profiles for active battles:', profilesError);
-          throw profilesError;
-        }
-        profilesData = fetchedProfilesData || [];
+  submitToWaitingPool: async (videoUrl: string, battleFormat: BattleFormat) => {
+    try {
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      
+      if (authError) {
+        console.error('Authentication error:', authError);
+        throw new Error('認証エラーが発生しました');
       }
 
-      // Step 6: Transform data
-      const transformedBattles = battlesData.map((battle: any) => {
-        const player1Submission = submissionsData?.find(sub => sub.id === battle.player1_submission_id);
-        const player2Submission = submissionsData?.find(sub => sub.id === battle.player2_submission_id);
-        const player1 = profilesData?.find(profile => profile.id === player1Submission?.user_id);
-        const player2 = profilesData?.find(profile => profile.id === player2Submission?.user_id);
+      if (!user) {
+        throw new Error('ユーザーがログインしていません');
+      }
 
-        return {
-          id: battle.id,
-          title: `${battle.battle_format} Battle`,
-          battle_format: battle.battle_format,
-          created_at: battle.created_at,
+      // submissionsテーブルに直接投稿
           end_voting_at: battle.end_voting_at,
           contestant_a_id: player1Submission?.user_id || null,
           contestant_b_id: player2Submission?.user_id || null,
