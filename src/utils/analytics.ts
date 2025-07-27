@@ -47,8 +47,12 @@ export const initializeGA = (): void => {
     
     // 開発環境でのGAスクリプト読み込みも防ぐ
     if (typeof window !== 'undefined') {
-      (window as any).gtag = (window as any).gtag || function() {
-        console.log('🚫 gtag call blocked in development:', arguments);
+      interface WindowWithGtag extends Window {
+        gtag?: (...args: unknown[]) => void;
+      }
+      const windowWithGtag = window as WindowWithGtag;
+      windowWithGtag.gtag = windowWithGtag.gtag || function(...args: unknown[]) {
+        console.log('🚫 gtag call blocked in development:', args);
       };
     }
   }

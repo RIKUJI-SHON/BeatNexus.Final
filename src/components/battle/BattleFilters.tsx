@@ -196,7 +196,7 @@ export const BattleFilters: React.FC<BattleFiltersProps> = ({
                 {sortButtons.map((button) => (
                   <button
                     key={button.key}
-                    onClick={() => handleSortClick(button.key as any)}
+                    onClick={() => handleSortClick(button.key as 'recent' | 'trending' | 'ending' | 'completed')}
                     className={`px-2.5 py-1.5 rounded-md text-xs font-medium transition-all duration-300 border flex items-center gap-1 flex-shrink-0 ${
                       sortBy === button.key
                         ? `bg-gradient-to-r ${button.colors} text-white border-transparent`

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, createContext, useContext, useState } from 'react';
+import React, { useEffect, useRef, createContext, useContext, useState, useCallback } from 'react';
 import { useAuthStore } from '../../store/authStore';
 import { useOnboardingStore } from '../../store/onboardingStore';
 import { supabase } from '../../lib/supabase';
@@ -47,7 +47,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   // 認証エラー時の自動リカバリ
-  const handleAuthError = async (error: unknown) => {
+  const handleAuthError = useCallback(async (error: unknown) => {
     console.error('Auth error detected:', error);
     authErrorCount.current += 1;
 
@@ -69,7 +69,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     // トークンリフレッシュを試行
     try {
       console.log('Attempting to refresh session...');
-      const { data, error: refreshError } = await supabase.auth.refreshSession();
+      const { error: refreshError } = await supabase.auth.refreshSession();
       
       if (refreshError) {
         console.error('Session refresh failed:', refreshError);
@@ -85,10 +85,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       await supabase.auth.signOut();
       setUserFromAuth(null);
     }
-  };
+  }, [setUserFromAuth]);
 
   // 安全な言語設定更新（新規登録時のみ）
-  const initializeLanguageForNewUser = async (userId: string, eventType: string) => {
+  const initializeLanguageForNewUser = useCallback(async (userId: string, eventType: string) => {
     const userKey = `${userId}-${eventType}`;
     
     // 既に処理済みの場合はスキップ
@@ -144,7 +144,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         await handleAuthError(error);
       }
     }
-  };
+  }, [handleAuthError]);
 
   useEffect(() => {
     let mounted = true;
@@ -214,7 +214,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       mounted = false;
       subscription.unsubscribe();
     };
-  }, [setUserFromAuth, i18n]);
+  }, [setUserFromAuth, i18n, handleAuthError, initializeLanguageForNewUser, triggerOnboardingForNewUser]);
 
   const authModalContextValue: AuthModalContextType = {
     isAuthModalOpen,

@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, memo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Battle } from '../../types';
 import { VoteButton } from '../ui/VoteButton';
 import { BattleCommentsModal } from '../ui/BattleCommentsModal';
-import { Clock, Crown, MessageSquare, ThumbsUp } from 'lucide-react';
+import { Clock, Crown, MessageSquare } from 'lucide-react';
 import { VSIcon } from '../ui/VSIcon';
 import { RatingChangeDisplay } from '../ui/RatingChangeDisplay';
 import { format } from 'date-fns';
@@ -21,7 +21,7 @@ interface SimpleBattleCardProps {
 
 // 色の固定化のため、colorPairs配列は不要になりました
 
-export const SimpleBattleCard: React.FC<SimpleBattleCardProps> = ({ battle }) => {
+export const SimpleBattleCard: React.FC<SimpleBattleCardProps> = memo(({ battle }) => {
   const { t, i18n } = useTranslation();
   const [isCommentsModalOpen, setIsCommentsModalOpen] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState<string>('');
@@ -287,4 +287,6 @@ export const SimpleBattleCard: React.FC<SimpleBattleCardProps> = ({ battle }) =>
       />
     </>
   );
-}; 
+});
+
+SimpleBattleCard.displayName = 'SimpleBattleCard'; 

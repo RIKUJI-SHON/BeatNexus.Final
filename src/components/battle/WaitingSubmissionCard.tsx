@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Clock, Video, AlertCircle, X, Play, Search, Timer } from 'lucide-react';
+import { Video, AlertCircle, X, Play, Search, Timer } from 'lucide-react';
 import { Card } from '../ui/Card';
 import { Button } from '../ui/Button';
 import { type Submission } from '../../store/submissionStore';

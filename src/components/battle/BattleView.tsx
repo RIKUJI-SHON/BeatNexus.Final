@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Share2, ThumbsUp, ArrowLeft, Clock, MessageCircle, Crown, Play, UserX, X, Users, Timer, Volume2, Star, Shield, AlertTriangle, Send } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Button } from '../ui/Button';
-import { Card } from '../ui/Card';
+import { Share2, ThumbsUp, MessageCircle, Crown, Play, Users, Timer, Volume2, AlertTriangle, X } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { VoteCommentModal } from '../ui/VoteCommentModal';
 import { useBattleStore } from '../../store/battleStore';
 import { useAuthStore } from '../../store/authStore';
@@ -11,11 +9,9 @@ import { useTranslation } from 'react-i18next';
 import { VSIcon } from '../ui/VSIcon';
 import { VotingTips } from '../ui/VotingTips';
 import { trackBeatNexusEvents } from '../../utils/analytics';
-import { getCurrentRank } from '../../lib/rankUtils';
 import { supabase } from '../../lib/supabase';
 import { generateBattleUrl } from '../../utils/battleUrl';
 import { getDefaultAvatarUrl } from '../../utils';
-import { useNotificationStore } from '../../store/notificationStore';
 
 interface BattleViewProps {
   battle: Battle;
@@ -28,10 +24,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
   const [hasVoted, setHasVoted] = useState<'A' | 'B' | null>(null);
   const [votesA, setVotesA] = useState(battle.votes_a);
   const [votesB, setVotesB] = useState(battle.votes_b);
-  const [comment, setComment] = useState('');
   const [isLoadingVoteStatus, setIsLoadingVoteStatus] = useState(true);
-  const [showCommentInput, setShowCommentInput] = useState(false);
-  const [isSubmittingComment, setIsSubmittingComment] = useState(false);
   const [isVoting, setIsVoting] = useState(false);
   const [showVoteModal, setShowVoteModal] = useState<'A' | 'B' | null>(null);
   const [playerRatings, setPlayerRatings] = useState<{
@@ -55,11 +48,10 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
     commentsLoading 
   } = useBattleStore();
   const { user } = useAuthStore();
-  const { addNotification } = useNotificationStore();
   
   // 🔍 厳密な型チェックと参加者判定 - battleStoreの変換後データに合わせて修正
-  const player1Id = battle.player1_user_id || (battle as any).contestant_a_id;
-  const player2Id = battle.player2_user_id || (battle as any).contestant_b_id;
+  const player1Id = battle.player1_user_id || (battle as Battle & { contestant_a_id?: string }).contestant_a_id;
+  const player2Id = battle.player2_user_id || (battle as Battle & { contestant_b_id?: string }).contestant_b_id;
   
   const isUserParticipant = user && user.id ? 
     (String(player1Id) === String(user.id) || String(player2Id) === String(user.id)) : 
@@ -239,7 +231,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
 
 
   // Format timestamp for comments
-  const formatTimestamp = (timestamp: string) => {
+  const _formatTimestamp = (timestamp: string) => {
     const now = new Date();
     const commentTime = new Date(timestamp);
     const diffTime = now.getTime() - commentTime.getTime();
@@ -285,14 +277,12 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
   // Determine who's leading
   const isALeading = votesA > votesB;
   const isBLeading = votesB > votesA;
-  const isDraw = votesA === votesB;
   
   // 色の固定化のため、colorPairs配列は不要になりました
 
   // 固定色: プレイヤーAを青、プレイヤーBを赤  
   const playerColorA = '#3B82F6'; // Blue for Player A
   const playerColorB = '#EF4444'; // Red for Player B
-  const gradientBg = 'from-blue-500/20 to-red-500/20';
 
   const handleShareBattle = () => {
     const player1Name = battle.contestant_a?.username || 'Player 1';
