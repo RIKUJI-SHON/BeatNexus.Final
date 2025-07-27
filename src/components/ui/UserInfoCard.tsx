@@ -280,7 +280,7 @@ export const UserInfoCard: React.FC = () => {
             <div className="flex items-center justify-center gap-2 mb-3">
               <Trophy className="h-5 w-5 text-yellow-400" />
               <span className="text-sm font-medium text-slate-300">
-                {activeSeason?.name || t('userInfoCard.currentSeason')}
+                {activeSeason ? activeSeason.name : t('userInfoCard.noActiveSeason')}
               </span>
             </div>
             

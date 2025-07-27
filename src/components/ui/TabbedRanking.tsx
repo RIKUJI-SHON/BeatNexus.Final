@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Trophy, Star, Vote, ArrowRight, Users } from 'lucide-react';
+import { ArrowRight, Users } from 'lucide-react';
 import { useRankingStore } from '../../store/rankingStore';
 import { useTranslation } from 'react-i18next';
-import { RankingEntry, VoterRankingEntry, SeasonVoterRankingEntry } from '../../types';
-import { getRankFromRating } from '../../utils/rankUtils';
+import { SeasonVoterRankingEntry, SeasonRankingEntry } from '../../types';
 
 type RankingType = 'player' | 'voter';
 
@@ -21,11 +20,11 @@ export const TabbedRanking: React.FC<TabbedRankingProps> = ({
 }) => {
   const { t } = useTranslation();
   const { 
-    rankings, 
+    seasonRankings,
     seasonVoterRankings,
-    loading: rankingsLoading, 
+    seasonLoading,
     seasonVoterLoading,
-    fetchRankings, 
+    fetchSeasonRankings,
     fetchSeasonVoterRankings 
   } = useRankingStore();
   
@@ -33,9 +32,9 @@ export const TabbedRanking: React.FC<TabbedRankingProps> = ({
   const [isAnimating, setIsAnimating] = useState(false);
 
   useEffect(() => {
-    fetchRankings();
+    fetchSeasonRankings();
     fetchSeasonVoterRankings();
-  }, [fetchRankings, fetchSeasonVoterRankings]);
+  }, [fetchSeasonRankings, fetchSeasonVoterRankings]);
 
   const handleTabChange = (isChecked: boolean) => {
     const newTab = isChecked ? 'voter' : 'player';
@@ -88,10 +87,10 @@ export const TabbedRanking: React.FC<TabbedRankingProps> = ({
     return 'text-gray-500';
   };
 
-  const currentData = activeTab === 'player' ? rankings.slice(0, maxItems) : seasonVoterRankings.slice(0, maxItems);
-  const currentLoading = activeTab === 'player' ? rankingsLoading : seasonVoterLoading;
+  const currentData = activeTab === 'player' ? seasonRankings.slice(0, maxItems) : seasonVoterRankings.slice(0, maxItems);
+  const currentLoading = activeTab === 'player' ? seasonLoading : seasonVoterLoading;
 
-  const renderPlayerRanking = (entry: RankingEntry) => (
+  const renderPlayerRanking = (entry: SeasonRankingEntry) => (
     <Link 
       key={entry.user_id}
       to={`/profile/${entry.user_id}`}
@@ -361,7 +360,7 @@ export const TabbedRanking: React.FC<TabbedRankingProps> = ({
         ) : currentData.length > 0 ? (
           <div className="space-y-1">
             {activeTab === 'player'
-              ? (currentData as RankingEntry[]).map(renderPlayerRanking)
+              ? (currentData as SeasonRankingEntry[]).map(renderPlayerRanking)
               : (currentData as SeasonVoterRankingEntry[]).map(renderVoterRanking)
             }
           </div>

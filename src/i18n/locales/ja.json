@@ -345,7 +345,7 @@
     "currentSeason": "現在のシーズン",
     "notParticipating": "シーズン未参加",
     "notParticipatingMessage": "バトルに参加または投票してシーズンランキングに挑戦しよう！",
-    "noActiveSeason": "シーズンがアクティブではありません",
+    "noActiveSeason": "アクティブなシーズンがありません",
     "noActiveSeasonMessage": "現在アクティブなシーズンがありません",
     "rankings": {
       "player": "プレイヤー",
@@ -655,7 +655,7 @@
       "currentSeason": "現在のシーズン",
       "notParticipating": "シーズン未参加",
       "notParticipatingMessage": "バトルに参加または投票してシーズンランキングに挑戦しよう！",
-      "noActiveSeason": "シーズンがアクティブではありません",
+      "noActiveSeason": "アクティブなシーズンがありません",
       "noActiveSeasonMessage": "現在アクティブなシーズンがありません",
       "rankings": {
         "player": "プレイヤー",

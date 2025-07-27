@@ -144,14 +144,6 @@ const RankingPage: React.FC = () => {
 
   // 現在表示するデータを決定
   const getCurrentData = () => {
-    console.log('[DEBUG] getCurrentData - Current state:', {
-      activeTab,
-      activeVoterRankingType,
-      currentSeason: currentSeason?.name,
-      selectedSeasonId,
-      seasonVoterRankings: seasonVoterRankings.length,
-      voterRankings: voterRankings.length
-    });
 
     if (activeTab === 'player') {
       const rankingType = activeRankingType;
@@ -184,25 +176,8 @@ const RankingPage: React.FC = () => {
       
       if (voterRankingType === 'current_season') {
         if (selectedSeasonId === currentSeason?.id || !selectedSeasonId) {
-          console.log('[DEBUG] Returning seasonVoterRankings:', seasonVoterRankings);
           return seasonVoterRankings;
         } else {
-          console.log('[DEBUG] Historical voter rankings:', {
-            historicalSeasonVoterRankings,
-            mappedData: historicalSeasonVoterRankings.map(entry => ({
-              user_id: entry.user_id,
-              username: entry.username,
-              avatar_url: entry.avatar_url,
-              vote_count: entry.votes,
-              position: entry.rank,
-              rating: 0,
-              rank_name: 'Historical',
-              rank_color: 'gray',
-              created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString(),
-            }))
-          });
-          
           return historicalSeasonVoterRankings.map(entry => ({
             user_id: entry.user_id,
             username: entry.username,
@@ -217,7 +192,6 @@ const RankingPage: React.FC = () => {
           }));
         }
       } else {
-        console.log('[DEBUG] Returning voterRankings:', voterRankings);
         return voterRankings;
       }
     }
