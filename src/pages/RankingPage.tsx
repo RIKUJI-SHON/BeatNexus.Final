@@ -78,7 +78,25 @@ const RankingPage: React.FC = () => {
     
     // Track initial ranking view
     trackBeatNexusEvents.rankingView('rating');
-  }, [fetchSeasons, fetchRankings, fetchVoterRankings, fetchSeasonRankings, fetchSeasonVoterRankings]); // 依存配列を追加
+  }, [fetchSeasons, fetchRankings, fetchVoterRankings, fetchSeasonRankings, fetchSeasonVoterRankings]); // 初期化に必要な関数のみ
+
+  // アクティブなシーズンがない場合の処理を別のuseEffectで管理
+  useEffect(() => {
+    if (seasons.length > 0 && !currentSeason && !selectedSeasonId) {
+      const latestEndedSeason = seasons
+        .filter(s => s.status === 'ended')
+        .sort((a, b) => new Date(b.end_at).getTime() - new Date(a.end_at).getTime())[0];
+      
+      if (latestEndedSeason) {
+        console.log('[DEBUG] No active season, selecting latest ended season:', latestEndedSeason.name);
+        setSelectedSeasonId(latestEndedSeason.id);
+        setActiveRankingType('current_season');
+        setActiveVoterRankingType('current_season');
+        fetchHistoricalSeasonRankings(latestEndedSeason.id);
+        fetchHistoricalSeasonVoterRankings(latestEndedSeason.id);
+      }
+    }
+  }, [seasons, currentSeason, selectedSeasonId, setSelectedSeasonId, setActiveRankingType, setActiveVoterRankingType, fetchHistoricalSeasonRankings, fetchHistoricalSeasonVoterRankings]);
 
   const handleTabChange = (isChecked: boolean) => {
     const newTab = isChecked ? 'voter' : 'player';
