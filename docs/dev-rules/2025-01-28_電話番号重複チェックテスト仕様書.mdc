@@ -1,0 +1,788 @@
+# 電話番号重複チェック機能 テスト仕様書
+
+## 📋 実装ログ
+
+**作成日**: 2025年1月28日  
+**対象**: 電話番号重複チェック・既存番号使用防止機能のテスト仕様  
+**テスト対象**: データベース関数、Edge Function、フロントエンドUI  
+**関連仕様**: 要件定義書、DB設計仕様書、EdgeFunction修正仕様書
+
+## 🎯 テスト概要
+
+### テスト目的
+1. **機能検証**: 重複チェック機能が正しく動作することを確認
+2. **セキュリティ検証**: 不正アクセスや攻撃に対する防御を確認
+3. **パフォーマンス検証**: 要求された性能基準を満たすことを確認
+4. **統合検証**: システム全体の統合動作を確認
+
+### テスト環境
+- **開発環境**: Supabase プロジェクトID `wdttluticnlqzmqmfvgt`
+- **本番環境**: Supabase プロジェクトID `qgqcjtjxaoplhxurbpis`
+- **テストフレームワーク**: Jest + Supertest
+- **テストデータ**: 専用テストアカウントとテスト電話番号
+
+### テストスコープ
+- ✅ データベース関数テスト
+- ✅ Edge Function API テスト
+- ✅ フロントエンド統合テスト
+- ✅ セキュリティテスト
+- ✅ パフォーマンステスト
+- ✅ エラーハンドリングテスト
+
+## 🧪 データベース関数テスト
+
+### 1. normalize_phone_number 関数テスト
+
+#### TC-DB-001: 日本の電話番号正規化テスト
+```sql
+-- テスト目的: 日本の電話番号形式の正規化が正しく動作することを確認
+-- 期待結果: 全て '+81' で始まる国際形式に正規化される
+
+-- テストケース 1: 090形式
+SELECT normalize_phone_number('090-1234-5678') = '+819012345678';
+-- Expected: true
+
+-- テストケース 2: 080形式
+SELECT normalize_phone_number('080-9876-5432') = '+818098765432';
+-- Expected: true
+
+-- テストケース 3: 070形式
+SELECT normalize_phone_number('070-1111-2222') = '+817011112222';
+-- Expected: true
+
+-- テストケース 4: 既に国際形式
+SELECT normalize_phone_number('+81-90-1234-5678') = '+819012345678';
+-- Expected: true
+
+-- テストケース 5: ハイフンなし
+SELECT normalize_phone_number('09012345678') = '+819012345678';
+-- Expected: true
+
+-- テストケース 6: スペース含み
+SELECT normalize_phone_number('090 1234 5678') = '+819012345678';
+-- Expected: true
+
+-- テストケース 7: 無効な形式
+SELECT normalize_phone_number('123') IS NULL;
+-- Expected: true
+
+-- テストケース 8: NULL入力
+SELECT normalize_phone_number(NULL) IS NULL;
+-- Expected: true
+
+-- テストケース 9: 空文字
+SELECT normalize_phone_number('') IS NULL;
+-- Expected: true
+
+-- テストケース 10: 固定電話（無効）
+SELECT normalize_phone_number('03-1234-5678') IS NULL;
+-- Expected: true
+```
+
+#### TC-DB-002: 国際電話番号対応テスト
+```sql
+-- テスト目的: 他国の電話番号も適切に処理されることを確認
+
+-- アメリカ
+SELECT normalize_phone_number('+1-555-123-4567') = '+15551234567';
+-- Expected: true
+
+-- イギリス
+SELECT normalize_phone_number('+44-20-7946-0958') = '+442079460958';
+-- Expected: true
+
+-- 韓国
+SELECT normalize_phone_number('+82-10-1234-5678') = '+821012345678';
+-- Expected: true
+```
+
+### 2. check_phone_availability 関数テスト
+
+#### TC-DB-003: 重複チェック基本機能テスト
+```sql
+-- テスト用データ準備
+DO $$
+DECLARE
+  test_user_id UUID := gen_random_uuid();
+  test_phone TEXT := '+819012345678';
+BEGIN
+  -- テスト用ユーザー作成（auth.users テーブルに挿入は管理者権限必要）
+  -- テスト用電話番号認証レコード作成
+  INSERT INTO phone_verifications (user_id, phone_number, is_active)
+  VALUES (test_user_id, test_phone, true);
+  
+  -- テストケース 1: 重複する電話番号
+  -- Expected: available = false, error = 'phone_already_registered'
+  SELECT (check_phone_availability(test_phone)->>'available')::boolean = false;
+  
+  -- テストケース 2: 利用可能な電話番号
+  -- Expected: available = true
+  SELECT (check_phone_availability('+819087654321')->>'available')::boolean = true;
+  
+  -- テストケース 3: 無効な形式
+  -- Expected: available = false, error = 'invalid_format'
+  SELECT (check_phone_availability('invalid')->>'available')::boolean = false;
+  
+  -- テストケース 4: NULL入力
+  -- Expected: available = false, error = 'invalid_input'
+  SELECT (check_phone_availability(NULL)->>'available')::boolean = false;
+  
+  -- クリーンアップ
+  DELETE FROM phone_verifications WHERE user_id = test_user_id;
+END;
+$$;
+```
+
+#### TC-DB-004: レート制限機能テスト
+```sql
+-- テスト目的: レート制限が正しく動作することを確認
+DO $$
+DECLARE
+  test_phone TEXT := '+819012345678';
+  i INTEGER;
+  result JSON;
+BEGIN
+  -- 3回連続でSMS送信ログを作成（1時間以内）
+  FOR i IN 1..3 LOOP
+    PERFORM log_audit_event(
+      'phone_verifications',
+      'SEND_SMS',
+      NULL,
+      json_build_object('phone_number_hash', encode(digest(test_phone, 'sha256'), 'hex')),
+      true,
+      NULL
+    );
+  END LOOP;
+  
+  -- 4回目のチェック（レート制限に引っかかるはず）
+  result := check_phone_availability(test_phone);
+  
+  -- Expected: available = false, error = 'rate_limit_exceeded'
+  IF (result->>'available')::boolean = true THEN
+    RAISE EXCEPTION 'Rate limit test failed: should be blocked after 3 attempts';
+  END IF;
+  
+  -- クリーンアップ
+  DELETE FROM audit_logs WHERE action = 'SEND_SMS' AND details->>'phone_number_hash' = encode(digest(test_phone, 'sha256'), 'hex');
+END;
+$$;
+```
+
+### 3. record_phone_verification 関数テスト
+
+#### TC-DB-005: 電話番号認証記録テスト
+```sql
+-- テスト目的: 電話番号認証記録が正しく動作することを確認
+DO $$
+DECLARE
+  test_user_id UUID := gen_random_uuid();
+  test_phone TEXT := '+819012345678';
+  result JSON;
+BEGIN
+  -- テストケース 1: 新規レコード作成
+  result := record_phone_verification(test_user_id, test_phone);
+  
+  -- Expected: success = true
+  IF (result->>'success')::boolean = false THEN
+    RAISE EXCEPTION 'Record verification test failed: %', result->>'message';
+  END IF;
+  
+  -- レコードが実際に作成されているか確認
+  IF NOT EXISTS (
+    SELECT 1 FROM phone_verifications 
+    WHERE user_id = test_user_id AND phone_number = test_phone
+  ) THEN
+    RAISE EXCEPTION 'Phone verification record was not created';
+  END IF;
+  
+  -- テストケース 2: 重複レコード作成試行
+  result := record_phone_verification(gen_random_uuid(), test_phone);
+  
+  -- Expected: success = false, error = 'phone_already_exists'
+  IF (result->>'success')::boolean = true THEN
+    RAISE EXCEPTION 'Duplicate phone verification should fail';
+  END IF;
+  
+  -- テストケース 3: 無効な入力
+  result := record_phone_verification(NULL, test_phone);
+  
+  -- Expected: success = false, error = 'invalid_user_id'
+  IF (result->>'success')::boolean = true THEN
+    RAISE EXCEPTION 'Invalid user ID should fail';
+  END IF;
+  
+  -- クリーンアップ
+  DELETE FROM phone_verifications WHERE user_id = test_user_id;
+END;
+$$;
+```
+
+## 🌐 Edge Function APIテスト
+
+### 4. SMS送信API テスト
+
+#### TC-API-001: SMS送信正常系テスト
+```javascript
+// テスト目的: SMS送信APIが正常に動作することを確認
+const request = require('supertest');
+const { SUPABASE_URL, SUPABASE_ANON_KEY } = process.env;
+
+describe('Phone Verification API - Send SMS', () => {
+  const baseURL = `${SUPABASE_URL}/functions/v1`;
+  
+  test('should send SMS for valid phone number', async () => {
+    const response = await request(baseURL)
+      .post('/phone-verification')
+      .set('Authorization', `Bearer ${SUPABASE_ANON_KEY}`)
+      .set('Content-Type', 'application/json')
+      .send({
+        action: 'send_code',
+        phoneNumber: '+819012345678'
+      });
+    
+    expect(response.status).toBe(200);
+    expect(response.body.success).toBe(true);
+    expect(response.body.message).toContain('SMS送信が完了しました');
+  });
+  
+  test('should reject invalid phone number format', async () => {
+    const response = await request(baseURL)
+      .post('/phone-verification')
+      .set('Authorization', `Bearer ${SUPABASE_ANON_KEY}`)
+      .set('Content-Type', 'application/json')
+      .send({
+        action: 'send_code',
+        phoneNumber: 'invalid-phone'
+      });
+    
+    expect(response.status).toBe(400);
+    expect(response.body.error).toBe('invalid_phone_format');
+  });
+  
+  test('should reject duplicate phone number', async () => {
+    // 既存の電話番号を使用
+    const response = await request(baseURL)
+      .post('/phone-verification')
+      .set('Authorization', `Bearer ${SUPABASE_ANON_KEY}`)
+      .set('Content-Type', 'application/json')
+      .send({
+        action: 'send_code',
+        phoneNumber: '+819087654321' // 既に登録済みの番号
+      });
+    
+    expect(response.status).toBe(409);
+    expect(response.body.error).toBe('phone_already_registered');
+  });
+  
+  test('should enforce rate limiting', async () => {
+    const phoneNumber = '+819012345679';
+    
+    // 3回連続でSMS送信
+    for (let i = 0; i < 3; i++) {
+      const response = await request(baseURL)
+        .post('/phone-verification')
+        .set('Authorization', `Bearer ${SUPABASE_ANON_KEY}`)
+        .set('Content-Type', 'application/json')
+        .send({
+          action: 'send_code',
+          phoneNumber: phoneNumber
+        });
+      
+      if (i < 3) {
+        expect(response.status).toBe(200);
+      }
+    }
+    
+    // 4回目は制限に引っかかるはず
+    const rateLimitResponse = await request(baseURL)
+      .post('/phone-verification')
+      .set('Authorization', `Bearer ${SUPABASE_ANON_KEY}`)
+      .set('Content-Type', 'application/json')
+      .send({
+        action: 'send_code',
+        phoneNumber: phoneNumber
+      });
+    
+    expect(rateLimitResponse.status).toBe(429);
+    expect(rateLimitResponse.body.error).toBe('rate_limit_exceeded');
+  });
+});
+```
+
+#### TC-API-002: OTP検証API テスト
+```javascript
+describe('Phone Verification API - Verify OTP', () => {
+  test('should verify valid OTP code', async () => {
+    // 事前にSMS送信
+    await request(baseURL)
+      .post('/phone-verification')
+      .set('Authorization', `Bearer ${SUPABASE_ANON_KEY}`)
+      .set('Content-Type', 'application/json')
+      .send({
+        action: 'send_code',
+        phoneNumber: '+819012345680'
+      });
+    
+    // OTP検証（テスト用の固定コード）
+    const response = await request(baseURL)
+      .post('/phone-verification')
+      .set('Authorization', `Bearer ${SUPABASE_ANON_KEY}`)
+      .set('Content-Type', 'application/json')
+      .send({
+        action: 'verify_code',
+        phoneNumber: '+819012345680',
+        code: '123456' // テスト環境用固定コード
+      });
+    
+    expect(response.status).toBe(200);
+    expect(response.body.success).toBe(true);
+    expect(response.body.message).toContain('認証が完了しました');
+  });
+  
+  test('should reject invalid OTP code', async () => {
+    const response = await request(baseURL)
+      .post('/phone-verification')
+      .set('Authorization', `Bearer ${SUPABASE_ANON_KEY}`)
+      .set('Content-Type', 'application/json')
+      .send({
+        action: 'verify_code',
+        phoneNumber: '+819012345680',
+        code: '000000' // 無効なコード
+      });
+    
+    expect(response.status).toBe(400);
+    expect(response.body.error).toBe('verification_failed');
+  });
+  
+  test('should require both phone number and code', async () => {
+    const response = await request(baseURL)
+      .post('/phone-verification')
+      .set('Authorization', `Bearer ${SUPABASE_ANON_KEY}`)
+      .set('Content-Type', 'application/json')
+      .send({
+        action: 'verify_code',
+        phoneNumber: '+819012345680'
+        // code missing
+      });
+    
+    expect(response.status).toBe(400);
+    expect(response.body.error).toBe('invalid_request');
+  });
+});
+```
+
+## 🖥️ フロントエンド統合テスト
+
+### 5. UI統合テスト
+
+#### TC-UI-001: 電話番号入力・検証フローテスト
+```javascript
+// テスト目的: フロントエンドの電話番号認証フローが正常動作することを確認
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { AuthModal } from '../src/components/auth/AuthModal';
+
+describe('Phone Number Authentication Flow', () => {
+  test('should complete phone verification flow', async () => {
+    const mockOnSuccess = jest.fn();
+    
+    render(<AuthModal mode="signup" onSuccess={mockOnSuccess} />);
+    
+    // 電話番号入力
+    const phoneInput = screen.getByPlaceholderText('電話番号を入力');
+    fireEvent.change(phoneInput, { target: { value: '090-1234-5678' } });
+    
+    // SMS送信ボタンクリック
+    const sendButton = screen.getByText('認証コードを送信');
+    fireEvent.click(sendButton);
+    
+    // SMS送信完了まで待機
+    await waitFor(() => {
+      expect(screen.getByText('認証コードを入力してください')).toBeInTheDocument();
+    });
+    
+    // OTPコード入力
+    const otpInput = screen.getByPlaceholderText('6桁のコードを入力');
+    fireEvent.change(otpInput, { target: { value: '123456' } });
+    
+    // 検証ボタンクリック
+    const verifyButton = screen.getByText('コードを確認');
+    fireEvent.click(verifyButton);
+    
+    // 検証完了まで待機
+    await waitFor(() => {
+      expect(mockOnSuccess).toHaveBeenCalled();
+    }, { timeout: 5000 });
+  });
+  
+  test('should show error for duplicate phone number', async () => {
+    render(<AuthModal mode="signup" />);
+    
+    // 既に登録済みの電話番号入力
+    const phoneInput = screen.getByPlaceholderText('電話番号を入力');
+    fireEvent.change(phoneInput, { target: { value: '090-8765-4321' } });
+    
+    // SMS送信ボタンクリック
+    const sendButton = screen.getByText('認証コードを送信');
+    fireEvent.click(sendButton);
+    
+    // エラーメッセージ表示まで待機
+    await waitFor(() => {
+      expect(screen.getByText(/この電話番号は既に他のアカウントで使用されています/)).toBeInTheDocument();
+    });
+  });
+  
+  test('should validate phone number format', async () => {
+    render(<AuthModal mode="signup" />);
+    
+    // 無効な電話番号入力
+    const phoneInput = screen.getByPlaceholderText('電話番号を入力');
+    fireEvent.change(phoneInput, { target: { value: '123' } });
+    
+    // SMS送信ボタンクリック
+    const sendButton = screen.getByText('認証コードを送信');
+    fireEvent.click(sendButton);
+    
+    // バリデーションエラー表示まで待機
+    await waitFor(() => {
+      expect(screen.getByText(/電話番号の形式が正しくありません/)).toBeInTheDocument();
+    });
+  });
+});
+```
+
+## 🔒 セキュリティテスト
+
+### 6. セキュリティテスト
+
+#### TC-SEC-001: SQLインジェクション耐性テスト
+```sql
+-- テスト目的: SQLインジェクション攻撃に対する耐性を確認
+DO $$
+DECLARE
+  malicious_input TEXT := '''; DROP TABLE phone_verifications; --';
+  result JSON;
+BEGIN
+  -- 悪意のある入力でcheck_phone_availability関数を呼び出し
+  result := check_phone_availability(malicious_input);
+  
+  -- 関数が正常にエラーを返すことを確認
+  IF (result->>'available')::boolean = true THEN
+    RAISE EXCEPTION 'SQL injection test failed: malicious input was processed';
+  END IF;
+  
+  -- テーブルが削除されていないことを確認
+  IF NOT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'phone_verifications') THEN
+    RAISE EXCEPTION 'SQL injection succeeded: table was dropped';
+  END IF;
+  
+  RAISE NOTICE 'SQL injection test passed';
+END;
+$$;
+```
+
+#### TC-SEC-002: ブルートフォース攻撃テスト
+```javascript
+// テスト目的: ブルートフォース攻撃に対する防御を確認
+describe('Security Tests - Brute Force Protection', () => {
+  test('should block excessive OTP attempts', async () => {
+    const phoneNumber = '+819012345681';
+    
+    // 事前にSMS送信
+    await request(baseURL)
+      .post('/phone-verification')
+      .send({
+        action: 'send_code',
+        phoneNumber: phoneNumber
+      });
+    
+    // 10回連続で間違ったOTPを試行
+    const promises = [];
+    for (let i = 0; i < 10; i++) {
+      promises.push(
+        request(baseURL)
+          .post('/phone-verification')
+          .send({
+            action: 'verify_code',
+            phoneNumber: phoneNumber,
+            code: String(i).padStart(6, '0') // 000000, 000001, etc.
+          })
+      );
+    }
+    
+    const responses = await Promise.all(promises);
+    
+    // 最初の数回は400 (無効なコード)、後半は429 (レート制限)になるはず
+    const rateLimitedResponses = responses.filter(r => r.status === 429);
+    expect(rateLimitedResponses.length).toBeGreaterThan(0);
+  });
+});
+```
+
+#### TC-SEC-003: データ漏洩防止テスト
+```javascript
+// テスト目的: エラーレスポンスにシステム内部情報が漏洩しないことを確認
+describe('Security Tests - Information Disclosure', () => {
+  test('should not leak system information in error responses', async () => {
+    const response = await request(baseURL)
+      .post('/phone-verification')
+      .send({
+        action: 'send_code',
+        phoneNumber: '+819012345682'
+      });
+    
+    // エラーレスポンスに機密情報が含まれていないことを確認
+    const responseText = JSON.stringify(response.body);
+    
+    // 検出すべき機密情報のパターン
+    const sensitivePatterns = [
+      /TWILIO_AUTH_TOKEN/i,
+      /SUPABASE_SERVICE_ROLE_KEY/i,
+      /password/i,
+      /secret/i,
+      /postgres/i,
+      /database/i,
+      /connection/i,
+      /stack trace/i
+    ];
+    
+    sensitivePatterns.forEach(pattern => {
+      expect(responseText).not.toMatch(pattern);
+    });
+  });
+});
+```
+
+## ⚡ パフォーマンステスト
+
+### 7. パフォーマンステスト
+
+#### TC-PERF-001: レスポンス時間テスト
+```javascript
+// テスト目的: API レスポンス時間が要件を満たすことを確認
+describe('Performance Tests', () => {
+  test('SMS sending should complete within 3 seconds', async () => {
+    const startTime = Date.now();
+    
+    const response = await request(baseURL)
+      .post('/phone-verification')
+      .send({
+        action: 'send_code',
+        phoneNumber: '+819012345683'
+      });
+    
+    const endTime = Date.now();
+    const responseTime = endTime - startTime;
+    
+    expect(response.status).toBe(200);
+    expect(responseTime).toBeLessThan(3000); // 3秒以内
+  });
+  
+  test('OTP verification should complete within 1 second', async () => {
+    // 事前準備
+    await request(baseURL)
+      .post('/phone-verification')
+      .send({
+        action: 'send_code',
+        phoneNumber: '+819012345684'
+      });
+    
+    const startTime = Date.now();
+    
+    const response = await request(baseURL)
+      .post('/phone-verification')
+      .send({
+        action: 'verify_code',
+        phoneNumber: '+819012345684',
+        code: '123456'
+      });
+    
+    const endTime = Date.now();
+    const responseTime = endTime - startTime;
+    
+    expect(responseTime).toBeLessThan(1000); // 1秒以内
+  });
+});
+```
+
+#### TC-PERF-002: 同時接続テスト
+```javascript
+// テスト目的: 同時に多数のリクエストを処理できることを確認
+describe('Concurrent Request Tests', () => {
+  test('should handle 50 concurrent phone availability checks', async () => {
+    const promises = [];
+    
+    for (let i = 0; i < 50; i++) {
+      promises.push(
+        request(baseURL)
+          .post('/phone-verification')
+          .send({
+            action: 'send_code',
+            phoneNumber: `+8190123456${String(i).padStart(2, '0')}`
+          })
+      );
+    }
+    
+    const startTime = Date.now();
+    const responses = await Promise.allSettled(promises);
+    const endTime = Date.now();
+    
+    // 全てのリクエストが10秒以内に完了すること
+    expect(endTime - startTime).toBeLessThan(10000);
+    
+    // 成功レスポンスが適切な数あること
+    const successfulResponses = responses.filter(
+      result => result.status === 'fulfilled' && result.value.status === 200
+    );
+    
+    expect(successfulResponses.length).toBeGreaterThan(40); // 80%以上の成功率
+  });
+});
+```
+
+## 📊 テスト実行・管理
+
+### 8. テスト実行計画
+
+#### 8.1 テスト実行順序
+1. **単体テスト**: データベース関数のテスト
+2. **API テスト**: Edge Function の API テスト
+3. **統合テスト**: フロントエンドとの統合テスト
+4. **セキュリティテスト**: 脆弱性・攻撃耐性テスト
+5. **パフォーマンステスト**: 性能・負荷テスト
+
+#### 8.2 テスト自動化
+```javascript
+// package.json スクリプト設定例
+{
+  "scripts": {
+    "test:db": "npm run test:db:functions && npm run test:db:security",
+    "test:db:functions": "psql -d $TEST_DATABASE_URL -f tests/database/functions.test.sql",
+    "test:db:security": "psql -d $TEST_DATABASE_URL -f tests/database/security.test.sql",
+    "test:api": "jest tests/api/ --detectOpenHandles",
+    "test:integration": "jest tests/integration/ --detectOpenHandles",
+    "test:security": "jest tests/security/ --detectOpenHandles",
+    "test:performance": "jest tests/performance/ --detectOpenHandles --timeout=30000",
+    "test:all": "npm run test:db && npm run test:api && npm run test:integration && npm run test:security && npm run test:performance"
+  }
+}
+```
+
+#### 8.3 CI/CD 統合
+```yaml
+# .github/workflows/phone-verification-tests.yml
+name: Phone Verification Tests
+
+on:
+  push:
+    paths:
+      - 'supabase/functions/phone-verification/**'
+      - 'supabase/migrations/**phone_verification**'
+      - 'src/components/auth/AuthModal.tsx'
+  pull_request:
+    paths:
+      - 'supabase/functions/phone-verification/**'
+      - 'supabase/migrations/**phone_verification**'
+      - 'src/components/auth/AuthModal.tsx'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '18'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Run database tests
+        run: npm run test:db
+        env:
+          TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
+          
+      - name: Run API tests
+        run: npm run test:api
+        env:
+          SUPABASE_URL: ${{ secrets.TEST_SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.TEST_SUPABASE_ANON_KEY }}
+          
+      - name: Run security tests
+        run: npm run test:security
+        
+      - name: Run performance tests
+        run: npm run test:performance
+```
+
+### 9. テスト結果レポート
+
+#### 9.1 テスト結果サマリー
+```javascript
+// テスト結果レポート生成
+const generateTestReport = (testResults) => {
+  return {
+    summary: {
+      total: testResults.length,
+      passed: testResults.filter(t => t.status === 'passed').length,
+      failed: testResults.filter(t => t.status === 'failed').length,
+      skipped: testResults.filter(t => t.status === 'skipped').length
+    },
+    categories: {
+      database: testResults.filter(t => t.category === 'database'),
+      api: testResults.filter(t => t.category === 'api'),
+      security: testResults.filter(t => t.category === 'security'),
+      performance: testResults.filter(t => t.category === 'performance')
+    },
+    coverage: calculateCoverage(testResults),
+    executionTime: calculateTotalExecutionTime(testResults)
+  };
+};
+```
+
+## 🎯 受け入れ基準
+
+### 10. テスト合格基準
+
+#### 10.1 機能テスト合格基準
+- ✅ 全ての単体テストが合格
+- ✅ API テストが95%以上合格
+- ✅ 統合テストが90%以上合格
+- ✅ 重複チェック機能が100%動作
+
+#### 10.2 セキュリティテスト合格基準
+- ✅ SQLインジェクション攻撃テストが合格
+- ✅ ブルートフォース攻撃防御テストが合格
+- ✅ データ漏洩防止テストが合格
+- ✅ レート制限テストが合格
+
+#### 10.3 パフォーマンステスト合格基準
+- ✅ SMS送信APIが3秒以内に応答
+- ✅ OTP検証APIが1秒以内に応答
+- ✅ 重複チェックが500ms以内に完了
+- ✅ 同時50接続で90%以上の成功率
+
+#### 10.4 全体合格基準
+- ✅ 全カテゴリのテストが合格基準を満たす
+- ✅ コードカバレッジが85%以上
+- ✅ 重大なセキュリティ脆弱性が0件
+- ✅ パフォーマンス要件を全て満たす
+
+---
+
+## 実装ログ更新履歴
+
+**2025-01-28**: 電話番号重複チェック機能の包括的なテスト仕様書を作成。データベース関数、API、UI、セキュリティ、パフォーマンステストの詳細仕様を策定。

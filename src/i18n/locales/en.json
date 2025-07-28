@@ -1891,6 +1891,7 @@
     "password": "Password",
     "passwordPlaceholder": "Enter your password",
     "passwordRequirement": "Password must be at least 6 characters long",
+    "usernameRequirement": "Username must be between 3 and 30 characters",
     "rememberMe": "Remember me",
     "sending": "Sending...",
     "verifying": "Verifying...",

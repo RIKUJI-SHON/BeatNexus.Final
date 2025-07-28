@@ -10,7 +10,7 @@ interface AuthState {
   loading: boolean;
   isUserInitiatedLogin?: boolean;
   signIn: (email: string, password: string) => Promise<void>;
-  signUp: (email: string, password: string, username: string) => Promise<{ user: User | null; error: any } | undefined>;
+  signUp: (email: string, password: string, username: string, phoneNumber?: string) => Promise<{ user: User | null; error: unknown } | undefined>;
   validatePreregistration: (email: string) => Promise<boolean>;
   signOut: () => Promise<void>;
   setUser: (user: User | null) => void;
@@ -48,7 +48,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       return false;
     }
   },
-  signUp: async (email: string, password: string, username: string) => {
+  signUp: async (email: string, password: string, username: string, phoneNumber?: string) => {
     // Check if email is pre-registered
     const isPreregistered = await (async () => {
       try {
@@ -71,7 +71,9 @@ export const useAuthStore = create<AuthState>((set) => ({
     // ブラウザの言語設定を検出
     const detectedLanguage = detectBrowserLanguage();
     console.log('SignUp: Detected browser language:', detectedLanguage);
+    console.log('SignUp: Phone number provided:', phoneNumber ? 'Yes' : 'No');
 
+    console.log('🔐 Calling Supabase auth.signUp...');
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -82,7 +84,34 @@ export const useAuthStore = create<AuthState>((set) => ({
         },
       },
     });
-    if (error) throw error;
+    
+    console.log('📊 Supabase signUp response:', { data: !!data, error: !!error });
+    if (error) {
+      console.error('❌ Supabase signUp error:', error);
+      throw error;
+    }
+    
+    console.log('✅ Supabase signUp successful, user ID:', data.user?.id);
+    
+    // 電話番号が提供されている場合、データベースに保存
+    if (phoneNumber && data.user) {
+      console.log('📱 Recording phone number for new user...');
+      try {
+        const { error: phoneError } = await supabase.rpc('record_phone_verification', {
+          p_user_id: data.user.id,
+          p_phone_number: phoneNumber
+        });
+        
+        if (phoneError) {
+          console.error('❌ Phone number recording failed:', phoneError);
+          // 電話番号保存失敗はアカウント作成の失敗とはしない（継続可能）
+        } else {
+          console.log('✅ Phone number successfully recorded for new user');
+        }
+      } catch (phoneRecordError) {
+        console.error('Phone number recording exception:', phoneRecordError);
+      }
+    }
     
     // Track registration event
     trackBeatNexusEvents.userRegister();

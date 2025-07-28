@@ -1706,6 +1706,7 @@
     "password": "パスワード",
     "passwordPlaceholder": "パスワードを入力",
     "passwordRequirement": "パスワードは6文字以上である必要があります",
+    "usernameRequirement": "ユーザー名は3文字以上30文字以下で入力してください",
     "rememberMe": "ログイン状態を保持",
     "sending": "送信中...",
     "verifying": "認証中...",

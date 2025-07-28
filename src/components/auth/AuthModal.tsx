@@ -79,6 +79,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       return;
     }
 
+    if (mode === 'signup' && (username.length < 3 || username.length > 30)) {
+      setError(t('auth.usernameRequirement'));
+      setLoading(false);
+      return;
+    }
+
     if (mode === 'signup' && password.length < 6) {
       setError(t('auth.passwordRequirement'));
       setLoading(false);
@@ -93,21 +99,48 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
     try {
       if (mode === 'login') {
+        console.log('🔐 Starting login process...');
         await signIn(email, password);
         onClose();
         navigate('/');
       } else {
-        const result = await signUp(email, password, username);
+        console.log('📝 Starting signup process...');
+        console.log('📞 Phone verified:', phoneVerified);
+        console.log('👤 Username:', username);
+        console.log('📧 Email:', email);
+        
+        // 電話番号のフォーマット（認証済みの場合）
+        let formattedPhone = '';
+        if (phoneVerified && phoneNumber) {
+          formattedPhone = phoneNumber.trim().replace(/-/g, '').replace(/\s+/g, '');
+          formattedPhone = `${selectedCountry.dial}${formattedPhone.replace(/^0+/, '')}`;
+          console.log('📱 Formatted phone:', formattedPhone.substring(0, 5) + '***');
+        }
+        
+        console.log('🚀 Calling signUp...');
+        const result = await signUp(email, password, username, phoneVerified ? formattedPhone : undefined);
+        console.log('✅ SignUp result:', result);
+        
         if (result && result.user && !result.user.email_confirmed_at) {
+          console.log('📧 Email confirmation required');
           setShowConfirmationEmailModal(true);
         } else if (result && result.user) {
+          console.log('🎉 Signup successful, redirecting...');
           onClose();
           navigate('/');
         } else {
+          console.error('❌ Unexpected signup result:', result);
           setError('An unexpected error occurred during sign up.');
         }
       }
     } catch (err) {
+      console.error('❌ Auth error caught:', err);
+      console.error('Error type:', typeof err);
+      console.error('Error constructor:', err?.constructor?.name);
+      if (err instanceof Error) {
+        console.error('Error message:', err.message);
+        console.error('Error stack:', err.stack);
+      }
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
       setLoading(false);
@@ -237,6 +270,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     placeholder={t('auth.usernamePlaceholder') as string}
                     required
                   />
+                  <p className="text-xs text-gray-400 mt-1">3-30文字で入力してください</p>
                 </div>
               )}
 

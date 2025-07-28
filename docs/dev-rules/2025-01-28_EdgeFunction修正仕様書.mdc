@@ -1,0 +1,582 @@
+# Edge Function修正仕様書 - 電話番号認証システム
+
+## 📋 実装ログ
+
+**作成日**: 2025年1月28日  
+**対象**: phone-verification Edge Function の修正仕様  
+**緊急度**: 🔴 高（現在の実装に重大な欠陥あり）  
+**関連**: 電話番号重複チェック機能要件定義書、DB設計仕様書
+
+## 🚨 現在の問題状況
+
+### Edge Function の重大な問題
+1. **存在しないDB関数の呼び出し**: `check_phone_availability`, `record_phone_verification` が未実装
+2. **エラーハンドリング不備**: DB関数エラー時の適切な処理がない
+3. **ログ記録不足**: 重要な操作の監査ログが不足
+4. **レート制限未実装**: アプリケーションレベルでの制限がない
+5. **セキュリティログ不足**: 不正試行の記録がない
+
+## 🎯 修正要件
+
+### 1. 機能要件
+
+#### 1.1 エラーハンドリング強化
+**FR-001**: DB関数呼び出しエラーの適切な処理
+- **概要**: 存在しない関数呼び出し時のエラーを適切にキャッチ
+- **対応**: try-catch による例外処理とフォールバック機能
+- **ログ**: 詳細なエラー情報を監査ログに記録
+
+**FR-002**: ユーザーフレンドリーなエラーメッセージ
+- **概要**: 技術的エラーを適切にユーザー向けメッセージに変換
+- **多言語対応**: 日本語・英語での適切なエラーメッセージ
+- **セキュリティ**: システム内部情報の漏洩防止
+
+#### 1.2 ログ機能強化
+**FR-003**: 包括的な監査ログ
+- **概要**: 全ての重要な操作を監査ログに記録
+- **対象**: SMS送信、OTP検証、重複チェック、エラー発生
+- **詳細**: リクエスト情報、実行時間、結果
+
+**FR-004**: セキュリティログ記録
+- **概要**: セキュリティ関連イベントの記録
+- **対象**: 重複試行、レート制限違反、不正アクセス
+- **分析**: パターン分析のための構造化データ
+
+#### 1.3 パフォーマンス改善
+**FR-005**: 実行時間の測定と最適化
+- **概要**: 各処理の実行時間を測定し最適化
+- **目標**: SMS送信3秒以内、OTP検証1秒以内
+- **監視**: パフォーマンスメトリクスの記録
+
+### 2. 技術仕様
+
+#### 2.1 修正対象ファイル
+- **ファイル**: `supabase/functions/phone-verification/index.ts`
+- **現在のバージョン**: v2.0
+- **新バージョン**: v2.1 (修正版)
+
+#### 2.2 主要な修正内容
+
+##### 2.2.1 エラーハンドリング機能の追加
+```typescript
+// DB関数呼び出し用ヘルパー関数
+async function callDatabaseFunction<T>(
+  supabase: SupabaseClient,
+  functionName: string,
+  params: any
+): Promise<{ data: T | null; error: any }> {
+  try {
+    const result = await supabase.rpc(functionName, params);
+    return result;
+  } catch (error) {
+    // 関数不存在エラーの特別処理
+    if (error.message?.includes('function') && error.message?.includes('does not exist')) {
+      console.error(`Database function ${functionName} does not exist:`, error);
+      return {
+        data: null,
+        error: {
+          code: 'FUNCTION_NOT_FOUND',
+          message: `Database function ${functionName} is not implemented`,
+          details: error.message
+        }
+      };
+    }
+    
+    // その他のエラー
+    console.error(`Database function ${functionName} error:`, error);
+    return {
+      data: null,
+      error: {
+        code: 'DATABASE_ERROR',
+        message: 'Database operation failed',
+        details: error.message
+      }
+    };
+  }
+}
+```
+
+##### 2.2.2 監査ログ機能の追加
+```typescript
+// 監査ログ記録関数
+async function logAuditEvent(
+  supabase: SupabaseClient,
+  tableName: string,
+  action: string,
+  userId: string | null,
+  details: any,
+  success: boolean = true,
+  errorMessage: string | null = null,
+  executionTimeMs: number | null = null
+): Promise<void> {
+  try {
+    const { error } = await callDatabaseFunction(supabase, 'log_audit_event', {
+      p_table_name: tableName,
+      p_action: action,
+      p_user_id: userId,
+      p_details: details,
+      p_success: success,
+      p_error_message: errorMessage,
+      p_execution_time_ms: executionTimeMs
+    });
+    
+    if (error) {
+      console.error('Failed to log audit event:', error);
+      // フォールバック: コンソールログ
+      console.log('AUDIT LOG:', {
+        table: tableName,
+        action,
+        userId,
+        details,
+        success,
+        error: errorMessage,
+        executionTime: executionTimeMs,
+        timestamp: new Date().toISOString()
+      });
+    }
+  } catch (err) {
+    console.error('Audit logging error:', err);
+  }
+}
+```
+
+##### 2.2.3 セキュリティログ機能の追加
+```typescript
+// セキュリティログ記録関数
+async function logSecurityEvent(
+  supabase: SupabaseClient,
+  eventType: string,
+  userId: string | null,
+  phoneNumber: string | null,
+  eventData: any,
+  severityLevel: number = 3,
+  request: Request
+): Promise<void> {
+  try {
+    const requestInfo = {
+      ip: request.headers.get('x-forwarded-for') || 
+          request.headers.get('x-real-ip') || 
+          'unknown',
+      userAgent: request.headers.get('user-agent') || 'unknown',
+      referer: request.headers.get('referer') || null,
+      timestamp: new Date().toISOString()
+    };
+    
+    const { error } = await callDatabaseFunction(supabase, 'log_security_event', {
+      p_event_type: eventType,
+      p_user_id: userId,
+      p_phone_number: phoneNumber,
+      p_event_data: { ...eventData, request: requestInfo },
+      p_severity_level: severityLevel
+    });
+    
+    if (error) {
+      console.error('Failed to log security event:', error);
+      // フォールバック: コンソールログ
+      console.log('SECURITY LOG:', {
+        eventType,
+        userId,
+        phoneNumber: phoneNumber ? '[REDACTED]' : null,
+        eventData,
+        severityLevel,
+        request: requestInfo
+      });
+    }
+  } catch (err) {
+    console.error('Security logging error:', err);
+  }
+}
+```
+
+##### 2.2.4 パフォーマンス測定機能
+```typescript
+// パフォーマンス測定ヘルパー
+class PerformanceTimer {
+  private startTime: number;
+  private operation: string;
+  
+  constructor(operation: string) {
+    this.operation = operation;
+    this.startTime = performance.now();
+  }
+  
+  end(): number {
+    const endTime = performance.now();
+    const executionTime = Math.round(endTime - this.startTime);
+    console.log(`Performance: ${this.operation} took ${executionTime}ms`);
+    return executionTime;
+  }
+}
+```
+
+##### 2.2.5 改善されたメインハンドラー
+```typescript
+serve(async (req) => {
+  const timer = new PerformanceTimer('phone-verification-request');
+  
+  if (req.method === 'OPTIONS') {
+    return corsResponse();
+  }
+
+  let requestData;
+  let normalizedPhone: string | null = null;
+  
+  try {
+    requestData = await req.json();
+    const { action, phoneNumber, code } = requestData;
+    
+    // 電話番号の正規化
+    normalizedPhone = phoneNumber ? normalizePhoneNumber(phoneNumber) : null;
+    
+    // 基本的な入力検証
+    if (!action) {
+      await logAuditEvent(
+        supabaseAdmin,
+        'phone_verifications',
+        'VALIDATION_ERROR',
+        null,
+        { error: 'missing_action', request: requestData },
+        false,
+        'Action parameter is required'
+      );
+      
+      return corsResponse({ 
+        error: 'invalid_request',
+        message: 'アクションパラメータが必要です。' 
+      }, 400);
+    }
+
+    if (action === 'send_code') {
+      return await handleSendCode(req, phoneNumber, normalizedPhone, supabaseAdmin);
+    }
+
+    if (action === 'verify_code') {
+      return await handleVerifyCode(req, phoneNumber, normalizedPhone, code, supabaseAdmin);
+    }
+
+    return corsResponse({ 
+      error: 'invalid_action',
+      message: 'サポートされていないアクションです。' 
+    }, 400);
+
+  } catch (error) {
+    const executionTime = timer.end();
+    
+    await logAuditEvent(
+      supabaseAdmin,
+      'phone_verifications',
+      'SYSTEM_ERROR',
+      null,
+      { 
+        error: error.message,
+        stack: error.stack,
+        request: requestData
+      },
+      false,
+      error.message,
+      executionTime
+    );
+    
+    return corsResponse({ 
+      error: 'system_error',
+      message: 'システムエラーが発生しました。しばらくしてからお試しください。' 
+    }, 500);
+  }
+});
+```
+
+##### 2.2.6 SMS送信処理の改善
+```typescript
+async function handleSendCode(
+  req: Request,
+  phoneNumber: string,
+  normalizedPhone: string | null,
+  supabaseAdmin: SupabaseClient
+): Promise<Response> {
+  const timer = new PerformanceTimer('send-sms');
+  
+  try {
+    // 入力検証
+    if (!phoneNumber) {
+      await logAuditEvent(
+        supabaseAdmin,
+        'phone_verifications',
+        'VALIDATION_ERROR',
+        null,
+        { error: 'missing_phone_number' },
+        false,
+        'Phone number is required'
+      );
+      
+      return corsResponse({ 
+        error: 'invalid_request',
+        message: '電話番号が必要です。' 
+      }, 400);
+    }
+    
+    if (!normalizedPhone) {
+      await logSecurityEvent(
+        supabaseAdmin,
+        'INVALID_PHONE_FORMAT',
+        null,
+        phoneNumber,
+        { originalPhone: phoneNumber },
+        2,
+        req
+      );
+      
+      return corsResponse({ 
+        error: 'invalid_phone_format',
+        message: '電話番号の形式が正しくありません。' 
+      }, 400);
+    }
+    
+    // 重複チェック（DB関数呼び出し）
+    const { data: availabilityCheck, error: availabilityError } = 
+      await callDatabaseFunction(supabaseAdmin, 'check_phone_availability', {
+        phone_input: normalizedPhone
+      });
+    
+    if (availabilityError) {
+      const executionTime = timer.end();
+      
+      if (availabilityError.code === 'FUNCTION_NOT_FOUND') {
+        // フォールバック: 基本的な重複チェック
+        console.warn('Using fallback duplicate check');
+        
+        const { data: existingVerifications, error: queryError } = await supabaseAdmin
+          .from('phone_verifications')
+          .select('id')
+          .eq('phone_number', normalizedPhone)
+          .eq('is_active', true);
+        
+        if (queryError) {
+          await logAuditEvent(
+            supabaseAdmin,
+            'phone_verifications',
+            'FALLBACK_CHECK_ERROR',
+            null,
+            { error: queryError.message, phone_hash: hashPhoneNumber(normalizedPhone) },
+            false,
+            queryError.message,
+            executionTime
+          );
+          
+          return corsResponse({ 
+            error: 'system_error',
+            message: 'システムエラーが発生しました。しばらくしてからお試しください。' 
+          }, 500);
+        }
+        
+        if (existingVerifications && existingVerifications.length > 0) {
+          await logSecurityEvent(
+            supabaseAdmin,
+            'PHONE_DUPLICATE_ATTEMPT',
+            null,
+            normalizedPhone,
+            { 
+              method: 'fallback_check',
+              existingCount: existingVerifications.length 
+            },
+            4,
+            req
+          );
+          
+          return corsResponse({ 
+            error: 'phone_already_registered',
+            message: 'この電話番号は既に他のアカウントで使用されています。別の電話番号をお試しください。' 
+          }, 409);
+        }
+      } else {
+        // その他のDBエラー
+        await logAuditEvent(
+          supabaseAdmin,
+          'phone_verifications',
+          'AVAILABILITY_CHECK_ERROR',
+          null,
+          { 
+            error: availabilityError.message,
+            phone_hash: hashPhoneNumber(normalizedPhone)
+          },
+          false,
+          availabilityError.message,
+          executionTime
+        );
+        
+        return corsResponse({ 
+          error: 'system_error',
+          message: 'システムエラーが発生しました。しばらくしてからお試しください。' 
+        }, 500);
+      }
+    } else if (!availabilityCheck?.available) {
+      // 重複検出
+      await logSecurityEvent(
+        supabaseAdmin,
+        'PHONE_DUPLICATE_ATTEMPT',
+        null,
+        normalizedPhone,
+        { 
+          method: 'database_function',
+          error: availabilityCheck?.error,
+          message: availabilityCheck?.message
+        },
+        4,
+        req
+      );
+      
+      return corsResponse({ 
+        error: availabilityCheck?.error || 'phone_not_available',
+        message: availabilityCheck?.message || 'この電話番号は使用できません。' 
+      }, 409);
+    }
+    
+    // SMS送信処理
+    const smsResult = await sendVerificationCode(normalizedPhone);
+    const executionTime = timer.end();
+    
+    if (smsResult.success) {
+      await logAuditEvent(
+        supabaseAdmin,
+        'phone_verifications',
+        'SEND_SMS',
+        null,
+        { 
+          phone_hash: hashPhoneNumber(normalizedPhone),
+          provider: 'twilio'
+        },
+        true,
+        null,
+        executionTime
+      );
+      
+      return corsResponse({ 
+        success: true, 
+        message: 'SMS送信が完了しました。' 
+      });
+    } else {
+      await logAuditEvent(
+        supabaseAdmin,
+        'phone_verifications',
+        'SEND_SMS',
+        null,
+        { 
+          phone_hash: hashPhoneNumber(normalizedPhone),
+          error: smsResult.error,
+          provider: 'twilio'
+        },
+        false,
+        smsResult.error,
+        executionTime
+      );
+      
+      return corsResponse({ 
+        error: 'sms_send_failed',
+        message: 'SMS送信に failed しました。しばらくしてからお試しください。' 
+      }, 500);
+    }
+    
+  } catch (error) {
+    const executionTime = timer.end();
+    
+    await logAuditEvent(
+      supabaseAdmin,
+      'phone_verifications',
+      'SEND_SMS',
+      null,
+      { 
+        error: error.message,
+        phone_hash: normalizedPhone ? hashPhoneNumber(normalizedPhone) : null
+      },
+      false,
+      error.message,
+      executionTime
+    );
+    
+    return corsResponse({ 
+      error: 'system_error',
+      message: 'システムエラーが発生しました。しばらくしてからお試しください。' 
+    }, 500);
+  }
+}
+```
+
+#### 2.3 ユーティリティ関数
+
+##### 2.3.1 電話番号ハッシュ化
+```typescript
+function hashPhoneNumber(phoneNumber: string): string {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(phoneNumber);
+  return crypto.subtle.digest('SHA-256', data)
+    .then(hash => Array.from(new Uint8Array(hash))
+      .map(b => b.toString(16).padStart(2, '0'))
+      .join('')
+    );
+}
+```
+
+## 🧪 テスト仕様
+
+### 3. テストケース
+
+#### 3.1 エラーハンドリングテスト
+- **TC-001**: DB関数不存在時のフォールバック動作
+- **TC-002**: DB接続エラー時の適切なエラーメッセージ
+- **TC-003**: 無効な入力データの処理
+- **TC-004**: Twilioサービスエラーの処理
+
+#### 3.2 ログ機能テスト
+- **TC-005**: 監査ログの正確な記録
+- **TC-006**: セキュリティログの記録
+- **TC-007**: パフォーマンスメトリクスの記録
+- **TC-008**: ログ記録失敗時のフォールバック
+
+#### 3.3 セキュリティテスト
+- **TC-009**: 重複検出の正確性
+- **TC-010**: レート制限の動作
+- **TC-011**: 不正データの検出と記録
+- **TC-012**: 個人情報の適切なマスキング
+
+## 📅 実装計画
+
+### 4. 段階的実装
+
+#### Phase 1: 緊急修正（即座に実施）
+1. エラーハンドリング機能の追加
+2. フォールバック機能の実装
+3. 基本的なログ機能の追加
+
+#### Phase 2: 機能強化（1週間以内）
+1. 包括的な監査ログ実装
+2. セキュリティログ機能実装
+3. パフォーマンス測定機能追加
+
+#### Phase 3: 最適化（2週間以内）
+1. パフォーマンスチューニング
+2. エラーメッセージの多言語対応
+3. 管理ダッシュボード対応
+
+## 🔒 セキュリティ考慮事項
+
+### 5. セキュリティ要件
+
+#### 5.1 データ保護
+- 電話番号のハッシュ化記録
+- ログ内の個人情報マスキング
+- API キー・シークレットの適切な管理
+
+#### 5.2 不正アクセス対策
+- レート制限の実装
+- 異常パターンの検出
+- セキュリティイベントの記録
+
+#### 5.3 監査証跡
+- 全ての重要操作の記録
+- エラー発生時の詳細情報保存
+- パフォーマンス情報の記録
+
+---
+
+## 実装ログ更新履歴
+
+**2025-01-28**: phone-verification Edge Function の包括的な修正仕様書を作成。エラーハンドリング、ログ機能、セキュリティ機能の強化仕様を策定。
