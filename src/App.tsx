@@ -83,8 +83,8 @@ function RouterContent() {
         <Header />
         <main id="main-content" className="w-full pt-16" role="main">
           <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/homepage.test" element={<HomepageTestPage />} />
+            <Route path="/" element={<HomepageTestPage />} />
+            <Route path="/old-homepage" element={<HomePage />} />
             <Route path="/battles" element={<BattlesPage />} />
             <Route path="/my-battles" element={<MyBattlesPage />} />
             <Route path="/battle/:battlePath" element={<BattleViewPage />} />

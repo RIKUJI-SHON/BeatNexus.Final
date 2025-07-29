@@ -40,13 +40,24 @@ const HomepageTestPage: React.FC = () => {
 
   // SEO設定
   useCanonicalUrl({
-    canonicalUrl: 'https://beatnexus.vercel.app/homepage.test',
+    canonicalUrl: 'https://beatnexus.vercel.app/',
     excludeQueryParams: true
   });
 
   useDynamicMeta({
-    title: 'BeatNexus - 新しいランディングページテスト',
-    description: 'ビートボクサーのための競技プラットフォーム。動画投稿、自動マッチング、コミュニティ投票でバトルを楽しもう！'
+    title: 'BeatNexus - ビートボクサーのための競技プラットフォーム | オンラインバトル・ランキング',
+    description: 'ビートボクサーのための競技プラットフォーム。動画投稿で気軽にバトル、コミュニティ投票で勝敗決定。Eloレーティング、シーズン制ランキング、賞金トーナメントまで。全てのビートボクサーに次のステップを提供します。',
+    keywords: 'ビートボックス,バトル,オンライン,競技,ランキング,コミュニティ,投票,動画,トーナメント,beatbox,battle',
+    author: 'BeatNexus',
+    robots: 'index,follow',
+    ogTitle: 'BeatNexus - ビートボクサーのための競技プラットフォーム',
+    ogDescription: 'ビートボクサーのための競技プラットフォーム。動画投稿で気軽にバトル、コミュニティ投票で勝敗決定。全てのビートボクサーに次のステップを。',
+    ogImage: 'https://beatnexus.vercel.app/images/og-image.png',
+    ogType: 'website',
+    twitterCard: 'summary_large_image',
+    twitterTitle: 'BeatNexus - ビートボクサーのための競技プラットフォーム',
+    twitterDescription: 'ビートボクサーのための競技プラットフォーム。動画投稿で気軽にバトル、コミュニティ投票で勝敗決定。',
+    twitterImage: 'https://beatnexus.vercel.app/images/og-image.png'
   });
 
   const requireAuth = useRequireAuth({

@@ -72,10 +72,47 @@ interface UseDynamicMetaOptions {
   description?: string;
   /** タイトルの後ろに付けるサフィックス（デフォルト: " - BeatNexus"） */
   titleSuffix?: string;
+  /** meta keywords */
+  keywords?: string;
+  /** meta author */
+  author?: string;
+  /** meta robots */
+  robots?: string;
+  /** Open Graph title */
+  ogTitle?: string;
+  /** Open Graph description */
+  ogDescription?: string;
+  /** Open Graph image */
+  ogImage?: string;
+  /** Open Graph type */
+  ogType?: string;
+  /** Twitter Card type */
+  twitterCard?: string;
+  /** Twitter title */
+  twitterTitle?: string;
+  /** Twitter description */
+  twitterDescription?: string;
+  /** Twitter image */
+  twitterImage?: string;
 }
 
 export function useDynamicMeta(options: UseDynamicMetaOptions = {}) {
-  const { title, description, titleSuffix = ' - BeatNexus' } = options;
+  const { 
+    title, 
+    description, 
+    titleSuffix = ' - BeatNexus',
+    keywords,
+    author,
+    robots,
+    ogTitle,
+    ogDescription,
+    ogImage,
+    ogType,
+    twitterCard,
+    twitterTitle,
+    twitterDescription,
+    twitterImage
+  } = options;
 
   useEffect(() => {
     if (title) {
@@ -96,6 +133,165 @@ export function useDynamicMeta(options: UseDynamicMetaOptions = {}) {
       metaDescription.setAttribute('content', description);
     }
   }, [description]);
+
+  // Keywords meta tag
+  useEffect(() => {
+    if (keywords) {
+      let metaKeywords = document.querySelector('meta[name="keywords"]');
+      
+      if (!metaKeywords) {
+        metaKeywords = document.createElement('meta');
+        metaKeywords.setAttribute('name', 'keywords');
+        document.head.appendChild(metaKeywords);
+      }
+      
+      metaKeywords.setAttribute('content', keywords);
+    }
+  }, [keywords]);
+
+  // Author meta tag
+  useEffect(() => {
+    if (author) {
+      let metaAuthor = document.querySelector('meta[name="author"]');
+      
+      if (!metaAuthor) {
+        metaAuthor = document.createElement('meta');
+        metaAuthor.setAttribute('name', 'author');
+        document.head.appendChild(metaAuthor);
+      }
+      
+      metaAuthor.setAttribute('content', author);
+    }
+  }, [author]);
+
+  // Robots meta tag
+  useEffect(() => {
+    if (robots) {
+      let metaRobots = document.querySelector('meta[name="robots"]');
+      
+      if (!metaRobots) {
+        metaRobots = document.createElement('meta');
+        metaRobots.setAttribute('name', 'robots');
+        document.head.appendChild(metaRobots);
+      }
+      
+      metaRobots.setAttribute('content', robots);
+    }
+  }, [robots]);
+
+  // Open Graph meta tags
+  useEffect(() => {
+    if (ogTitle) {
+      let ogTitleMeta = document.querySelector('meta[property="og:title"]');
+      
+      if (!ogTitleMeta) {
+        ogTitleMeta = document.createElement('meta');
+        ogTitleMeta.setAttribute('property', 'og:title');
+        document.head.appendChild(ogTitleMeta);
+      }
+      
+      ogTitleMeta.setAttribute('content', ogTitle);
+    }
+  }, [ogTitle]);
+
+  useEffect(() => {
+    if (ogDescription) {
+      let ogDescMeta = document.querySelector('meta[property="og:description"]');
+      
+      if (!ogDescMeta) {
+        ogDescMeta = document.createElement('meta');
+        ogDescMeta.setAttribute('property', 'og:description');
+        document.head.appendChild(ogDescMeta);
+      }
+      
+      ogDescMeta.setAttribute('content', ogDescription);
+    }
+  }, [ogDescription]);
+
+  useEffect(() => {
+    if (ogImage) {
+      let ogImageMeta = document.querySelector('meta[property="og:image"]');
+      
+      if (!ogImageMeta) {
+        ogImageMeta = document.createElement('meta');
+        ogImageMeta.setAttribute('property', 'og:image');
+        document.head.appendChild(ogImageMeta);
+      }
+      
+      ogImageMeta.setAttribute('content', ogImage);
+    }
+  }, [ogImage]);
+
+  useEffect(() => {
+    if (ogType) {
+      let ogTypeMeta = document.querySelector('meta[property="og:type"]');
+      
+      if (!ogTypeMeta) {
+        ogTypeMeta = document.createElement('meta');
+        ogTypeMeta.setAttribute('property', 'og:type');
+        document.head.appendChild(ogTypeMeta);
+      }
+      
+      ogTypeMeta.setAttribute('content', ogType);
+    }
+  }, [ogType]);
+
+  // Twitter Card meta tags
+  useEffect(() => {
+    if (twitterCard) {
+      let twitterCardMeta = document.querySelector('meta[name="twitter:card"]');
+      
+      if (!twitterCardMeta) {
+        twitterCardMeta = document.createElement('meta');
+        twitterCardMeta.setAttribute('name', 'twitter:card');
+        document.head.appendChild(twitterCardMeta);
+      }
+      
+      twitterCardMeta.setAttribute('content', twitterCard);
+    }
+  }, [twitterCard]);
+
+  useEffect(() => {
+    if (twitterTitle) {
+      let twitterTitleMeta = document.querySelector('meta[name="twitter:title"]');
+      
+      if (!twitterTitleMeta) {
+        twitterTitleMeta = document.createElement('meta');
+        twitterTitleMeta.setAttribute('name', 'twitter:title');
+        document.head.appendChild(twitterTitleMeta);
+      }
+      
+      twitterTitleMeta.setAttribute('content', twitterTitle);
+    }
+  }, [twitterTitle]);
+
+  useEffect(() => {
+    if (twitterDescription) {
+      let twitterDescMeta = document.querySelector('meta[name="twitter:description"]');
+      
+      if (!twitterDescMeta) {
+        twitterDescMeta = document.createElement('meta');
+        twitterDescMeta.setAttribute('name', 'twitter:description');
+        document.head.appendChild(twitterDescMeta);
+      }
+      
+      twitterDescMeta.setAttribute('content', twitterDescription);
+    }
+  }, [twitterDescription]);
+
+  useEffect(() => {
+    if (twitterImage) {
+      let twitterImageMeta = document.querySelector('meta[name="twitter:image"]');
+      
+      if (!twitterImageMeta) {
+        twitterImageMeta = document.createElement('meta');
+        twitterImageMeta.setAttribute('name', 'twitter:image');
+        document.head.appendChild(twitterImageMeta);
+      }
+      
+      twitterImageMeta.setAttribute('content', twitterImage);
+    }
+  }, [twitterImage]);
 }
 
 /**
