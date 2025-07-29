@@ -23,8 +23,8 @@ export function detectBrowserLanguage(): string {
     return languageCode;
   }
   
-  // デフォルトは日本語
-  return 'ja';
+  // デフォルトは英語
+  return 'en';
 }
 
 /**

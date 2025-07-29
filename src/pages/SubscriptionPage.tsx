@@ -1,7 +1,10 @@
 import React from 'react';
 import { Crown } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const SubscriptionPage: React.FC = () => {
+  const { t } = useTranslation();
+
   return (
     <div className="min-h-screen bg-gray-950 flex items-center justify-center">
       <div className="text-center max-w-md mx-auto p-8">
@@ -10,10 +13,10 @@ const SubscriptionPage: React.FC = () => {
             <Crown className="h-12 w-12 text-cyan-400" />
           </div>
           <h1 className="text-4xl font-bold text-white mb-4">
-            Coming Soon
+            {t('subscription.comingSoon.title')}
           </h1>
           <p className="text-xl text-gray-400">
-            サブスクリプション機能は近日公開予定です
+            {t('subscription.comingSoon.description')}
           </p>
         </div>
       </div>

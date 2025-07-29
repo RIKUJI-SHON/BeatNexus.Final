@@ -92,7 +92,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     }
 
     if (mode === 'signup' && password !== confirmPassword) {
-      setError(t('auth.passwordMismatch', 'パスワードが一致しません'));
+      setError(t('auth.passwordMismatch'));
       setLoading(false);
       return;
     }
@@ -270,7 +270,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     placeholder={t('auth.usernamePlaceholder') as string}
                     required
                   />
-                  <p className="text-xs text-gray-400 mt-1">3-30文字で入力してください</p>
+                  <p className="text-xs text-gray-400 mt-1">{t('auth.usernameDescription')}</p>
                 </div>
               )}
 
@@ -312,7 +312,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               {mode === 'signup' && (
                 <div>
                   <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-300 mb-2">
-                    {t('auth.confirmPassword', 'パスワード確認')}
+                    {t('auth.confirmPassword')}
                   </label>
                   <input
                     type="password"
@@ -320,12 +320,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     className="w-full px-4 py-3 bg-gray-800/50 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition-colors"
-                    placeholder={t('auth.confirmPasswordPlaceholder', 'パスワードを再入力してください') as string}
+                    placeholder={t('auth.confirmPasswordPlaceholder') as string}
                     required
                     minLength={6}
                   />
                   {confirmPassword && password !== confirmPassword && (
-                    <p className="text-red-400 text-sm mt-2">{t('auth.passwordMismatch', 'パスワードが一致しません')}</p>
+                    <p className="text-red-400 text-sm mt-2">{t('auth.passwordMismatch')}</p>
                   )}
                 </div>
               )}

@@ -311,7 +311,7 @@ const BattlesPage: React.FC = () => {
                       <div className="mt-6 p-4 bg-slate-800/60 rounded-lg border border-slate-600/40">
                         <p className="text-cyan-300 text-sm font-medium flex items-center justify-center gap-2">
                           <Mic className="w-4 h-4" aria-hidden="true" />
-                          新しいバトルを作成して、コミュニティを盛り上げよう！
+                          {t('battlesPage.status.createBattleHint')}
                         </p>
                       </div>
                     </div>
@@ -384,7 +384,7 @@ const BattlesPage: React.FC = () => {
                       <div className="mt-6 p-4 bg-slate-800/60 rounded-lg border border-slate-600/40">
                         <p className="text-cyan-300 text-xs font-medium flex items-center justify-center gap-2">
                           <Archive className="w-4 h-4" aria-hidden="true" />
-                          完了したバトルがここに表示されます
+                          {t('battlesPage.status.completedBattlesHint')}
                         </p>
                       </div>
                     </div>

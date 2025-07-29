@@ -142,6 +142,10 @@
           "earnedDate": "獲得日"
         }
       }
+    },
+    "comingSoon": {
+      "title": "Coming Soon",
+      "description": "サブスクリプション機能は近日公開予定です"
     }
   },
   "battle": {
@@ -598,6 +602,12 @@
       "subtitle": "あなたのビートボックスの旅はここから始まります。今すぐBeatNexusに参加し、革命の一部になりましょう。",
       "button": "無料で登録してバトル！",
       "availability": "iOSおよびAndroidでも利用可能（近日公開！）"
+    },
+    "cta": {
+      "title": "準備はできた？ <span>バトルを始めよう</span>！",
+      "subtitle": "今すぐ参加して世界中のビートボクサーと競い合い、ランキングの頂点を目指そう",
+      "button": "今すぐバトル開始",
+      "note": "無料でご利用いただけます • 24時間投稿制限あり"
     }
   },
   "battlesPage": {
@@ -636,7 +646,9 @@
       "noCompletedBattles": "完了したバトルはまだありません",
       "checkBackSoonCompleted": "過去のバトルの結果はここに表示されます。",
       "loadingRankings": "ランキングを読み込み中...",
-      "noRankingsAvailable": "利用可能なランキングはまだありません。"
+      "noRankingsAvailable": "利用可能なランキングはまだありません。",
+      "createBattleHint": "新しいバトルを作成して、コミュニティを盛り上げよう！",
+      "completedBattlesHint": "完了したバトルがここに表示されます"
     },
     "rankings": {
       "title": "トップビートボクサー",
@@ -1707,6 +1719,10 @@
     "passwordPlaceholder": "パスワードを入力",
     "passwordRequirement": "パスワードは6文字以上である必要があります",
     "usernameRequirement": "ユーザー名は3文字以上30文字以下で入力してください",
+    "usernameDescription": "3-30文字で入力してください",
+    "confirmPassword": "パスワード確認",
+    "confirmPasswordPlaceholder": "パスワードを再入力してください",
+    "passwordMismatch": "パスワードが一致しません",
     "rememberMe": "ログイン状態を保持",
     "sending": "送信中...",
     "verifying": "認証中...",

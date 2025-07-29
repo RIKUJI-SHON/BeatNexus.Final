@@ -127,6 +127,10 @@
           "earnedDate": "Earned Date"
         }
       }
+    },
+    "comingSoon": {
+      "title": "Coming Soon",
+      "description": "Subscription features will be available soon"
     }
   },
   "battle": {
@@ -596,6 +600,12 @@
       "subtitle": "Your beatbox journey starts here. Join BeatNexus today and become part of the revolution.",
       "button": "Sign Up For Free & Battle!",
       "availability": "Also available on iOS and Android (Coming Soon!)"
+    },
+    "cta": {
+      "title": "Ready? <span>Let's Start the Battle</span>!",
+      "subtitle": "Join now and compete with beatboxers worldwide to reach the top of the rankings",
+      "button": "Start Battle Now",
+      "note": "Free to use • 24-hour posting limit"
     }
   },
   "battlesPage": {
@@ -634,7 +644,9 @@
       "noCompletedBattles": "No Completed Battles Yet",
       "checkBackSoonCompleted": "Check back soon to see the results of past clashes.",
       "loadingRankings": "Loading rankings...",
-      "noRankingsAvailable": "No rankings available yet."
+      "noRankingsAvailable": "No rankings available yet.",
+      "createBattleHint": "Create a new battle and energize the community!",
+      "completedBattlesHint": "Completed battles will be displayed here"
     },
     "rankings": {
       "title": "Top Beatboxers",
@@ -1892,6 +1904,10 @@
     "passwordPlaceholder": "Enter your password",
     "passwordRequirement": "Password must be at least 6 characters long",
     "usernameRequirement": "Username must be between 3 and 30 characters",
+    "usernameDescription": "3-30 characters required",
+    "confirmPassword": "Confirm Password",
+    "confirmPasswordPlaceholder": "Re-enter your password",
+    "passwordMismatch": "Passwords do not match",
     "rememberMe": "Remember me",
     "sending": "Sending...",
     "verifying": "Verifying...",

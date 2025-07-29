@@ -14,7 +14,7 @@ import { useAuthStore } from '../store/authStore';
 import BattlesPage from './BattlesPage';
 import { useRequireAuth } from '../hooks/useRequireAuth';
 import { AuthModal } from '../components/auth/AuthModal';
-import { useTranslation } from 'react-i18next';
+import { useTranslation, Trans } from 'react-i18next';
 import { useCanonicalUrl, useDynamicMeta } from '../hooks/useSEO';
 
 const HomePage: React.FC = () => {
@@ -398,10 +398,15 @@ const HomePage: React.FC = () => {
 
         <div className="container-ultra-wide relative z-10">
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-            準備はできた？ <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400">バトルを始めよう</span>！
+            <Trans
+              i18nKey="home.cta.title"
+              components={{
+                span: <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400" />
+              }}
+            />
           </h2>
           <p className="text-lg text-gray-300 mb-10 max-w-2xl mx-auto">
-            今すぐ参加して世界中のビートボクサーと競い合い、ランキングの頂点を目指そう
+            {t('home.cta.subtitle')}
           </p>
           <Button
             variant="primary"
@@ -410,10 +415,10 @@ const HomePage: React.FC = () => {
             className="bg-gradient-to-r from-cyan-500 to-purple-500 rounded-xl px-12 py-5 text-xl font-bold hover:scale-105 transition-transform duration-300"
             onClick={handleJoinNow}
           >
-            今すぐバトル開始
+            {t('home.cta.button')}
           </Button>
           <p className="text-sm text-gray-500 mt-6">
-            無料でご利用いただけます • 24時間投稿制限あり
+            {t('home.cta.note')}
           </p>
         </div>
       </section>
