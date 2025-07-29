@@ -194,9 +194,12 @@ export const TopThreePodium: React.FC<TopThreePodiumProps> = ({
                 </div>
 
                 {/* ユーザー名 */}
-                <div className="mt-2 text-center px-1">
-                  <div className={`font-bold text-xs sm:text-sm text-white truncate max-w-[100px] sm:max-w-[120px] ${config.textGlow}`}>
-                    {entry.username}
+                <div className="mt-2 text-center px-1 w-full">
+                  <div 
+                    className={`font-bold text-xs sm:text-sm text-white ${config.textGlow} overflow-hidden text-ellipsis whitespace-nowrap`}
+                    title={entry.username}
+                  >
+                    {entry.username.length > 8 ? `${entry.username.substring(0, 8)}...` : entry.username}
                   </div>
                 </div>
 

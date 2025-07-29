@@ -45,6 +45,7 @@ import { NewSeasonModal } from './components/ui/NewSeasonModal';
 
 // Pages
 import HomePage from './pages/HomePage';
+import HomepageTestPage from './pages/HomepageTestPage';
 import BattlesPage from './pages/BattlesPage';
 import BattleViewPage from './pages/BattleViewPage';
 import BattleReplayPage from './pages/BattleReplayPage';
@@ -83,6 +84,7 @@ function RouterContent() {
         <main id="main-content" className="w-full pt-16" role="main">
           <Routes>
             <Route path="/" element={<HomePage />} />
+            <Route path="/homepage.test" element={<HomepageTestPage />} />
             <Route path="/battles" element={<BattlesPage />} />
             <Route path="/my-battles" element={<MyBattlesPage />} />
             <Route path="/battle/:battlePath" element={<BattleViewPage />} />
