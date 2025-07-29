@@ -298,15 +298,6 @@ const BattlesPage: React.FC = () => {
                         {t('battlesPage.status.noBattlesFound')}
                       </h2>
                       
-                      <p className="text-slate-400 text-base leading-relaxed">
-                        {searchQuery 
-                          ? t('battlesPage.status.noBattlesMatchSearch')
-                          : loading 
-                            ? t('battlesPage.status.loadingBattles')
-                            : t('battlesPage.status.beTheFirstToCreate')
-                        }
-                      </p>
-                      
                       {/* ヒント */}
                       <div className="mt-6 p-4 bg-slate-800/60 rounded-lg border border-slate-600/40">
                         <p className="text-cyan-300 text-sm font-medium flex items-center justify-center gap-2">
