@@ -483,6 +483,162 @@
     "privacyPolicy": "プライバシーポリシー"
   },
   "home": {
+    "landingPage": {
+      "cta": {
+        "joinBeta": "βシーズンに無料で参加する",
+        "watchBattles": "バトルを観戦する"
+      },
+      "hero": {
+        "title": {
+          "forAll": "全てのビートボクサーに",
+          "nextStep": "\"次のステップ\"を。"
+        },
+        "subtitle": "動画投稿で気軽にバトル → コミュニティ投票で勝敗が決まる、\nビートボクサー対戦プラットフォーム。"
+      },
+      "challenges": {
+        "title": "こんな課題、ありませんか？",
+        "motivation": {
+          "title": "モチベーション継続",
+          "description": "練習のモチベーションがなかなか続かない"
+        },
+        "skillAssessment": {
+          "title": "スキル把握",
+          "description": "自分のスキルがシーンでどのレベルなのか、客観的に知りたい"
+        },
+        "casualChallenge": {
+          "title": "気軽な実力試し",
+          "description": "大会に出るのはハードルが高いが、気軽に実力を試す場所がない"
+        },
+        "community": {
+          "title": "コミュニティ",
+          "description": "仲間と切磋琢磨し、フィードバックを得る機会が少ない"
+        }
+      },
+      "solution": {
+        "title": "が、あなたの「次のステップ」を創り出します。",
+        "visualizeGrowth": {
+          "title": "成長を可視化",
+          "description": "Eloレートとランキングシステムで、あなたのスキルアップが客観的な数値となって目に見えます。"
+        },
+        "gradualChallenge": {
+          "title": "段階的な挑戦",
+          "description": "気軽なレート戦「Main Battle」から、賞金を懸けた「BeatNexus Summit」まで。あなたのレベルと目標に合わせた挑戦の場があります。"
+        },
+        "communityConnection": {
+          "title": "コミュニティとの繋がり",
+          "description": "投票やコメントを通じて、熱量の高い仲間と繋がり、共に高め合う文化がここにあります。"
+        }
+      },
+      "howItWorks": {
+        "title": "シンプルな4ステップで始める",
+        "subtitle": "複雑な設定は不要。すぐにバトルを楽しめます。",
+        "steps": {
+          "upload": {
+            "title": "1. 動画投稿",
+            "description": "あなたのビートを動画で投稿"
+          },
+          "matching": {
+            "title": "2. 自動マッチング", 
+            "description": "最適なレートの対戦相手が自動で決定"
+          },
+          "voting": {
+            "title": "3. コミュニティ投票",
+            "description": "オーディエンスがジャッジとして勝敗を決定"
+          },
+          "results": {
+            "title": "4. 結果・レート更新",
+            "description": "結果に基づいてレートが更新され成長を実感"
+          }
+        },
+        "features": {
+          "onlineBattle": {
+            "title": "オンラインバトル",
+            "description": "動画をアップするだけで、あなたに最適なレートの対戦相手が自動でマッチングされます。"
+          },
+          "communityVoting": {
+            "title": "コミュニティ投票",
+            "description": "バトルの勝敗を決めるのは、オーディエンスの1票。プレイヤーだけでなく、誰もがジャッジとして主役になれます。"
+          },
+          "seasonRanking": {
+            "title": "シーズン制ランキング",
+            "description": "約3ヶ月ごとにシーズンが切り替わり、ランキングがリセット。プレイヤーだけでなく、優れたジャッジを称える「投票者ランキング」も存在します。"
+          },
+          "judgeSystem": {
+            "title": "詳細なジャッジシステム",
+            "description": "「この人、好き！」という直感での投票はもちろん、4つの専門的な視点から評価できる「Judge's Scorecard」機能で、より深くバトルを分析・評価できます。"
+          }
+        }
+      },
+      "socialProof": {
+        "title": "既にこれだけ盛り上がっています",
+        "stats": {
+          "preRegistration": "事前登録者数",
+          "totalBattles": "総バトル数",
+          "communityVotes": "コミュニティ投票数"
+        },
+        "ranking": {
+          "title": "ランキングTOP3",
+          "closedTest": "クローズドテスト ランキングTOP3",
+          "playerRanking": "プレイヤーランキング",
+          "voterRanking": "投票者ランキング",
+          "noPlayerRanking": "プレイヤーランキングがありません",
+          "noVoterRanking": "投票者ランキングがありません",
+          "noSeasonEnded": "まだ終了したシーズンがありません",
+          "betaSeasonNote": "βシーズンの結果をお楽しみに！",
+          "loading": "読み込み中..."
+        }
+      },
+      "vision": {
+        "title": "BeatNexusの壮大なビジョン",
+        "subtitle": "ただの対戦ツールではない、シーン全体を巻き込むプラットフォーム",
+        "disclaimer": "※ 以下の内容は将来的な構想・計画であり、現在開発・検討中のものです",
+        "summit": {
+          "title": "BeatNexus Summit 構想",
+          "prizeTournament": "シーズン上位者には、賞金付きトーナメントへの道が拓かれる",
+          "seedRights": "Season 1 の上位8名は、次なるトーナメントの【シード権】を獲得",
+          "globalConnection": "グローバルなビートボックスシーンとの連携を予定"
+        },
+        "freemium": {
+          "title": "フリーミアムモデルの予告",
+          "betaFree": "<span class=\"font-bold text-cyan-400\">βシーズンは【完全無料】</span>で全機能をご利用いただけます",
+          "futureModel": "将来的には、月に指定回数まで無料で挑戦できるレート戦を提供",
+          "unlimited": "本気で上を目指すプレイヤーのための<span class=\"font-semibold text-purple-400\">「Nexus Unlimited」</span>の導入を計画"
+        }
+      },
+      "faq": {
+        "title": "よくある質問",
+        "beginner": {
+          "question": "初心者でも参加できますか？",
+          "answer": "もちろんです。BeatNexusはあらゆるレベルのプレイヤーに「次のステップ」を提供するために生まれました。まずは気軽に動画を投稿してみてください。"
+        },
+        "pricing": {
+          "question": "料金はかかりますか？",
+          "answer": "現在開催中のβシーズンは、全ての機能を完全無料でご利用いただけます。"
+        },
+        "mobile": {
+          "question": "スマートフォンでも利用できますか？",
+          "answer": "現在はPCでの利用を推奨していますが、モバイル版でもアプリのようにサイトからダウンロードして使うことができます。PWA対応により、ホーム画面に追加してネイティブアプリのような体験を提供しています。"
+        },
+        "fairness": {
+          "question": "不正な投票が心配です。",
+          "answer": "BeatNexusでは投票の匿名性をなくし、誰が誰に投票したかを公開することで、責任感のある健全なコミュニティを目指しています。"
+        }
+      },
+      "closing": {
+        "title": {
+          "history": "歴史の始まりに、",
+          "dontMiss": "乗り遞れるな。"
+        },
+        "subtitle": "新たなビートボックスの歴史を、共に刻もう。",
+        "schedule": {
+          "earlyAccess": "先行アクセス (事前登録者限定):",
+          "earlyAccessDate": "8月1日〜8月7日",
+          "publicRelease": "完全一般公開:",
+          "publicReleaseDate": "8月8日〜"
+        },
+        "finalCta": "【無料】でβシーズン先行アクセス権を手に入れる"
+      }
+    },
     "hero": {
       "title": {
         "main": "BEATNEXUS",

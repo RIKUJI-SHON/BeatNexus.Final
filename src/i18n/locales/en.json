@@ -481,6 +481,162 @@
     "contactMessage": "For any questions regarding this privacy policy, please contact us."
   },
   "home": {
+    "landingPage": {
+      "cta": {
+        "joinBeta": "Join Beta Season for Free",
+        "watchBattles": "Watch Battles"
+      },
+      "hero": {
+        "title": {
+          "forAll": "For All Beatboxers",
+          "nextStep": "The \"Next Step\"."
+        },
+        "subtitle": "Easy battles through video uploads → Community voting determines the winner,\nBeatboxer battle platform."
+      },
+      "challenges": {
+        "title": "Do you face these challenges?",
+        "motivation": {
+          "title": "Motivation Persistence",
+          "description": "It's hard to maintain motivation for practice"
+        },
+        "skillAssessment": {
+          "title": "Skill Assessment",
+          "description": "Want to objectively know what level your skills are in the scene"
+        },
+        "casualChallenge": {
+          "title": "Casual Skill Testing",
+          "description": "Tournaments have high barriers, but there's no place to casually test your skills"
+        },
+        "community": {
+          "title": "Community",
+          "description": "Few opportunities to compete with peers and get feedback"
+        }
+      },
+      "solution": {
+        "title": " creates your \"Next Step\".",
+        "visualizeGrowth": {
+          "title": "Visualize Growth",
+          "description": "With the Elo rating and ranking system, your skill improvement becomes visible as objective numbers."
+        },
+        "gradualChallenge": {
+          "title": "Gradual Challenges",
+          "description": "From casual rate battles \"Main Battle\" to prize money \"BeatNexus Summit\". There are challenges suited to your level and goals."
+        },
+        "communityConnection": {
+          "title": "Community Connection",
+          "description": "Connect with passionate peers through voting and comments, building a culture of mutual improvement."
+        }
+      },
+      "howItWorks": {
+        "title": "Start with Simple 4 Steps",
+        "subtitle": "No complex setup required. Start enjoying battles immediately.",
+        "steps": {
+          "upload": {
+            "title": "1. Video Upload",
+            "description": "Upload your beat video"
+          },
+          "matching": {
+            "title": "2. Auto Matching",
+            "description": "Optimal opponents automatically selected based on rating"
+          },
+          "voting": {
+            "title": "3. Community Voting",
+            "description": "Audience acts as judges to determine the winner"
+          },
+          "results": {
+            "title": "4. Results & Rating Update",
+            "description": "Ratings are updated based on results and you feel your growth"
+          }
+        },
+        "features": {
+          "onlineBattle": {
+            "title": "Online Battles",
+            "description": "Just upload a video and get automatically matched with opponents at your optimal rating level."
+          },
+          "communityVoting": {
+            "title": "Community Voting",
+            "description": "The audience's vote decides battle outcomes. Not just players, but everyone can be the star as a judge."
+          },
+          "seasonRanking": {
+            "title": "Season-based Rankings",
+            "description": "Seasons change every ~3 months with ranking resets. There's also a \"Voter Ranking\" to honor excellent judges, not just players."
+          },
+          "judgeSystem": {
+            "title": "Detailed Judge System",
+            "description": "From intuitive \"I like this person!\" voting to the \"Judge's Scorecard\" feature for deeper battle analysis from 4 professional perspectives."
+          }
+        }
+      },
+      "socialProof": {
+        "title": "Already this much excitement!",
+        "stats": {
+          "preRegistration": "Pre-registrations",
+          "totalBattles": "Total Battles",
+          "communityVotes": "Community Votes"
+        },
+        "ranking": {
+          "title": "Ranking TOP3",
+          "closedTest": "Closed Test Ranking TOP3",
+          "playerRanking": "Player Ranking",
+          "voterRanking": "Voter Ranking",
+          "noPlayerRanking": "No player rankings available",
+          "noVoterRanking": "No voter rankings available",
+          "noSeasonEnded": "No seasons have ended yet",
+          "betaSeasonNote": "Look forward to the β season results!",
+          "loading": "Loading..."
+        }
+      },
+      "vision": {
+        "title": "BeatNexus's Grand Vision",
+        "subtitle": "Not just a battle tool, but a platform involving the entire scene",
+        "disclaimer": "※ The following content is a future concept/plan and is currently under development/consideration",
+        "summit": {
+          "title": "BeatNexus Summit Concept",
+          "prizeTournament": "Top season performers will have the path to prize money tournaments opened",
+          "seedRights": "Top 8 of Season 1 will gain seed rights to the next tournament",
+          "globalConnection": "Planning connections with the global beatbox scene"
+        },
+        "freemium": {
+          "title": "Freemium Model Preview",
+          "betaFree": "<span class=\"font-bold text-cyan-400\">β Season is completely free</span> with all features available",
+          "futureModel": "In the future, we'll provide rate battles with a specified number of free challenges per month",
+          "unlimited": "Planning to introduce <span class=\"font-semibold text-purple-400\">\"Nexus Unlimited\"</span> for serious players aiming for the top"
+        }
+      },
+      "faq": {
+        "title": "Frequently Asked Questions",
+        "beginner": {
+          "question": "Can beginners participate?",
+          "answer": "Of course! BeatNexus was born to provide the \"next step\" for players of all levels. Please feel free to start by uploading a video."
+        },
+        "pricing": {
+          "question": "Are there any fees?",
+          "answer": "The currently ongoing β season is completely free with all features available."
+        },
+        "mobile": {
+          "question": "Can I use it on smartphones?",
+          "answer": "We currently recommend PC usage, but mobile versions can be downloaded from the site like an app. With PWA support, you can add it to your home screen for a native app experience."
+        },
+        "fairness": {
+          "question": "I'm concerned about unfair voting.",
+          "answer": "BeatNexus aims for a healthy community with responsibility by removing voting anonymity and making public who voted for whom."
+        }
+      },
+      "closing": {
+        "title": {
+          "history": "At the beginning of history,",
+          "dontMiss": "don't be left behind."
+        },
+        "subtitle": "Let's carve out a new beatbox history together.",
+        "schedule": {
+          "earlyAccess": "Early Access (Pre-registrants only):",
+          "earlyAccessDate": "August 1st - August 7th",
+          "publicRelease": "Full Public Release:",
+          "publicReleaseDate": "August 8th -"
+        },
+        "finalCta": "Get β Season Early Access Rights for Free"
+      }
+    },
     "hero": {
       "title": {
         "main": "BEATNEXUS",

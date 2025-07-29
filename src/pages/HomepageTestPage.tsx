@@ -14,6 +14,9 @@ import { AuthModal } from '../components/auth/AuthModal';
 import { useCanonicalUrl, useDynamicMeta } from '../hooks/useSEO';
 import { supabase } from '../lib/supabase';
 import { Season, HistoricalSeasonRanking } from '../types';
+import { useAuthStore } from '../store/authStore';
+import BattlesPage from './BattlesPage';
+import { useTranslation } from 'react-i18next';
 
 interface VoterRankingEntry {
   rank: number;
@@ -25,6 +28,8 @@ interface VoterRankingEntry {
 }
 
 const HomepageTestPage: React.FC = () => {
+  const { user } = useAuthStore();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authModalMode, setAuthModalMode] = useState<'login' | 'signup'>('login');
@@ -196,6 +201,11 @@ const HomepageTestPage: React.FC = () => {
     }
   };
 
+  // ログインしているユーザーにはBattlesPageを表示
+  if (user) {
+    return <BattlesPage />;
+  }
+
   return (
     <div className="min-h-screen bg-black text-white">
       {/* BeatNexus ワードマークセクション */}
@@ -229,7 +239,7 @@ const HomepageTestPage: React.FC = () => {
               <span className="absolute inset-0 rounded-xl bg-gradient-to-r from-teal-400 via-blue-500 to-purple-500 p-[2px] opacity-0 transition-opacity duration-500 group-hover:opacity-100"></span>
               <span className="relative z-10 block px-8 py-4 rounded-xl bg-gray-950">
                 <div className="relative z-10 flex items-center space-x-2">
-                  <span className="text-lg">βシーズンに無料で参加する</span>
+                  <span className="text-lg">{t('home.landingPage.cta.joinBeta')}</span>
                   <ArrowRight className="w-5 h-5" />
                 </div>
               </span>
@@ -240,7 +250,7 @@ const HomepageTestPage: React.FC = () => {
               className="flex items-center space-x-2 px-8 py-4 border border-gray-600 rounded-xl hover:border-gray-400 transition-colors duration-200"
             >
               <Play className="w-5 h-5" />
-              <span className="text-lg">バトルを観戦する</span>
+              <span className="text-lg">{t('home.landingPage.cta.watchBattles')}</span>
             </button>
           </div>
         </div>
@@ -262,19 +272,17 @@ const HomepageTestPage: React.FC = () => {
           {/* メインキャッチコピー */}
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-16 animate-fade-in-delay-1">
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400">
-              全てのビートボクサーに
+              {t('home.landingPage.hero.title.forAll')}
             </span>
             <br />
             <span className="text-white">
-              "次のステップ"を。
+              {t('home.landingPage.hero.title.nextStep')}
             </span>
           </h1>
 
           {/* 説明文 */}
           <p className="text-lg md:text-xl text-gray-400 animate-fade-in-delay-3">
-            動画投稿で気軽にバトル → コミュニティ投票で勝敗が決まる、
-            <br />
-            ビートボクサー対戦プラットフォーム。
+            {t('home.landingPage.hero.subtitle')}
           </p>
         </div>
       </section>
@@ -284,34 +292,38 @@ const HomepageTestPage: React.FC = () => {
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-6">
-              こんな課題、ありませんか？
+              {t('home.landingPage.challenges.title')}
             </h2>
           </div>
           
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {[
               { 
+                key: 'motivation',
                 icon: Target, 
-                title: "モチベーション継続", 
-                description: "練習のモチベーションがなかなか続かない" 
+                title: t('home.landingPage.challenges.motivation.title'), 
+                description: t('home.landingPage.challenges.motivation.description')
               },
               { 
+                key: 'skillAssessment',
                 icon: BarChart3, 
-                title: "スキル把握", 
-                description: "自分のスキルがシーンでどのレベルなのか、客観的に知りたい" 
+                title: t('home.landingPage.challenges.skillAssessment.title'), 
+                description: t('home.landingPage.challenges.skillAssessment.description')
               },
               { 
+                key: 'casualChallenge',
                 icon: Shield, 
-                title: "気軽な実力試し", 
-                description: "大会に出るのはハードルが高いが、気軽に実力を試す場所がない" 
+                title: t('home.landingPage.challenges.casualChallenge.title'), 
+                description: t('home.landingPage.challenges.casualChallenge.description')
               },
               { 
+                key: 'community',
                 icon: Users, 
-                title: "コミュニティ", 
-                description: "仲間と切磋琢磨し、フィードバックを得る機会が少ない" 
+                title: t('home.landingPage.challenges.community.title'), 
+                description: t('home.landingPage.challenges.community.description')
               }
-            ].map((item, index) => (
-              <Card key={index} className="bg-gray-800/50 border-gray-700 p-6 text-center hover:bg-gray-800/70 transition-colors duration-200">
+            ].map((item) => (
+              <Card key={item.key} className="bg-gray-800/50 border-gray-700 p-6 text-center hover:bg-gray-800/70 transition-colors duration-200">
                 <item.icon className="w-12 h-12 mx-auto mb-4 text-cyan-400" />
                 <h3 className="text-lg font-semibold mb-3 text-white">{item.title}</h3>
                 <p className="text-gray-400">{item.description}</p>
@@ -329,32 +341,35 @@ const HomepageTestPage: React.FC = () => {
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400">
                 BeatNexus
               </span>
-              が、あなたの「次のステップ」を創り出します。
+              {t('home.landingPage.solution.title')}
             </h2>
           </div>
           
           <div className="grid lg:grid-cols-3 gap-12">
             {[
               {
+                key: 'visualizeGrowth',
                 icon: ChartLine,
-                title: "成長を可視化",
-                description: "Eloレートとランキングシステムで、あなたのスキルアップが客観的な数値となって目に見えます。",
+                title: t('home.landingPage.solution.visualizeGrowth.title'),
+                description: t('home.landingPage.solution.visualizeGrowth.description'),
                 gradient: "from-green-400 to-blue-500"
               },
               {
+                key: 'gradualChallenge',
                 icon: Trophy,
-                title: "段階的な挑戦",
-                description: "気軽なレート戦「Main Battle」から、賞金を懸けた「BeatNexus Summit」まで。あなたのレベルと目標に合わせた挑戦の場があります。",
+                title: t('home.landingPage.solution.gradualChallenge.title'),
+                description: t('home.landingPage.solution.gradualChallenge.description'),
                 gradient: "from-yellow-400 to-orange-500"
               },
               {
+                key: 'communityConnection',
                 icon: MessageCircle,
-                title: "コミュニティとの繋がり",
-                description: "投票やコメントを通じて、熱量の高い仲間と繋がり、共に高め合う文化がここにあります。",
+                title: t('home.landingPage.solution.communityConnection.title'),
+                description: t('home.landingPage.solution.communityConnection.description'),
                 gradient: "from-pink-400 to-purple-500"
               }
-            ].map((item, index) => (
-              <div key={index} className="text-center">
+            ].map((item) => (
+              <div key={item.key} className="text-center">
                 <div className={`w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-r ${item.gradient} flex items-center justify-center`}>
                   <item.icon className="w-10 h-10 text-white" />
                 </div>
@@ -371,10 +386,10 @@ const HomepageTestPage: React.FC = () => {
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-6">
-              シンプルな4ステップで始める
+              {t('home.landingPage.howItWorks.title')}
             </h2>
             <p className="text-xl text-gray-400">
-              複雑な設定は不要。すぐにバトルを楽しめます。
+              {t('home.landingPage.howItWorks.subtitle')}
             </p>
           </div>
 
@@ -382,31 +397,35 @@ const HomepageTestPage: React.FC = () => {
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-20">
             {[
               { 
-                title: "1. 動画投稿", 
-                description: "あなたのビートを動画で投稿", 
+                key: 'upload',
+                title: t('home.landingPage.howItWorks.steps.upload.title'), 
+                description: t('home.landingPage.howItWorks.steps.upload.description'), 
                 icon: Upload,
                 image: step1Upload
               },
               { 
-                title: "2. 自動マッチング", 
-                description: "最適なレートの対戦相手が自動で決定", 
+                key: 'matching',
+                title: t('home.landingPage.howItWorks.steps.matching.title'), 
+                description: t('home.landingPage.howItWorks.steps.matching.description'), 
                 icon: Zap,
                 image: step2Matching
               },
               { 
-                title: "3. コミュニティ投票", 
-                description: "オーディエンスがジャッジとして勝敗を決定", 
+                key: 'voting',
+                title: t('home.landingPage.howItWorks.steps.voting.title'), 
+                description: t('home.landingPage.howItWorks.steps.voting.description'), 
                 icon: Vote,
                 image: step3Voting
               },
               { 
-                title: "4. 結果・レート更新", 
-                description: "結果に基づいてレートが更新され成長を実感", 
+                key: 'results',
+                title: t('home.landingPage.howItWorks.steps.results.title'), 
+                description: t('home.landingPage.howItWorks.steps.results.description'), 
                 icon: Star,
                 image: step4Results
               }
-            ].map((item, index) => (
-              <div key={index} className="text-center">
+            ].map((item) => (
+              <div key={item.key} className="text-center">
                 <div className="relative mb-6">
                   <img 
                     src={item.image} 
@@ -424,27 +443,31 @@ const HomepageTestPage: React.FC = () => {
           <div className="grid lg:grid-cols-2 gap-12">
             {[
               {
+                key: 'onlineBattle',
                 icon: Video,
-                title: "オンラインバトル",
-                description: "動画をアップするだけで、あなたに最適なレートの対戦相手が自動でマッチングされます。"
+                title: t('home.landingPage.howItWorks.features.onlineBattle.title'),
+                description: t('home.landingPage.howItWorks.features.onlineBattle.description')
               },
               {
+                key: 'communityVoting',
                 icon: Vote,
-                title: "コミュニティ投票",
-                description: "バトルの勝敗を決めるのは、オーディエンスの1票。プレイヤーだけでなく、誰もがジャッジとして主役になれます。"
+                title: t('home.landingPage.howItWorks.features.communityVoting.title'),
+                description: t('home.landingPage.howItWorks.features.communityVoting.description')
               },
               {
+                key: 'seasonRanking',
                 icon: Crown,
-                title: "シーズン制ランキング",
-                description: "約3ヶ月ごとにシーズンが切り替わり、ランキングがリセット。プレイヤーだけでなく、優れたジャッジを称える「投票者ランキング」も存在します。"
+                title: t('home.landingPage.howItWorks.features.seasonRanking.title'),
+                description: t('home.landingPage.howItWorks.features.seasonRanking.description')
               },
               {
+                key: 'judgeSystem',
                 icon: Star,
-                title: "詳細なジャッジシステム",
-                description: "「この人、好き！」という直感での投票はもちろん、4つの専門的な視点から評価できる「Judge's Scorecard」機能で、より深くバトルを分析・評価できます。"
+                title: t('home.landingPage.howItWorks.features.judgeSystem.title'),
+                description: t('home.landingPage.howItWorks.features.judgeSystem.description')
               }
-            ].map((item, index) => (
-              <Card key={index} className="bg-gray-800/50 border-gray-700 p-8 hover:bg-gray-800/70 transition-colors duration-200">
+            ].map((item) => (
+              <Card key={item.key} className="bg-gray-800/50 border-gray-700 p-8 hover:bg-gray-800/70 transition-colors duration-200">
                 <div className="flex items-start space-x-4">
                   <div className="w-12 h-12 bg-gradient-to-r from-cyan-400 to-purple-400 rounded-lg flex items-center justify-center flex-shrink-0">
                     <item.icon className="w-6 h-6 text-white" />
@@ -465,42 +488,42 @@ const HomepageTestPage: React.FC = () => {
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-6">
-              既にこれだけ盛り上がっています
+              {t('home.landingPage.socialProof.title')}
             </h2>
           </div>
           
           <div className="grid md:grid-cols-3 gap-8 mb-16">
             <Card className="bg-gray-800/40 border-gray-700/50 p-8 text-center hover:bg-gray-800/60 transition-colors duration-200">
               <div className="text-4xl font-bold text-gray-200 mb-2">40+</div>
-              <div className="text-gray-400">事前登録者数</div>
+              <div className="text-gray-400">{t('home.landingPage.socialProof.stats.preRegistration')}</div>
             </Card>
             <Card className="bg-gray-800/40 border-gray-700/50 p-8 text-center hover:bg-gray-800/60 transition-colors duration-200">
               <div className="text-4xl font-bold text-gray-200 mb-2">
                 {statsData.loading ? '...' : `${statsData.totalBattles}+`}
               </div>
-              <div className="text-gray-400">総バトル数</div>
+              <div className="text-gray-400">{t('home.landingPage.socialProof.stats.totalBattles')}</div>
             </Card>
             <Card className="bg-gray-800/40 border-gray-700/50 p-8 text-center hover:bg-gray-800/60 transition-colors duration-200">
               <div className="text-4xl font-bold text-gray-200 mb-2">
                 {statsData.loading ? '...' : `${statsData.totalVotes}+`}
               </div>
-              <div className="text-gray-400">コミュニティ投票数</div>
+              <div className="text-gray-400">{t('home.landingPage.socialProof.stats.communityVotes')}</div>
             </Card>
           </div>
 
           <div className="text-center">
             <h3 className="text-3xl font-bold mb-12 text-white">
-              {latestEndedSeason ? `${latestEndedSeason.name} ランキングTOP3` : 'クローズドテスト ランキングTOP3'}
+              {latestEndedSeason ? `${latestEndedSeason.name} ${t('home.landingPage.socialProof.ranking.title')}` : t('home.landingPage.socialProof.ranking.closedTest')}
             </h3>
             
             {rankingsLoading ? (
-              <div className="text-gray-400 text-xl">読み込み中...</div>
+              <div className="text-gray-400 text-xl">{t('home.landingPage.socialProof.ranking.loading')}</div>
             ) : (topThreeRankings.length > 0 || topThreeVoterRankings.length > 0) ? (
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 justify-items-center max-w-6xl mx-auto">
                 {/* 左側：プレイヤーランキング */}
                 <div className="bg-gray-800/30 rounded-xl p-4 sm:p-6 lg:p-8 w-full max-w-sm sm:max-w-md lg:max-w-lg">
                   <h4 className="text-lg sm:text-xl lg:text-2xl font-bold mb-4 sm:mb-6 lg:mb-8 text-center text-purple-400">
-                    プレイヤーランキング
+                    {t('home.landingPage.socialProof.ranking.playerRanking')}
                   </h4>
                   {topThreeRankings.length > 0 ? (
                     <TopThreePodium
@@ -523,7 +546,7 @@ const HomepageTestPage: React.FC = () => {
                     />
                   ) : (
                     <div className="text-center text-gray-400">
-                      <p>プレイヤーランキングがありません</p>
+                      <p>{t('home.landingPage.socialProof.ranking.noPlayerRanking')}</p>
                     </div>
                   )}
                 </div>
@@ -531,7 +554,7 @@ const HomepageTestPage: React.FC = () => {
                 {/* 右側：投票者ランキング */}
                 <div className="bg-gray-800/30 rounded-xl p-4 sm:p-6 lg:p-8 w-full max-w-sm sm:max-w-md lg:max-w-lg">
                   <h4 className="text-lg sm:text-xl lg:text-2xl font-bold mb-4 sm:mb-6 lg:mb-8 text-center text-cyan-400">
-                    投票者ランキング
+                    {t('home.landingPage.socialProof.ranking.voterRanking')}
                   </h4>
                   {topThreeVoterRankings.length > 0 ? (
                     <TopThreePodium
@@ -554,15 +577,15 @@ const HomepageTestPage: React.FC = () => {
                     />
                   ) : (
                     <div className="text-center text-gray-400">
-                      <p>投票者ランキングがありません</p>
+                      <p>{t('home.landingPage.socialProof.ranking.noVoterRanking')}</p>
                     </div>
                   )}
                 </div>
               </div>
             ) : (
               <div className="text-center text-gray-400">
-                <p>まだ終了したシーズンがありません</p>
-                <p className="text-sm mt-2">βシーズンの結果をお楽しみに！</p>
+                <p>{t('home.landingPage.socialProof.ranking.noSeasonEnded')}</p>
+                <p className="text-sm mt-2">{t('home.landingPage.socialProof.ranking.betaSeasonNote')}</p>
               </div>
             )}
           </div>
@@ -574,14 +597,14 @@ const HomepageTestPage: React.FC = () => {
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-6">
-              BeatNexusの壮大なビジョン
+              {t('home.landingPage.vision.title')}
             </h2>
             <p className="text-xl text-gray-400 mb-4">
-              ただの対戦ツールではない、シーン全体を巻き込むプラットフォーム
+              {t('home.landingPage.vision.subtitle')}
             </p>
             <div className="inline-block bg-yellow-500/10 border border-yellow-500/30 rounded-lg px-4 py-2">
               <p className="text-sm text-yellow-400">
-                ※ 以下の内容は将来的な構想・計画であり、現在開発・検討中のものです
+                {t('home.landingPage.vision.disclaimer')}
               </p>
             </div>
           </div>
@@ -589,40 +612,40 @@ const HomepageTestPage: React.FC = () => {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
               <h3 className="text-2xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400">
-                BeatNexus Summit 構想
+                {t('home.landingPage.vision.summit.title')}
               </h3>
               <ul className="space-y-4 text-gray-300">
                 <li className="flex items-start space-x-3">
                   <Trophy className="w-6 h-6 text-yellow-400 mt-0.5" />
-                  <span>シーズン上位者には、賞金付きトーナメントへの道が拓かれる</span>
+                  <span>{t('home.landingPage.vision.summit.prizeTournament')}</span>
                 </li>
                 <li className="flex items-start space-x-3">
                   <Crown className="w-6 h-6 text-purple-400 mt-0.5" />
-                  <span>Season 1 の上位8名は、次なるトーナメントの【シード権】を獲得</span>
+                  <span>{t('home.landingPage.vision.summit.seedRights')}</span>
                 </li>
                 <li className="flex items-start space-x-3">
                   <Star className="w-6 h-6 text-cyan-400 mt-0.5" />
-                  <span>グローバルなビートボックスシーンとの連携を予定</span>
+                  <span>{t('home.landingPage.vision.summit.globalConnection')}</span>
                 </li>
               </ul>
             </div>
             
             <div className="text-center lg:text-left">
               <h4 className="text-2xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400">
-                フリーミアムモデルの予告
+                {t('home.landingPage.vision.freemium.title')}
               </h4>
               <ul className="space-y-4 text-gray-300">
                 <li className="flex items-start space-x-3">
                   <Star className="w-6 h-6 text-cyan-400 mt-0.5" />
-                  <span><span className="font-bold text-cyan-400">βシーズンは【完全無料】</span>で全機能をご利用いただけます</span>
+                  <span dangerouslySetInnerHTML={{ __html: t('home.landingPage.vision.freemium.betaFree') }} />
                 </li>
                 <li className="flex items-start space-x-3">
                   <Zap className="w-6 h-6 text-yellow-400 mt-0.5" />
-                  <span>将来的には、月に指定回数まで無料で挑戦できるレート戦を提供</span>
+                  <span>{t('home.landingPage.vision.freemium.futureModel')}</span>
                 </li>
                 <li className="flex items-start space-x-3">
                   <Crown className="w-6 h-6 text-purple-400 mt-0.5" />
-                  <span>本気で上を目指すプレイヤーのための<span className="font-semibold text-purple-400">「Nexus Unlimited」</span>の導入を計画</span>
+                  <span dangerouslySetInnerHTML={{ __html: t('home.landingPage.vision.freemium.unlimited') }} />
                 </li>
               </ul>
             </div>
@@ -635,30 +658,34 @@ const HomepageTestPage: React.FC = () => {
         <div className="max-w-4xl mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-6">
-              よくある質問
+              {t('home.landingPage.faq.title')}
             </h2>
           </div>
           
           <div className="space-y-6">
             {[
               {
-                question: "初心者でも参加できますか？",
-                answer: "もちろんです。BeatNexusはあらゆるレベルのプレイヤーに「次のステップ」を提供するために生まれました。まずは気軽に動画を投稿してみてください。"
+                key: 'beginner',
+                question: t('home.landingPage.faq.beginner.question'),
+                answer: t('home.landingPage.faq.beginner.answer')
               },
               {
-                question: "料金はかかりますか？",
-                answer: "現在開催中のβシーズンは、全ての機能を完全無料でご利用いただけます。"
+                key: 'pricing',
+                question: t('home.landingPage.faq.pricing.question'),
+                answer: t('home.landingPage.faq.pricing.answer')
               },
               {
-                question: "スマートフォンでも利用できますか？",
-                answer: "現在はPCでの利用を推奨していますが、モバイル版でもアプリのようにサイトからダウンロードして使うことができます。PWA対応により、ホーム画面に追加してネイティブアプリのような体験を提供しています。"
+                key: 'mobile',
+                question: t('home.landingPage.faq.mobile.question'),
+                answer: t('home.landingPage.faq.mobile.answer')
               },
               {
-                question: "不正な投票が心配です。",
-                answer: "BeatNexusでは投票の匿名性をなくし、誰が誰に投票したかを公開することで、責任感のある健全なコミュニティを目指しています。"
+                key: 'fairness',
+                question: t('home.landingPage.faq.fairness.question'),
+                answer: t('home.landingPage.faq.fairness.answer')
               }
-            ].map((item, index) => (
-              <Card key={index} className="bg-gray-800/50 border-gray-700 p-6">
+            ].map((item) => (
+              <Card key={item.key} className="bg-gray-800/50 border-gray-700 p-6">
                 <h3 className="text-lg font-semibold mb-3 text-white">Q. {item.question}</h3>
                 <p className="text-gray-300">A. {item.answer}</p>
               </Card>
@@ -672,16 +699,16 @@ const HomepageTestPage: React.FC = () => {
         <div className="max-w-4xl mx-auto px-4 text-center">
           <h2 className="text-3xl md:text-5xl font-bold mb-6">
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400">
-              歴史の始まりに、
+              {t('home.landingPage.closing.title.history')}
             </span>
             <br />
             <span className="text-white">
-              乗り遅れるな。
+              {t('home.landingPage.closing.title.dontMiss')}
             </span>
           </h2>
           
           <p className="text-xl text-gray-300 mb-8">
-            新たなビートボックスの歴史を、共に刻もう。
+            {t('home.landingPage.closing.subtitle')}
           </p>
           
           {/* 日程の明記 */}
@@ -689,12 +716,12 @@ const HomepageTestPage: React.FC = () => {
             <Card className="bg-gradient-to-r from-gray-800/80 to-gray-900/80 border-gray-700/50 p-8 inline-block">
               <div className="space-y-2">
                 <div className="flex flex-col items-center text-lg">
-                  <span className="font-bold text-cyan-400">先行アクセス (事前登録者限定):</span>
-                  <span className="text-white">8月1日〜8月7日</span>
+                  <span className="font-bold text-cyan-400">{t('home.landingPage.closing.schedule.earlyAccess')}</span>
+                  <span className="text-white">{t('home.landingPage.closing.schedule.earlyAccessDate')}</span>
                 </div>
                 <div className="flex flex-col items-center text-lg">
-                  <span className="font-bold text-purple-400">完全一般公開:</span>
-                  <span className="text-white">8月8日〜</span>
+                  <span className="font-bold text-purple-400">{t('home.landingPage.closing.schedule.publicRelease')}</span>
+                  <span className="text-white">{t('home.landingPage.closing.schedule.publicReleaseDate')}</span>
                 </div>
               </div>
             </Card>
@@ -708,7 +735,7 @@ const HomepageTestPage: React.FC = () => {
             <span className="absolute inset-0 rounded-xl bg-gradient-to-r from-teal-400 via-blue-500 to-purple-500 p-[3px] opacity-100 animate-pulse"></span>
             <span className="relative z-10 block px-12 py-6 rounded-xl bg-gray-950">
               <div className="relative z-10 flex items-center space-x-3">
-                <span className="text-xl font-bold">【無料】でβシーズン先行アクセス権を手に入れる</span>
+                <span className="text-xl font-bold">{t('home.landingPage.closing.finalCta')}</span>
                 <ArrowRight className="w-6 h-6" />
               </div>
             </span>
