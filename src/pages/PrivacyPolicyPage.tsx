@@ -189,7 +189,7 @@ End`;
                     : 'text-gray-400 hover:text-white hover:bg-gray-700/50'
                 }`}
               >
-                日本語
+                {t('privacyPolicyPage.languageTabs.japanese')}
               </button>
               <button
                 onClick={() => setActiveTab('en')}
@@ -199,7 +199,7 @@ End`;
                     : 'text-gray-400 hover:text-white hover:bg-gray-700/50'
                 }`}
               >
-                English
+                {t('privacyPolicyPage.languageTabs.english')}
               </button>
             </div>
           </div>

@@ -5,6 +5,7 @@
  */
 
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 import { usePushNotification } from '../../hooks/usePushNotification'
 import { Button } from './Button'
 import { Badge } from './Badge'
@@ -19,6 +20,7 @@ export const PushNotificationSetup: React.FC<PushNotificationSetupProps> = ({
   className = '',
   onSetupComplete
 }) => {
+  const { t } = useTranslation()
   const {
     isSupported,
     permission,
@@ -47,7 +49,7 @@ export const PushNotificationSetup: React.FC<PushNotificationSetupProps> = ({
         <div className="flex items-center space-x-2">
           <BellOff className="h-5 w-5 text-gray-500" />
           <span className="text-sm text-gray-400">
-            お使いのブラウザはプッシュ通知をサポートしていません
+            {t('pushNotificationSetup.unsupported')}
           </span>
         </div>
       </div>
@@ -57,18 +59,18 @@ export const PushNotificationSetup: React.FC<PushNotificationSetupProps> = ({
   // 購読状況に応じた表示
   const getSubscriptionBadge = () => {
     if (permission === 'denied') {
-      return <Badge variant="danger">拒否済み</Badge>
+      return <Badge variant="danger">{t('pushNotificationSetup.status.denied')}</Badge>
     }
     
     if (isSubscribed) {
-      return <Badge variant="success">有効</Badge>
+      return <Badge variant="success">{t('pushNotificationSetup.status.enabled')}</Badge>
     }
     
     if (permission === 'granted') {
-      return <Badge variant="secondary">無効</Badge>
+      return <Badge variant="secondary">{t('pushNotificationSetup.status.disabled')}</Badge>
     }
     
-    return <Badge variant="secondary">未設定</Badge>
+    return <Badge variant="secondary">{t('pushNotificationSetup.status.notSet')}</Badge>
   }
 
   return (
@@ -79,7 +81,7 @@ export const PushNotificationSetup: React.FC<PushNotificationSetupProps> = ({
           <Bell className="h-5 w-5 text-cyan-400" />
           <div className="flex items-center space-x-2">
             <span className="text-base font-medium text-gray-100">
-              プッシュ通知
+              {t('pushNotificationSetup.title')}
             </span>
             {getSubscriptionBadge()}
           </div>
@@ -110,17 +112,17 @@ export const PushNotificationSetup: React.FC<PushNotificationSetupProps> = ({
             {isLoading ? (
               <>
                 <Bell className="h-4 w-4 mr-2 animate-pulse" />
-                設定中...
+                {t('pushNotificationSetup.buttons.enabling')}
               </>
             ) : permission === 'denied' ? (
               <>
                 <BellOff className="h-4 w-4 mr-2" />
-                ブラウザ設定で許可してください
+                {t('pushNotificationSetup.buttons.browserSettings')}
               </>
             ) : (
               <>
                 <Bell className="h-4 w-4 mr-2" />
-                通知を有効にする
+                {t('pushNotificationSetup.buttons.enable')}
               </>
             )}
           </Button>
@@ -134,12 +136,12 @@ export const PushNotificationSetup: React.FC<PushNotificationSetupProps> = ({
             {isLoading ? (
               <>
                 <BellOff className="h-4 w-4 mr-2 animate-pulse" />
-                無効化中...
+                {t('pushNotificationSetup.buttons.disabling')}
               </>
             ) : (
               <>
                 <BellOff className="h-4 w-4 mr-2" />
-                通知を無効にする
+                {t('pushNotificationSetup.buttons.disable')}
               </>
             )}
           </Button>
@@ -150,11 +152,11 @@ export const PushNotificationSetup: React.FC<PushNotificationSetupProps> = ({
       {permission === 'denied' && (
         <div className="p-3 bg-blue-900 border border-blue-600 rounded-lg">
           <div className="text-sm text-blue-300 space-y-2">
-            <p className="font-medium text-blue-200">通知を有効にするには：</p>
+            <p className="font-medium text-blue-200">{t('pushNotificationSetup.help.title')}</p>
             <ol className="list-decimal list-inside ml-2 space-y-1">
-              <li>ブラウザのアドレスバー左側の🔒アイコンをクリック</li>
-              <li>「通知」を「許可」に変更</li>
-              <li>ページを再読み込み</li>
+              <li>{t('pushNotificationSetup.help.step1')}</li>
+              <li>{t('pushNotificationSetup.help.step2')}</li>
+              <li>{t('pushNotificationSetup.help.step3')}</li>
             </ol>
           </div>
         </div>

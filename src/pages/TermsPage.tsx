@@ -205,7 +205,7 @@ End`;
             onClick={() => navigate(-1)}
             leftIcon={<ArrowLeft className="h-4 w-4" />}
           >
-            戻る
+            {t('termsPage.backButton')}
           </Button>
 
           {/* Header */}
@@ -221,7 +221,7 @@ End`;
             </h1>
             
             <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed mb-8">
-              BeatNexusサービスの利用に関する規約をご確認ください
+              {t('termsPage.subtitle')}
             </p>
           </div>
 
@@ -236,7 +236,7 @@ End`;
                     : 'text-gray-400 hover:text-white hover:bg-gray-700/50'
                 }`}
               >
-                日本語
+                {t('termsPage.languageTabs.japanese')}
               </button>
               <button
                 onClick={() => setActiveTab('en')}
@@ -246,7 +246,7 @@ End`;
                     : 'text-gray-400 hover:text-white hover:bg-gray-700/50'
                 }`}
               >
-                English
+                {t('termsPage.languageTabs.english')}
               </button>
             </div>
           </div>
@@ -266,10 +266,10 @@ End`;
               <div className="text-center">
                 <h3 className="text-xl font-semibold text-white mb-4 flex items-center justify-center gap-2">
                   <Mail className="h-5 w-5 text-cyan-400" />
-                  お問い合わせ
+                  {t('termsPage.contactSection.title')}
                 </h3>
                 <p className="text-gray-300 mb-4">
-                  利用規約に関するご質問やお問い合わせは、下記までご連絡ください。
+                  {t('termsPage.contactSection.description')}
                 </p>
                 <a 
                   href="mailto:beatnexus.app@gmail.com"
@@ -285,7 +285,7 @@ End`;
           {/* Last Updated Info */}
           <div className="text-center mt-8 text-gray-400 text-sm flex items-center justify-center gap-2">
             <Calendar className="h-4 w-4" />
-            最終更新日: 2025年7月18日
+            {t('termsPage.lastUpdated')}
           </div>
         </div>
       </div>

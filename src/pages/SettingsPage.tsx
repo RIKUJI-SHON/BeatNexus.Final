@@ -336,14 +336,14 @@ const SettingsPage: React.FC = () => {
 
               {/* Push Notification Setting */}
               <div>
-                <h3 className="text-lg font-medium text-gray-100">プッシュ通知</h3>
-                <p className="text-sm text-gray-400 mb-4">バトルの更新やマッチング通知を受け取る設定を管理します。</p>
+                <h3 className="text-lg font-medium text-gray-100">{t('settingsPage.pushNotifications.title')}</h3>
+                <p className="text-sm text-gray-400 mb-4">{t('settingsPage.pushNotifications.description')}</p>
                 <PushNotificationSetup 
                   onSetupComplete={(isSubscribed) => {
                     if (isSubscribed) {
-                      toast.success('設定完了', 'プッシュ通知が有効になりました')
+                      toast.success(t('settingsPage.toasts.setupComplete'), t('settingsPage.pushNotifications.enabled'))
                     } else {
-                      toast.info('設定変更', 'プッシュ通知が無効になりました')
+                      toast.info(t('settingsPage.toasts.settingsChanged'), t('settingsPage.pushNotifications.disabled'))
                     }
                   }}
                 />

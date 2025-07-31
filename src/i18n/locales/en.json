@@ -474,11 +474,32 @@
     "contactMessage": "Have a question or feedback? Reach out to our team!",
     "allRightsReserved": "All rights reserved.",
     "termsOfService": "Terms of Service",
-    "privacyPolicy": "Privacy Policy"
+    "privacyPolicy": "Privacy Policy",
+    "lastUpdated": "Last Updated"
   },
   "privacyPolicyPage": {
+    "title": "Privacy Policy",
     "subtitle": "Please review our policy on how we handle your personal information.",
-    "contactMessage": "For any questions regarding this privacy policy, please contact us."
+    "contactMessage": "For any questions regarding this privacy policy, please contact us.",
+    "backButton": "Back",
+    "languageTabs": {
+      "japanese": "日本語",
+      "english": "English"
+    }
+  },
+  "termsPage": {
+    "title": "Terms of Service",
+    "subtitle": "Please review the terms and conditions for using BeatNexus services",
+    "backButton": "Back",
+    "languageTabs": {
+      "japanese": "日本語",
+      "english": "English"
+    },
+    "contactSection": {
+      "title": "Contact Us",
+      "description": "For any questions or inquiries regarding the terms of service, please contact us below."
+    },
+    "lastUpdated": "Last Updated: July 18, 2025"
   },
   "home": {
     "landingPage": {
@@ -875,6 +896,12 @@
       "english": "English",
       "japanese": "日本語"
     },
+    "pushNotifications": {
+      "title": "Push Notifications",
+      "description": "Manage settings for receiving battle updates and match notifications.",
+      "enabled": "Push notifications have been enabled",
+      "disabled": "Push notifications have been disabled"
+    },
     "accountManagement": {
       "title": "Account Management"
     },
@@ -909,6 +936,8 @@
     "toasts": {
       "errorTitle": "Error",
       "successTitle": "Success",
+      "setupComplete": "Setup Complete",
+      "settingsChanged": "Settings Changed",
       "loadLanguageError": "Failed to load language preference.",
       "mustBeLoggedIn": "You must be logged in to change settings.",
       "noChanges": "No changes to save.",
@@ -2085,6 +2114,29 @@
         "description": "Description",
         "earnedDate": "Earned Date"
       }
+    }
+  },
+  "pushNotificationSetup": {
+    "title": "Push Notifications",
+    "unsupported": "Your browser does not support push notifications",
+    "status": {
+      "denied": "Denied",
+      "enabled": "Enabled",
+      "disabled": "Disabled",
+      "notSet": "Not Set"
+    },
+    "buttons": {
+      "enabling": "Setting up...",
+      "enable": "Enable Notifications",
+      "browserSettings": "Please allow in browser settings",
+      "disabling": "Disabling...",
+      "disable": "Disable Notifications"
+    },
+    "help": {
+      "title": "To enable notifications:",
+      "step1": "Click the 🔒 icon on the left side of the browser address bar",
+      "step2": "Change \"Notifications\" to \"Allow\"",
+      "step3": "Reload the page"
     }
   }
 }
