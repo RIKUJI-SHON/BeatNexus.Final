@@ -212,13 +212,11 @@
     "participantCannotVote": "Participants cannot vote",
     "voteSuccess": "Vote submitted successfully",
     "voteError": "Failed to submit vote",
-    "cancelVote": "Cancel vote",
     "votingGuide": "Voting Guide",
     "evaluationCriteria": "Judge's Scorecard",
     "selectVoteMethod": "Select Voting Method",
     "voteForPlayer": "Vote for Player {{player}}",
     "simpleVote": "Vote",
-    "voteWithComment": "Vote with Comment",
     "criteria": {
       "technicality": "Technicality",
       "technicalityDesc": "Can complex patterns be controlled as clear, accurate timing and uninterrupted flow?",
@@ -1762,11 +1760,11 @@
       },
       "battleTypes": {
         "question": "What types of battles are available?",
-        "answer": "There are 3 battle formats: Main Battle (60-120 seconds), Mini Battle (30-59 seconds), and Theme Challenge (specific themes or skills). We recommend beginners start with Mini Battles."
+        "answer": "Currently, only Main Battle format is available. This is a 60-120 second battle format where you can showcase your skills thoroughly."
       },
       "votingPeriod": {
         "question": "How long is the voting period?",
-        "answer": "The voting period is 5 minutes. You must cast your vote within 5 minutes of the battle going live. Results are announced once voting closes."
+        "answer": "The voting period is 5 days. You have 5 days to cast your vote after the battle goes live. Results are announced once voting closes."
       },
       "matching": {
         "question": "How are opponents matched?",
@@ -1786,7 +1784,11 @@
       },
       "mobile": {
         "question": "Can I use BeatNexus on mobile?",
-        "answer": "Yes, BeatNexus works on mobile browsers. We're also working on dedicated mobile apps coming soon."
+        "answer": "Yes, BeatNexus supports PWA (Progressive Web App). You can add it to your home screen for a native app experience on mobile devices."
+      },
+      "battleFormat": {
+        "question": "What is the battle format?",
+        "answer": "• Video must be 60-120 seconds (1-2 minutes) long\n• Greeting with \"BeatNexus\" at the beginning is required\n• Simultaneous audio-video recording (no lip sync)\n• Real-time audio only (no samples or backing tracks)\n• Basic audio processing is allowed (EQ, compression, reverb)\n• Face showing is optional, mouth area is recommended"
       },
       "ranking": {
         "question": "How does the ranking system work?",
@@ -1999,66 +2001,6 @@
     "simpleVote": "Vote Only",
     "commentVotePoints": "+300VP",
     "simpleVotePoints": "+100VP"
-  },
-  "community": {
-    "title": "Communities",
-    "description": "Join communities to compete with like-minded beatboxers!",
-    "createCommunity": "Create Community",
-    "searchPlaceholder": "Search communities...",
-    "myCommunities": "My Communities",
-    "allCommunities": "All Communities",
-    "noCommunities": "No communities found",
-    "memberCount": "{{count}} members",
-    "avgRating": "Avg Rating",
-    "yourRank": "Your Rank",
-    "owner": "Owner",
-    "admin": "Admin",
-    "member": "Member",
-    "viewDetails": "View Details",
-    "join": "Join",
-    "leave": "Leave",
-    "loginRequired": "Please login to join communities",
-    "name": "Name",
-    "namePlaceholder": "Enter community name",
-    "description": "Description",
-    "descriptionPlaceholder": "Enter community description",
-    "password": "Password",
-    "optional": "Optional",
-    "passwordPlaceholder": "Enter password for private community",
-    "passwordHint": "Leave empty for public community",
-    "passwordRequired": "This community requires a password",
-    "enterPassword": "Enter password",
-    "nameRequired": "Community name is required",
-    "createSuccess": "Community created successfully!",
-    "joinSuccess": "Successfully joined the community!",
-    "joinCommunity": "Join Community",
-    "notFound": "Community not found or you don't have access",
-    "backToList": "Back to Communities",
-    "ranking": "Ranking",
-    "chat": "Chat",
-    "management": "Management",
-    "memberRanking": "Member Ranking",
-    "noMembers": "No members yet",
-    "joined": "Joined",
-    "noMessages": "No messages yet. Start the conversation!",
-    "chatPlaceholder": "Type a message...",
-    "send": "Send",
-    "memberManagement": "Member Management",
-    "rating": "Rating",
-    "promote": "Promote to Admin",
-    "demote": "Demote to Member",
-    "kick": "Kick",
-    "confirmLeave": "Leave Community?",
-    "leaveConfirmMessage": "Are you sure you want to leave this community?",
-    "leaveSuccess": "Successfully left the community",
-    "confirmKick": "Kick Member?",
-    "kickConfirmMessage": "Are you sure you want to kick this member from the community?",
-    "kickSuccess": "Member kicked successfully",
-    "changeRole": "Change Role",
-    "currentRole": "Current Role",
-    "promoteConfirmMessage": "Promote this member to admin?",
-    "demoteConfirmMessage": "Demote this admin to member?",
-    "roleUpdateSuccess": "Role updated successfully"
   },
   "auth": {
     "phoneNumber": "Phone Number",

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ChevronDown, ChevronUp, HelpCircle, MessageCircle, Video, Trophy, Users, Settings } from 'lucide-react';
+import { ChevronDown, ChevronUp, HelpCircle, MessageCircle, Trophy, Users, Settings } from 'lucide-react';
 import { useOnboardingStore } from '../store/onboardingStore';
+import { Card } from '../components/ui/Card';
 
 interface FAQItem {
   question: string;
@@ -84,6 +85,11 @@ const FAQPage: React.FC = () => {
       question: t('faq.items.showFace.question'),
       answer: t('faq.items.showFace.answer')
     },
+    {
+      category: t('faq.categories.battles'),
+      question: t('faq.items.battleFormat.question'),
+      answer: t('faq.items.battleFormat.answer')
+    },
 
     // Technical
     {
@@ -127,108 +133,127 @@ const FAQPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900">
-      <div className="container-ultra-wide py-16">
+    <div className="min-h-screen bg-slate-950 py-6 sm:py-10">
+      <div className="container-ultra-wide">
         {/* Hero Section */}
-        <div className="text-center mb-16">
-          <div className="flex justify-center mb-8">
-            <div className="bg-blue-500/20 rounded-full p-6">
-              <HelpCircle className="w-16 h-16 text-blue-400" />
+        <div className="text-center mb-8 sm:mb-12">
+          <div className="relative">
+            {/* 背景のグラデーション効果 */}
+            <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 via-purple-500/20 to-pink-500/20 blur-3xl transform -translate-y-4"></div>
+            
+            <div className="relative animate-fade-in">
+              <div className="flex justify-center mb-6 sm:mb-8">
+                <div className="bg-cyan-500/20 rounded-full p-6 border border-cyan-500/30">
+                  <HelpCircle className="w-12 h-12 sm:w-16 sm:h-16 text-cyan-400" />
+                </div>
+              </div>
+
+              <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-4 sm:mb-6 text-transparent bg-clip-text bg-gradient-to-r from-cyan-500 to-purple-500">
+                {t('faq.title')}
+              </h1>
+              
+              <p className="text-lg text-slate-300 max-w-3xl mx-auto leading-relaxed">
+                {t('faq.subtitle')}
+              </p>
             </div>
           </div>
-          
-          <h1 className="text-5xl md:text-6xl font-bold text-white mb-6">
-            {t('faq.title')}
-          </h1>
-          
-          <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
-            {t('faq.subtitle')}
-          </p>
         </div>
 
         {/* Categories */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-16">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 mb-8 sm:mb-12">
           {categories.map((category, index) => {
             const Icon = category.icon;
             return (
-              <div key={index} className="bg-white/10 backdrop-blur-lg rounded-xl p-6 text-center border border-white/20">
-                <Icon className={`w-8 h-8 mx-auto mb-3 ${category.color}`} />
-                <h3 className="text-white font-semibold text-sm">
+              <Card 
+                key={index} 
+                className="bg-slate-800 border border-slate-700 p-4 sm:p-6 text-center hover:bg-slate-700/50 transition-all duration-300 hover-lift group"
+              >
+                <Icon className={`w-6 h-6 sm:w-8 sm:h-8 mx-auto mb-3 ${category.color} group-hover:scale-110 transition-transform duration-300`} />
+                <h3 className="text-slate-50 font-semibold text-sm sm:text-base">
                   {category.name}
                 </h3>
-              </div>
+              </Card>
             );
           })}
         </div>
 
         {/* FAQ Items */}
-        <div className="max-w-4xl mx-auto">
-          <div className="space-y-4">
+        <div className="max-w-4xl mx-auto mb-8 sm:mb-12">
+          <div className="space-y-4 sm:space-y-6">
             {faqs.map((faq, index) => {
               const isExpanded = expandedItems.includes(index);
               const Icon = getCategoryIcon(faq.category);
               
               return (
-                <div 
+                <Card
                   key={index}
-                  className="bg-white/10 backdrop-blur-lg rounded-xl border border-white/20 overflow-hidden transition-all duration-300 hover:bg-white/15"
+                  className="bg-slate-800 border border-slate-700 overflow-hidden transition-all duration-300 hover:bg-slate-700/50 hover-lift"
                 >
                   <button
                     onClick={() => toggleItem(index)}
-                    className="w-full px-6 py-4 text-left flex items-center justify-between focus:outline-none"
+                    className="w-full px-4 sm:px-6 py-4 sm:py-5 text-left flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:ring-inset"
                   >
-                    <div className="flex items-center space-x-4">
-                      <Icon className={`w-5 h-5 ${getCategoryColor(faq.category)}`} />
-                      <span className="text-white font-medium text-lg">
+                    <div className="flex items-center space-x-3 sm:space-x-4">
+                      <Icon className={`w-5 h-5 sm:w-6 sm:h-6 ${getCategoryColor(faq.category)} flex-shrink-0`} />
+                      <span className="text-slate-50 font-medium text-base sm:text-lg">
                         {faq.question}
                       </span>
                     </div>
-                    {isExpanded ? (
-                      <ChevronUp className="w-5 h-5 text-gray-400" />
-                    ) : (
-                      <ChevronDown className="w-5 h-5 text-gray-400" />
-                    )}
+                    <div className="flex-shrink-0 ml-4">
+                      {isExpanded ? (
+                        <ChevronUp className="w-5 h-5 text-slate-400 transition-transform duration-300" />
+                      ) : (
+                        <ChevronDown className="w-5 h-5 text-slate-400 transition-transform duration-300" />
+                      )}
+                    </div>
                   </button>
                   
                   {isExpanded && (
-                    <div className="px-6 pb-6">
-                      <div className="pl-9 text-gray-300 leading-relaxed">
+                    <div className="px-4 sm:px-6 pb-4 sm:pb-6 animate-fade-in">
+                      <div className="pl-8 sm:pl-10 text-slate-300 leading-relaxed text-sm sm:text-base">
                         {faq.answer}
                       </div>
                     </div>
                   )}
-                </div>
+                </Card>
               );
             })}
           </div>
         </div>
 
         {/* Contact Section */}
-        <div className="mt-16 text-center">
-          <div className="bg-gradient-to-r from-blue-600/20 to-purple-600/20 rounded-3xl p-12 border border-blue-500/30">
-            <h2 className="text-3xl font-bold text-white mb-4">
-              {t('faq.stillNeedHelp.title')}
-            </h2>
-            <p className="text-xl text-gray-300 mb-8">
-              {t('faq.stillNeedHelp.description')}
-            </p>
-            
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button 
-                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg"
-                onClick={() => window.location.href = 'mailto:beatnexus.app@gmail.com'}
-              >
-                {t('faq.stillNeedHelp.contactSupport')}
-              </button>
+        <div className="max-w-4xl mx-auto">
+          <Card className="bg-slate-800 border border-slate-700 p-8 sm:p-12 text-center hover-lift">
+            <div className="relative">
+              {/* 背景のグラデーション効果 */}
+              <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 to-purple-500/10 rounded-xl"></div>
               
-              <button 
-                className="bg-white/10 hover:bg-white/20 border border-white/30 text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 backdrop-blur-sm"
-                onClick={() => setOnboardingModalOpen(true)}
-              >
-                {t('faq.stillNeedHelp.readGuide')}
-              </button>
+              <div className="relative">
+                <h2 className="text-2xl sm:text-3xl font-bold text-slate-50 mb-4">
+                  {t('faq.stillNeedHelp.title')}
+                </h2>
+                <p className="text-lg sm:text-xl text-slate-300 mb-8 max-w-2xl mx-auto">
+                  {t('faq.stillNeedHelp.description')}
+                </p>
+                
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                  <button 
+                    className="bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600 text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+                    onClick={() => window.location.href = 'mailto:beatnexus.app@gmail.com'}
+                  >
+                    {t('faq.stillNeedHelp.contactSupport')}
+                  </button>
+                  
+                  <button 
+                    className="bg-slate-700 hover:bg-slate-600 border border-slate-600 hover:border-slate-500 text-slate-50 font-bold py-4 px-8 rounded-xl transition-all duration-300 hover-lift"
+                    onClick={() => setOnboardingModalOpen(true)}
+                  >
+                    {t('faq.stillNeedHelp.readGuide')}
+                  </button>
+                </div>
+              </div>
             </div>
-          </div>
+          </Card>
         </div>
       </div>
     </div>
