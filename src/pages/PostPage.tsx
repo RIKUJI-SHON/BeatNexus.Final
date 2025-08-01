@@ -890,20 +890,20 @@ const PostPage: React.FC = () => {
                     <div className="space-y-6">
                       {/* 動画冒頭の挨拶 */}
                       <div className="flex items-start gap-3">
-                        <div className="w-3 h-3 bg-amber-400 rounded-full mt-2 flex-shrink-0"></div>
+                        <div className="w-3 h-3 bg-cyan-400 rounded-full mt-2 flex-shrink-0"></div>
                         <div>
                           <h4 className="text-lg font-bold text-slate-50 mb-2">
-                            {t('postPage.guidelines.detailed.greetingRule.title')}<span className="text-amber-400">{t('postPage.guidelines.detailed.greetingRule.value')}</span>
+                            {t('postPage.guidelines.detailed.greetingRule.title')}<span className="text-cyan-400">{t('postPage.guidelines.detailed.greetingRule.value')}</span>
                           </h4>
                           <p className="text-sm text-slate-400 mb-3">{t('postPage.guidelines.detailed.greetingRule.description')}</p>
                           
                           {/* 例文リスト */}
                           <div className="bg-slate-800/50 rounded-lg p-3 border border-slate-700">
-                            <p className="text-xs font-semibold text-amber-300 mb-2">{t('postPage.guidelines.detailed.greetingRule.examples.title')}</p>
+                            <p className="text-xs font-semibold text-cyan-300 mb-2">{t('postPage.guidelines.detailed.greetingRule.examples.title')}</p>
                             <ul className="space-y-1">
                               {(t('postPage.guidelines.detailed.greetingRule.examples.list', { returnObjects: true }) as string[]).map((example, index) => (
                                 <li key={index} className="text-xs text-slate-300 flex items-start gap-2">
-                                  <span className="text-amber-400 mt-0.5">•</span>
+                                  <span className="text-cyan-400 mt-0.5">•</span>
                                   <span>{example}</span>
                                 </li>
                               ))}
@@ -915,10 +915,10 @@ const PostPage: React.FC = () => {
                       
                       {/* パフォーマンス時間 */}
                       <div className="flex items-start gap-3">
-                        <div className="w-3 h-3 bg-blue-400 rounded-full mt-2 flex-shrink-0"></div>
+                        <div className="w-3 h-3 bg-slate-400 rounded-full mt-2 flex-shrink-0"></div>
                         <div>
                           <h4 className="text-lg font-bold text-slate-50 mb-2">
-                            {t('postPage.guidelines.detailed.performanceTime.title')}<span className="text-blue-400">{t('postPage.guidelines.detailed.performanceTime.value')}</span>
+                            {t('postPage.guidelines.detailed.performanceTime.title')}<span className="text-slate-400">{t('postPage.guidelines.detailed.performanceTime.value')}</span>
                           </h4>
                           <p className="text-sm text-slate-400">{t('postPage.guidelines.detailed.performanceTime.description')}</p>
                         </div>
@@ -937,10 +937,10 @@ const PostPage: React.FC = () => {
                       
                       {/* 本人確認 */}
                       <div className="flex items-start gap-3">
-                        <div className="w-3 h-3 bg-emerald-400 rounded-full mt-2 flex-shrink-0"></div>
+                        <div className="w-3 h-3 bg-cyan-400 rounded-full mt-2 flex-shrink-0"></div>
                         <div>
                           <h4 className="text-lg font-bold text-slate-50 mb-2">
-                            {t('postPage.guidelines.detailed.identityVerification.title')}<span className="text-emerald-400">{t('postPage.guidelines.detailed.identityVerification.value')}</span>
+                            {t('postPage.guidelines.detailed.identityVerification.title')}<span className="text-cyan-400">{t('postPage.guidelines.detailed.identityVerification.value')}</span>
                           </h4>
                           <p className="text-sm text-slate-400">{t('postPage.guidelines.detailed.identityVerification.description')}</p>
                         </div>
@@ -959,10 +959,10 @@ const PostPage: React.FC = () => {
                       
                       {/* 音源 */}
                       <div className="flex items-start gap-3">
-                        <div className="w-3 h-3 bg-purple-400 rounded-full mt-2 flex-shrink-0"></div>
+                        <div className="w-3 h-3 bg-slate-400 rounded-full mt-2 flex-shrink-0"></div>
                         <div>
                           <h4 className="text-lg font-bold text-slate-50 mb-2">
-                            {t('postPage.guidelines.detailed.audioSource.title')}<span className="text-purple-400">{t('postPage.guidelines.detailed.audioSource.value')}</span>
+                            {t('postPage.guidelines.detailed.audioSource.title')}<span className="text-slate-400">{t('postPage.guidelines.detailed.audioSource.value')}</span>
                           </h4>
                           <p className="text-sm text-slate-400">{t('postPage.guidelines.detailed.audioSource.description')}</p>
                         </div>
@@ -970,10 +970,10 @@ const PostPage: React.FC = () => {
                       
                       {/* サンプル使用禁止 */}
                       <div className="flex items-start gap-3">
-                        <div className="w-3 h-3 bg-orange-400 rounded-full mt-2 flex-shrink-0"></div>
+                        <div className="w-3 h-3 bg-red-400 rounded-full mt-2 flex-shrink-0"></div>
                         <div>
                           <h4 className="text-lg font-bold text-slate-50 mb-2">
-                            <span className="text-orange-400">{t('postPage.guidelines.detailed.sampleBan.title')}</span>
+                            <span className="text-red-400">{t('postPage.guidelines.detailed.sampleBan.title')}</span>
                           </h4>
                           <p className="text-sm text-slate-400">{t('postPage.guidelines.detailed.sampleBan.description')}</p>
                         </div>
