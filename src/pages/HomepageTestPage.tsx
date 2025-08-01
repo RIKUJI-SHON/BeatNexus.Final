@@ -45,7 +45,7 @@ const HomepageTestPage: React.FC = () => {
 
   // SEO設定
   useCanonicalUrl({
-    canonicalUrl: 'https://beatnexus.vercel.app/',
+    // canonicalUrlを指定しない場合、自動的に公式ドメインが使用される
     excludeQueryParams: true
   });
 
@@ -57,7 +57,7 @@ const HomepageTestPage: React.FC = () => {
     robots: 'index,follow',
     ogTitle: 'BeatNexus - ビートボクサーのための競技プラットフォーム',
     ogDescription: 'ビートボクサーのための競技プラットフォーム。動画投稿で気軽にバトル、コミュニティ投票で勝敗決定。全てのビートボクサーに次のステップを。',
-    ogImage: 'https://beatnexus.vercel.app/images/og-image.png',
+    ogImage: 'https://beatnexus.app/images/og-image.png',
     ogType: 'website',
     twitterCard: 'summary_large_image',
     twitterTitle: 'BeatNexus - ビートボクサーのための競技プラットフォーム',

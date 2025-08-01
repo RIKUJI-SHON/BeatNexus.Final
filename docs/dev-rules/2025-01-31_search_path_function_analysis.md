@@ -67,7 +67,7 @@ search_path設定を一つずつ行っていく。既存の機能は絶対変え
 - ✅ start_new_season (既存設定済み) ※重要機能・本番同期完了
 - ✅ get_active_season (既存設定済み)
 - ✅ get_all_seasons (既存設定済み)
-- ⏭️ grant_season_rewards (2025-01-31 スキップ - 未使用)
+- ✅ grant_season_rewards (既存設定済み) ※重要機能・報酬システム
 - ✅ get_season_rankings_by_id (既存設定済み - 使用中)
 - ✅ get_season_voter_rankings_by_id (既存設定済み - 使用中)
 - ✅ get_top_rankings (既存設定済み)
@@ -93,12 +93,12 @@ search_path設定を一つずつ行っていく。既存の機能は絶対変え
 - ✅ update_post_comments_count (2025-01-31 完了)
 
 ### 9. ユーティリティ・支援系関数（低優先度）
-- handle_updated_at
+- ✅ handle_updated_at (2025-01-31 完了)
 - update_updated_at_column
 - get_rank_from_rating
 - get_rank_color_from_rating
 - get_original_email_hint
-- call_edge_function
+- ✅ call_edge_function (2025-01-31 完了)
 
 ### 10. 削除・クリーンアップ系関数（中優先度）
 - ✅ cleanup_all_deleted_user_videos (2025-01-31 完了) ※再帰呼び出しバグ修正済み

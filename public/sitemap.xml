@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <url>
+    <loc>https://beatnexus.app/</loc>
+    <lastmod>2025-01-31</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://beatnexus.app/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://beatnexus.app/" />
+  </url>
+  <url>
+    <loc>https://beatnexus.app/battles</loc>
+    <lastmod>2025-01-31</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://beatnexus.app/battles" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://beatnexus.app/battles" />
+  </url>
+  <url>
+    <loc>https://beatnexus.app/ranking</loc>
+    <lastmod>2025-01-31</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://beatnexus.app/ranking" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://beatnexus.app/ranking" />
+  </url>
+  <url>
+    <loc>https://beatnexus.app/forum</loc>
+    <lastmod>2025-01-31</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://beatnexus.app/forum" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://beatnexus.app/forum" />
+  </url>
+  <url>
+    <loc>https://beatnexus.app/communities</loc>
+    <lastmod>2025-01-31</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://beatnexus.app/communities" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://beatnexus.app/communities" />
+  </url>
+</urlset>

@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import { getCanonicalUrl, SEO_CONFIG } from '../utils/seoConfig';
 
 /**
  * SEO用のCanonical URLを動的に設定するフック
@@ -30,17 +31,10 @@ export function useCanonicalUrl(options: UseCanonicalUrlOptions = {}) {
       // カスタムURLが指定されている場合
       finalCanonicalUrl = canonicalUrl;
     } else {
-      // 現在の場所から生成
-      const baseUrl = `${window.location.protocol}//${window.location.host}`;
+      // 統一設定を使用して正規URLを生成
       const pathname = location.pathname;
-      
-      if (excludeQueryParams) {
-        // クエリパラメータを除外
-        finalCanonicalUrl = `${baseUrl}${pathname}`;
-      } else {
-        // クエリパラメータを含める
-        finalCanonicalUrl = `${baseUrl}${pathname}${location.search}`;
-      }
+      const search = excludeQueryParams ? '' : location.search;
+      finalCanonicalUrl = getCanonicalUrl(`${pathname}${search}`);
     }
 
     // 新しいcanonical linkタグを作成
@@ -222,6 +216,21 @@ export function useDynamicMeta(options: UseDynamicMetaOptions = {}) {
     }
   }, [ogImage]);
 
+  // og:url を自動設定（統一ドメインを使用）
+  useEffect(() => {
+    let ogUrlMeta = document.querySelector('meta[property="og:url"]');
+    
+    if (!ogUrlMeta) {
+      ogUrlMeta = document.createElement('meta');
+      ogUrlMeta.setAttribute('property', 'og:url');
+      document.head.appendChild(ogUrlMeta);
+    }
+    
+    // 常に公式ドメインを使用
+    const currentPath = window.location.pathname + window.location.search;
+    ogUrlMeta.setAttribute('content', getCanonicalUrl(currentPath));
+  }, []);
+
   useEffect(() => {
     if (ogType) {
       let ogTypeMeta = document.querySelector('meta[property="og:type"]');
@@ -292,6 +301,21 @@ export function useDynamicMeta(options: UseDynamicMetaOptions = {}) {
       twitterImageMeta.setAttribute('content', twitterImage);
     }
   }, [twitterImage]);
+
+  // Twitter URL を自動設定（統一ドメインを使用）
+  useEffect(() => {
+    let twitterUrlMeta = document.querySelector('meta[name="twitter:url"]');
+    
+    if (!twitterUrlMeta) {
+      twitterUrlMeta = document.createElement('meta');
+      twitterUrlMeta.setAttribute('name', 'twitter:url');
+      document.head.appendChild(twitterUrlMeta);
+    }
+    
+    // 常に公式ドメインを使用
+    const currentPath = window.location.pathname + window.location.search;
+    twitterUrlMeta.setAttribute('content', getCanonicalUrl(currentPath));
+  }, []);
 }
 
 /**

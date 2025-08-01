@@ -3,6 +3,19 @@
   "installCommand": "pnpm install --no-frozen-lockfile",
   "framework": "vite",
   "public": true,
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "beatnexus.vercel.app"
+        }
+      ],
+      "destination": "https://beatnexus.app/$1",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     {
       "source": "/(.*)",

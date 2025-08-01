@@ -10,4 +10,4 @@ Allow: /workbox-*.js
 Allow: /icon-*.svg
 Allow: /screenshot-*.png
 
-Sitemap: https://beatnexus.vercel.app/sitemap.xml 
+Sitemap: https://beatnexus.app/sitemap.xml 

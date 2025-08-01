@@ -25,7 +25,7 @@ const HomePage: React.FC = () => {
 
   // SEO設定
   useCanonicalUrl({
-    canonicalUrl: 'https://beatnexus.vercel.app/',
+    // canonicalUrlを指定しない場合、自動的に公式ドメインが使用される
     excludeQueryParams: true
   });
 

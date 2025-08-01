@@ -12,7 +12,7 @@ const corsHeaders = {
 // 環境変数
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-const SITE_BASE_URL = "https://beat-nexus-heatbeat-test.vercel.app";
+const SITE_BASE_URL = "https://beatnexus.app";
 
 if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
   console.error("Missing Supabase env vars");
