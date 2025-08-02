@@ -480,7 +480,7 @@
   "home": {
     "landingPage": {
       "cta": {
-        "joinBeta": "βシーズンに無料で参加する",
+        "joinBeta": "8月7日の完全一般公開をお待ちください",
         "watchBattles": "バトルを観戦する"
       },
       "hero": {
@@ -621,17 +621,17 @@
       },
       "closing": {
         "title": {
-          "history": "歴史の始まりに、",
-          "dontMiss": "乗り遞れるな。"
+          "history": "いよいよ始まった、",
+          "dontMiss": "新時代に参加しよう。"
         },
-        "subtitle": "新たなビートボックスの歴史を、共に刻もう。",
+        "subtitle": "現在先行リリース中！完全一般公開まであと少しお待ちください。",
         "schedule": {
-          "earlyAccess": "先行アクセス (事前登録者限定):",
-          "earlyAccessDate": "8月1日〜8月7日",
+          "earlyAccess": "先行リリース (事前登録者限定):",
+          "earlyAccessDate": "現在実施中（～8月7日）",
           "publicRelease": "完全一般公開:",
-          "publicReleaseDate": "8月8日〜"
+          "publicReleaseDate": "8月7日～"
         },
-        "finalCta": "【無料】でβシーズン先行アクセス権を手に入れる"
+        "finalCta": "8月7日の完全一般公開をお待ちください"
       }
     },
     "hero": {
@@ -654,13 +654,13 @@
       "button": {
         "startBattle": "バトルを始める",
         "watchBattles": "バトルを観戦 & 投票",
-        "joinNow": "事前登録"
+        "joinNow": "8月7日公開予定"
       },
       "seasonInfo": {
-        "earlyAccess": "8月1日",
-        "earlyAccessLabel": "先行アクセス開始",
-        "publicRelease": "8月8日",
-        "publicReleaseLabel": "完全一般公開"
+        "earlyAccess": "先行リリース中",
+        "earlyAccessLabel": "事前登録者限定",
+        "publicRelease": "8月7日",
+        "publicReleaseLabel": "完全一般公開開始"
       }
     },
     "howItWorks": {
