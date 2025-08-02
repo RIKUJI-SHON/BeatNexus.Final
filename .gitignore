@@ -49,3 +49,4 @@ lerna-debug.log*
 
 # Cursor IDE specific files
 .cursor/
+.vercel

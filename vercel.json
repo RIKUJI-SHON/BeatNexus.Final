@@ -2,7 +2,7 @@
   "buildCommand": "pnpm install --no-frozen-lockfile && pnpm build",
   "installCommand": "pnpm install --no-frozen-lockfile",
   "framework": "vite",
-  "public": true,
+  "public": false,
   "redirects": [
     {
       "source": "/(.*)",
@@ -14,6 +14,36 @@
       ],
       "destination": "https://beatnexus.app/$1",
       "permanent": true
+    },
+    {
+      "source": "/(.*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "beat-nexus-heatbeat-test.vercel.app"
+        }
+      ],
+      "destination": "https://beatnexus.app/$1",
+      "permanent": true
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Strict-Transport-Security",
+          "value": "max-age=31536000; includeSubDomains"
+        }
+      ]
     }
   ],
   "rewrites": [
