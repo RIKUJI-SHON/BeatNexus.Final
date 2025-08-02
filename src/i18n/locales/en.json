@@ -1117,15 +1117,17 @@
         "greetingRule": {
           "title": "Opening Greeting: ",
           "value": "Required",
-          "description": "Before starting your performance, declare your participation in BeatNexus with your voice. You must include the word 'BeatNexus'.",
+          "description": "Before starting your performance, you must declare your participation with your own voice including both ①the word 'BeatNexus' and ②your player name. This is an important rule to prove that your wonderful performance is a battle taking place on the official BeatNexus stage.\n\nPurpose of Declaration:\n• Identity Proof: Shows that you are the actual account owner, preventing impersonation.\n• Content Attribution: When your video is shared on other SNS platforms, it clearly indicates that this is a BeatNexus battle, enhancing the platform's value.\n• Competitive Spirit: Like athlete's oath in competitions, it demonstrates your serious commitment to the battle and heightens viewers' expectations.",
           "examples": {
             "title": "Examples: ",
             "list": [
-              "\"I'm joining BeatNexus, I'm [your player name]!\"",
-              "\"This is my video for BeatNexus.\"",
-              "\"Shout out to BeatNexus!\""
+              "\"BeatNexus, [Player Name], let's do this!\"",
+              "\"I'm [Player Name]. BeatNexus, here I go!\"",
+              "\"This is [Player Name] for BeatNexus.\"",
+              "\"My name is [Player Name], and this is my submission for BeatNexus.\"",
+              "\"Shout out to BeatNexus! [Player Name] in the house!\""
             ],
-            "note": "You can say it however you like, but you must include the word 'BeatNexus'."
+            "note": "You can express it freely, but you must include both ①the word 'BeatNexus' and ②your player name. You must speak with your own voice, not with text or subtitles. Videos without opening greetings or missing essential elements may be considered non-compliant with the rules."
           }
         },
         "performanceTime": {

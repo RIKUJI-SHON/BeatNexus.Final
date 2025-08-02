@@ -1168,15 +1168,17 @@
         "greetingRule": {
           "title": "動画冒頭の挨拶：",
           "value": "必須",
-          "description": "パフォーマンスを始める前に、あなたの声でBeatNexusへの参加を宣言してください。必ず「BeatNexus」という単語を含めてください。",
+          "description": "パフォーマンスを始める前に、必ずご自身の声で「①BeatNexusという単語」と「②あなたのプレイヤー名」の両方を含めて参加を宣言してください。これは、あなたの素晴らしいパフォーマンスが、BeatNexusという公式な舞台で行われるバトルであることを証明するための重要なルールです。\n\n宣言の目的：\n• 本人性の証明: あなたがアカウントの所有者本人であることを示し、なりすましを防ぎます。\n• コンテンツの帰属: あなたの動画が他のSNSなどで共有された際、それがBeatNexusのバトルであることを明確にし、プラットフォームの価値を高めます。\n• 競技性の演出: 大会における選手宣誓のように、バトルへの真剣な意志を示すことで、視聴者の期待感を高めます。",
           "examples": {
             "title": "例文：",
             "list": [
-              "「BeatNexusに参加します、[あなたのプレイヤー名]です！」",
-              "「This is my video for BeatNexus.」",
-              "「Shout out to BeatNexus！」"
+              "「BeatNexus、[プレイヤー名]、やります！」",
+              "「[プレイヤー名]です。BeatNexus、挑戦します。」",
+              "\"This is [Player Name] for BeatNexus.\"",
+              "\"My name is [Player Name], and this is my submission for BeatNexus.\"",
+              "\"Shout out to BeatNexus! [Player Name] in the house!\""
             ],
-            "note": "言い方は自由ですが、必ず「BeatNexus」という単語を入れてください。"
+            "note": "言い方は自由ですが、①BeatNexusという単語と②あなたのプレイヤー名の両方を必ず含めてください。テキストや字幕ではなく、必ずご自身の声で発声してください。冒頭の挨拶がない、または必須要素が欠けている動画は、ルールの不遵守と見なされる可能性があります。"
           }
         },
         "performanceTime": {

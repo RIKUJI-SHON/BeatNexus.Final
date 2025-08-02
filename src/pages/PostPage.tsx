@@ -895,7 +895,7 @@ const PostPage: React.FC = () => {
                           <h4 className="text-lg font-bold text-slate-50 mb-2">
                             {t('postPage.guidelines.detailed.greetingRule.title')}<span className="text-cyan-400">{t('postPage.guidelines.detailed.greetingRule.value')}</span>
                           </h4>
-                          <p className="text-sm text-slate-400 mb-3">{t('postPage.guidelines.detailed.greetingRule.description')}</p>
+                          <div className="text-sm text-slate-400 mb-3 whitespace-pre-line">{t('postPage.guidelines.detailed.greetingRule.description')}</div>
                           
                           {/* 例文リスト */}
                           <div className="bg-slate-800/50 rounded-lg p-3 border border-slate-700">
