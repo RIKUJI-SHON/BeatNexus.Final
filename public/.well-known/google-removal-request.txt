@@ -1,0 +1,10 @@
+# Google Search Console用 - URL削除申請情報
+# 削除対象: https://beatnexus.vercel.app/*
+# 正規URL: https://beatnexus.app/
+# 申請日: 2025-08-02
+
+# この設定により、Vercelサブドメインからの重複インデックスを防止し、
+# beatnexus.appを正規ドメインとして確立します。
+
+# Redirect confirmation
+beatnexus.vercel.app -> https://beatnexus.app (301 permanent redirect)

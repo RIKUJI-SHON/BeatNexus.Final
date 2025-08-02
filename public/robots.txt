@@ -1,6 +1,15 @@
 User-agent: *
 Allow: /
 
+# Block Vercel subdomains to prevent duplicate indexing
+User-agent: *
+Disallow: /
+Host: beatnexus.vercel.app
+
+User-agent: *
+Disallow: /
+Host: *.vercel.app
+
 # PWA files
 Allow: /manifest.webmanifest
 Allow: /sw.js
@@ -10,4 +19,6 @@ Allow: /workbox-*.js
 Allow: /icon-*.svg
 Allow: /screenshot-*.png
 
+# Only allow main domain
+Host: beatnexus.app
 Sitemap: https://beatnexus.app/sitemap.xml 

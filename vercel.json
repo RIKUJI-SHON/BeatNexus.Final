@@ -44,6 +44,21 @@
           "value": "max-age=31536000; includeSubDomains"
         }
       ]
+    },
+    {
+      "source": "/(.*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "beatnexus.app"
+        }
+      ],
+      "headers": [
+        {
+          "key": "Link",
+          "value": "<https://beatnexus.app/$1>; rel=\"canonical\""
+        }
+      ]
     }
   ],
   "rewrites": [
