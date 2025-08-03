@@ -14,16 +14,21 @@ export function detectBrowserLanguage(): string {
   
   // ブラウザの言語設定を取得
   const browserLanguage = navigator.language || (navigator as Navigator & { userLanguage?: string }).userLanguage;
+  console.log('🌐 Browser raw language:', browserLanguage);
+  console.log('🌐 Navigator languages:', navigator.languages);
   
   // 言語コードを正規化（例: "ja-JP" -> "ja"）
   const languageCode = browserLanguage?.split('-')[0].toLowerCase();
+  console.log('🌐 Normalized language code:', languageCode);
   
   // サポートされている言語かチェック
   if (languageCode && supportedLanguages.includes(languageCode)) {
+    console.log('🌐 Language supported, returning:', languageCode);
     return languageCode;
   }
   
   // デフォルトは英語
+  console.log('🌐 Language not supported or not detected, defaulting to: en');
   return 'en';
 }
 

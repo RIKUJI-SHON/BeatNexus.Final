@@ -10,13 +10,15 @@ search_path設定を一つずつ行っていく。既存の機能は絶対変え
 
 ### 1. 管理・認証系関数（最高優先度）
 - ✅ admin_force_release_email (2025-01-31 完了)
-- admin_force_release_email_v2
+- ✅ admin_force_release_email_v2 (2025-01-31 完了)
 - ✅ auto_release_deleted_emails (2025-01-31 完了)
-- check_phone_availability
+- ✅ check_phone_availability (既存設定済み)
 - ✅ normalize_phone_number (既存設定済み)
 - ✅ record_phone_verification (2025-01-31 完了)
 - ✅ log_audit_event (既存設定済み)
-- setup_custom_email_templates
+- ✅ log_security_event (既存設定済み) ※複数オーバーロード
+- ✅ log_api_access (2025-01-31 完了) ※新規関数・APIアクセスログ
+- ✅ setup_custom_email_templates (2025-01-31 完了)
 
 ### 2. ユーザー・アカウント管理系（高優先度）
 - ✅ safe_delete_user_account (2025-01-31 完了)
@@ -30,8 +32,8 @@ search_path設定を一つずつ行っていく。既存の機能は絶対変え
 - ✅ get_user_email_language (2025-01-31 完了)
 - ✅ update_onboarding_status (2025-01-31 完了)
 - ✅ handle_new_user (既存設定済み)
-- sync_user_community
-- get_user_current_community
+- ✅ sync_user_community (2025-01-31 完了)
+- ✅ get_user_current_community (2025-01-31 完了)
 
 ### 3. レーティング・計算系関数（高優先度）
 - ✅ calculate_elo_rating (2025-01-31 完了)
@@ -63,7 +65,7 @@ search_path設定を一つずつ行っていく。既存の機能は絶対変え
 - ✅ vote_battle (2025-01-31 完了)
 
 ### 6. シーズン・ランキング系関数（中優先度）
-- ✅ end_current_season (既存設定済み)
+- ✅ end_current_season (2025-01-31 完了)
 - ✅ start_new_season (既存設定済み) ※重要機能・本番同期完了
 - ✅ get_active_season (既存設定済み)
 - ✅ get_all_seasons (既存設定済み)
@@ -72,18 +74,20 @@ search_path設定を一つずつ行っていく。既存の機能は絶対変え
 - ✅ get_season_voter_rankings_by_id (既存設定済み - 使用中)
 - ✅ get_top_rankings (既存設定済み)
 - ✅ get_top_voter_rankings (既存設定済み)
-- ⏭️ get_user_rank (2025-01-31 スキップ - 未使用・動作不良)
-- ⏭️ get_user_voter_rank (2025-01-31 スキップ - 未使用・動作不良)
+- ✅ get_user_rank (既存設定済み) ※重要機能・個人ランキング
+- ✅ get_user_voter_rank (既存設定済み) ※重要機能・投票者ランキング
+- ✅ get_user_season_rank (2025-01-31 完了) ※新規関数・シーズン内ランキング
+- ✅ get_user_season_voter_rank (2025-01-31 完了) ※シーズン内投票者ランキング
 
 ### 7. コミュニティ系関数（中優先度）
-- create_community
-- delete_community
-- join_community
-- leave_community
-- kick_member_from_community
-- update_member_role
-- update_community_stats
-- update_community_stats_trigger
+- ✅ create_community (2025-01-31 完了)
+- ✅ delete_community (2025-01-31 完了)
+- ✅ join_community (2025-01-31 完了)
+- ✅ leave_community (2025-01-31 完了)
+- ✅ kick_member_from_community (2025-01-31 完了)
+- ✅ update_member_role (2025-01-31 完了)
+- ✅ update_community_stats (2025-01-31 完了)
+- ✅ update_community_stats_trigger (2025-01-31 完了)
 
 ### 8. 通知・コメント系関数（中優先度）
 - ✅ notify_battle_created_trigger (2025-01-31 完了)
@@ -94,10 +98,10 @@ search_path設定を一つずつ行っていく。既存の機能は絶対変え
 
 ### 9. ユーティリティ・支援系関数（低優先度）
 - ✅ handle_updated_at (2025-01-31 完了)
-- update_updated_at_column
-- get_rank_from_rating
-- get_rank_color_from_rating
-- get_original_email_hint
+- ✅ update_updated_at_column (2025-01-31 完了)
+- ✅ get_rank_from_rating (2025-01-31 完了)
+- ✅ get_rank_color_from_rating (2025-01-31 完了)
+- ✅ get_original_email_hint (2025-01-31 完了)
 - ✅ call_edge_function (2025-01-31 完了)
 
 ### 10. 削除・クリーンアップ系関数（中優先度）
@@ -111,4 +115,4 @@ search_path設定を一つずつ行っていく。既存の機能は絶対変え
 4. 優先度順にマイグレーションファイルを作成
 
 ## 確認が必要な重複関数
-- `get_k_factor_by_format`: 2つの異なるcache_keyが存在（オーバーロード？）
+- ✅ `get_k_factor_by_format`: 2つのオーバーロード完了（text版・enum版）
