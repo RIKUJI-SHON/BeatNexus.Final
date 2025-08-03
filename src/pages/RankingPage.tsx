@@ -295,8 +295,20 @@ const RankingPage: React.FC = () => {
     return '';
   };
 
-  // 🏆 Top 3 extraction for highlight display (同率順位対応)
-  const topThree = filteredData.filter(entry => getPosition(entry) <= 3);
+  // 🏆 Top 3 extraction for highlight display (最大3人制限)
+  const allTopThreeEntries = filteredData.filter(entry => getPosition(entry) <= 3);
+  
+  // TOP3ポディウム表示用（最大3人まで）
+  const topThreeForDisplay = allTopThreeEntries.slice(0, 3);
+  
+  // 溢れた分（4人目以降の同率含む）
+  const overflowEntries = allTopThreeEntries.slice(3);
+  
+  // ポディウムに表示されなかった人も含めて、リスト表示対象を作成
+  const listEntries = [
+    ...overflowEntries, // 溢れたTOP3候補
+    ...filteredData.filter(entry => getPosition(entry) > 3) // 4位以降
+  ];
 
   const getRatingOrSeasonPoints = (entry: unknown): number => {
     if (activeTab === 'player') {
@@ -676,9 +688,13 @@ const RankingPage: React.FC = () => {
         <div className="space-y-6">
 
           {/* 🏆 Top 3 Podium Section */}
-          {!currentLoading && topThree.length > 0 && (
+          {!currentLoading && topThreeForDisplay.length > 0 && (
             <TopThreePodium
-              topThree={topThree}
+              topThree={topThreeForDisplay as unknown as Array<{
+                username: string;
+                avatar_url?: string | null;
+                [key: string]: unknown;
+              } & Record<string, unknown>>}
               activeTab={activeTab}
               getRatingOrSeasonPoints={getRatingOrSeasonPoints}
               getVoteCount={getVoteCount}
@@ -727,10 +743,11 @@ const RankingPage: React.FC = () => {
                   </div>
                 ) : (
                   <>
-                    {filteredData
-                      .filter(entry => getPosition(entry) > 3)
+                    {listEntries
                       .slice(0, 12)
                       .map((entry) => {
+                      // 溢れたTOP3エントリかどうかをチェック
+                      const isOverflowTopThree = overflowEntries.includes(entry);
                       const isTopThree = getPosition(entry) <= 3;
                       
                       return (
@@ -744,8 +761,12 @@ const RankingPage: React.FC = () => {
                       } ${
                         isTopThree 
                           ? activeTab === 'player' 
-                            ? 'bg-gradient-to-r from-cyan-500/5 to-blue-500/5' 
-                            : 'bg-gradient-to-r from-purple-500/5 to-pink-500/5'
+                            ? isOverflowTopThree
+                              ? 'bg-gradient-to-r from-cyan-500/8 to-blue-500/8 border-l-2 border-cyan-400/40' // 溢れたTOP3エントリは少し強調
+                              : 'bg-gradient-to-r from-cyan-500/5 to-blue-500/5'
+                            : isOverflowTopThree
+                              ? 'bg-gradient-to-r from-purple-500/8 to-pink-500/8 border-l-2 border-purple-400/40'
+                              : 'bg-gradient-to-r from-purple-500/5 to-pink-500/5'
                           : ''
                       }`}
                     >

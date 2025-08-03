@@ -1,22 +1,21 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Trophy, Medal, Award } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
 import { getDefaultAvatarUrl } from '../../utils';
 
 interface TopThreePodiumProps {
   topThree: Array<{
     username: string;
-    avatar_url?: string;
-    [key: string]: any;
-  }>;
+    avatar_url?: string | null;
+    [key: string]: unknown;
+  } & Record<string, unknown>>;
   activeTab: 'player' | 'voter';
-  getRatingOrSeasonPoints: (entry: any) => number;
-  getVoteCount: (entry: any) => number;
+  getRatingOrSeasonPoints: (entry: unknown) => number;
+  getVoteCount: (entry: unknown) => number;
   getRatingColor: (rating: number) => string;
   getVoteCountColor: (voteCount: number) => string;
-  getPosition: (entry: any) => number;
-  getUserId: (entry: any) => string;
+  getPosition: (entry: unknown) => number;
+  getUserId: (entry: unknown) => string;
 }
 
 export const TopThreePodium: React.FC<TopThreePodiumProps> = ({
@@ -29,15 +28,13 @@ export const TopThreePodium: React.FC<TopThreePodiumProps> = ({
   getPosition,
   getUserId,
 }) => {
-  const { t } = useTranslation();
-
   if (topThree.length === 0) return null;
 
-  // 表彰台の配置順（同率順位対応）
+  // 表彰台の配置順（左：2位、真ん中：1位、右：3位）
   const podiumOrder = [];
   
   // 全てのエントリを順位でグループ化
-  const positionGroups: { [position: number]: any[] } = {};
+  const positionGroups: { [position: number]: typeof topThree } = {};
   topThree.forEach(entry => {
     const position = getPosition(entry);
     if (!positionGroups[position]) {
@@ -46,53 +43,21 @@ export const TopThreePodium: React.FC<TopThreePodiumProps> = ({
     positionGroups[position].push(entry);
   });
   
-  // 順位順でソートして上位3人を選択（同率の場合は複数表示）
-  const sortedPositions = Object.keys(positionGroups)
-    .map(Number)
-    .sort((a, b) => a - b);
+  // 表彰台配置: [2位, 1位, 3位] の順で配列を構築
+  const positions = [2, 1, 3]; // 左、真ん中、右の順
+  let totalDisplayed = 0;
   
-  let displayCount = 0;
-  for (const position of sortedPositions) {
-    const entriesAtPosition = positionGroups[position];
-    for (const entry of entriesAtPosition) {
-      if (displayCount < 5 && position <= 3) { // 最大5人まで、3位以内のみ
-        // 表彰台の表示順：2位、1位、3位の順で配置
-        if (position === 2 && displayCount === 0) {
-          podiumOrder.unshift(entry); // 2位を最初に配置
-        } else if (position === 1) {
-          // 1位を中央に配置（2位がある場合は2番目、ない場合は最初）
-          const insertIndex = podiumOrder.length > 0 ? 1 : 0;
-          podiumOrder.splice(insertIndex, 0, entry);
-        } else {
-          podiumOrder.push(entry); // 3位以下は末尾に追加
+  for (const targetPosition of positions) {
+    if (positionGroups[targetPosition] && totalDisplayed < 3) {
+      const entriesAtPosition = positionGroups[targetPosition];
+      for (const entry of entriesAtPosition) {
+        if (totalDisplayed < 3) {
+          podiumOrder.push(entry);
+          totalDisplayed++;
         }
-        displayCount++;
       }
     }
   }
-  
-  // 表示順が崩れている場合の修正（同率1位が複数いる場合など）
-  if (podiumOrder.length > 0) {
-    // 実際の順位に基づいて最終的な表示位置を調整
-    const finalOrder = [];
-    
-    // 2位を探して最初に配置
-    const secondPlaceEntries = podiumOrder.filter(entry => getPosition(entry) === 2);
-    finalOrder.push(...secondPlaceEntries);
-    
-    // 1位を中央に配置
-    const firstPlaceEntries = podiumOrder.filter(entry => getPosition(entry) === 1);
-    finalOrder.push(...firstPlaceEntries);
-    
-    // 3位以下を最後に配置
-    const remainingEntries = podiumOrder.filter(entry => getPosition(entry) !== 1 && getPosition(entry) !== 2);
-    finalOrder.push(...remainingEntries);
-    
-    // 同率順位対応：最大5人まで表示
-    podiumOrder.length = 0;
-    podiumOrder.push(...finalOrder.slice(0, 5));
-  }
-
   const getPositionConfig = (position: number) => {
     switch (position) {
       case 1:
@@ -228,9 +193,30 @@ export const TopThreePodium: React.FC<TopThreePodiumProps> = ({
 
         {/* 表彰台の土台 */}
         <div className="flex justify-center items-end gap-4 sm:gap-6 md:gap-8 mt-4">
-          <div className="w-28 sm:w-32 md:w-36 h-6 bg-gradient-to-r from-gray-600 to-gray-700 rounded-t-lg border-t-2 border-gray-400" />
-          <div className="w-28 sm:w-32 md:w-36 h-8 bg-gradient-to-r from-yellow-600 to-amber-700 rounded-t-lg border-t-2 border-yellow-400" />
-          <div className="w-28 sm:w-32 md:w-36 h-4 bg-gradient-to-r from-amber-700 to-orange-800 rounded-t-lg border-t-2 border-amber-600" />
+          {podiumOrder.map((entry) => {
+            if (!entry) return null;
+            
+            const position = getPosition(entry);
+            
+            // 各順位に応じた土台の高さとスタイル
+            let podiumStyle = '';
+            if (position === 1) {
+              podiumStyle = 'h-8 bg-gradient-to-r from-yellow-600 to-amber-700 border-t-2 border-yellow-400'; // 1位：一番高い
+            } else if (position === 2) {
+              podiumStyle = 'h-6 bg-gradient-to-r from-gray-600 to-gray-700 border-t-2 border-gray-400'; // 2位：中間
+            } else if (position === 3) {
+              podiumStyle = 'h-4 bg-gradient-to-r from-amber-700 to-orange-800 border-t-2 border-amber-600'; // 3位：一番低い
+            } else {
+              podiumStyle = 'h-4 bg-gradient-to-r from-gray-500 to-gray-600 border-t-2 border-gray-500'; // その他
+            }
+            
+            return (
+              <div
+                key={`podium-base-${getUserId(entry)}`}
+                className={`w-28 sm:w-32 md:w-36 ${podiumStyle} rounded-t-lg`}
+              />
+            );
+          })}
         </div>
       </div>
     </div>
