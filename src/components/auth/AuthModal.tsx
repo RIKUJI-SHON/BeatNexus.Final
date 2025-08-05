@@ -1,16 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { X, MailCheck } from 'lucide-react';
+import { X, MailCheck, Eye, EyeOff } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
 import { Button } from '../ui/Button';
 import { Modal } from '../ui/Modal';
+import { PasswordStrengthMeter } from '../ui/PasswordStrengthMeter';
 import { useTranslation, Trans } from 'react-i18next';
+import { validatePasswordStrength, PasswordStrength } from '../../utils/passwordSecurity';
+import { supabase } from '../../lib/supabase';
+import { toast } from '../../store/toastStore';
 
 interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
-  initialMode?: 'login' | 'signup';
-  setMode: React.Dispatch<React.SetStateAction<'login' | 'signup'>>;
+  initialMode?: 'login' | 'signup' | 'resetPassword' | 'setNewPassword';
+  setMode: React.Dispatch<React.SetStateAction<'login' | 'signup' | 'resetPassword' | 'setNewPassword'>>;
 }
 
 export const AuthModal: React.FC<AuthModalProps> = ({
@@ -19,7 +23,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   initialMode = 'login',
   setMode: setParentMode
 }) => {
-  const [mode, setLocalMode] = useState<'login' | 'signup'>(initialMode);
+  const [mode, setLocalMode] = useState<'login' | 'signup' | 'resetPassword' | 'setNewPassword'>(initialMode);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -35,6 +39,16 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   const [loading, setLoading] = useState(false);
   const [showConfirmationEmailModal, setShowConfirmationEmailModal] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState<{ code: string; dial: string }>({ code: 'JP', dial: '+81' });
+  
+  // パスワードリセット用の状態
+  const [resetEmail, setResetEmail] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmNewPassword, setConfirmNewPassword] = useState('');
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmNewPassword, setShowConfirmNewPassword] = useState(false);
+  const [passwordStrength, setPasswordStrength] = useState<PasswordStrength | null>(null);
+  const [resetEmailSent, setResetEmailSent] = useState(false);
+  const [sendingResetEmail, setSendingResetEmail] = useState(false);
   const countryOptions = [
     { code: 'JP', name: 'Japan', dial: '+81', flag: '🇯🇵' },
     { code: 'US', name: 'United States', dial: '+1', flag: '🇺🇸' },
@@ -66,10 +80,36 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     setLocalMode(initialMode);
   }, [initialMode]);
 
+  // リセットリンクからの遷移処理
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const accessToken = urlParams.get('access_token');
+    const refreshToken = urlParams.get('refresh_token');
+    const type = urlParams.get('type');
+
+    if (type === 'recovery' && accessToken && refreshToken) {
+      // パスワードリセットモードに切り替え
+      setLocalMode('setNewPassword');
+      setParentMode('setNewPassword');
+      
+      // Supabaseセッション設定
+      supabase.auth.setSession({
+        access_token: accessToken,
+        refresh_token: refreshToken
+      });
+    }
+  }, [setParentMode]);
+
   if (!isOpen) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // パスワードリセットモードの場合は専用ハンドラーを呼び出し
+    if (mode === 'setNewPassword') {
+      return handleUpdatePassword(e);
+    }
+    
     setError(null);
     setLoading(true);
 
@@ -147,10 +187,93 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     }
   };
 
-  const switchMode = (newMode: 'login' | 'signup') => {
+  const switchMode = (newMode: 'login' | 'signup' | 'resetPassword' | 'setNewPassword') => {
     setLocalMode(newMode);
     setParentMode(newMode);
     setError(null);
+  };
+
+  // パスワードリセット要求ハンドラー
+  const handleSendResetEmail = async () => {
+    if (!resetEmail) {
+      setError(t('auth.error.emailRequired'));
+      return;
+    }
+
+    setSendingResetEmail(true);
+    setError(null);
+
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
+        redirectTo: `${window.location.origin}/reset-password`
+      });
+
+      if (error) throw error;
+
+      setResetEmailSent(true);
+    } catch (error) {
+      console.error('Password reset email error:', error);
+      setError(error instanceof Error ? error.message : t('auth.error.resetEmailFailed'));
+    } finally {
+      setSendingResetEmail(false);
+    }
+  };
+
+  // 新しいパスワード設定ハンドラー
+  const handleUpdatePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+
+    // バリデーション
+    if (!passwordStrength?.isValid) {
+      setError(t('auth.error.passwordTooWeak'));
+      setLoading(false);
+      return;
+    }
+
+    if (newPassword !== confirmNewPassword) {
+      setError(t('auth.passwordMismatch'));
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword
+      });
+
+      if (error) throw error;
+
+      // 成功処理
+      toast.success(t('auth.passwordResetSuccess'));
+      onClose();
+      navigate('/'); // ホームページにリダイレクト
+      
+      // フォームリセット
+      setNewPassword('');
+      setConfirmNewPassword('');
+      setPasswordStrength(null);
+
+    } catch (error) {
+      console.error('Password update error:', error);
+      setError(error instanceof Error ? error.message : t('auth.error.passwordUpdateFailed'));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // パスワード強度チェック
+  const handleNewPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const password = e.target.value;
+    setNewPassword(password);
+    
+    if (password) {
+      const strength = validatePasswordStrength(password);
+      setPasswordStrength(strength);
+    } else {
+      setPasswordStrength(null);
+    }
   };
 
   const handleSendOtp = async () => {
@@ -231,30 +354,201 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               <X className="h-6 w-6" />
             </button>
 
-            {/* Tab Navigation */}
-            <div className="flex mb-8 border-b border-gray-700">
-              <button
-                className={`flex-1 py-3 text-center font-medium transition-colors ${
-                  mode === 'login'
-                    ? 'text-cyan-400 border-b-2 border-cyan-400'
-                    : 'text-gray-400 hover:text-white'
-                }`}
-                onClick={() => switchMode('login')}
-              >
-                {t('auth.signIn')}
-              </button>
-              <button
-                className={`flex-1 py-3 text-center font-medium transition-colors ${
-                  mode === 'signup'
-                    ? 'text-cyan-400 border-b-2 border-cyan-400'
-                    : 'text-gray-400 hover:text-white'
-                }`}
-                onClick={() => switchMode('signup')}
-              >
-                {t('auth.createAccount')}
-              </button>
-            </div>
+            {/* Tab Navigation - resetPassword と setNewPassword モードでは非表示 */}
+            {(mode === 'login' || mode === 'signup') && (
+              <div className="flex mb-8 border-b border-gray-700">
+                <button
+                  className={`flex-1 py-3 text-center font-medium transition-colors ${
+                    mode === 'login'
+                      ? 'text-cyan-400 border-b-2 border-cyan-400'
+                      : 'text-gray-400 hover:text-white'
+                  }`}
+                  onClick={() => switchMode('login')}
+                >
+                  {t('auth.signIn')}
+                </button>
+                <button
+                  className={`flex-1 py-3 text-center font-medium transition-colors ${
+                    mode === 'signup'
+                      ? 'text-cyan-400 border-b-2 border-cyan-400'
+                      : 'text-gray-400 hover:text-white'
+                  }`}
+                  onClick={() => switchMode('signup')}
+                >
+                  {t('auth.createAccount')}
+                </button>
+              </div>
+            )}
 
+            {/* パスワードリセット要求フォーム */}
+            {mode === 'resetPassword' && (
+              <div className="space-y-5">
+                <div className="text-center mb-6">
+                  <h3 className="text-lg font-medium text-white mb-2">
+                    {t('auth.resetPassword')}
+                  </h3>
+                  <p className="text-sm text-gray-400">
+                    {t('auth.resetPasswordDescription')}
+                  </p>
+                </div>
+
+                {!resetEmailSent ? (
+                  <div className="space-y-4">
+                    <div>
+                      <label htmlFor="resetEmail" className="block text-sm font-medium text-gray-300 mb-2">
+                        {t('auth.email')}
+                      </label>
+                      <input
+                        type="email"
+                        id="resetEmail"
+                        value={resetEmail}
+                        onChange={(e) => setResetEmail(e.target.value)}
+                        className="w-full px-4 py-3 bg-gray-800/50 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition-colors"
+                        placeholder={t('auth.emailPlaceholder') as string}
+                        required
+                      />
+                    </div>
+                    
+                    <button
+                      type="button"
+                      onClick={handleSendResetEmail}
+                      disabled={sendingResetEmail}
+                      className="w-full transition-all bg-cyan-500 text-white px-6 py-3 rounded-lg border-cyan-600 border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px] active:border-b-[2px] active:brightness-90 active:translate-y-[2px] disabled:opacity-60 disabled:hover:translate-y-0 font-semibold"
+                    >
+                      {sendingResetEmail ? t('auth.sendingResetEmail') : t('auth.sendResetEmail')}
+                    </button>
+
+                    <div className="text-center">
+                      <button
+                        type="button"
+                        onClick={() => switchMode('login')}
+                        className="text-sm text-gray-400 hover:text-white transition-colors"
+                      >
+                        {t('auth.backToLogin')}
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center space-y-4">
+                    <div className="w-16 h-16 mx-auto mb-4 bg-green-500/20 rounded-full flex items-center justify-center">
+                      <MailCheck className="w-8 h-8 text-green-400" />
+                    </div>
+                    <h4 className="text-lg font-medium text-white mb-2">
+                      {t('auth.resetEmailSent')}
+                    </h4>
+                    <p className="text-sm text-gray-400 mb-6">
+                      {t('auth.resetEmailSentDescription', { email: resetEmail })}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setResetEmailSent(false);
+                        setResetEmail('');
+                        switchMode('login');
+                      }}
+                      className="text-cyan-400 hover:text-cyan-300 text-sm transition-colors"
+                    >
+                      {t('auth.backToLogin')}
+                    </button>
+                  </div>
+                )}
+
+                {error && (
+                  <div className="text-red-400 text-sm bg-red-500/10 border border-red-500/20 rounded-lg p-3">
+                    {error}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* 新しいパスワード設定フォーム */}
+            {mode === 'setNewPassword' && (
+              <form onSubmit={handleSubmit} className="space-y-5">
+                <div className="text-center mb-6">
+                  <h3 className="text-lg font-medium text-white mb-2">
+                    {t('auth.setNewPassword')}
+                  </h3>
+                  <p className="text-sm text-gray-400">
+                    {t('auth.setNewPasswordDescription')}
+                  </p>
+                </div>
+
+                <div>
+                  <label htmlFor="newPassword" className="block text-sm font-medium text-gray-300 mb-2">
+                    {t('auth.newPassword')}
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showNewPassword ? 'text' : 'password'}
+                      id="newPassword"
+                      value={newPassword}
+                      onChange={handleNewPasswordChange}
+                      className="w-full px-4 py-3 bg-gray-800/50 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition-colors pr-12"
+                      placeholder={t('auth.newPasswordPlaceholder') as string}
+                      required
+                      minLength={8}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowNewPassword(!showNewPassword)}
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-200"
+                    >
+                      {showNewPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                    </button>
+                  </div>
+                  
+                  {/* パスワード強度メーター */}
+                  {newPassword && passwordStrength && (
+                    <PasswordStrengthMeter strength={passwordStrength} />
+                  )}
+                </div>
+
+                <div>
+                  <label htmlFor="confirmNewPassword" className="block text-sm font-medium text-gray-300 mb-2">
+                    {t('auth.confirmNewPassword')}
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showConfirmNewPassword ? 'text' : 'password'}
+                      id="confirmNewPassword"
+                      value={confirmNewPassword}
+                      onChange={(e) => setConfirmNewPassword(e.target.value)}
+                      className="w-full px-4 py-3 bg-gray-800/50 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition-colors pr-12"
+                      placeholder={t('auth.confirmNewPasswordPlaceholder') as string}
+                      required
+                      minLength={8}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirmNewPassword(!showConfirmNewPassword)}
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-200"
+                    >
+                      {showConfirmNewPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                    </button>
+                  </div>
+                  {confirmNewPassword && newPassword !== confirmNewPassword && (
+                    <p className="text-red-400 text-sm mt-2">{t('auth.passwordMismatch')}</p>
+                  )}
+                </div>
+
+                {error && (
+                  <div className="text-red-400 text-sm bg-red-500/10 border border-red-500/20 rounded-lg p-3">
+                    {error}
+                  </div>
+                )}
+
+                <button
+                  type="submit"
+                  className="w-full transition-all bg-cyan-500 text-white px-6 py-3 rounded-lg border-cyan-600 border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px] active:border-b-[2px] active:brightness-90 active:translate-y-[2px] disabled:opacity-60 disabled:hover:translate-y-0 font-semibold"
+                  disabled={loading || !passwordStrength?.isValid}
+                >
+                  {loading ? t('auth.updatingPassword') : t('auth.updatePassword')}
+                </button>
+              </form>
+            )}
+
+            {/* 既存のログイン・新規登録フォーム */}
+            {(mode === 'login' || mode === 'signup') && (
             <form onSubmit={handleSubmit} className="space-y-5">
               {mode === 'signup' && (
                 <div>
@@ -409,17 +703,29 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               )}
 
               {mode === 'login' && (
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    id="remember-me"
-                    checked={rememberMe}
-                    onChange={(e) => setRememberMe(e.target.checked)}
-                    className="h-4 w-4 rounded border-gray-600 bg-gray-800/50 text-cyan-500 focus:ring-cyan-500"
-                  />
-                  <label htmlFor="remember-me" className="ml-3 block text-sm text-gray-300">
-                    {t('auth.rememberMe')}
-                  </label>
+                <div className="space-y-3">
+                  <div className="flex items-center">
+                    <input
+                      type="checkbox"
+                      id="remember-me"
+                      checked={rememberMe}
+                      onChange={(e) => setRememberMe(e.target.checked)}
+                      className="h-4 w-4 rounded border-gray-600 bg-gray-800/50 text-cyan-500 focus:ring-cyan-500"
+                    />
+                    <label htmlFor="remember-me" className="ml-3 block text-sm text-gray-300">
+                      {t('auth.rememberMe')}
+                    </label>
+                  </div>
+                  
+                  <div className="text-center">
+                    <button
+                      type="button"
+                      onClick={() => switchMode('resetPassword')}
+                      className="text-sm text-cyan-400 hover:text-cyan-300 transition-colors"
+                    >
+                      {t('auth.forgotPassword')}
+                    </button>
+                  </div>
                 </div>
               )}
 
@@ -444,6 +750,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 )}
               </button>
             </form>
+            )}
           </div>
         </div>
       </div>

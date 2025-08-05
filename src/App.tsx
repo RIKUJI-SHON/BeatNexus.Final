@@ -64,6 +64,7 @@ import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import NotificationTestPage from './pages/NotificationTestPage';
 import CommunityDetailPage from './pages/CommunityDetailPage';
 import BattleResultTestPage from './pages/BattleResultTestPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
 
 // CSS for animations
 import './tailwind.extensions.css';
@@ -104,6 +105,7 @@ function RouterContent() {
             <Route path="/privacy" element={<PrivacyPolicyPage />} />
             <Route path="/notifications/test" element={<NotificationTestPage />} />
             <Route path="/result-test" element={<BattleResultTestPage />} />
+            <Route path="/reset-password" element={<ResetPasswordPage />} />
           </Routes>
         </main>
         <Footer />

@@ -7,8 +7,8 @@ import { detectBrowserLanguage } from '../../lib/utils';
 
 interface AuthModalContextType {
   isAuthModalOpen: boolean;
-  authModalMode: 'login' | 'signup';
-  openAuthModal: (mode: 'login' | 'signup') => void;
+  authModalMode: 'login' | 'signup' | 'resetPassword' | 'setNewPassword';
+  openAuthModal: (mode: 'login' | 'signup' | 'resetPassword' | 'setNewPassword') => void;
   closeAuthModal: () => void;
 }
 
@@ -35,9 +35,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   
   // AuthModal状態管理
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const [authModalMode, setAuthModalMode] = useState<'login' | 'signup'>('login');
+  const [authModalMode, setAuthModalMode] = useState<'login' | 'signup' | 'resetPassword' | 'setNewPassword'>('login');
 
-  const openAuthModal = (mode: 'login' | 'signup') => {
+  const openAuthModal = (mode: 'login' | 'signup' | 'resetPassword' | 'setNewPassword') => {
     setAuthModalMode(mode);
     setIsAuthModalOpen(true);
   };

@@ -1770,7 +1770,11 @@
       "authenticationError": "認証エラーが発生しました。",
       "recordError": "電話番号認証の記録に失敗しました。",
       "emailNotPreregistered": "このメールアドレスは登録されていません。招待されたメールアドレスを確認してください。",
-      "preregistrationCheckFailed": "事前登録の確認に失敗しました。しばらく経ってから再度お試しください。"
+      "preregistrationCheckFailed": "事前登録の確認に失敗しました。しばらく経ってから再度お試しください。",
+      "emailRequired": "メールアドレスが必要です",
+      "resetEmailFailed": "リセットメールの送信に失敗しました",
+      "passwordTooWeak": "パスワードが弱すぎます",
+      "passwordUpdateFailed": "パスワードの更新に失敗しました"
     },
     "signIn": "ログイン",
     "createAccount": "アカウント作成",
@@ -1794,7 +1798,31 @@
     "confirmEmailTitle": "メールを確認してください",
     "confirmEmailDescription": "確認リンクを <strong>{{email}}</strong> に送信しました。受信箱（迷惑メールフォルダも）を確認して登録を完了してください。",
     "gotIt": "了解",
-    "country": "国"
+    "country": "国",
+    "forgotPassword": "パスワードを忘れた方",
+    "resetPassword": "パスワードリセット",
+    "resetPasswordDescription": "登録したメールアドレスを入力してください。パスワードリセット用のリンクをお送りします。",
+    "sendResetEmail": "リセットメールを送信",
+    "sendingResetEmail": "送信中...",
+    "resetEmailSent": "メールを送信しました",
+    "resetEmailSentDescription": "{{email}} にパスワードリセット用のリンクをお送りしました。メールをご確認ください。",
+    "backToLogin": "ログインに戻る",
+    "setNewPassword": "新しいパスワードを設定",
+    "setNewPasswordDescription": "新しいパスワードを入力してください。",
+    "newPassword": "新しいパスワード",
+    "confirmNewPassword": "新しいパスワード（確認）",
+    "newPasswordPlaceholder": "新しいパスワードを入力",
+    "confirmNewPasswordPlaceholder": "新しいパスワードを再入力",
+    "updatePassword": "パスワードを更新",
+    "updatingPassword": "更新中...",
+    "passwordResetSuccess": "パスワードが正常にリセットされました",
+    "passwordStrength": {
+      "very_weak": "非常に弱い",
+      "weak": "弱い",
+      "fair": "普通",
+      "good": "良い",
+      "strong": "強力"
+    }
   },
   "privacyPolicyPage": {
     "title": "プライバシーポリシー",

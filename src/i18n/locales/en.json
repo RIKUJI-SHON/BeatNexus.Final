@@ -2020,7 +2020,11 @@
       "authenticationError": "An authentication error occurred.",
       "recordError": "Failed to record phone number verification.",
       "emailNotPreregistered": "This email address is not registered. Please check the email address you were invited with.",
-      "preregistrationCheckFailed": "Failed to verify pre-registration. Please try again later."
+      "preregistrationCheckFailed": "Failed to verify pre-registration. Please try again later.",
+      "emailRequired": "Email address is required",
+      "resetEmailFailed": "Failed to send reset email",
+      "passwordTooWeak": "Password is too weak",
+      "passwordUpdateFailed": "Failed to update password"
     },
     "signIn": "Sign In",
     "createAccount": "Create Account",
@@ -2044,7 +2048,31 @@
     "confirmEmailTitle": "Confirm Your Email",
     "confirmEmailDescription": "We've sent a confirmation link to <strong>{{email}}</strong>. Please check your inbox (and spam folder) to complete your registration.",
     "gotIt": "Got it!",
-    "country": "Country"
+    "country": "Country",
+    "forgotPassword": "Forgot Password?",
+    "resetPassword": "Reset Password",
+    "resetPasswordDescription": "Enter your registered email address. We'll send you a password reset link.",
+    "sendResetEmail": "Send Reset Email",
+    "sendingResetEmail": "Sending...",
+    "resetEmailSent": "Email Sent",
+    "resetEmailSentDescription": "We've sent a password reset link to {{email}}. Please check your email.",
+    "backToLogin": "Back to Login",
+    "setNewPassword": "Set New Password",
+    "setNewPasswordDescription": "Enter your new password.",
+    "newPassword": "New Password",
+    "confirmNewPassword": "Confirm New Password",
+    "newPasswordPlaceholder": "Enter new password",
+    "confirmNewPasswordPlaceholder": "Re-enter new password",
+    "updatePassword": "Update Password",
+    "updatingPassword": "Updating...",
+    "passwordResetSuccess": "Password reset successfully",
+    "passwordStrength": {
+      "very_weak": "Very Weak",
+      "weak": "Weak", 
+      "fair": "Fair",
+      "good": "Good",
+      "strong": "Strong"
+    }
   },
   "newSeasonModal": {
     "title": "🎉 New Season Started!",
