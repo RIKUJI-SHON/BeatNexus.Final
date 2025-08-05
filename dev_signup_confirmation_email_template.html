@@ -1,0 +1,69 @@
+<!-- 開発環境用アカウント作成確認メールテンプレート -->
+<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9;">
+  <div style="background-color: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+    
+    <!-- ヘッダー -->
+    <div style="text-align: center; margin-bottom: 30px;">
+      <h1 style="color: #1a1a1a; font-size: 24px; margin: 0;">BeatNexus</h1>
+      <p style="color: #666; font-size: 14px; margin: 5px 0 0 0;">DEV Environment</p>
+    </div>
+
+    <!-- メインコンテンツ -->
+    <div style="margin-bottom: 30px;">
+      <h2 style="color: #333; font-size: 20px; margin-bottom: 15px;">Welcome to BeatNexus!</h2>
+      
+      <p style="color: #555; line-height: 1.6; margin-bottom: 20px;">
+        Thank you for signing up for BeatNexus! To complete your account creation 
+        and ensure the security of your account, please verify your email address 
+        by clicking the button below:
+      </p>
+
+      <!-- CTA ボタン -->
+      <div style="text-align: center; margin: 30px 0;">
+        <a href="http://localhost:3000/auth/confirm?token_hash={{ .TokenHash }}&type=email" 
+           style="background-color: #10b981; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">
+          Verify Email Address
+        </a>
+      </div>
+
+      <!-- 次のステップ情報 -->
+      <div style="background-color: #f0f9ff; padding: 15px; border-radius: 6px; margin: 20px 0; border-left: 4px solid #3b82f6;">
+        <p style="color: #1e40af; font-size: 14px; margin: 0; line-height: 1.5;">
+          <strong>What happens next:</strong><br>
+          1. Click the verification button above<br>
+          2. You'll be redirected to BeatNexus<br>
+          3. Your account will be fully activated<br>
+          4. You can start using all features immediately
+        </p>
+      </div>
+
+      <!-- セキュリティ情報 -->
+      <div style="background-color: #fef2f2; padding: 15px; border-radius: 6px; margin: 20px 0; border-left: 4px solid #ef4444;">
+        <p style="color: #991b1b; font-size: 14px; margin: 0; line-height: 1.5;">
+          <strong>Security Notice:</strong><br>
+          • This verification link will expire in 24 hours<br>
+          • If you didn't create this account, please ignore this email<br>
+          • Never share this link with anyone<br>
+          • This email was sent to: {{ .Email }}
+        </p>
+      </div>
+
+      <p style="color: #777; font-size: 14px; line-height: 1.5;">
+        If the button doesn't work, copy and paste this link into your browser:
+      </p>
+      
+      <p style="word-break: break-all; background-color: #f5f5f5; padding: 10px; border-radius: 4px; font-size: 12px; color: #666;">
+        http://localhost:3000/auth/confirm?token_hash={{ .TokenHash }}&type=email
+      </p>
+    </div>
+
+    <!-- フッター -->
+    <div style="border-top: 1px solid #eee; padding-top: 20px; text-align: center;">
+      <p style="color: #999; font-size: 12px; margin: 0;">
+        This is an automated message from BeatNexus Development Environment<br>
+        If you have questions, please contact our support team.<br>
+        Please do not reply to this email.
+      </p>
+    </div>
+  </div>
+</div>

@@ -85,10 +85,30 @@ export const useAuthStore = create<AuthState>((set) => ({
       },
     });
     
-    console.log('📊 Supabase signUp response:', { data: !!data, error: !!error });
+    console.log('📊 Supabase signUp response:', { 
+      data: !!data, 
+      error: !!error,
+      user: !!data?.user,
+      session: !!data?.session,
+      email_confirmed_at: data?.user?.email_confirmed_at 
+    });
+    
     if (error) {
       console.error('❌ Supabase signUp error:', error);
       throw error;
+    }
+
+    // メール認証の状態を強制チェック
+    if (data?.user) {
+      console.log('✅ User created successfully');
+      console.log('📧 Email confirmed at:', data.user.email_confirmed_at);
+      
+      if (data.user.email_confirmed_at) {
+        console.log('⚠️  WARNING: Email was automatically confirmed! Check Supabase settings.');
+        console.log('⚠️  Expected: email_confirmed_at should be null for email confirmation flow');
+      } else {
+        console.log('✅ Email confirmation required - this is correct behavior');
+      }
     }
     
     console.log('✅ Supabase signUp successful, user ID:', data.user?.id);

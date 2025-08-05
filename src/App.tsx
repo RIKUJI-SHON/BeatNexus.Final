@@ -65,6 +65,7 @@ import NotificationTestPage from './pages/NotificationTestPage';
 import CommunityDetailPage from './pages/CommunityDetailPage';
 import BattleResultTestPage from './pages/BattleResultTestPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
+import AuthConfirmPage from './pages/AuthConfirmPage';
 
 // CSS for animations
 import './tailwind.extensions.css';
@@ -106,6 +107,7 @@ function RouterContent() {
             <Route path="/notifications/test" element={<NotificationTestPage />} />
             <Route path="/result-test" element={<BattleResultTestPage />} />
             <Route path="/reset-password" element={<ResetPasswordPage />} />
+            <Route path="/auth/confirm" element={<AuthConfirmPage />} />
           </Routes>
         </main>
         <Footer />
