@@ -1,69 +1,43 @@
-<!-- 本番環境用アカウント作成確認メールテンプレート（スパム対策版） -->
-<div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f8fafc;">
-  <div style="background-color: white; padding: 35px; border-radius: 12px; border: 1px solid #e2e8f0;">
-    
-    <!-- ヘッダー -->
-    <div style="text-align: center; margin-bottom: 35px;">
-      <h1 style="color: #1e293b; font-size: 28px; margin: 0; font-weight: 600;">BeatNexus</h1>
-      <p style="color: #64748b; font-size: 14px; margin: 8px 0 0 0;">Music Battle Platform</p>
-    </div>
-
-    <!-- メインコンテンツ -->
-    <div style="margin-bottom: 30px;">
-      <h2 style="color: #334155; font-size: 22px; margin-bottom: 20px; font-weight: 500;">Account Activation Required</h2>
-      
-      <p style="color: #475569; line-height: 1.7; margin-bottom: 25px; font-size: 16px;">
-        Hello! Your BeatNexus account has been created successfully. 
-        To start participating in music battles, please activate your account 
-        using the button below.
-      </p>
-
-      <!-- CTA ボタン -->
-      <div style="text-align: center; margin: 35px 0;">
-        <a href="https://beatnexus.app/auth/confirm?token_hash={{ .TokenHash }}&type=email" 
-           style="background-color: #0ea5e9; color: white; padding: 14px 35px; text-decoration: none; border-radius: 8px; font-weight: 500; display: inline-block; font-size: 16px;">
-          Activate Account
-        </a>
-      </div>
-
-      <!-- 次のステップ情報 -->
-      <div style="background-color: #f1f5f9; padding: 20px; border-radius: 8px; margin: 25px 0;">
-        <p style="color: #334155; font-size: 14px; margin: 0; line-height: 1.6;">
-          <strong style="color: #0f172a;">Next steps:</strong><br>
-          → Click the activation button<br>
-          → Complete your profile setup<br>
-          → Join your first music battle<br>
-          → Connect with the community
-        </p>
-      </div>
-
-      <!-- 追加情報 -->
-      <div style="background-color: #fefce8; padding: 20px; border-radius: 8px; margin: 25px 0; border-left: 4px solid #eab308;">
-        <p style="color: #713f12; font-size: 14px; margin: 0; line-height: 1.6;">
-          <strong>Important:</strong><br>
-          • Activation link expires in 24 hours<br>
-          • Account created for: {{ .Email }}<br>
-          • Having trouble? Contact our support team<br>
-          • This message was sent automatically
-        </p>
-      </div>
-
-      <p style="color: #64748b; font-size: 14px; line-height: 1.6; margin-top: 25px;">
-        Alternative access: Copy this link to your browser if the button above doesn't work:
-      </p>
-      
-      <div style="background-color: #f8fafc; padding: 15px; border-radius: 6px; font-size: 12px; color: #475569; word-break: break-all; border: 1px solid #e2e8f0; margin-top: 10px;">
-        https://beatnexus.app/auth/confirm?token_hash={{ .TokenHash }}&type=email
-      </div>
-    </div>
-
-    <!-- フッター -->
-    <div style="border-top: 1px solid #e2e8f0; padding-top: 25px; text-align: center;">
-      <p style="color: #94a3b8; font-size: 12px; margin: 0; line-height: 1.5;">
-        BeatNexus - Music Battle Platform<br>
-        This is an automated message from our system.<br>
-        Questions? Visit our help center or contact support.
-      </p>
-    </div>
+<!-- 本番環境用アカウント認証メール（シンプル・スパム対策版） -->
+<div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; max-width: 500px; margin: 40px auto; padding: 0; color: #333;">
+  
+  <!-- メールヘッダー -->
+  <div style="background-color: #ffffff; padding: 32px 24px; text-align: center; border-bottom: 1px solid #e5e7eb;">
+    <h1 style="margin: 0; font-size: 20px; font-weight: 600; color: #111827; letter-spacing: -0.025em;">BeatNexus</h1>
+    <p style="margin: 4px 0 0 0; font-size: 13px; color: #6b7280;">Music Battle Platform</p>
   </div>
+
+  <!-- メインコンテンツ -->
+  <div style="background-color: #ffffff; padding: 32px 24px;">
+    
+    <h2 style="margin: 0 0 16px 0; font-size: 18px; font-weight: 500; color: #374151; line-height: 1.4;">
+      Account Verification
+    </h2>
+    
+    <p style="margin: 0 0 24px 0; font-size: 15px; line-height: 1.6; color: #4b5563;">
+      Thank you for joining BeatNexus. Please verify your account to complete the registration process.
+    </p>
+
+    <!-- 認証ボタン -->
+    <div style="margin: 32px 0; text-align: center;">
+      <a href="https://beatnexus.app/auth/confirm?token_hash={{ .TokenHash }}&type=email" 
+         style="display: inline-block; background-color: #2563eb; color: #ffffff; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-size: 14px; font-weight: 500; text-align: center;">
+        Verify Account
+      </a>
+    </div>
+
+    <p style="margin: 24px 0 0 0; font-size: 13px; line-height: 1.5; color: #6b7280;">
+      This verification link will expire in 24 hours. If you did not create an account, please ignore this message.
+    </p>
+
+  </div>
+
+  <!-- フッター -->
+  <div style="background-color: #f9fafb; padding: 24px; text-align: center; border-top: 1px solid #e5e7eb;">
+    <p style="margin: 0; font-size: 12px; color: #9ca3af; line-height: 1.4;">
+      BeatNexus<br>
+      This message was sent to {{ .Email }}
+    </p>
+  </div>
+
 </div>
