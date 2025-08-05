@@ -14,14 +14,18 @@ interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
   initialMode?: 'login' | 'signup' | 'resetPassword' | 'setNewPassword';
-  setMode: React.Dispatch<React.SetStateAction<'login' | 'signup' | 'resetPassword' | 'setNewPassword'>>;
+  setMode?: React.Dispatch<React.SetStateAction<'login' | 'signup' | 'resetPassword' | 'setNewPassword'>>;
+  resetTokens?: { accessToken: string; refreshToken: string } | null;
+  onPasswordResetComplete?: () => void;
 }
 
 export const AuthModal: React.FC<AuthModalProps> = ({
   isOpen,
   onClose,
   initialMode = 'login',
-  setMode: setParentMode
+  setMode: setParentMode,
+  resetTokens,
+  onPasswordResetComplete
 }) => {
   const [mode, setLocalMode] = useState<'login' | 'signup' | 'resetPassword' | 'setNewPassword'>(initialMode);
   const [email, setEmail] = useState('');
@@ -90,7 +94,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     if (type === 'recovery' && accessToken && refreshToken) {
       // パスワードリセットモードに切り替え
       setLocalMode('setNewPassword');
-      setParentMode('setNewPassword');
+      if (setParentMode) {
+        setParentMode('setNewPassword');
+      }
       
       // Supabaseセッション設定
       supabase.auth.setSession({
@@ -189,7 +195,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
   const switchMode = (newMode: 'login' | 'signup' | 'resetPassword' | 'setNewPassword') => {
     setLocalMode(newMode);
-    setParentMode(newMode);
+    if (setParentMode) {
+      setParentMode(newMode);
+    }
     setError(null);
   };
 
@@ -239,24 +247,49 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     }
 
     try {
+      // リセットトークンがある場合は、まずセッションを設定
+      if (resetTokens) {
+        console.log('🔐 Setting session with reset tokens for password update...');
+        const { data: sessionData, error: sessionError } = await supabase.auth.setSession({
+          access_token: resetTokens.accessToken,
+          refresh_token: resetTokens.refreshToken
+        });
+
+        if (sessionError) {
+          throw new Error(`Session error: ${sessionError.message}`);
+        }
+
+        console.log('✅ Session established for user:', sessionData.user?.id);
+      }
+
+      // パスワードを更新
+      console.log('🔄 Updating password...');
       const { error } = await supabase.auth.updateUser({
         password: newPassword
       });
 
       if (error) throw error;
 
+      console.log('✅ Password updated successfully');
+      
       // 成功処理
       toast.success(t('auth.passwordResetSuccess'));
-      onClose();
-      navigate('/'); // ホームページにリダイレクト
       
       // フォームリセット
       setNewPassword('');
       setConfirmNewPassword('');
       setPasswordStrength(null);
 
+      // パスワードリセット完了のコールバック実行
+      if (onPasswordResetComplete) {
+        onPasswordResetComplete();
+      } else {
+        onClose();
+        navigate('/dashboard'); // デフォルトでダッシュボードにリダイレクト
+      }
+
     } catch (error) {
-      console.error('Password update error:', error);
+      console.error('❌ Password update error:', error);
       setError(error instanceof Error ? error.message : t('auth.error.passwordUpdateFailed'));
     } finally {
       setLoading(false);
