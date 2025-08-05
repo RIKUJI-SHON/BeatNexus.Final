@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthModal } from '../components/auth/AuthModal';
 import SupabaseAuthDebugger from '../components/debug/SupabaseAuthDebugger';
+import { PasswordResetDebugger } from '../components/PasswordResetDebugger';
 import { supabase } from '../lib/supabase';
 
 const ResetPasswordPage: React.FC = () => {
@@ -13,21 +14,35 @@ const ResetPasswordPage: React.FC = () => {
   const handleTokenHashVerification = useCallback(async (tokenHash: string) => {
     try {
       console.log('🔐 Verifying token_hash with Supabase...');
+      console.log('🔐 Token hash:', tokenHash);
+      console.log('🔐 Token hash length:', tokenHash.length);
       
       const { data, error } = await supabase.auth.verifyOtp({
         token_hash: tokenHash,
         type: 'recovery'
       });
 
+      console.log('🔐 VerifyOtp response data:', data);
+      console.log('🔐 VerifyOtp response error:', error);
+
       if (error) {
         console.error('❌ Token verification failed:', error);
-        alert(`トークンの検証に失敗しました: ${error.message}\n\n新しいパスワードリセットを申請してください。`);
+        console.error('❌ Error details:', {
+          message: error.message,
+          status: error.status,
+          name: error.name
+        });
+        
+        // より詳細なエラーメッセージ
+        const errorMsg = error.message || 'Unknown error';
+        alert(`トークンの検証に失敗しました:\n\n${errorMsg}\n\n可能な原因:\n- リンクが期限切れ（24時間制限）\n- トークンが既に使用済み\n- ネットワーク接続の問題\n\n新しいパスワードリセットを申請してください。`);
         navigate('/');
         return;
       }
 
       if (data.session) {
         console.log('✅ Token verified, session established');
+        console.log('✅ Session user:', data.session.user);
         console.log('🔄 Storing session tokens for password reset');
         
         // セッションからトークンを取得してresetTokensに設定
@@ -38,14 +53,21 @@ const ResetPasswordPage: React.FC = () => {
         
         // パスワード設定モーダルを表示
         setIsModalOpen(true);
+        
+        console.log('✅ Password reset modal should now be visible');
       } else {
         console.error('❌ No session returned from token verification');
-        alert('セッションの確立に失敗しました。新しいパスワードリセットを申請してください。');
+        console.error('❌ Data received:', data);
+        alert('セッションの確立に失敗しました。\n\nレスポンスにセッション情報が含まれていません。\n\n新しいパスワードリセットを申請してください。');
         navigate('/');
       }
     } catch (error) {
       console.error('❌ Error during token verification:', error);
-      alert('認証処理中にエラーが発生しました。新しいパスワードリセットを申請してください。');
+      console.error('❌ Error type:', typeof error);
+      console.error('❌ Error details:', error);
+      
+      const errorMessage = error instanceof Error ? error.message : '不明なエラー';
+      alert(`認証処理中にエラーが発生しました:\n\n${errorMessage}\n\n新しいパスワードリセットを申請してください。`);
       navigate('/');
     }
   }, [navigate]);
@@ -156,6 +178,9 @@ const ResetPasswordPage: React.FC = () => {
           setIsModalOpen(true);
         }}
       />
+      
+      {/* パスワードリセットデバッガー - 開発環境でのみ表示 */}
+      <PasswordResetDebugger isVisible={true} />
       
       <AuthModal
         isOpen={isModalOpen}
