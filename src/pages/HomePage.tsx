@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Mic, Users, LineChart as ChartLine, ArrowRight, Play, Star, Video, Zap, Crown, Target, Upload, Vote } from 'lucide-react';
 import beatnexusWordmark from '../assets/images/BEATNEXUS-WORDMARK.png';
@@ -22,6 +22,23 @@ const HomePage: React.FC = () => {
   const navigate = useNavigate();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const { t } = useTranslation();
+
+  // **緊急対応**: 従来のSupabaseリダイレクトでの認証処理
+  useEffect(() => {
+    const hashParams = new URLSearchParams(window.location.hash.substring(1));
+    const accessToken = hashParams.get('access_token');
+    const refreshToken = hashParams.get('refresh_token');
+    const type = hashParams.get('type');
+
+    // パスワードリセット用のハッシュフラグメントを検出
+    if (type === 'recovery' && accessToken && refreshToken) {
+      console.log('🔍 Password reset tokens detected on home page');
+      console.log('🔄 Redirecting to reset-password page with hash fragments');
+      
+      // ハッシュフラグメントを保持したままリダイレクト
+      navigate('/reset-password' + window.location.hash);
+    }
+  }, [navigate]);
 
   // SEO設定
   useCanonicalUrl({
