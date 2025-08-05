@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Share2, ThumbsUp, ArrowLeft, Clock, MessageCircle, Crown, Play, UserX, X, Users, Timer, Volume2, Star, Shield, AlertTriangle, Send } from 'lucide-react';
+import { Share2, ThumbsUp, ArrowLeft, Clock, MessageCircle, Play, X, Users, Timer, Volume2, AlertTriangle } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '../ui/Button';
 import { Card } from '../ui/Card';
@@ -526,15 +526,6 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                       </p>
                     </div>
                   )}
-
-                  {/* Winner Badge */}
-                  {isALeading && (
-                    <div className="absolute top-4 right-4">
-                      <div className="bg-gradient-to-r from-yellow-500 to-amber-600 rounded-full p-2 shadow-lg animate-pulse">
-                        <Crown className="h-5 w-5 text-white" />
-                      </div>
-                    </div>
-                  )}
                 </div>
               </div>
 
@@ -614,15 +605,6 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                       <p className="text-sm text-center px-4">
                         {t('battleReplay.videoError')}
                       </p>
-                    </div>
-                  )}
-
-                  {/* Winner Badge */}
-                  {isBLeading && (
-                    <div className="absolute top-4 right-4">
-                      <div className="bg-gradient-to-r from-yellow-500 to-amber-600 rounded-full p-2 shadow-lg animate-pulse">
-                        <Crown className="h-5 w-5 text-white" />
-                      </div>
                     </div>
                   )}
                 </div>
@@ -742,16 +724,6 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
               
               <div className="battle-card">
                 <div className="battle-card__content relative overflow-hidden">
-                
-                {/* Leading Crown Effect */}
-                {isALeading && (
-                  <div className="absolute -top-6 left-1/2 -translate-x-1/2 z-20">
-                    <div className="bg-gradient-to-r from-yellow-500 to-amber-600 px-4 py-2 rounded-full flex items-center gap-2 shadow-lg animate-bounce">
-                      <Crown className="h-5 w-5 text-white" />
-                      <span className="text-white font-bold text-sm">LEADING</span>
-                    </div>
-                  </div>
-                )}
 
                 {/* Player Header */}
                 <div className="relative p-6 bg-gradient-to-r from-blue-600/20 to-cyan-600/20 border-b border-cyan-500/30">
@@ -827,16 +799,6 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
               
               <div className="battle-card">
                 <div className="battle-card__content relative overflow-hidden">
-                
-                {/* Leading Crown Effect */}
-                {isBLeading && (
-                  <div className="absolute -top-6 left-1/2 -translate-x-1/2 z-20">
-                    <div className="bg-gradient-to-r from-yellow-500 to-amber-600 px-4 py-2 rounded-full flex items-center gap-2 shadow-lg animate-bounce">
-                      <Crown className="h-5 w-5 text-white" />
-                      <span className="text-white font-bold text-sm">LEADING</span>
-                    </div>
-                  </div>
-                )}
 
                 {/* Player Header */}
                 <div className="relative p-6 bg-gradient-to-r from-pink-600/20 to-purple-600/20 border-b border-pink-500/30">
