@@ -70,7 +70,6 @@ export const VoteCommentModal: React.FC<VoteCommentModalProps> = ({
 
   if (!isOpen) return null;
 
-  const isCommentEmpty = !comment.trim();
   const templates = t('voteCommentModal.templates', { returnObjects: true }) as string[];
 
   return (
@@ -85,7 +84,7 @@ export const VoteCommentModal: React.FC<VoteCommentModalProps> = ({
               <span className="text-white font-bold text-sm">{player}</span>
             </div>
             <h2 className="text-xl font-bold text-white">
-              {playerName ? t('voteCommentModal.title', { player: playerName }) : t('voteCommentModal.title', { player: `Player ${player}` })}
+              {t('voteCommentModal.title', { player: playerName || `Player ${player}` })}
             </h2>
           </div>
           <button
@@ -101,7 +100,7 @@ export const VoteCommentModal: React.FC<VoteCommentModalProps> = ({
         <div className="p-6">
           <div className="mb-4">
             <p className="text-gray-300 text-sm mb-3">
-              {playerName ? t('voteCommentModal.subtitle', { playerName }) : t('voteCommentModal.subtitle', { playerName: `Player ${player}` })}
+              {t('voteCommentModal.subtitle', { playerName: playerName || `Player ${player}` })}
             </p>
             <p className="text-gray-400 text-xs">
               {t('voteCommentModal.description')}
@@ -135,7 +134,7 @@ export const VoteCommentModal: React.FC<VoteCommentModalProps> = ({
             <textarea
               value={comment}
               onChange={handleCommentChange}
-              placeholder={playerName ? t('voteCommentModal.commentPlaceholder', { player: playerName }) : t('voteCommentModal.commentPlaceholder', { player: `Player ${player}` })}
+              placeholder={t('voteCommentModal.commentPlaceholder', { player: playerName || `Player ${player}` })}
               className={`w-full p-3 rounded-lg bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 border resize-none ${
                 showError ? 'border-red-500 focus:ring-red-500/50' : 'border-gray-600 focus:ring-cyan-500/50'
               }`}
