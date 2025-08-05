@@ -1181,7 +1181,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
           onVote={(comment) => handleVoteWithComment(showVoteModal!, comment)}
           onSimpleVote={handleSimpleVote}
           player={showVoteModal || 'A'}
-          playerName={showVoteDetails ? (showVoteModal === 'A' ? battle.contestant_a?.username : battle.contestant_b?.username) : battle.contestant_a?.username}
+          playerName={showVoteModal === 'A' ? battle.contestant_a?.username : battle.contestant_b?.username}
           isLoading={isVoting}
         />
       )}
