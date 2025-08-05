@@ -1,8 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthModal } from '../components/auth/AuthModal';
-import SupabaseAuthDebugger from '../components/debug/SupabaseAuthDebugger';
-import { PasswordResetDebugger } from '../components/PasswordResetDebugger';
 import { supabase } from '../lib/supabase';
 
 const ResetPasswordPage: React.FC = () => {
@@ -164,24 +162,12 @@ const ResetPasswordPage: React.FC = () => {
 
   const handlePasswordResetComplete = () => {
     setIsModalOpen(false);
-    // パスワードリセット完了後はダッシュボードに移動
-    navigate('/dashboard');
+    // パスワードリセット完了後はホームページに移動
+    navigate('/');
   };
 
   return (
     <div className="min-h-screen bg-gray-950">
-      {/* デバッグ用 - 開発環境でのみ表示 */}
-      <SupabaseAuthDebugger 
-        onTokensDetected={(tokens) => {
-          console.log('🎯 Tokens detected by debugger:', tokens);
-          setResetTokens(tokens);
-          setIsModalOpen(true);
-        }}
-      />
-      
-      {/* パスワードリセットデバッガー - 開発環境でのみ表示 */}
-      <PasswordResetDebugger isVisible={true} />
-      
       <AuthModal
         isOpen={isModalOpen}
         onClose={handleClose}
