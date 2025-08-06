@@ -877,6 +877,7 @@ const BattleReplayPage: React.FC = () => {
                       alt={comment.username}
                       className="w-10 h-10 rounded-full border-2 border-gray-600"
                     />
+                    {/* A/B投票タグ: アーカイブページでは常に表示 */}
                     <div className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center ${
                       comment.vote === 'A' ? 'bg-gradient-to-r from-blue-500 to-blue-400' : 'bg-gradient-to-r from-red-500 to-red-400'
                     }`}>

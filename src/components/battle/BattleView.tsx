@@ -1140,11 +1140,14 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                           alt={comment.username}
                           className="w-10 h-10 rounded-full border-2 border-gray-600"
                         />
-                        <div className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center ${
-                          comment.vote === 'A' ? 'bg-gradient-to-r from-cyan-500 to-cyan-400' : 'bg-gradient-to-r from-pink-500 to-pink-400'
-                        }`}>
-                          <span className="text-white font-bold text-xs">{comment.vote}</span>
-                        </div>
+                        {/* A/B投票タグ: 現在のユーザーが投票済みまたはアーカイブ済みまたは参加者の場合のみ表示 */}
+                        {(hasVoted || isArchived || isUserParticipant) && (
+                          <div className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center ${
+                            comment.vote === 'A' ? 'bg-gradient-to-r from-cyan-500 to-cyan-400' : 'bg-gradient-to-r from-pink-500 to-pink-400'
+                          }`}>
+                            <span className="text-white font-bold text-xs">{comment.vote}</span>
+                          </div>
+                        )}
                       </div>
                       
                       <div className="flex-1">
