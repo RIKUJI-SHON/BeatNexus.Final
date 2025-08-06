@@ -6,6 +6,7 @@ import { Card } from '../ui/Card';
 import { VoteCommentModal } from '../ui/VoteCommentModal';
 import { useBattleStore } from '../../store/battleStore';
 import { useAuthStore } from '../../store/authStore';
+import { useAuthModal } from '../auth/AuthProvider';
 import { Battle } from '../../types';
 import { useTranslation } from 'react-i18next';
 import { VSIcon } from '../ui/VSIcon';
@@ -55,6 +56,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
     commentsLoading 
   } = useBattleStore();
   const { user } = useAuthStore();
+  const { openAuthModal } = useAuthModal();
   const { addNotification } = useNotificationStore();
   
   // 🔍 厳密な型チェックと参加者判定 - battleStoreの変換後データに合わせて修正
@@ -151,7 +153,13 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
 
   // Handle simple vote without comment
   const handleSimpleVote = async (player: 'A' | 'B') => {
-    if (!user || isUserParticipant || hasVoted) return;
+    // 非ログインユーザーの場合はAuthModalを開く
+    if (!user) {
+      openAuthModal('login');
+      return;
+    }
+    
+    if (isUserParticipant || hasVoted) return;
     
     setIsVoting(true);
     try {
@@ -182,7 +190,13 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
 
   // Handle vote with comment
   const handleVoteWithComment = async (player: 'A' | 'B', comment: string) => {
-    if (!user || isUserParticipant || hasVoted) return;
+    // 非ログインユーザーの場合はAuthModalを開く
+    if (!user) {
+      openAuthModal('login');
+      return;
+    }
+    
+    if (isUserParticipant || hasVoted) return;
     
     setIsVoting(true);
     try {
@@ -234,6 +248,18 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
     } finally {
       setIsVoting(false);
     }
+  };
+
+  // Handle vote button click - check authentication first
+  const handleVoteButtonClick = (player: 'A' | 'B') => {
+    if (!user) {
+      openAuthModal('login');
+      return;
+    }
+    
+    if (isUserParticipant || hasVoted || isVoting) return;
+    
+    setShowVoteModal(player);
   };
 
 
@@ -952,7 +978,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                           </div>
                         ) : (
                           <button 
-                            onClick={() => setShowVoteModal('A')} 
+                            onClick={() => handleVoteButtonClick('A')} 
                             disabled={isVoting || !!hasVoted || isUserParticipant}
                             className="vote-btn-player-a"
                           >
@@ -1019,7 +1045,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                           </div>
                         ) : (
                           <button 
-                            onClick={() => setShowVoteModal('B')} 
+                            onClick={() => handleVoteButtonClick('B')} 
                             disabled={isVoting || !!hasVoted || isUserParticipant}
                             className="vote-btn-player-b"
                           >
