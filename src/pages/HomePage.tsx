@@ -59,13 +59,7 @@ const HomePage: React.FC = () => {
 
   const handleJoinNow = (e: React.MouseEvent) => {
     e.preventDefault();
-    // 事前登録は締め切りました。8月7日の完全一般公開をお待ちください。
-    // window.open('https://forms.gle/A5roMYfa6gJFNLpA7', '_blank');
-    alert('事前登録は締め切りました。8月7日の完全一般公開をお待ちください。');
-  };
-
-  const handleWatchBattles = (e: React.MouseEvent) => {
-    e.preventDefault();
+    // 一般公開開始！今すぐサインアップしてバトルに参加しよう
     if (requireAuth(() => navigate('/battles'))) {
       navigate('/battles');
     }

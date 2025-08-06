@@ -480,7 +480,7 @@
   "home": {
     "landingPage": {
       "cta": {
-        "joinBeta": "8月7日の完全一般公開をお待ちください",
+        "joinBeta": "今すぐ参加",
         "watchBattles": "バトルを観戦する"
       },
       "hero": {
@@ -624,14 +624,14 @@
           "history": "いよいよ始まった、",
           "dontMiss": "新時代に参加しよう。"
         },
-        "subtitle": "現在先行リリース中！完全一般公開まであと少しお待ちください。",
+        "subtitle": "正式リリース開始！今すぐ誰でも参加できます！",
         "schedule": {
-          "earlyAccess": "先行リリース (事前登録者限定):",
-          "earlyAccessDate": "現在実施中（～8月7日）",
-          "publicRelease": "完全一般公開:",
-          "publicReleaseDate": "8月7日～"
+          "earlyAccess": "正式リリース開始日:",
+          "earlyAccessDate": "8月7日より開始",
+          "publicRelease": "現在の状況:",
+          "publicReleaseDate": "一般公開中！"
         },
-        "finalCta": "8月7日の完全一般公開をお待ちください"
+        "finalCta": "今すぐ参加してβシーズンを楽しもう！"
       }
     },
     "hero": {
@@ -654,13 +654,13 @@
       "button": {
         "startBattle": "バトルを始める",
         "watchBattles": "バトルを観戦 & 投票",
-        "joinNow": "8月7日公開予定"
+        "joinNow": "今すぐ参加"
       },
       "seasonInfo": {
-        "earlyAccess": "先行リリース中",
-        "earlyAccessLabel": "事前登録者限定",
+        "earlyAccess": "正式リリース済み",
+        "earlyAccessLabel": "みんな参加OK！",
         "publicRelease": "8月7日",
-        "publicReleaseLabel": "完全一般公開開始"
+        "publicReleaseLabel": "一般公開開始済み"
       }
     },
     "howItWorks": {

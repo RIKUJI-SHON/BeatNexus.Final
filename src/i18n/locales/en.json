@@ -502,7 +502,7 @@
   "home": {
     "landingPage": {
       "cta": {
-        "joinBeta": "Full Release Coming August 7th - Please Wait",
+        "joinBeta": "Join Now",
         "watchBattles": "Watch Battles"
       },
       "hero": {
@@ -646,14 +646,14 @@
           "history": "At the beginning of history,",
           "dontMiss": "don't be left behind."
         },
-        "subtitle": "Let's carve out a new beatbox history together.",
+        "subtitle": "Official release is live! Everyone can join now!",
         "schedule": {
-          "earlyAccess": "Early Access (Pre-registrants only):",
-          "earlyAccessDate": "August 1st - August 7th",
-          "publicRelease": "Full Public Release:",
-          "publicReleaseDate": "August 8th -"
+          "earlyAccess": "Official Release Date:",
+          "earlyAccessDate": "Started August 7th",
+          "publicRelease": "Current Status:",
+          "publicReleaseDate": "Publicly Available!"
         },
-        "finalCta": "Get β Season Early Access Rights for Free"
+        "finalCta": "Join β Season Now!"
       }
     },
     "hero": {
@@ -676,13 +676,13 @@
       "button": {
         "startBattle": "Start Your Battle",
         "watchBattles": "Watch Battles & Vote",
-        "joinNow": "Pre-register"
+        "joinNow": "Join Now"
       },
       "seasonInfo": {
-        "earlyAccess": "August 1st",
-        "earlyAccessLabel": "Early Access Begins",
-        "publicRelease": "August 8th",
-        "publicReleaseLabel": "Full Public Release"
+        "earlyAccess": "Now Live!",
+        "earlyAccessLabel": "Public Release",
+        "publicRelease": "August 7th",
+        "publicReleaseLabel": "Released!"
       }
     },
     "howItWorks": {
