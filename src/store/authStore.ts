@@ -3,7 +3,6 @@ import { User } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
 import { trackBeatNexusEvents, setUserProperties, clearUserProperties } from '../utils/analytics';
 import { detectBrowserLanguage } from '../lib/utils';
-import i18n from '../i18n';
 
 interface AuthState {
   user: User | null;
@@ -11,7 +10,6 @@ interface AuthState {
   isUserInitiatedLogin?: boolean;
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string, username: string, phoneNumber?: string) => Promise<{ user: User | null; error: unknown } | undefined>;
-  validatePreregistration: (email: string) => Promise<boolean>;
   signOut: () => Promise<void>;
   setUser: (user: User | null) => void;
   setUserFromAuth: (user: User | null) => void; // AuthProvider用
@@ -31,42 +29,9 @@ export const useAuthStore = create<AuthState>((set) => ({
     // ログインアクションを実行したことをマーク
     set({ isUserInitiatedLogin: true });
   },
-  validatePreregistration: async (email: string) => {
-    try {
-      const { data, error } = await supabase.functions.invoke('validate-preregistration', {
-        body: { email: email.toLowerCase().trim() }
-      });
-
-      if (error) {
-        console.error('Preregistration validation error:', error);
-        return false;
-      }
-
-      return data?.isRegistered || false;
-    } catch (error) {
-      console.error('Preregistration validation failed:', error);
-      return false;
-    }
-  },
   signUp: async (email: string, password: string, username: string, phoneNumber?: string) => {
-    // Check if email is pre-registered
-    const isPreregistered = await (async () => {
-      try {
-        const { data, error } = await supabase.functions.invoke('validate-preregistration', {
-          body: { email: email.toLowerCase().trim() }
-        });
-        
-        if (error) throw error;
-        return data?.isRegistered || false;
-             } catch (error) {
-         console.error('Pre-registration check failed:', error);
-         throw new Error(i18n.t('auth.error.preregistrationCheckFailed'));
-       }
-     })();
-
-     if (!isPreregistered) {
-       throw new Error(i18n.t('auth.error.emailNotPreregistered'));
-     }
+    // 事前登録チェックを削除 - 一般リリース対応
+    // (validate-preregistration Edge Functionは保持、pre_registered_usersテーブルも保持)
 
     // ブラウザの言語設定を検出
     const detectedLanguage = detectBrowserLanguage();
