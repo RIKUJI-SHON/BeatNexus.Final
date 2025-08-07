@@ -1,0 +1,67 @@
+<!-- 本番環境用アカウント認証メール（改善版・スパム対策） -->
+<div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; max-width: 500px; margin: 40px auto; padding: 0; color: #333;">
+  
+  <!-- メールヘッダー -->
+  <div style="background-color: #ffffff; padding: 32px 24px; text-align: center; border-bottom: 1px solid #e5e7eb;">
+    <h1 style="margin: 0; font-size: 20px; font-weight: 600; color: #111827; letter-spacing: -0.025em;">🎵 BeatNexus</h1>
+    <p style="margin: 4px 0 0 0; font-size: 13px; color: #6b7280;">Music Battle Platform</p>
+  </div>
+
+  <!-- メインコンテンツ -->
+  <div style="background-color: #ffffff; padding: 32px 24px;">
+    
+    <h2 style="margin: 0 0 16px 0; font-size: 18px; font-weight: 500; color: #374151; line-height: 1.4;">
+      Account Verification / アカウント確認
+    </h2>
+    
+    <p style="margin: 0 0 24px 0; font-size: 15px; line-height: 1.6; color: #4b5563;">
+      Thank you for joining BeatNexus. Please verify your account to complete the registration process.<br><br>
+      BeatNexusへのご登録ありがとうございます。登録手続きを完了するため、アカウントの確認をお願いします。
+    </p>
+
+    <!-- 認証ボタン -->
+    <div style="margin: 32px 0; text-align: center;">
+      <a href="https://beatnexus.app/auth/confirm?token_hash={{ .TokenHash }}&type=email" 
+         style="display: inline-block; background-color: #667eea; color: #ffffff; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-size: 14px; font-weight: 500; text-align: center;"
+         target="_blank" rel="noopener noreferrer">
+        Verify Account / アカウント確認
+      </a>
+    </div>
+
+    <!-- 代替リンク -->
+    <div style="margin: 20px 0; padding: 15px; background-color: #f3f4f6; border-radius: 6px;">
+      <p style="margin: 0 0 10px 0; font-size: 13px; color: #6b7280;">
+        If the button doesn't work, copy and paste this link into your browser:<br>
+        ボタンが動作しない場合は、このリンクをコピーしてブラウザに貼り付けてください：
+      </p>
+      <p style="margin: 0; font-size: 12px; color: #4b5563; word-break: break-all; font-family: monospace; background-color: #ffffff; padding: 8px; border-radius: 4px;">
+        https://beatnexus.app/auth/confirm?token_hash={{ .TokenHash }}&type=email
+      </p>
+    </div>
+
+    <p style="margin: 24px 0 0 0; font-size: 13px; line-height: 1.5; color: #6b7280;">
+      This verification link will expire in 24 hours. If you did not create an account, please ignore this message.<br>
+      この確認リンクは24時間で期限切れとなります。アカウントを作成していない場合は、このメッセージを無視してください。
+    </p>
+
+    <!-- トラブルシューティング情報 -->
+    <div style="margin: 20px 0; padding: 15px; background-color: #fef2f2; border-left: 4px solid #ef4444; border-radius: 6px;">
+      <p style="margin: 0; font-size: 12px; color: #7f1d1d; line-height: 1.4;">
+        <strong>Having trouble? / 問題が発生していますか？</strong><br>
+        • Try opening the link in a different browser / 別のブラウザでリンクを開いてみてください<br>
+        • Disable VPN or proxy temporarily / VPNやプロキシを一時的に無効にしてください<br>
+        • Contact support: support@beatnexus.app / サポートにお問い合わせ: support@beatnexus.app
+      </p>
+    </div>
+
+  </div>
+
+  <!-- フッター -->
+  <div style="background-color: #f9fafb; padding: 24px; text-align: center; border-top: 1px solid #e5e7eb;">
+    <p style="margin: 0; font-size: 12px; color: #9ca3af; line-height: 1.4;">
+      BeatNexus Team<br>
+      This message was sent to {{ .Email }}
+    </p>
+  </div>
+
+</div>

@@ -78,23 +78,21 @@ export const useAuthStore = create<AuthState>((set) => ({
     
     console.log('✅ Supabase signUp successful, user ID:', data.user?.id);
     
-    // 電話番号が提供されている場合、データベースに保存
+    // 電話番号は一時的にlocalStorageに保存（メール認証成功後に正式記録）
     if (phoneNumber && data.user) {
-      console.log('📱 Recording phone number for new user...');
+      console.log('📱 Temporarily storing phone number for post-email-confirmation recording...');
       try {
-        const { error: phoneError } = await supabase.rpc('record_phone_verification', {
-          p_user_id: data.user.id,
-          p_phone_number: phoneNumber
-        });
-        
-        if (phoneError) {
-          console.error('❌ Phone number recording failed:', phoneError);
-          // 電話番号保存失敗はアカウント作成の失敗とはしない（継続可能）
-        } else {
-          console.log('✅ Phone number successfully recorded for new user');
-        }
-      } catch (phoneRecordError) {
-        console.error('Phone number recording exception:', phoneRecordError);
+        // メール認証後の電話番号記録のために一時保存
+        const tempPhoneData = {
+          userId: data.user.id,
+          phoneNumber: phoneNumber,
+          timestamp: new Date().toISOString(),
+          expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() // 24時間で期限切れ
+        };
+        localStorage.setItem('beatnexus_temp_phone_verification', JSON.stringify(tempPhoneData));
+        console.log('✅ Phone number temporarily stored for post-email-confirmation recording');
+      } catch (phoneStorageError) {
+        console.error('Phone number temporary storage exception:', phoneStorageError);
       }
     }
     

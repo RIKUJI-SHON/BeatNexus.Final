@@ -2,6 +2,51 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 
+// 一時保存された電話番号を正式記録する関数
+const recordTempPhoneVerification = async (userId: string): Promise<void> => {
+  try {
+    const tempPhoneDataStr = localStorage.getItem('beatnexus_temp_phone_verification');
+    if (!tempPhoneDataStr) {
+      console.log('📱 No temporary phone data found');
+      return;
+    }
+
+    const tempPhoneData = JSON.parse(tempPhoneDataStr);
+    
+    // 期限切れチェック
+    if (new Date() > new Date(tempPhoneData.expiresAt)) {
+      console.log('📱 Temporary phone data expired, removing...');
+      localStorage.removeItem('beatnexus_temp_phone_verification');
+      return;
+    }
+
+    // ユーザーIDの一致確認
+    if (tempPhoneData.userId !== userId) {
+      console.log('📱 User ID mismatch, removing temp phone data...');
+      localStorage.removeItem('beatnexus_temp_phone_verification');
+      return;
+    }
+
+    console.log('📱 Recording phone number after email confirmation...');
+    
+    // 正式に電話番号をデータベースに記録
+    const { error: phoneError } = await supabase.rpc('record_phone_verification', {
+      p_user_id: tempPhoneData.userId,
+      p_phone_number: tempPhoneData.phoneNumber
+    });
+    
+    if (phoneError) {
+      console.error('❌ Phone number recording failed after email confirmation:', phoneError);
+    } else {
+      console.log('✅ Phone number successfully recorded after email confirmation');
+      // 成功したら一時データを削除
+      localStorage.removeItem('beatnexus_temp_phone_verification');
+    }
+  } catch (error) {
+    console.error('❌ Error in recordTempPhoneVerification:', error);
+  }
+};
+
 const AuthConfirmPage: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -42,6 +87,9 @@ const AuthConfirmPage: React.FC = () => {
         if (data.session) {
           console.log('✅ Email verified successfully');
           console.log('✅ User session:', data.session.user);
+          
+          // メール認証成功後に一時保存した電話番号を正式記録
+          await recordTempPhoneVerification(data.session.user.id);
           
           setStatus('success');
           setMessage('メールアドレスが正常に認証されました！');
