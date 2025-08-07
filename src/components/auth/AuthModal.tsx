@@ -132,6 +132,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       return;
     }
 
+    // ユーザー名の文字種チェック（データベースと同じルール）
+    if (mode === 'signup' && !/^[a-zA-Z0-9_-]+$/.test(username)) {
+      setError(t('auth.error.usernameInvalidChars'));
+      setLoading(false);
+      return;
+    }
+
     if (mode === 'signup' && password.length < 6) {
       setError(t('auth.passwordRequirement'));
       setLoading(false);
@@ -599,6 +606,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     required
                   />
                   <p className="text-xs text-gray-400 mt-1">{t('auth.usernameDescription')}</p>
+                  {/* リアルタイムバリデーション表示 */}
+                  {username && (username.length < 3 || username.length > 30) && (
+                    <p className="text-red-400 text-xs mt-1">{t('auth.usernameRequirement')}</p>
+                  )}
+                  {username && username.length >= 3 && username.length <= 30 && !/^[a-zA-Z0-9_-]+$/.test(username) && (
+                    <p className="text-red-400 text-xs mt-1">{t('auth.error.usernameInvalidChars')}</p>
+                  )}
                 </div>
               )}
 

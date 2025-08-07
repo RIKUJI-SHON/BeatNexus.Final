@@ -1774,7 +1774,8 @@
       "emailRequired": "メールアドレスが必要です",
       "resetEmailFailed": "リセットメールの送信に失敗しました",
       "passwordTooWeak": "パスワードが弱すぎます",
-      "passwordUpdateFailed": "パスワードの更新に失敗しました"
+      "passwordUpdateFailed": "パスワードの更新に失敗しました",
+      "usernameInvalidChars": "ユーザー名には英数字、アンダースコア（_）、ハイフン（-）のみ使用可能です"
     },
     "signIn": "ログイン",
     "createAccount": "アカウント作成",
@@ -1786,7 +1787,7 @@
     "passwordPlaceholder": "パスワードを入力",
     "passwordRequirement": "パスワードは6文字以上である必要があります",
     "usernameRequirement": "ユーザー名は3文字以上30文字以下で入力してください",
-    "usernameDescription": "3-30文字で入力してください",
+    "usernameDescription": "3-30文字、英数字・アンダースコア（_）・ハイフン（-）のみ",
     "confirmPassword": "パスワード確認",
     "confirmPasswordPlaceholder": "パスワードを再入力してください",
     "passwordMismatch": "パスワードが一致しません",

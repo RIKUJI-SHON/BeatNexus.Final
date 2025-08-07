@@ -2024,7 +2024,8 @@
       "emailRequired": "Email address is required",
       "resetEmailFailed": "Failed to send reset email",
       "passwordTooWeak": "Password is too weak",
-      "passwordUpdateFailed": "Failed to update password"
+      "passwordUpdateFailed": "Failed to update password",
+      "usernameInvalidChars": "Username can only contain letters, numbers, underscores (_), and hyphens (-)"
     },
     "signIn": "Sign In",
     "createAccount": "Create Account",
@@ -2036,7 +2037,7 @@
     "passwordPlaceholder": "Enter your password",
     "passwordRequirement": "Password must be at least 6 characters long",
     "usernameRequirement": "Username must be between 3 and 30 characters",
-    "usernameDescription": "3-30 characters required",
+    "usernameDescription": "3-30 chars, letters/numbers/underscore/hyphen only",
     "confirmPassword": "Confirm Password",
     "confirmPasswordPlaceholder": "Re-enter your password",
     "passwordMismatch": "Passwords do not match",
