@@ -194,8 +194,30 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       if (err instanceof Error) {
         console.error('Error message:', err.message);
         console.error('Error stack:', err.stack);
+        
+        // エラーメッセージを解析して適切な翻訳キーに変換
+        const errorMessage = err.message;
+        
+        if (errorMessage.startsWith('usernameAlreadyExists:')) {
+          const duplicateUsername = errorMessage.split(':')[1];
+          setError(t('auth.error.usernameAlreadyExists', { username: duplicateUsername }));
+        } else if (errorMessage === 'usernameInvalidLength') {
+          setError(t('auth.error.usernameInvalidLength'));
+        } else if (errorMessage === 'usernameInvalidChars') {
+          setError(t('auth.error.usernameInvalidChars'));
+        } else if (errorMessage === 'emailAlreadyExists') {
+          setError(t('auth.error.emailAlreadyExists'));
+        } else if (errorMessage.includes('signup_disabled')) {
+          setError(t('auth.error.signupDisabled'));
+        } else if (errorMessage.includes('Invalid login credentials')) {
+          setError(t('auth.error.invalidCredentials'));
+        } else {
+          // デフォルトエラーメッセージ
+          setError(errorMessage);
+        }
+      } else {
+        setError('An error occurred');
       }
-      setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
       setLoading(false);
     }

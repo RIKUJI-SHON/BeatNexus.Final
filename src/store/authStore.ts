@@ -65,6 +65,33 @@ export const useAuthStore = create<AuthState>((set) => ({
     
     if (error) {
       console.error('❌ Supabase signUp error:', error);
+      
+      // Supabaseエラーメッセージを解析して適切なエラーに変換
+      const errorMessage = error.message || '';
+      
+      // ユーザー名重複エラーの検出
+      if (errorMessage.includes('Username already exists:') || 
+          errorMessage.includes('duplicate key value violates unique constraint "profiles_username_key"')) {
+        const duplicateUsername = errorMessage.match(/Username already exists: (.+)/)?.[1] || username;
+        throw new Error(`usernameAlreadyExists:${duplicateUsername}`);
+      }
+      
+      // ユーザー名バリデーションエラー
+      if (errorMessage.includes('Username contains invalid characters')) {
+        throw new Error('usernameInvalidChars');
+      }
+      
+      if (errorMessage.includes('Username must be between 3 and 30 characters')) {
+        throw new Error('usernameInvalidLength');
+      }
+      
+      // メールアドレス関連エラー
+      if (errorMessage.includes('User already registered') || 
+          errorMessage.includes('email address is already registered')) {
+        throw new Error('emailAlreadyExists');
+      }
+      
+      // デフォルトエラー
       throw error;
     }
 

@@ -2025,7 +2025,12 @@
       "resetEmailFailed": "Failed to send reset email",
       "passwordTooWeak": "Password is too weak",
       "passwordUpdateFailed": "Failed to update password",
-      "usernameInvalidChars": "Username can only contain letters, numbers, underscores (_), and hyphens (-)"
+      "usernameInvalidChars": "Username can only contain letters, numbers, underscores (_), and hyphens (-)",
+      "usernameAlreadyExists": "This username is already taken. Please try a different username.",
+      "usernameInvalidLength": "Username must be between 3 and 30 characters long.",
+      "emailAlreadyExists": "This email address is already registered.",
+      "signupDisabled": "New registrations are currently temporarily disabled.",
+      "invalidCredentials": "Invalid email or password."
     },
     "signIn": "Sign In",
     "createAccount": "Create Account",

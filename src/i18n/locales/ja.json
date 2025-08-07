@@ -1775,7 +1775,12 @@
       "resetEmailFailed": "リセットメールの送信に失敗しました",
       "passwordTooWeak": "パスワードが弱すぎます",
       "passwordUpdateFailed": "パスワードの更新に失敗しました",
-      "usernameInvalidChars": "ユーザー名には英数字、アンダースコア（_）、ハイフン（-）のみ使用可能です"
+      "usernameInvalidChars": "ユーザー名には英数字、アンダースコア（_）、ハイフン（-）のみ使用可能です",
+      "usernameAlreadyExists": "このユーザー名は既に使用されています。別のユーザー名をお試しください。",
+      "usernameInvalidLength": "ユーザー名は3文字以上30文字以下で入力してください。",
+      "emailAlreadyExists": "このメールアドレスは既に登録されています。",
+      "signupDisabled": "現在、新規登録は一時的に無効になっています。",
+      "invalidCredentials": "メールアドレスまたはパスワードが正しくありません。"
     },
     "signIn": "ログイン",
     "createAccount": "アカウント作成",
