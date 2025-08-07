@@ -5,13 +5,22 @@ import { supabase } from '../lib/supabase';
 // 一時保存された電話番号を正式記録する関数
 const recordTempPhoneVerification = async (userId: string): Promise<void> => {
   try {
+    console.log('📱 Starting recordTempPhoneVerification for user:', userId);
+    
     const tempPhoneDataStr = localStorage.getItem('beatnexus_temp_phone_verification');
+    console.log('📱 localStorage data:', tempPhoneDataStr ? 'Found' : 'Not found');
+    
     if (!tempPhoneDataStr) {
       console.log('📱 No temporary phone data found');
       return;
     }
 
     const tempPhoneData = JSON.parse(tempPhoneDataStr);
+    console.log('📱 Parsed phone data:', { 
+      userId: tempPhoneData.userId, 
+      phoneNumber: tempPhoneData.phoneNumber ? 'Present' : 'Missing',
+      expires: tempPhoneData.expiresAt 
+    });
     
     // 期限切れチェック
     if (new Date() > new Date(tempPhoneData.expiresAt)) {
@@ -22,7 +31,10 @@ const recordTempPhoneVerification = async (userId: string): Promise<void> => {
 
     // ユーザーIDの一致確認
     if (tempPhoneData.userId !== userId) {
-      console.log('📱 User ID mismatch, removing temp phone data...');
+      console.log('📱 User ID mismatch, removing temp phone data...', {
+        expected: userId,
+        found: tempPhoneData.userId
+      });
       localStorage.removeItem('beatnexus_temp_phone_verification');
       return;
     }
@@ -30,10 +42,13 @@ const recordTempPhoneVerification = async (userId: string): Promise<void> => {
     console.log('📱 Recording phone number after email confirmation...');
     
     // 正式に電話番号をデータベースに記録
+    console.log('📱 Calling record_phone_verification RPC...');
     const { error: phoneError } = await supabase.rpc('record_phone_verification', {
       p_user_id: tempPhoneData.userId,
       p_phone_number: tempPhoneData.phoneNumber
     });
+    
+    console.log('📱 RPC response:', { error: phoneError });
     
     if (phoneError) {
       console.error('❌ Phone number recording failed after email confirmation:', phoneError);
@@ -41,6 +56,7 @@ const recordTempPhoneVerification = async (userId: string): Promise<void> => {
       console.log('✅ Phone number successfully recorded after email confirmation');
       // 成功したら一時データを削除
       localStorage.removeItem('beatnexus_temp_phone_verification');
+      console.log('✅ Temporary phone data removed from localStorage');
     }
   } catch (error) {
     console.error('❌ Error in recordTempPhoneVerification:', error);
@@ -87,9 +103,12 @@ const AuthConfirmPage: React.FC = () => {
         if (data.session) {
           console.log('✅ Email verified successfully');
           console.log('✅ User session:', data.session.user);
+          console.log('✅ User ID for phone recording:', data.session.user.id);
           
           // メール認証成功後に一時保存した電話番号を正式記録
+          console.log('📱 About to call recordTempPhoneVerification...');
           await recordTempPhoneVerification(data.session.user.id);
+          console.log('📱 recordTempPhoneVerification completed');
           
           setStatus('success');
           setMessage('メールアドレスが正常に認証されました！');

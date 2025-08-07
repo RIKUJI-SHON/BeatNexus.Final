@@ -38,7 +38,12 @@ export const useAuthStore = create<AuthState>((set) => ({
     console.log('SignUp: Detected browser language:', detectedLanguage);
     console.log('SignUp: Phone number provided:', phoneNumber ? 'Yes' : 'No');
 
-    console.log('🔐 Calling Supabase auth.signUp...');
+    console.log('� Debug - Environment check:');
+    console.log('🔧 VITE_SUPABASE_URL:', import.meta.env.VITE_SUPABASE_URL);
+    console.log('🔧 Expected dev URL: https://wdttluticnlqzmqmfvgt.supabase.co');
+    console.log('🔧 Expected prod URL: https://qgqcjtjxaoplhxurbpis.supabase.co');
+
+    console.log('�🔐 Calling Supabase auth.signUp...');
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
