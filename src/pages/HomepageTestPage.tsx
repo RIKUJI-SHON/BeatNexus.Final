@@ -9,7 +9,6 @@ import step3Voting from '../assets/images/steps/step3-voting.png';
 import step4Results from '../assets/images/steps/step4-results.png';
 import { Card } from '../components/ui/Card';
 import { TopThreePodium } from '../components/ui/TopThreePodium';
-import { useRequireAuth } from '../hooks/useRequireAuth';
 import { AuthModal } from '../components/auth/AuthModal';
 import { useCanonicalUrl, useDynamicMeta } from '../hooks/useSEO';
 import { supabase } from '../lib/supabase';
@@ -32,7 +31,7 @@ const HomepageTestPage: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const [authModalMode, setAuthModalMode] = useState<'login' | 'signup'>('login');
+  const [authModalMode, setAuthModalMode] = useState<'login' | 'signup' | 'resetPassword' | 'setNewPassword'>('signup');
   const [latestEndedSeason, setLatestEndedSeason] = useState<Season | null>(null);
   const [topThreeRankings, setTopThreeRankings] = useState<HistoricalSeasonRanking[]>([]);
   const [topThreeVoterRankings, setTopThreeVoterRankings] = useState<VoterRankingEntry[]>([]);
@@ -63,12 +62,6 @@ const HomepageTestPage: React.FC = () => {
     twitterTitle: 'BeatNexus - ビートボクサーのための競技プラットフォーム',
     twitterDescription: 'ビートボクサーのための競技プラットフォーム。動画投稿で気軽にバトル、コミュニティ投票で勝敗決定。',
     twitterImage: 'https://beatnexus.vercel.app/images/og-image.png'
-  });
-
-  const requireAuth = useRequireAuth({
-    showAuthModal: true,
-    setAuthModalOpen: setIsAuthModalOpen,
-    setAuthModalMode: setAuthModalMode,
   });
 
   // 最新の終了したシーズンのTOP3を取得
@@ -191,16 +184,15 @@ const HomepageTestPage: React.FC = () => {
 
   const handleJoinNow = (e: React.MouseEvent) => {
     e.preventDefault();
-    // 事前登録は締め切りました。8月7日の完全一般公開をお待ちください。
-    // window.open('https://forms.gle/A5roMYfa6gJFNLpA7', '_blank');
-    alert('事前登録は締め切りました。8月7日の完全一般公開をお待ちください。');
+    // 認証モーダルを開く（サインアップモード）
+    setAuthModalMode('signup');
+    setIsAuthModalOpen(true);
   };
 
   const handleWatchBattles = (e: React.MouseEvent) => {
     e.preventDefault();
-    if (requireAuth(() => navigate('/battles'))) {
-      return;
-    }
+    // バトルページに直接遷移
+    navigate('/battles');
   };
 
   // ログインしているユーザーにはBattlesPageを表示
