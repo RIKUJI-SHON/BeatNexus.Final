@@ -2,6 +2,8 @@
  * iOS動画再生問題対応 - 動画サポートユーティリティ
  * 作成日: 2025-01-08
  * 目的: iOS Safariでの動画再生制限に対応するためのヘルパー関数
+ * 
+ * Phase 1.5追加: より積極的なiOS制限対応
  */
 
 /**
@@ -22,16 +24,29 @@ export const isIOSSafari = (): boolean => {
 };
 
 /**
+ * iOS環境全体を検出する関数（すべてのiOSブラウザ）
+ * @returns iOSデバイスの場合はtrue、それ以外はfalse
+ */
+export const isIOSDevice = (): boolean => {
+  // サーバーサイドレンダリング対応
+  if (typeof window === 'undefined') return false;
+  
+  const ua = window.navigator.userAgent;
+  return !!ua.match(/iPad/i) || !!ua.match(/iPhone/i) || !!ua.match(/iPod/i);
+};
+
+/**
  * iOS用の動画属性を取得する関数
  * @returns iOS Safari用の動画属性オブジェクト
  */
 export const getIOSVideoProps = () => {
-  if (!isIOSSafari()) return {};
+  if (!isIOSDevice()) return {};
   
   return {
     playsInline: true,
     'webkit-playsinline': 'true',
     preload: 'none' as const,
+    muted: true, // iOS制限回避のため初期ミュート
   };
 };
 
@@ -40,10 +55,50 @@ export const getIOSVideoProps = () => {
  * @returns 適切なpreload値
  */
 export const getOptimalPreloadSetting = (): 'none' | 'metadata' | 'auto' => {
-  if (isIOSSafari()) {
-    return 'none'; // iOS Safariでは複数動画の同時preloadを避ける
+  if (isIOSDevice()) {
+    return 'none'; // iOS全体で複数動画の同時preloadを避ける
   }
   return 'metadata'; // その他のデバイスではメタデータを事前読み込み
+};
+
+/**
+ * iOS環境での動画読み込み戦略
+ * @param isSecondVideo 2つ目の動画かどうか
+ * @returns 読み込み戦略
+ */
+export const getIOSLoadingStrategy = (isSecondVideo: boolean = false) => {
+  if (!isIOSDevice()) {
+    return { shouldLoad: true, requiresUserAction: false };
+  }
+  
+  return {
+    shouldLoad: !isSecondVideo, // iOSでは最初の動画のみ自動読み込み
+    requiresUserAction: isSecondVideo, // 2つ目の動画はユーザー操作が必要
+    preload: 'none' as const,
+    muted: true,
+  };
+};
+
+/**
+ * 動画要素の遅延読み込み制御
+ * @param videoElement HTML video要素
+ * @param isSecondVideo 2つ目の動画かどうか
+ */
+export const setupIOSVideoLoading = (
+  videoElement: HTMLVideoElement,
+  isSecondVideo: boolean = false
+) => {
+  if (!isIOSDevice()) return;
+  
+  if (isSecondVideo) {
+    // 2つ目の動画は明示的なユーザー操作まで読み込みを延期
+    videoElement.preload = 'none';
+    
+    // プレースホルダー表示用のポスター設定
+    if (!videoElement.poster) {
+      videoElement.poster = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIwIiBoZWlnaHQ9IjE4MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMzMzIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPuOCv+ODg+ODl+OBl+OBpuiqreOBv+i+vOOBv+OBvuOBmTwvdGV4dD48L3N2Zz4=';
+    }
+  }
 };
 
 /**
