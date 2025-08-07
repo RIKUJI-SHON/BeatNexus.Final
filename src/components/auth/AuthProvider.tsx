@@ -46,6 +46,51 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setIsAuthModalOpen(false);
   };
 
+  // 電話番号保存処理（メール認証完了時）
+  const processPendingPhoneVerification = async (userId: string) => {
+    try {
+      const pendingData = localStorage.getItem('pending_phone_verification');
+      if (!pendingData) {
+        console.log('No pending phone verification data found');
+        return;
+      }
+
+      const { userId: storedUserId, phoneNumber, timestamp } = JSON.parse(pendingData);
+      
+      // ユーザーIDが一致し、24時間以内のデータかチェック
+      const isExpired = Date.now() - timestamp > 24 * 60 * 60 * 1000; // 24時間
+      if (storedUserId !== userId) {
+        console.log('Stored user ID does not match current user, skipping phone verification');
+        localStorage.removeItem('pending_phone_verification');
+        return;
+      }
+      
+      if (isExpired) {
+        console.log('Pending phone verification data expired, removing...');
+        localStorage.removeItem('pending_phone_verification');
+        return;
+      }
+
+      console.log('📱 Processing pending phone verification for user:', userId);
+      
+      // データベースに電話番号を保存
+      const { error: phoneError } = await supabase.rpc('record_phone_verification', {
+        p_user_id: userId,
+        p_phone_number: phoneNumber
+      });
+      
+      if (phoneError) {
+        console.error('❌ Phone number recording failed:', phoneError);
+      } else {
+        console.log('✅ Phone number successfully recorded after email confirmation');
+        // 成功したら一時保存データを削除
+        localStorage.removeItem('pending_phone_verification');
+      }
+    } catch (error) {
+      console.error('Error processing pending phone verification:', error);
+    }
+  };
+
   // 認証エラー時の自動リカバリ
   const handleAuthError = async (error: unknown) => {
     console.error('Auth error detected:', error);
@@ -189,6 +234,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         // 認証成功時はエラーカウントをリセット
         if (session?.user) {
           authErrorCount.current = 0;
+          
+          // メール認証完了時の電話番号保存処理
+          if (event === 'SIGNED_IN' && session.user.email_confirmed_at) {
+            console.log('✅ User signed in with confirmed email, processing pending phone verification...');
+            await processPendingPhoneVerification(session.user.id);
+          }
+          
+          // メール確認後のトークン更新時にも電話番号処理を実行
+          if (event === 'TOKEN_REFRESHED' && session.user.email_confirmed_at) {
+            console.log('🔄 Token refreshed for confirmed user, checking pending phone verification...');
+            await processPendingPhoneVerification(session.user.id);
+          }
         }
 
         // 新規登録時の処理
