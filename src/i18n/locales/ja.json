@@ -1779,6 +1779,7 @@
       "usernameAlreadyExists": "このユーザー名は既に使用されています。別のユーザー名をお試しください。",
       "usernameInvalidLength": "ユーザー名は3文字以上30文字以下で入力してください。",
       "emailAlreadyExists": "このメールアドレスは既に登録されています。",
+      "databaseError": "データベースエラーが発生しました。しばらくしてから再度お試しください。",
       "signupDisabled": "現在、新規登録は一時的に無効になっています。",
       "invalidCredentials": "メールアドレスまたはパスワードが正しくありません。"
     },

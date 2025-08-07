@@ -2029,6 +2029,7 @@
       "usernameAlreadyExists": "This username is already taken. Please try a different username.",
       "usernameInvalidLength": "Username must be between 3 and 30 characters long.",
       "emailAlreadyExists": "This email address is already registered.",
+      "databaseError": "A database error occurred. Please try again later.",
       "signupDisabled": "New registrations are currently temporarily disabled.",
       "invalidCredentials": "Invalid email or password."
     },

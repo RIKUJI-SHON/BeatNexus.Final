@@ -65,6 +65,10 @@ export const useAuthStore = create<AuthState>((set) => ({
     
     if (error) {
       console.error('❌ Supabase signUp error:', error);
+      console.error('❌ Error details:', {
+        message: error.message,
+        status: error.status
+      });
       
       // Supabaseエラーメッセージを解析して適切なエラーに変換
       const errorMessage = error.message || '';
@@ -73,25 +77,40 @@ export const useAuthStore = create<AuthState>((set) => ({
       if (errorMessage.includes('Username already exists:') || 
           errorMessage.includes('duplicate key value violates unique constraint "profiles_username_key"')) {
         const duplicateUsername = errorMessage.match(/Username already exists: (.+)/)?.[1] || username;
+        console.error('❌ Username duplicate error for:', duplicateUsername);
         throw new Error(`usernameAlreadyExists:${duplicateUsername}`);
       }
       
-      // ユーザー名バリデーションエラー
+      // ユーザー名バリデーションエラー（詳細ログ付き）
       if (errorMessage.includes('Username contains invalid characters')) {
+        console.error('❌ Username validation error - invalid characters for username:', username);
+        console.error('❌ Username details:', {
+          length: username.length,
+          chars: username.split('').map(c => ({ char: c, ascii: c.charCodeAt(0) }))
+        });
         throw new Error('usernameInvalidChars');
       }
       
       if (errorMessage.includes('Username must be between 3 and 30 characters')) {
+        console.error('❌ Username validation error - invalid length:', username.length);
         throw new Error('usernameInvalidLength');
       }
       
       // メールアドレス関連エラー
       if (errorMessage.includes('User already registered') || 
           errorMessage.includes('email address is already registered')) {
+        console.error('❌ Email already exists error for:', email);
         throw new Error('emailAlreadyExists');
       }
       
+      // 一般的なデータベースエラー
+      if (errorMessage.includes('Database error') || errorMessage.includes('current transaction is aborted')) {
+        console.error('❌ Database transaction error detected');
+        throw new Error('databaseError');
+      }
+      
       // デフォルトエラー
+      console.error('❌ Unhandled signup error:', errorMessage);
       throw error;
     }
 
