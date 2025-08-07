@@ -17,6 +17,7 @@ import { supabase } from '../../lib/supabase';
 import { generateBattleUrl } from '../../utils/battleUrl';
 import { getDefaultAvatarUrl } from '../../utils';
 import { useNotificationStore } from '../../store/notificationStore';
+import { getOptimalPreloadSetting } from '../../utils/videoSupport';
 
 interface BattleViewProps {
   battle: Battle;
@@ -520,10 +521,11 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                 <div className="aspect-video bg-black rounded-xl overflow-hidden relative shadow-2xl border-2" style={{ borderColor: playerColorA }}>
                   {battle.video_url_a ? (
                     <video
-                      src={battle.video_url_a}
                       className="w-full h-full object-contain"
                       controls
-                      preload="metadata"
+                      preload={getOptimalPreloadSetting()}
+                      playsInline
+                      webkit-playsinline="true"
                       onError={(e) => {
                         console.error('Player A video error:', e);
                         e.currentTarget.style.display = 'none';
@@ -531,8 +533,8 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                         if (errorDiv) errorDiv.style.display = 'flex';
                       }}
                     >
-                      <source src={battle.video_url_a} type="video/webm" />
                       <source src={battle.video_url_a} type="video/mp4" />
+                      <source src={battle.video_url_a} type="video/webm" />
                       {t('battleReplay.videoNotSupported')}
                     </video>
                   ) : null}
@@ -601,10 +603,11 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                 <div className="aspect-video bg-black rounded-xl overflow-hidden relative shadow-2xl border-2" style={{ borderColor: playerColorB }}>
                   {battle.video_url_b ? (
                     <video
-                      src={battle.video_url_b}
                       className="w-full h-full object-contain"
                       controls
-                      preload="metadata"
+                      preload={getOptimalPreloadSetting()}
+                      playsInline
+                      webkit-playsinline="true"
                       onError={(e) => {
                         console.error('Player B video error:', e);
                         e.currentTarget.style.display = 'none';
@@ -612,8 +615,8 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                         if (errorDiv) errorDiv.style.display = 'flex';
                       }}
                     >
-                      <source src={battle.video_url_b} type="video/webm" />
                       <source src={battle.video_url_b} type="video/mp4" />
+                      <source src={battle.video_url_b} type="video/webm" />
                       {t('battleReplay.videoNotSupported')}
                     </video>
                   ) : null}
