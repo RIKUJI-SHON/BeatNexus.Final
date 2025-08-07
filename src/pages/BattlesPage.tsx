@@ -26,7 +26,7 @@ const BattlesPage: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
-  const [sortBy, setSortBy] = useState<'recent' | 'trending' | 'ending' | 'completed' | null>('trending');
+  const [sortBy, setSortBy] = useState<'recent' | 'trending' | 'ending' | 'completed' | null>('ending');
   const [showMyBattlesOnly, setShowMyBattlesOnly] = useState(false);
 
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
@@ -121,10 +121,12 @@ const BattlesPage: React.FC = () => {
           });
         case null:
         default:
-          // フィルターが外れている場合はtrending順（人気順）
-          return battleList.sort((a, b) => 
-            ((b.votes_a || 0) + (b.votes_b || 0)) - ((a.votes_a || 0) + (a.votes_b || 0))
-          );
+          // フィルターが外れている場合はending順（終了間際順）
+          return battleList.sort((a, b) => {
+            const aTime = a.end_voting_at ? new Date(a.end_voting_at).getTime() : 0;
+            const bTime = b.end_voting_at ? new Date(b.end_voting_at).getTime() : 0;
+            return aTime - bTime;
+          });
       }
     } catch (error) {
       console.error('Error in filteredBattles:', error);

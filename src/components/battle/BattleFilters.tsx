@@ -1,5 +1,5 @@
 import React from 'react';
-import { Search, SortDesc, Clock, Archive, User, Filter, Play } from 'lucide-react';
+import { Search, SortDesc, Clock, Archive, User, Filter, Play, TrendingUp } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
 import { useTranslation } from 'react-i18next';
@@ -27,8 +27,14 @@ export const BattleFilters: React.FC<BattleFiltersProps> = ({
   const navigate = useNavigate();
   const { user } = useAuthStore();
 
-  // Sort button configurations with enhanced styling
+  // Sort button configurations with enhanced styling - ending first as default
   const sortButtons = [
+    {
+      key: 'ending',
+      icon: <Clock className="h-3 w-3" />,
+      label: t('battleFilters.endingSoon'),
+      colors: 'from-red-500 to-orange-500', // 緊急性を表現する赤オレンジ
+    },
     {
       key: 'recent',
       icon: <SortDesc className="h-3 w-3" />,
@@ -36,10 +42,10 @@ export const BattleFilters: React.FC<BattleFiltersProps> = ({
       colors: 'from-cyan-500 to-blue-500',
     },
     {
-      key: 'ending',
-      icon: <Clock className="h-3 w-3" />,
-      label: t('battleFilters.endingSoon'),
-      colors: 'from-yellow-500 to-orange-500',
+      key: 'trending',
+      icon: <TrendingUp className="h-3 w-3" />,
+      label: t('battleFilters.trending'),
+      colors: 'from-purple-500 to-pink-500', // 人気を表現する紫ピンク
     },
     {
       key: 'completed',
@@ -176,38 +182,41 @@ export const BattleFilters: React.FC<BattleFiltersProps> = ({
               </div>
               
                     {/* マイバトル & ソートボタン */}
-              <div className="flex gap-1.5 items-center overflow-x-auto scrollbar-hide pb-1">
-                {/* My Battles Filter */}
-                {isLoggedIn && (
-                  <button
-                    onClick={() => setShowMyBattlesOnly(!showMyBattlesOnly)}
-                    className={`px-2.5 py-1.5 rounded-md text-xs font-medium transition-all duration-300 border flex items-center gap-1 flex-shrink-0 ${
-                      showMyBattlesOnly
-                        ? 'bg-gradient-to-r from-pink-500 to-purple-500 text-white border-pink-500/50'
-                        : 'bg-gray-800/60 text-gray-300 border-gray-600/50 hover:border-pink-500/50 hover:text-white'
-                    }`}
-                  >
-                    <User className="h-3 w-3" />
-                    <span className="whitespace-nowrap text-xs">{t('battleFilters.myBattlesOnly')}</span>
-                  </button>
-                )}
+              <div className="space-y-2">
+                {/* モバイル: 2行レイアウト, デスクトップ: 横並び */}
+                <div className="flex flex-wrap gap-1.5 sm:flex-nowrap sm:items-center sm:overflow-x-auto sm:scrollbar-hide sm:pb-1">
+                  {/* My Battles Filter */}
+                  {isLoggedIn && (
+                    <button
+                      onClick={() => setShowMyBattlesOnly(!showMyBattlesOnly)}
+                      className={`px-2.5 py-1.5 rounded-md text-xs font-medium transition-all duration-300 border flex items-center justify-center gap-1 flex-shrink-0 ${
+                        showMyBattlesOnly
+                          ? 'bg-gradient-to-r from-pink-500 to-purple-500 text-white border-pink-500/50'
+                          : 'bg-gray-800/60 text-gray-300 border-gray-600/50 hover:border-pink-500/50 hover:text-white'
+                      }`}
+                    >
+                      <User className="h-3 w-3" />
+                      <span className="text-xs">{t('battleFilters.myBattlesOnly')}</span>
+                    </button>
+                  )}
 
-                      {/* Sort Options */}
-                {sortButtons.map((button) => (
-                  <button
-                    key={button.key}
-                    onClick={() => handleSortClick(button.key as any)}
-                    className={`px-2.5 py-1.5 rounded-md text-xs font-medium transition-all duration-300 border flex items-center gap-1 flex-shrink-0 ${
-                      sortBy === button.key
-                        ? `bg-gradient-to-r ${button.colors} text-white border-transparent`
-                        : `bg-gray-800/60 text-gray-300 border-gray-600/50 hover:border-gray-500/50 hover:text-white`
-                    }`}
-                    title={button.label}
-                  >
-                    {button.icon}
-                    <span className="whitespace-nowrap text-xs">{button.label}</span>
-                  </button>
-                ))}
+                  {/* Sort Options */}
+                  {sortButtons.map((button) => (
+                    <button
+                      key={button.key}
+                      onClick={() => handleSortClick(button.key as 'recent' | 'trending' | 'ending' | 'completed')}
+                      className={`px-2.5 py-1.5 rounded-md text-xs font-medium transition-all duration-300 border flex items-center justify-center gap-1 flex-shrink-0 ${
+                        sortBy === button.key
+                          ? `bg-gradient-to-r ${button.colors} text-white border-transparent`
+                          : `bg-gray-800/60 text-gray-300 border-gray-600/50 hover:border-gray-500/50 hover:text-white`
+                      }`}
+                      title={button.label}
+                    >
+                      {button.icon}
+                      <span className="text-xs">{button.label}</span>
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
