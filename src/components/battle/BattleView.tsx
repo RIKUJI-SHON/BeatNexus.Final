@@ -165,18 +165,34 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
     }
   }, [playerAInView, playerAVideoLoaded]);
 
-  // Phase 3: Player B の遅延読み込み制御（iOS用遅延付き）
+  // Phase 3: Player B の遅延読み込み制御（iOS最適化版）
   useEffect(() => {
     if (playerBInView && !playerBVideoLoaded) {
       console.log('🎬 Player B is in view, loading video...');
-      // iOS環境の場合は Player A の読み込み完了後に遅延を追加
-      const delay = isIOSDevice() ? 500 : 0;
       
-      const timer = setTimeout(() => {
+      if (isIOSDevice()) {
+        // iOSの場合、Player Aの動画が準備できているか確認
+        const checkPlayerAReady = () => {
+          const playerAVideo = playerARef.current?.querySelector('video');
+          if (playerAVideo && playerAVideo.readyState >= 2) {
+            console.log('✅ Player A is ready (readyState: ' + playerAVideo.readyState + '), loading Player B after 2s delay...');
+            // Player Aが再生可能になってから2秒待つ
+            setTimeout(() => {
+              console.log('🎬 Starting Player B video load...');
+              setPlayerBVideoLoaded(true);
+            }, 2000);
+          } else {
+            console.log('⏳ Player A not ready yet (readyState: ' + (playerAVideo?.readyState || 'N/A') + '), rechecking in 500ms...');
+            // まだ準備できていない場合は再チェック
+            setTimeout(checkPlayerAReady, 500);
+          }
+        };
+        checkPlayerAReady();
+      } else {
+        // iOS以外は即座に読み込み
+        console.log('🚀 Non-iOS device detected, loading Player B immediately...');
         setPlayerBVideoLoaded(true);
-      }, delay);
-
-      return () => clearTimeout(timer);
+      }
     }
   }, [playerBInView, playerBVideoLoaded]);
 
@@ -605,11 +621,13 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                       playerName="Player B"
                       className=""
                       controls
-                      preload={getOptimalPreloadSetting()}
+                      preload={isIOSDevice() ? 'none' : getOptimalPreloadSetting()} // iOS環境ではPlayer Bは手動読み込み
                       muted={isIOSDevice()}
                       isSecondVideo={true} // Player BはiOS環境で制限される
                       onError={(errorInfo) => {
                         console.error('Player B video error:', errorInfo);
+                        console.log('🔄 Attempting iOS-specific recovery for Player B...');
+                        // iOS特有のエラー時復旧処理を将来実装予定
                       }}
                     />
                   ) : (
@@ -617,7 +635,11 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                       <div className="text-center text-gray-400">
                         <Play className="h-16 w-16 mx-auto mb-3 opacity-70" />
                         <p className="text-sm">Player B 動画読み込み中...</p>
-                        {isIOSDevice() && <p className="text-xs mt-1">iOS環境: 遅延読み込み</p>}
+                        {isIOSDevice() && (
+                          <p className="text-xs mt-1 text-blue-400">
+                            iOS最適化: Player A読み込み完了後に開始
+                          </p>
+                        )}
                       </div>
                     </div>
                   )}

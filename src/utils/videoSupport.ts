@@ -65,13 +65,13 @@ export const getOptimalPreloadSetting = (): 'none' | 'metadata' | 'auto' => {
 };
 
 /**
- * iOS環境での動画読み込み戦略
+ * iOS環境での動画読み込み戦略（強化版）
  * @param isSecondVideo 2つ目の動画かどうか
  * @returns 読み込み戦略
  */
 export const getIOSLoadingStrategy = (isSecondVideo: boolean = false) => {
   if (!isIOSDevice()) {
-    return { shouldLoad: true, requiresUserAction: false };
+    return { shouldLoad: true, requiresUserAction: false, delay: 0 };
   }
   
   return {
@@ -79,7 +79,72 @@ export const getIOSLoadingStrategy = (isSecondVideo: boolean = false) => {
     requiresUserAction: isSecondVideo, // 2つ目の動画はユーザー操作が必要
     preload: 'none' as const,
     muted: true,
+    delay: isSecondVideo ? 2000 : 0, // 2つ目の動画は2秒遅延
   };
+};
+
+/**
+ * iOS環境での動画エラー復旧処理
+ * @param videoElement HTML video要素
+ * @param originalUrl 元の動画URL
+ * @param retryCount 再試行回数（最大3回）
+ * @returns 復旧成功の場合true
+ */
+export const recoverIOSVideoError = async (
+  videoElement: HTMLVideoElement,
+  originalUrl: string,
+  retryCount: number = 0
+): Promise<boolean> => {
+  const MAX_RETRIES = 3;
+  
+  if (!isIOSDevice() || retryCount >= MAX_RETRIES) {
+    return false;
+  }
+
+  console.log(`🔄 iOS video recovery attempt ${retryCount + 1}/${MAX_RETRIES} for URL: ${originalUrl}`);
+
+  try {
+    // 動画要素をリセット
+    videoElement.pause();
+    videoElement.removeAttribute('src');
+    videoElement.load();
+
+    // 段階的な待機時間（指数関数的バックオフ）
+    const waitTime = Math.min(1000 * Math.pow(2, retryCount), 5000);
+    await new Promise(resolve => setTimeout(resolve, waitTime));
+
+    // URL再設定と読み込み
+    videoElement.src = originalUrl;
+    videoElement.preload = 'metadata'; // 段階的読み込み
+    videoElement.load();
+
+    // 読み込み完了を待機
+    return new Promise((resolve) => {
+      const timeout = setTimeout(() => {
+        console.warn(`⏰ iOS video recovery timeout for attempt ${retryCount + 1}`);
+        resolve(false);
+      }, 10000);
+
+      const onSuccess = () => {
+        clearTimeout(timeout);
+        console.log(`✅ iOS video recovery successful on attempt ${retryCount + 1}`);
+        resolve(true);
+      };
+
+      const onError = () => {
+        clearTimeout(timeout);
+        console.warn(`❌ iOS video recovery failed on attempt ${retryCount + 1}`);
+        // 再帰的に次の試行
+        recoverIOSVideoError(videoElement, originalUrl, retryCount + 1).then(resolve);
+      };
+
+      videoElement.addEventListener('canplay', onSuccess, { once: true });
+      videoElement.addEventListener('error', onError, { once: true });
+    });
+  } catch (error) {
+    console.error(`💥 iOS video recovery exception on attempt ${retryCount + 1}:`, error);
+    return false;
+  }
 };
 
 /**

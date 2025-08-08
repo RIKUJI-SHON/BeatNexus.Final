@@ -58,13 +58,17 @@ export const OptimizedVideoPlayer: React.FC<OptimizedVideoPlayerProps> = ({
     return videoUrl;
   }, [videoUrl, iosCompatUrl]);
 
-  // 動画読み込み戦略の決定
+  // 動画読み込み戦略の決定（iOS最適化強化）
   const getVideoPreloadSetting = useCallback(() => {
     if (isIOSDevice()) {
-      return 'none'; // iOS全体でpreloadを最小化
+      // iOS環境では2番目の動画はより慎重に読み込み
+      if (isSecondVideo) {
+        return 'none'; // Player Bは初期状態では読み込まない
+      }
+      return 'metadata'; // Player Aはメタデータのみ
     }
     return preload;
-  }, [preload]);
+  }, [preload, isSecondVideo]);
 
   // 単一アクティブ動画: 他からのアクティブ化イベントを受けたら自分をデタッチ
   useEffect(() => {
@@ -92,42 +96,66 @@ export const OptimizedVideoPlayer: React.FC<OptimizedVideoPlayerProps> = ({
     };
   }, []);
 
-  // エラーハンドリング
-  const handleVideoError = useCallback((event: React.SyntheticEvent<HTMLVideoElement>) => {
+  // 現在使用すべき動画URL（iOS互換性考慮）
+  const currentVideoUrl = getOptimalVideoUrl();
+
+  // エラーハンドリング（iOS最適化強化）
+  const handleVideoError = useCallback(async (event: React.SyntheticEvent<HTMLVideoElement>) => {
     console.error(`❌ Video error for ${playerName}:`, event);
     setHasError(true);
-    // リトライ（1回）
+    
+    // iOS環境での専用復旧処理
+    if (isIOSDevice() && !hasRetried && videoRef.current && currentVideoUrl) {
+      setHasRetried(true);
+      console.log(`🔄 Attempting iOS-specific recovery for ${playerName}...`);
+      
+      try {
+        // iOS専用復旧処理をインポートして使用
+        const { recoverIOSVideoError } = await import('../../utils/videoSupport');
+        const recoverySuccess = await recoverIOSVideoError(videoRef.current, currentVideoUrl);
+        
+        if (recoverySuccess) {
+          setHasError(false);
+          console.log(`✅ iOS recovery successful for ${playerName}`);
+          return;
+        }
+      } catch (recoveryError) {
+        console.warn(`iOS recovery failed for ${playerName}:`, recoveryError);
+      }
+    }
+    
+    // 通常のリトライ処理（非iOS環境または復旧失敗時）
     if (!hasRetried && videoRef.current) {
       setHasRetried(true);
-      const retryDelay = isIOSDevice() ? 600 : 300;
+      const retryDelay = isIOSDevice() ? 1000 : 300; // iOS環境では長めの遅延
       setTimeout(() => {
         const v = videoRef.current!;
         try {
           v.pause();
           // 強制再読み込み
-          const currentSrc = v.currentSrc || v.src || videoUrl || '';
+          const currentSrc = v.currentSrc || v.src || currentVideoUrl || '';
           v.removeAttribute('src');
           v.load();
           if (currentSrc) v.src = currentSrc;
           v.load();
           v.play().catch(() => {});
           setHasError(false);
-          console.log('🔁 Retried video load once');
+          console.log(`🔁 Standard retry completed for ${playerName}`);
         } catch (e) {
-          console.warn('Retry failed:', e);
+          console.warn(`Standard retry failed for ${playerName}:`, e);
         }
       }, retryDelay);
     }
     
     const errorInfo = {
       playerName,
-      url: videoUrl,
+      url: currentVideoUrl,
       error: 'Video loading failed',
       isIOSDevice: isIOSDevice(),
       isSecondVideo
     };
     onError?.(errorInfo);
-  }, [playerName, videoUrl, onError, isSecondVideo, hasRetried]);
+  }, [playerName, currentVideoUrl, onError, isSecondVideo, hasRetried]);
 
   // 自分が再生開始したら単一アクティブ宣言
   const onPlayHandler = useCallback(() => {
@@ -148,9 +176,6 @@ export const OptimizedVideoPlayer: React.FC<OptimizedVideoPlayerProps> = ({
     }
     return undefined;
   };
-
-  // 現在使用すべき動画URL（iOS互換性考慮）
-  const currentVideoUrl = getOptimalVideoUrl();
 
   // レンダリング
   if (!currentVideoUrl) {
