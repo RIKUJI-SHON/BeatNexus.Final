@@ -73,33 +73,6 @@
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
     
-    <!-- Service Worker Registration for PWA -->
-    <script>
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', function() {
-          navigator.serviceWorker.register('/sw.js', {
-            scope: '/'
-          })
-            .then(function(registration) {
-              console.log('Service Worker registered successfully:', registration.scope);
-              
-              // 更新があるかチェック
-              registration.addEventListener('updatefound', () => {
-                console.log('New Service Worker version found');
-              });
-            })
-            .catch(function(error) {
-              console.error('Service Worker registration failed:', error);
-            });
-        });
-        
-        // Service Worker メッセージの受信
-        navigator.serviceWorker.addEventListener('message', (event) => {
-          console.log('Message from Service Worker:', event.data);
-        });
-      } else {
-        console.warn('Service Worker is not supported in this browser');
-      }
-    </script>
+    <!-- Service Worker Registration moved to main.tsx for DEV/PROD environment control -->
   </body>
 </html>
