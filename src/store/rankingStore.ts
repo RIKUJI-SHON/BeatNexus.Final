@@ -95,14 +95,6 @@ export const useRankingStore = create<RankingState>((set, get) => ({
         const totalBattles = entry.battles_won + entry.battles_lost;
         const winRate = totalBattles > 0 ? (entry.battles_won / totalBattles) * 100 : 0;
         
-        // 同じレーティングを持つエントリより高いレーティングのエントリ数 + 1 = 順位
-        let position = 1;
-        for (let i = 0; i < sortedData.length; i++) {
-          if (sortedData[i].rating > entry.rating) {
-            position++;
-          }
-        }
-        
         return {
           user_id: entry.user_id,
           username: entry.username,
@@ -114,7 +106,7 @@ export const useRankingStore = create<RankingState>((set, get) => ({
           battles_won: entry.battles_won,
           battles_lost: entry.battles_lost,
           win_rate: winRate,
-          position: position
+          position: entry.rank // データベースのRANK()結果を使用
         } as RankingEntry;
       });
 
@@ -138,19 +130,10 @@ export const useRankingStore = create<RankingState>((set, get) => ({
 
       if (error) throw error;
 
-      // RANK()相当の順位計算（同ポイント時は同順位）
-      const sortedData = [...(data || [])];
-      const voterRankingsWithPosition = sortedData.map((entry: any) => {
+      // データベースのrank（DENSE_RANK）をそのまま使用
+      const voterRankingsWithPosition = (data || []).map((entry: any) => {
         // voter_rankings_viewのidをuser_idにマッピング
         const rankInfo = getRankFromRating(1200); // 投票者にはデフォルトランクを設定
-        
-        // 同じ投票数を持つエントリより高い投票数のエントリ数 + 1 = 順位
-        let position = 1;
-        for (let i = 0; i < sortedData.length; i++) {
-          if (sortedData[i].vote_count > entry.vote_count) {
-            position++;
-          }
-        }
         
         return {
           user_id: entry.id,
@@ -162,7 +145,7 @@ export const useRankingStore = create<RankingState>((set, get) => ({
           rank_color: rankInfo.color,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
-          position: position
+          position: entry.rank // データベースのDENSE_RANK()結果を使用
         } as VoterRankingEntry;
       });
 
@@ -214,22 +197,11 @@ export const useRankingStore = create<RankingState>((set, get) => ({
 
       if (error) throw error;
 
-      // RANK()相当の順位計算（同ポイント時は同順位）
-      const sortedData = [...(data || [])];
-      const seasonRankingsWithPosition = sortedData.map((entry) => {
-        // 同じシーズンポイントを持つエントリより高いポイントのエントリ数 + 1 = 順位
-        let position = 1;
-        for (let i = 0; i < sortedData.length; i++) {
-          if (sortedData[i].season_points > entry.season_points) {
-            position++;
-          }
-        }
-        
-        return {
-          ...entry,
-          position: position
-        };
-      });
+      // データベースのposition（DENSE_RANK）をそのまま使用
+      const seasonRankingsWithPosition = (data || []).map((entry) => ({
+        ...entry,
+        // position フィールドはすでにデータベースで DENSE_RANK() により計算済み
+      }));
 
       set({ seasonRankings: seasonRankingsWithPosition });
     } catch (error) {
