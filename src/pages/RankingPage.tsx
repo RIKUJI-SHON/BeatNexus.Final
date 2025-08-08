@@ -744,7 +744,7 @@ const RankingPage: React.FC = () => {
                 ) : (
                   <>
                     {listEntries
-                      .slice(0, 12)
+                      .slice(0, 17)
                       .map((entry) => {
                       // 溢れたTOP3エントリかどうかをチェック
                       const isOverflowTopThree = overflowEntries.includes(entry);
