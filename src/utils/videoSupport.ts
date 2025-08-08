@@ -11,16 +11,16 @@
  * @returns iOS Safariの場合はtrue、それ以外はfalse
  */
 export const isIOSSafari = (): boolean => {
-  // サーバーサイドレンダリング対応
   if (typeof window === 'undefined') return false;
-  
   const ua = window.navigator.userAgent;
-  const iOS = !!ua.match(/iPad/i) || !!ua.match(/iPhone/i);
-  const webkit = !!ua.match(/WebKit/i);
-  // Chrome iOS版（CriOS）を除外してSafariのみを検出
-  const iOSSafari = iOS && webkit && !ua.match(/CriOS/i);
-  
-  return iOSSafari;
+  const nav = window.navigator as Navigator & { vendor?: string; maxTouchPoints?: number };
+  const vendor = nav.vendor || '';
+  const iOSUA = /iPad|iPhone/i.test(ua);
+  const iPadOSDesktopUA = navigator.platform === 'MacIntel' && (nav.maxTouchPoints || 0) > 1;
+  const webkit = /WebKit/i.test(ua);
+  const isChromeLike = /CriOS|EdgiOS|FxiOS/i.test(ua);
+  const isAppleVendor = /Apple/i.test(vendor);
+  return (iOSUA || iPadOSDesktopUA) && webkit && !isChromeLike && isAppleVendor;
 };
 
 /**
@@ -32,7 +32,10 @@ export const isIOSDevice = (): boolean => {
   if (typeof window === 'undefined') return false;
   
   const ua = window.navigator.userAgent;
-  return !!ua.match(/iPad/i) || !!ua.match(/iPhone/i) || !!ua.match(/iPod/i);
+  const nav = window.navigator as Navigator & { maxTouchPoints?: number };
+  const iOSUA = /iPad|iPhone|iPod/i.test(ua);
+  const iPadOSDesktopUA = navigator.platform === 'MacIntel' && (nav.maxTouchPoints || 0) > 1;
+  return iOSUA || iPadOSDesktopUA;
 };
 
 /**

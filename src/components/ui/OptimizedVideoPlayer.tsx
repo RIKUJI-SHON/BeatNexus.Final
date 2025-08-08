@@ -47,6 +47,8 @@ export const OptimizedVideoPlayer: React.FC<OptimizedVideoPlayerProps> = ({
 
   // iOS環境かつ2つ目の動画の場合の制御
   const shouldShowPlaceholder = isIOSDevice() && isSecondVideo && !userInteracted;
+  // BはiOSで必ずプレースホルダー先行（初回エラー回避）
+  const isIOSBHardGuard = isIOSDevice() && isSecondVideo && !userInteracted;
 
   // 動画読み込み戦略の決定
   const getVideoPreloadSetting = useCallback(() => {
@@ -150,8 +152,21 @@ export const OptimizedVideoPlayer: React.FC<OptimizedVideoPlayerProps> = ({
     }
   }, [playerName, isAttached, reattachAndPlay]);
 
+  // URLからMIMEを推定
+  const guessMimeFromUrl = (url?: string) => {
+    if (!url) return undefined;
+    try {
+      const noQuery = url.split('?')[0].toLowerCase();
+      if (noQuery.endsWith('.mp4')) return 'video/mp4';
+      if (noQuery.endsWith('.webm')) return 'video/webm';
+      if (noQuery.endsWith('.mov')) return 'video/quicktime';
+      if (noQuery.endsWith('.m4v')) return 'video/x-m4v';
+    } catch {}
+    return undefined;
+  };
+
   // レンダリング
-  if (shouldShowPlaceholder) {
+  if (shouldShowPlaceholder || isIOSBHardGuard) {
     return (
       <div 
         className={`w-full h-full flex flex-col items-center justify-center text-gray-400 bg-gradient-to-br from-gray-800 to-gray-900 cursor-pointer hover:bg-gradient-to-br hover:from-gray-700 hover:to-gray-800 transition-all ${className}`}
@@ -159,7 +174,7 @@ export const OptimizedVideoPlayer: React.FC<OptimizedVideoPlayerProps> = ({
       >
         <Play className="h-16 w-16 mb-3 opacity-70 hover:opacity-100 transition-opacity" />
         <p className="text-sm text-center px-4 mb-2">
-          {playerName}の動画を読み込む
+          {playerName}の動画を読み込む（iOS）
         </p>
         <p className="text-xs text-center px-4 text-gray-500">
           タップして動画を読み込み
@@ -210,8 +225,14 @@ export const OptimizedVideoPlayer: React.FC<OptimizedVideoPlayerProps> = ({
       onLoadedData={() => setHasError(false)}
       onPlay={onPlayHandler}
     >
-      <source src={videoUrl} type="video/mp4" />
-      <source src={videoUrl} type="video/webm" />
+      {/* typeミスマッチ回避のため、必要な場合のみsourceを1つだけ出す */}
+      {(() => {
+        const mime = guessMimeFromUrl(videoUrl);
+        if (mime) {
+          return <source src={videoUrl} type={mime} />;
+        }
+        return <source src={videoUrl} />;
+      })()}
       {t('battleReplay.videoNotSupported')}
     </video>
   );
