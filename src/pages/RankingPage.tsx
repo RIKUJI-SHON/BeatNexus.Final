@@ -255,10 +255,10 @@ const RankingPage: React.FC = () => {
   const currentLoading = getCurrentLoading();
   const currentError = getCurrentError();
 
-  // フィルター済みデータ
-  const filteredData = currentData.filter(entry =>
-    entry.username.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // フィルター済みデータ（20位まで）
+  const filteredData = currentData
+    .filter(entry => entry.username.toLowerCase().includes(searchQuery.toLowerCase()))
+    .filter(entry => getPosition(entry) <= 20);
 
   // Type guards and utility functions
   const isVoterEntry = (entry: unknown): entry is VoterRankingEntry => {
@@ -304,10 +304,10 @@ const RankingPage: React.FC = () => {
   // 溢れた分（4人目以降の同率含む）
   const overflowEntries = allTopThreeEntries.slice(3);
   
-  // ポディウムに表示されなかった人も含めて、リスト表示対象を作成
+  // ポディウムに表示されなかった人も含めて、リスト表示対象を作成（20位まで）
   const listEntries = [
     ...overflowEntries, // 溢れたTOP3候補
-    ...filteredData.filter(entry => getPosition(entry) > 3) // 4位以降
+    ...filteredData.filter(entry => getPosition(entry) > 3 && getPosition(entry) <= 20) // 4位以降20位まで
   ];
 
   const getRatingOrSeasonPoints = (entry: unknown): number => {
@@ -744,7 +744,6 @@ const RankingPage: React.FC = () => {
                 ) : (
                   <>
                     {listEntries
-                      .slice(0, 17)
                       .map((entry) => {
                       // 溢れたTOP3エントリかどうかをチェック
                       const isOverflowTopThree = overflowEntries.includes(entry);
