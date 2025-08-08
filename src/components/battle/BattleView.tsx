@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Share2, ThumbsUp, ArrowLeft, Clock, MessageCircle, Play, X, Users, Timer, Volume2 } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Share2, ThumbsUp, ArrowLeft, Clock, MessageCircle, Play, X, Users, Timer } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '../ui/Button';
 import { Card } from '../ui/Card';
@@ -16,9 +16,9 @@ import { getCurrentRank } from '../../lib/rankUtils';
 import { supabase } from '../../lib/supabase';
 import { generateBattleUrl } from '../../utils/battleUrl';
 import { getDefaultAvatarUrl } from '../../utils';
-import { useNotificationStore } from '../../store/notificationStore';
 import { isIOSDevice, getOptimalPreloadSetting } from '../../utils/videoSupport';
 import { OptimizedVideoPlayer } from '../ui/OptimizedVideoPlayer';
+import { useIntersectionObserver } from '../../hooks/useIntersectionObserver';
 
 interface BattleViewProps {
   battle: Battle;
@@ -31,7 +31,6 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
   const [hasVoted, setHasVoted] = useState<'A' | 'B' | null>(null);
   const [votesA, setVotesA] = useState(battle.votes_a);
   const [votesB, setVotesB] = useState(battle.votes_b);
-  const [comment, setComment] = useState('');
   const [isLoadingVoteStatus, setIsLoadingVoteStatus] = useState(true);
   const [isVoting, setIsVoting] = useState(false);
   const [showVoteModal, setShowVoteModal] = useState<'A' | 'B' | null>(null);
@@ -42,6 +41,18 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
     playerA: { rating: 1200, loading: true },
     playerB: { rating: 1200, loading: true }
   });
+  
+  // Phase 3: 遅延読み込み用の状態管理
+  const [playerAVideoLoaded, setPlayerAVideoLoaded] = useState(false);
+  const [playerBVideoLoaded, setPlayerBVideoLoaded] = useState(false);
+  
+  // Intersection Observer用のref
+  const playerARef = useRef<HTMLDivElement>(null);
+  const playerBRef = useRef<HTMLDivElement>(null);
+  
+  // ビューポート内にある要素を検知
+  const playerAInView = useIntersectionObserver(playerARef);
+  const playerBInView = useIntersectionObserver(playerBRef);
   
 
   
@@ -57,11 +68,10 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
   } = useBattleStore();
   const { user } = useAuthStore();
   const { openAuthModal } = useAuthModal();
-  const { addNotification } = useNotificationStore();
   
   // 🔍 厳密な型チェックと参加者判定 - battleStoreの変換後データに合わせて修正
-  const player1Id = battle.player1_user_id || (battle as any).contestant_a_id;
-  const player2Id = battle.player2_user_id || (battle as any).contestant_b_id;
+  const player1Id = battle.player1_user_id || battle.contestant_a_id;
+  const player2Id = battle.player2_user_id || battle.contestant_b_id;
   
   const isUserParticipant = user && user.id ? 
     (String(player1Id) === String(user.id) || String(player2Id) === String(user.id)) : 
@@ -146,6 +156,29 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
     // Load comments when component mounts
     fetchBattleComments(battle.id);
   }, [battle.id, getUserVote, fetchBattleComments]);
+
+  // Phase 3: Player A の遅延読み込み制御
+  useEffect(() => {
+    if (playerAInView && !playerAVideoLoaded) {
+      console.log('🎬 Player A is in view, loading video...');
+      setPlayerAVideoLoaded(true);
+    }
+  }, [playerAInView, playerAVideoLoaded]);
+
+  // Phase 3: Player B の遅延読み込み制御（iOS用遅延付き）
+  useEffect(() => {
+    if (playerBInView && !playerBVideoLoaded) {
+      console.log('🎬 Player B is in view, loading video...');
+      // iOS環境の場合は Player A の読み込み完了後に遅延を追加
+      const delay = isIOSDevice() ? 500 : 0;
+      
+      const timer = setTimeout(() => {
+        setPlayerBVideoLoaded(true);
+      }, delay);
+
+      return () => clearTimeout(timer);
+    }
+  }, [playerBInView, playerBVideoLoaded]);
 
   // Get comments for this battle
   const comments = battleComments[battle.id] || [];
@@ -264,22 +297,6 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
 
 
 
-  // Format timestamp for comments
-  const formatTimestamp = (timestamp: string) => {
-    const now = new Date();
-    const commentTime = new Date(timestamp);
-    const diffTime = now.getTime() - commentTime.getTime();
-    const diffMinutes = Math.floor(diffTime / (1000 * 60));
-    const diffHours = Math.floor(diffTime / (1000 * 60 * 60));
-    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-
-    if (diffMinutes < 1) return 'just now';
-    if (diffMinutes < 60) return `${diffMinutes}m ago`;
-    if (diffHours < 24) return `${diffHours}h ago`;
-    return `${diffDays}d ago`;
-  };
-
-
   
   // Calculate time remaining
   const getTimeRemaining = (endDate: string) => {
@@ -308,17 +325,11 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
   const totalVotes = votesA + votesB;
   const percentageA = totalVotes > 0 ? (votesA / totalVotes) * 100 : 50;
   
-  // Determine who's leading
-  const isALeading = votesA > votesB;
-  const isBLeading = votesB > votesA;
-  const isDraw = votesA === votesB;
-  
   // 色の固定化のため、colorPairs配列は不要になりました
 
   // 固定色: プレイヤーAを青、プレイヤーBを赤  
   const playerColorA = '#3B82F6'; // Blue for Player A
   const playerColorB = '#EF4444'; // Red for Player B
-  const gradientBg = 'from-blue-500/20 to-red-500/20';
 
   const handleShareBattle = () => {
     const player1Name = battle.contestant_a?.username || 'Player 1';
@@ -517,19 +528,28 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                 </div>
 
                 {/* Player A Video Preview */}
-                <div className="aspect-video bg-black rounded-xl overflow-hidden relative shadow-2xl border-2" style={{ borderColor: playerColorA }}>
-                  <OptimizedVideoPlayer
-                    videoUrl={battle.video_url_a}
-                    playerName="Player A"
-                    className=""
-                    controls
-                    preload={getOptimalPreloadSetting()}
-                    muted={isIOSDevice()}
-                    isSecondVideo={false}
-                    onError={(errorInfo) => {
-                      console.error('Player A video error:', errorInfo);
-                    }}
-                  />
+                <div ref={playerARef} className="aspect-video bg-black rounded-xl overflow-hidden relative shadow-2xl border-2" style={{ borderColor: playerColorA }}>
+                  {playerAVideoLoaded ? (
+                    <OptimizedVideoPlayer
+                      videoUrl={battle.video_url_a}
+                      playerName="Player A"
+                      className=""
+                      controls
+                      preload={getOptimalPreloadSetting()}
+                      muted={isIOSDevice()}
+                      isSecondVideo={false}
+                      onError={(errorInfo) => {
+                        console.error('Player A video error:', errorInfo);
+                      }}
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-800 to-gray-900">
+                      <div className="text-center text-gray-400">
+                        <Play className="h-16 w-16 mx-auto mb-3 opacity-70" />
+                        <p className="text-sm">Player A 動画読み込み中...</p>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -576,19 +596,29 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                 </div>
 
                 {/* Player B Video Preview */}
-                <div className="aspect-video bg-black rounded-xl overflow-hidden relative shadow-2xl border-2" style={{ borderColor: playerColorB }}>
-                  <OptimizedVideoPlayer
-                    videoUrl={battle.video_url_b}
-                    playerName="Player B"
-                    className=""
-                    controls
-                    preload={getOptimalPreloadSetting()}
-                    muted={isIOSDevice()}
-                    isSecondVideo={true} // Player BはiOS環境で制限される
-                    onError={(errorInfo) => {
-                      console.error('Player B video error:', errorInfo);
-                    }}
-                  />
+                <div ref={playerBRef} className="aspect-video bg-black rounded-xl overflow-hidden relative shadow-2xl border-2" style={{ borderColor: playerColorB }}>
+                  {playerBVideoLoaded ? (
+                    <OptimizedVideoPlayer
+                      videoUrl={battle.video_url_b}
+                      playerName="Player B"
+                      className=""
+                      controls
+                      preload={getOptimalPreloadSetting()}
+                      muted={isIOSDevice()}
+                      isSecondVideo={true} // Player BはiOS環境で制限される
+                      onError={(errorInfo) => {
+                        console.error('Player B video error:', errorInfo);
+                      }}
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-800 to-gray-900">
+                      <div className="text-center text-gray-400">
+                        <Play className="h-16 w-16 mx-auto mb-3 opacity-70" />
+                        <p className="text-sm">Player B 動画読み込み中...</p>
+                        {isIOSDevice() && <p className="text-xs mt-1">iOS環境: 遅延読み込み</p>}
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Player B Name - Below Video on Mobile */}
@@ -694,162 +724,6 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
           </div>
         </div>
       </div>
-
-        {/* Old Battle Arena - Remove entire section */}
-        <div className="relative" style={{ display: 'none' }}>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16">
-            
-            {/* Player A Side - Left */}
-            <div className="relative">
-              {/* Battle Side Indicator */}
-              <div className="absolute -top-4 -left-4 -right-4 -bottom-4 rounded-3xl bg-gradient-to-br from-blue-500/20 to-cyan-500/20 blur-xl"></div>
-              
-              <div className="battle-card">
-                <div className="battle-card__content relative overflow-hidden">
-
-                {/* Player Header */}
-                <div className="relative p-6 bg-gradient-to-r from-blue-600/20 to-cyan-600/20 border-b border-cyan-500/30">
-                  <div className="flex items-center gap-4">
-                    <div className="relative cursor-pointer hover:scale-105 transition-transform" onClick={() => navigateToProfile(battle.player1_user_id)}>
-                      <div className="w-24 h-24 rounded-full p-1 bg-gradient-to-r from-cyan-400 to-blue-600 shadow-lg">
-                        <img
-                          src={battle.contestant_a?.avatar_url || getDefaultAvatarUrl()}
-                          alt={battle.contestant_a?.username || 'Contestant A'}
-                          className="w-full h-full rounded-full object-cover border-2 border-gray-900"
-                        />
-                      </div>
-                      {hasVoted === 'A' && (
-                        <div className="absolute -top-2 -right-2 w-8 h-8 bg-green-500 rounded-full flex items-center justify-center shadow-lg animate-pulse">
-                          <ThumbsUp className="h-4 w-4 text-white" />
-                        </div>
-                      )}
-                    </div>
-                    
-                    <div className="flex-1">
-                      <h3 
-                        className="text-2xl font-bold text-white mb-1 truncate max-w-[180px] md:max-w-[220px] cursor-pointer hover:text-cyan-300 transition-colors" 
-                        title={battle.contestant_a?.username || 'Contestant A'}
-                        onClick={() => navigateToProfile(battle.player1_user_id)}
-                      >
-                        {battle.contestant_a?.username || 'Contestant A'}
-                      </h3>
-                      <div className="flex items-center gap-3">
-                        <div className={`text-3xl font-black ${
-                          isALeading ? 'text-cyan-400 animate-pulse' : 'text-cyan-300'
-                        }`}>
-                          {showVoteDetails ? votesA : '--'}
-                        </div>
-                        <span className="text-cyan-200 text-sm font-medium">votes</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Video Player */}
-                <div className="relative aspect-video bg-black group">
-                  {!battle.video_url_a ? (
-                    <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-gray-800 to-gray-900">
-                      <div className="text-center">
-                        <Play className="h-16 w-16 text-gray-600 mx-auto mb-4" />
-                        <p className="text-gray-400 font-medium">Video Loading...</p>
-                      </div>
-                    </div>
-                  ) : (
-                    <video
-                      src={battle.video_url_a}
-                      className="w-full h-full object-contain"
-                      controls
-                      poster=""
-                    />
-                  )}
-                  
-                  {/* Volume Indicator */}
-                  <div className="absolute top-4 right-4">
-                    <div className="bg-black/50 p-2 rounded-full backdrop-blur-sm">
-                      <Volume2 className="h-5 w-5 text-white" />
-                    </div>
-                  </div>
-                                 </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Player B Side - Right */}
-            <div className="relative">
-              {/* Battle Side Indicator */}
-              <div className="absolute -top-4 -left-4 -right-4 -bottom-4 rounded-3xl bg-gradient-to-br from-pink-500/20 to-purple-500/20 blur-xl"></div>
-              
-              <div className="battle-card">
-                <div className="battle-card__content relative overflow-hidden">
-
-                {/* Player Header */}
-                <div className="relative p-6 bg-gradient-to-r from-pink-600/20 to-purple-600/20 border-b border-pink-500/30">
-                  <div className="flex items-center gap-4">
-                    <div className="relative cursor-pointer hover:scale-105 transition-transform" onClick={() => navigateToProfile(battle.player2_user_id)}>
-                      <div className="w-24 h-24 rounded-full p-1 bg-gradient-to-r from-pink-400 to-purple-600 shadow-lg">
-                        <img
-                          src={battle.contestant_b?.avatar_url || getDefaultAvatarUrl()}
-                          alt={battle.contestant_b?.username || 'Contestant B'}
-                          className="w-full h-full rounded-full object-cover border-2 border-gray-900"
-                        />
-                      </div>
-                      {hasVoted === 'B' && (
-                        <div className="absolute -top-2 -right-2 w-8 h-8 bg-green-500 rounded-full flex items-center justify-center shadow-lg animate-pulse">
-                          <ThumbsUp className="h-4 w-4 text-white" />
-                        </div>
-                      )}
-                    </div>
-                    
-                    <div className="flex-1">
-                      <h3 
-                        className="text-2xl font-bold text-white mb-1 truncate max-w-[180px] md:max-w-[220px] cursor-pointer hover:text-pink-300 transition-colors" 
-                        title={battle.contestant_b?.username || 'Contestant B'}
-                        onClick={() => navigateToProfile(battle.player2_user_id)}
-                      >
-                        {battle.contestant_b?.username || 'Contestant B'}
-                      </h3>
-                      <div className="flex items-center gap-3">
-                        <div className={`text-3xl font-black ${
-                          isBLeading ? 'text-pink-400 animate-pulse' : 'text-pink-300'
-                        }`}>
-                          {showVoteDetails ? votesB : '--'}
-                        </div>
-                        <span className="text-pink-200 text-sm font-medium">votes</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Video Player */}
-                <div className="relative aspect-video bg-black group">
-                  {!battle.video_url_b ? (
-                    <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-gray-800 to-gray-900">
-                      <div className="text-center">
-                        <Play className="h-16 w-16 text-gray-600 mx-auto mb-4" />
-                        <p className="text-gray-400 font-medium">Video Loading...</p>
-                      </div>
-                    </div>
-                  ) : (
-                    <video
-                      src={battle.video_url_b}
-                      className="w-full h-full object-contain"
-                      controls
-                      poster=""
-                    />
-                  )}
-                  
-                  {/* Volume Indicator */}
-                  <div className="absolute top-4 right-4">
-                    <div className="bg-black/50 p-2 rounded-full backdrop-blur-sm">
-                      <Volume2 className="h-5 w-5 text-white" />
-                    </div>
-                  </div>
-                                 </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
 
         {/* Voting Console Machine - Show for all users */}
         <div className="flex justify-center mt-12">
