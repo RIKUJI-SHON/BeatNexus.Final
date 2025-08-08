@@ -221,8 +221,13 @@ export const useRankingStore = create<RankingState>((set, get) => ({
 
       if (error) throw error;
 
-      // ビューが既にrankを含んでいるため、そのまま使用
-      set({ seasonVoterRankings: data || [] });
+      // データベースのrank（DENSE_RANK）をpositionにマッピング
+      const mappedData = (data || []).map((entry: any) => ({
+        ...entry,
+        position: entry.rank // データベースのDENSE_RANK()結果をpositionフィールドに設定
+      }));
+      
+      set({ seasonVoterRankings: mappedData });
     } catch (error) {
       set({ seasonVoterError: error instanceof Error ? error.message : 'Failed to fetch season voter rankings' });
     } finally {
