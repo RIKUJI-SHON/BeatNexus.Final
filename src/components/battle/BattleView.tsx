@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Share2, ThumbsUp, ArrowLeft, Clock, MessageCircle, Play, X, Users, Timer, Volume2, AlertTriangle } from 'lucide-react';
+import { Share2, ThumbsUp, ArrowLeft, Clock, MessageCircle, Play, X, Users, Timer, Volume2 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '../ui/Button';
 import { Card } from '../ui/Card';
@@ -18,6 +18,7 @@ import { generateBattleUrl } from '../../utils/battleUrl';
 import { getDefaultAvatarUrl } from '../../utils';
 import { useNotificationStore } from '../../store/notificationStore';
 import { isIOSDevice, getOptimalPreloadSetting } from '../../utils/videoSupport';
+import { OptimizedVideoPlayer } from '../ui/OptimizedVideoPlayer';
 
 interface BattleViewProps {
   battle: Battle;
@@ -32,12 +33,6 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
   const [votesB, setVotesB] = useState(battle.votes_b);
   const [comment, setComment] = useState('');
   const [isLoadingVoteStatus, setIsLoadingVoteStatus] = useState(true);
-  const [showCommentInput, setShowCommentInput] = useState(false);
-  const [isSubmittingComment, setIsSubmittingComment] = useState(false);
-  
-  // iOS動画読み込み制御
-  const [playerBVideoEnabled, setPlayerBVideoEnabled] = useState(!isIOSDevice());
-  const [playerBUserInteracted, setPlayerBUserInteracted] = useState(false);
   const [isVoting, setIsVoting] = useState(false);
   const [showVoteModal, setShowVoteModal] = useState<'A' | 'B' | null>(null);
   const [playerRatings, setPlayerRatings] = useState<{
@@ -523,42 +518,18 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
 
                 {/* Player A Video Preview */}
                 <div className="aspect-video bg-black rounded-xl overflow-hidden relative shadow-2xl border-2" style={{ borderColor: playerColorA }}>
-                  {battle.video_url_a ? (
-                    <video
-                      className="w-full h-full object-contain"
-                      controls
-                      preload={getOptimalPreloadSetting()}
-                      playsInline
-                      webkit-playsinline="true"
-                      muted={isIOSDevice()} // iOS環境では初期ミュート
-                      onError={(e) => {
-                        console.error('Player A video error:', e);
-                        e.currentTarget.style.display = 'none';
-                        const errorDiv = e.currentTarget.nextElementSibling as HTMLElement;
-                        if (errorDiv) errorDiv.style.display = 'flex';
-                      }}
-                    >
-                      <source src={battle.video_url_a} type="video/mp4" />
-                      <source src={battle.video_url_a} type="video/webm" />
-                      {t('battleReplay.videoNotSupported')}
-                    </video>
-                  ) : null}
-                  
-                  {!battle.video_url_a ? (
-                    <div className="w-full h-full flex flex-col items-center justify-center text-gray-400 bg-gradient-to-br from-gray-800 to-gray-900">
-                      <Play className="h-16 w-16 mb-3 opacity-50" />
-                      <p className="text-sm text-center px-4">
-                        {t('battleView.videoLoading')}
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="w-full h-full flex flex-col items-center justify-center text-gray-400 bg-gradient-to-br from-gray-800 to-gray-900" style={{ display: 'none' }}>
-                      <AlertTriangle className="h-16 w-16 mb-3 opacity-50" />
-                      <p className="text-sm text-center px-4">
-                        {t('battleReplay.videoError')}
-                      </p>
-                    </div>
-                  )}
+                  <OptimizedVideoPlayer
+                    videoUrl={battle.video_url_a}
+                    playerName="Player A"
+                    className=""
+                    controls
+                    preload={getOptimalPreloadSetting()}
+                    muted={isIOSDevice()}
+                    isSecondVideo={false}
+                    onError={(errorInfo) => {
+                      console.error('Player A video error:', errorInfo);
+                    }}
+                  />
                 </div>
               </div>
 
@@ -606,63 +577,18 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
 
                 {/* Player B Video Preview */}
                 <div className="aspect-video bg-black rounded-xl overflow-hidden relative shadow-2xl border-2" style={{ borderColor: playerColorB }}>
-                  {battle.video_url_b ? (
-                    // iOS環境での条件付き動画表示
-                    isIOSDevice() && !playerBVideoEnabled ? (
-                      // iOS用：ユーザー操作待ちプレースホルダー
-                      <div 
-                        className="w-full h-full flex flex-col items-center justify-center text-gray-400 bg-gradient-to-br from-gray-800 to-gray-900 cursor-pointer hover:bg-gradient-to-br hover:from-gray-700 hover:to-gray-800 transition-all"
-                        onClick={() => {
-                          setPlayerBVideoEnabled(true);
-                          setPlayerBUserInteracted(true);
-                        }}
-                      >
-                        <Play className="h-16 w-16 mb-3 opacity-70 hover:opacity-100 transition-opacity" />
-                        <p className="text-sm text-center px-4 mb-2">
-                          Player Bの動画を読み込む
-                        </p>
-                        <p className="text-xs text-center px-4 text-gray-500">
-                          タップして動画を読み込み
-                        </p>
-                      </div>
-                    ) : (
-                      // 通常の動画表示（非iOS または iOS+ユーザー操作後）
-                      <video
-                        className="w-full h-full object-contain"
-                        controls
-                        preload={isIOSDevice() && playerBUserInteracted ? "metadata" : getOptimalPreloadSetting()}
-                        playsInline
-                        webkit-playsinline="true"
-                        muted={isIOSDevice()} // iOS環境では初期ミュート
-                        onError={(e) => {
-                          console.error('Player B video error:', e);
-                          e.currentTarget.style.display = 'none';
-                          const errorDiv = e.currentTarget.nextElementSibling as HTMLElement;
-                          if (errorDiv) errorDiv.style.display = 'flex';
-                        }}
-                      >
-                        <source src={battle.video_url_b} type="video/mp4" />
-                        <source src={battle.video_url_b} type="video/webm" />
-                        {t('battleReplay.videoNotSupported')}
-                      </video>
-                    )
-                  ) : null}
-                  
-                  {!battle.video_url_b ? (
-                    <div className="w-full h-full flex flex-col items-center justify-center text-gray-400 bg-gradient-to-br from-gray-800 to-gray-900">
-                      <Play className="h-16 w-16 mb-3 opacity-50" />
-                      <p className="text-sm text-center px-4">
-                        {t('battleView.videoLoading')}
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="w-full h-full flex flex-col items-center justify-center text-gray-400 bg-gradient-to-br from-gray-800 to-gray-900" style={{ display: 'none' }}>
-                      <AlertTriangle className="h-16 w-16 mb-3 opacity-50" />
-                      <p className="text-sm text-center px-4">
-                        {t('battleReplay.videoError')}
-                      </p>
-                    </div>
-                  )}
+                  <OptimizedVideoPlayer
+                    videoUrl={battle.video_url_b}
+                    playerName="Player B"
+                    className=""
+                    controls
+                    preload={getOptimalPreloadSetting()}
+                    muted={isIOSDevice()}
+                    isSecondVideo={true} // Player BはiOS環境で制限される
+                    onError={(errorInfo) => {
+                      console.error('Player B video error:', errorInfo);
+                    }}
+                  />
                 </div>
 
                 {/* Player B Name - Below Video on Mobile */}
