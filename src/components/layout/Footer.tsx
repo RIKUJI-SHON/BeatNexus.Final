@@ -21,7 +21,7 @@ export const Footer: React.FC = () => {
               {t('footer.description')}
             </p>
             <div className="flex space-x-4">
-              <a href="#" className="text-gray-400 hover:text-white transition-colors">
+              <a href="https://www.instagram.com/beatnexus_beatbox_global/" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">
                 <Instagram className="h-5 w-5" />
               </a>
               <a href="https://x.com/Beatboxnexus" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">
