@@ -255,11 +255,6 @@ const RankingPage: React.FC = () => {
   const currentLoading = getCurrentLoading();
   const currentError = getCurrentError();
 
-  // フィルター済みデータ（20位まで）
-  const filteredData = currentData
-    .filter(entry => entry.username.toLowerCase().includes(searchQuery.toLowerCase()))
-    .filter(entry => getPosition(entry) <= 20);
-
   // Type guards and utility functions
   const isVoterEntry = (entry: unknown): entry is VoterRankingEntry => {
     return typeof entry === 'object' && entry !== null && 'vote_count' in entry && typeof (entry as VoterRankingEntry).vote_count === 'number';
@@ -294,6 +289,11 @@ const RankingPage: React.FC = () => {
     }
     return '';
   };
+
+  // フィルター済みデータ（20位まで）
+  const filteredData = currentData
+    .filter(entry => entry.username.toLowerCase().includes(searchQuery.toLowerCase()))
+    .filter(entry => getPosition(entry) <= 20);
 
   // 🏆 Top 3 extraction for highlight display (最大3人制限)
   const allTopThreeEntries = filteredData.filter(entry => getPosition(entry) <= 3);
