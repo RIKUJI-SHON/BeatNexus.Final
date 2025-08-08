@@ -238,21 +238,23 @@ const PostPage: React.FC = () => {
       
       let finalVideoFile = videoFile;
       
-      // ファイルサイズをチェックして、必要に応じて圧縮
-      const compressionThreshold = 300 * 1024 * 1024; // 300MB（大容量ファイル対応）
+      // ⭐ 圧縮閾値を大幅に引き下げ（10MB以上は全て圧縮）
+      const compressionThreshold = 10 * 1024 * 1024; // 10MB（iOS最適化強化）
       
+      // 全ての動画に対して圧縮を適用（iOS互換性とファイルサイズ削減のため）
       if (videoFile.size > compressionThreshold) {
         setSubmissionStage(t('submissionModal.compressing'));
         setSubmissionProgress(10);
         setIsCompressing(true); // 圧縮フラグを設定
         
         try {
-          console.log(`🔄 Starting compression for ${videoFile.name} (${(videoFile.size / 1024 / 1024).toFixed(1)}MB)`);
+          const originalSizeMB = videoFile.size / 1024 / 1024;
+          console.log(`🔄 Starting enhanced compression for ${videoFile.name} (${originalSizeMB.toFixed(1)}MB)`);
           console.log('📋 Current VideoProcessor state:', { isReady: isFFmpegLoaded, isLoading: isProcessing, progress });
           
-          // 動画処理を実行（プログレス更新を監視）
+          // 動画処理を実行（新しい圧縮プロファイルで）
           const processedResult = await processVideo(videoFile);
-          console.log('🎬 processVideo returned result:', processedResult);
+          console.log('🎬 Enhanced compression completed, result:', processedResult);
           
           // Blobの場合はFileに変換
           if (processedResult instanceof File) {
@@ -263,7 +265,20 @@ const PostPage: React.FC = () => {
             finalVideoFile = new File([processedResult], fileName, { type: 'video/mp4' });
           }
           
-          console.log(`✅ Compression completed: ${(finalVideoFile.size / 1024 / 1024).toFixed(1)}MB`);
+          const compressedSizeMB = finalVideoFile.size / 1024 / 1024;
+          const reductionPercent = ((1 - finalVideoFile.size / videoFile.size) * 100).toFixed(1);
+          
+          console.log(`✅ Enhanced compression completed:`, {
+            originalSize: originalSizeMB.toFixed(1) + 'MB',
+            compressedSize: compressedSizeMB.toFixed(1) + 'MB',
+            reduction: reductionPercent + '%'
+          });
+          
+          // iOS向け最終チェック（50MB以下を推奨）
+          if (compressedSizeMB > 50) {
+            console.warn(`⚠️ File size (${compressedSizeMB.toFixed(1)}MB) may cause issues on iOS devices`);
+            setSubmissionStage('⚠️ 大きなファイルサイズです。iOS端末で問題が発生する可能性があります...');
+          }
           
           // 圧縮後のファイルサイズチェック
           if (finalVideoFile.size > MAX_FILE_SIZE) {
@@ -284,9 +299,34 @@ const PostPage: React.FC = () => {
           return;
         }
       } else {
-        // 圧縮不要の場合、最終サイズチェックのみ
-        if (videoFile.size > MAX_FILE_SIZE) {
-          setSubmissionError(t('postPage.errors.fileTooBig', { current: (videoFile.size / 1024 / 1024).toFixed(1) }));
+        // 10MB未満でもiOS最適化のため軽い圧縮を適用
+        console.log(`📦 File size (${(videoFile.size / 1024 / 1024).toFixed(1)}MB) is below threshold, applying light compression for iOS optimization...`);
+        
+        try {
+          setSubmissionStage('iOS最適化のため軽い圧縮を実行中...');
+          setSubmissionProgress(25);
+          setIsCompressing(true);
+          
+          const processedResult = await processVideo(videoFile);
+          
+          if (processedResult instanceof File) {
+            finalVideoFile = processedResult;
+          } else {
+            const fileName = videoFile.name.replace(/\.[^/.]+$/, '') + '_optimized.mp4';
+            finalVideoFile = new File([processedResult], fileName, { type: 'video/mp4' });
+          }
+          
+          console.log(`✅ Light compression applied: ${(finalVideoFile.size / 1024 / 1024).toFixed(1)}MB`);
+          setIsCompressing(false);
+        } catch (error) {
+          console.log('Light compression failed, using original file:', error);
+          // 軽い圧縮に失敗した場合は元のファイルを使用
+          setIsCompressing(false);
+        }
+        
+        // 最終サイズチェック
+        if (finalVideoFile.size > MAX_FILE_SIZE) {
+          setSubmissionError(t('postPage.errors.fileTooBig', { current: (finalVideoFile.size / 1024 / 1024).toFixed(1) }));
           setIsSubmissionProcessing(false);
           return;
         }
