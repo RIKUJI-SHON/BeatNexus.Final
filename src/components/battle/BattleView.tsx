@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Share2, ThumbsUp, ArrowLeft, Clock, MessageCircle, Play, X, Users, Timer } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Button } from '../ui/Button';
-import { Card } from '../ui/Card';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { Share2, ThumbsUp, MessageCircle, Play, X, Users, Timer } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+
 import { VoteCommentModal } from '../ui/VoteCommentModal';
 import { useBattleStore } from '../../store/battleStore';
 import { useAuthStore } from '../../store/authStore';
@@ -12,13 +11,14 @@ import { useTranslation } from 'react-i18next';
 import { VSIcon } from '../ui/VSIcon';
 import { VotingTips } from '../ui/VotingTips';
 import { trackBeatNexusEvents } from '../../utils/analytics';
-import { getCurrentRank } from '../../lib/rankUtils';
+
 import { supabase } from '../../lib/supabase';
 import { generateBattleUrl } from '../../utils/battleUrl';
 import { getDefaultAvatarUrl } from '../../utils';
 import { isIOSDevice, getOptimalPreloadSetting } from '../../utils/videoSupport';
 import { OptimizedVideoPlayer } from '../ui/OptimizedVideoPlayer';
 import { useIntersectionObserver } from '../../hooks/useIntersectionObserver';
+import { getIOSCompatibleUrl } from '../../utils/iosVideoMapping';
 
 interface BattleViewProps {
   battle: Battle;
@@ -87,7 +87,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
   };
 
   // Load player season points
-  const loadPlayerRatings = async () => {
+  const loadPlayerRatings = useCallback(async () => {
     try {
       // Player Aのシーズンポイント取得
       const { data: playerAData, error: errorA } = await supabase
@@ -123,7 +123,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
         playerB: { rating: 1200, loading: false }
       });
     }
-  };
+  }, [battle.player1_user_id, battle.player2_user_id]);
 
   // Load user's current vote status when component mounts
   useEffect(() => {
@@ -155,7 +155,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
     loadPlayerRatings(); // レート情報を読み込み
     // Load comments when component mounts
     fetchBattleComments(battle.id);
-  }, [battle.id, getUserVote, fetchBattleComments]);
+  }, [battle.id, getUserVote, fetchBattleComments, isArchived, loadPlayerRatings]);
 
   // Phase 3: Player A の遅延読み込み制御
   useEffect(() => {
@@ -532,6 +532,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                   {playerAVideoLoaded ? (
                     <OptimizedVideoPlayer
                       videoUrl={battle.video_url_a}
+                      iosCompatUrl={getIOSCompatibleUrl(battle.video_url_a || '')}
                       playerName="Player A"
                       className=""
                       controls
@@ -600,6 +601,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                   {playerBVideoLoaded ? (
                     <OptimizedVideoPlayer
                       videoUrl={battle.video_url_b}
+                      iosCompatUrl={getIOSCompatibleUrl(battle.video_url_b || '')}
                       playerName="Player B"
                       className=""
                       controls

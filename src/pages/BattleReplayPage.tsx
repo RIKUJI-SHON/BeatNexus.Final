@@ -10,6 +10,8 @@ import { ja, enUS } from 'date-fns/locale';
 import { cn } from '../lib/utils';
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '../store/authStore';
+import { OptimizedVideoPlayer } from '../components/ui/OptimizedVideoPlayer';
+import { getIOSCompatibleUrl } from '../utils/iosVideoMapping';
 import { VSIcon } from '../components/ui/VSIcon';
 import { ShareBattleButton } from '../components/ui/ShareBattleButton';
 import { trackBeatNexusEvents } from '../utils/analytics';
@@ -20,7 +22,7 @@ import { getBattleIdFromPath } from '../utils/battleUrl';
 // 固定色設定（BattleViewと統一）
 const playerColorA = '#3B82F6'; // Blue for Player A
 const playerColorB = '#EF4444'; // Red for Player B
-const gradientBg = 'from-blue-500/20 to-red-500/20';
+
 
 const BattleReplayPage: React.FC = () => {
   const { battlePath } = useParams<{ battlePath: string }>();
@@ -60,6 +62,7 @@ const BattleReplayPage: React.FC = () => {
     }
 
     fetchBattleDetails();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   const fetchBattleDetails = async () => {
@@ -266,8 +269,6 @@ const BattleReplayPage: React.FC = () => {
   const percentageB = 100 - percentageA;
   const isAWinner = battle.winner_id === battle.player1_user_id;
   const isBWinner = battle.winner_id === battle.player2_user_id;
-  const isALeading = battle.final_votes_a > battle.final_votes_b;
-  const isBLeading = battle.final_votes_b > battle.final_votes_a;
 
   const getResultBadge = () => {
     // 引き分けの場合
@@ -508,36 +509,23 @@ const BattleReplayPage: React.FC = () => {
                     {/* Player A Video Preview */}
                     <div className={`aspect-video bg-black rounded-xl overflow-hidden relative shadow-2xl ${isAWinner ? 'border-4 border-cyan-400 shadow-cyan-400/80' : isBWinner ? 'border-2 opacity-60' : 'border-2'}`} style={{ borderColor: isAWinner ? '#22d3ee' : isBWinner ? '#6b7280' : playerColorA }}>
                       {player1VideoStatus.available && player1VideoStatus.videoUrl ? (
-                        <video
-                          src={player1VideoStatus.videoUrl}
-                          className="w-full h-full object-contain"
+                        <OptimizedVideoPlayer
+                          videoUrl={player1VideoStatus.videoUrl}
+                          iosCompatUrl={getIOSCompatibleUrl(player1VideoStatus.videoUrl)}
+                          playerName="Player A"
+                          className=""
                           controls
                           preload="metadata"
-                          onError={(e) => {
-                            console.error('Player A video error:', e);
-                            e.currentTarget.style.display = 'none';
-                            const errorDiv = e.currentTarget.nextElementSibling as HTMLElement;
-                            if (errorDiv) errorDiv.style.display = 'flex';
+                          isSecondVideo={false}
+                          onError={(errorInfo) => {
+                            console.error('Player A video error:', errorInfo);
                           }}
-                        >
-                          <source src={player1VideoStatus.videoUrl} type="video/webm" />
-                          <source src={player1VideoStatus.videoUrl} type="video/mp4" />
-                          {t('battleReplay.videoNotSupported')}
-                        </video>
-                      ) : null}
-                      
-                      {!player1VideoStatus.available || !player1VideoStatus.videoUrl ? (
+                        />
+                      ) : (
                         <div className="w-full h-full flex flex-col items-center justify-center text-gray-400 bg-gradient-to-br from-gray-800 to-gray-900">
                           <ArchiveX className="h-16 w-16 mb-3 opacity-50" />
                           <p className="text-sm text-center px-4">
                             {t('battleReplay.videoNotAvailable.title')}
-                          </p>
-                        </div>
-                      ) : (
-                        <div className="w-full h-full flex flex-col items-center justify-center text-gray-400 bg-gradient-to-br from-gray-800 to-gray-900" style={{ display: 'none' }}>
-                          <AlertTriangle className="h-16 w-16 mb-3 opacity-50" />
-                          <p className="text-sm text-center px-4">
-                            {t('battleReplay.videoError')}
                           </p>
                         </div>
                       )}
@@ -589,36 +577,23 @@ const BattleReplayPage: React.FC = () => {
                     {/* Player B Video Preview */}
                     <div className={`aspect-video bg-black rounded-xl overflow-hidden relative shadow-2xl ${isBWinner ? 'border-4 border-pink-400 shadow-pink-400/80' : isAWinner ? 'border-2 opacity-60' : 'border-2'}`} style={{ borderColor: isBWinner ? '#f472b6' : isAWinner ? '#6b7280' : playerColorB }}>
                       {player2VideoStatus.available && player2VideoStatus.videoUrl ? (
-                        <video
-                          src={player2VideoStatus.videoUrl}
-                          className="w-full h-full object-contain"
+                        <OptimizedVideoPlayer
+                          videoUrl={player2VideoStatus.videoUrl}
+                          iosCompatUrl={getIOSCompatibleUrl(player2VideoStatus.videoUrl)}
+                          playerName="Player B"
+                          className=""
                           controls
                           preload="metadata"
-                          onError={(e) => {
-                            console.error('Player B video error:', e);
-                            e.currentTarget.style.display = 'none';
-                            const errorDiv = e.currentTarget.nextElementSibling as HTMLElement;
-                            if (errorDiv) errorDiv.style.display = 'flex';
+                          isSecondVideo={true}
+                          onError={(errorInfo) => {
+                            console.error('Player B video error:', errorInfo);
                           }}
-                        >
-                          <source src={player2VideoStatus.videoUrl} type="video/webm" />
-                          <source src={player2VideoStatus.videoUrl} type="video/mp4" />
-                          {t('battleReplay.videoNotSupported')}
-                        </video>
-                      ) : null}
-                      
-                      {!player2VideoStatus.available || !player2VideoStatus.videoUrl ? (
+                        />
+                      ) : (
                         <div className="w-full h-full flex flex-col items-center justify-center text-gray-400 bg-gradient-to-br from-gray-800 to-gray-900">
                           <ArchiveX className="h-16 w-16 mb-3 opacity-50" />
                           <p className="text-sm text-center px-4">
                             {t('battleReplay.videoNotAvailable.title')}
-                          </p>
-                        </div>
-                      ) : (
-                        <div className="w-full h-full flex flex-col items-center justify-center text-gray-400 bg-gradient-to-br from-gray-800 to-gray-900" style={{ display: 'none' }}>
-                          <AlertTriangle className="h-16 w-16 mb-3 opacity-50" />
-                          <p className="text-sm text-center px-4">
-                            {t('battleReplay.videoError')}
                           </p>
                         </div>
                       )}

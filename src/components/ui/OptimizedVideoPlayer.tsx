@@ -23,6 +23,7 @@ interface OptimizedVideoPlayerProps {
   controls?: boolean;
   preload?: 'none' | 'metadata' | 'auto';
   isSecondVideo?: boolean; // iOS環境での動画読み込み制御用
+  iosCompatUrl?: string | undefined; // iOS専用の互換URL
 }
 
 export const OptimizedVideoPlayer: React.FC<OptimizedVideoPlayerProps> = ({
@@ -35,7 +36,8 @@ export const OptimizedVideoPlayer: React.FC<OptimizedVideoPlayerProps> = ({
   muted = false,
   controls = true,
   preload = 'metadata',
-  isSecondVideo = false
+  isSecondVideo = false,
+  iosCompatUrl
 }) => {
   const { t } = useTranslation();
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -44,6 +46,18 @@ export const OptimizedVideoPlayer: React.FC<OptimizedVideoPlayerProps> = ({
   const [hasRetried, setHasRetried] = useState(false);
   const [isAttached, setIsAttached] = useState(true);
   const instanceIdRef = useRef<string>(Math.random().toString(36).slice(2));
+
+  // iOS環境での最適なURL選択
+  const getOptimalVideoUrl = useCallback(() => {
+    if (!videoUrl) return undefined;
+    
+    // iOS環境で専用URLが提供されている場合は優先使用
+    if (isIOSDevice() && iosCompatUrl) {
+      return iosCompatUrl;
+    }
+    
+    return videoUrl;
+  }, [videoUrl, iosCompatUrl]);
 
   // iOS環境かつ2つ目の動画の場合の制御
   const shouldShowPlaceholder = isIOSDevice() && isSecondVideo && !userInteracted;
@@ -161,9 +175,14 @@ export const OptimizedVideoPlayer: React.FC<OptimizedVideoPlayerProps> = ({
       if (noQuery.endsWith('.webm')) return 'video/webm';
       if (noQuery.endsWith('.mov')) return 'video/quicktime';
       if (noQuery.endsWith('.m4v')) return 'video/x-m4v';
-    } catch {}
+    } catch (error) {
+      console.warn('Error guessing MIME type:', error);
+    }
     return undefined;
   };
+
+  // 現在使用すべき動画URL（iOS互換性考慮）
+  const currentVideoUrl = getOptimalVideoUrl();
 
   // レンダリング
   if (shouldShowPlaceholder || isIOSBHardGuard) {
@@ -183,7 +202,7 @@ export const OptimizedVideoPlayer: React.FC<OptimizedVideoPlayerProps> = ({
     );
   }
 
-  if (!videoUrl) {
+  if (!currentVideoUrl) {
     return (
       <div className={`w-full h-full flex flex-col items-center justify-center text-gray-400 bg-gradient-to-br from-gray-800 to-gray-900 ${className}`}>
         <Play className="h-16 w-16 mb-3 opacity-50" />
@@ -227,11 +246,11 @@ export const OptimizedVideoPlayer: React.FC<OptimizedVideoPlayerProps> = ({
     >
       {/* typeミスマッチ回避のため、必要な場合のみsourceを1つだけ出す */}
       {(() => {
-        const mime = guessMimeFromUrl(videoUrl);
+        const mime = guessMimeFromUrl(currentVideoUrl);
         if (mime) {
-          return <source src={videoUrl} type={mime} />;
+          return <source src={currentVideoUrl} type={mime} />;
         }
-        return <source src={videoUrl} />;
+        return <source src={currentVideoUrl} />;
       })()}
       {t('battleReplay.videoNotSupported')}
     </video>
