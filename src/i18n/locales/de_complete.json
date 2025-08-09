@@ -1,0 +1,218 @@
+{
+  "common": {
+    "upgrade": "Aktualisieren",
+    "login": "Anmelden",
+    "signup": "Registrieren",
+    "support": "Support",
+    "community": "Community",
+    "battles": "Kämpfe",
+    "shop": "Shop",
+    "home": "Startseite",
+    "ranking": "Rangliste",
+    "createPost": "Beitrag erstellen",
+    "logout": "Abmelden",
+    "howToGuide": "Anleitung",
+    "locale": "de",
+    "back": "Zurück",
+    "next": "Weiter",
+    "cancel": "Abbrechen",
+    "create": "Erstellen",
+    "creating": "Erstellen...",
+    "joining": "Beitreten...",
+    "join": "Beitreten",
+    "owner": "Besitzer",
+    "members": "Mitglieder",
+    "avgRating": "Durchschnittsbewertung",
+    "loading": "Laden...",
+    "description": "Beschreibung",
+    "password": "Passwort",
+    "enterPassword": "Passwort eingeben",
+    "noDescription": "Keine Beschreibung",
+    "termsOfService": "Nutzungsbedingungen",
+    "privacyPolicy": "Datenschutzrichtlinie"
+  },
+  "hoverCard": {
+    "profile": "Profil",
+    "myBattles": "Meine Kämpfe",
+    "settings": "Einstellungen",
+    "logout": "Abmelden"
+  },
+  "submissionModal": {
+    "title": "Video hochladen",
+    "videoPreview": "Video-Vorschau",
+    "processing": "Verarbeitung...",
+    "progress": "Fortschritt",
+    "estimatedRemaining": "Geschätzte Restzeit",
+    "estimatedTime": {
+      "seconds": "Etwa {{seconds}} Sekunden",
+      "minutes": "Etwa {{minutes}}m {{seconds}}s",
+      "almostDone": "Fast fertig"
+    },
+    "cancel": "Abbrechen",
+    "close": "Schließen"
+  },
+  "battle": {
+    "title": "Kampf",
+    "voteA": "Für A stimmen",
+    "voteB": "Für B stimmen",
+    "votingEndsIn": "Abstimmung endet in",
+    "ended": "Beendet",
+    "vs": "vs",
+    "viewBattle": "Kampf ansehen",
+    "alreadyVoted": "Sie haben bereits abgestimmt",
+    "submissionA": "Einreichung A",
+    "submissionB": "Einreichung B",
+    "loading": "Laden...",
+    "noActiveBattles": "Keine aktiven Kämpfe",
+    "viewResults": "Ergebnisse ansehen",
+    "winner": "Gewinner",
+    "tie": "Unentschieden",
+    "comments": "Kommentare",
+    "writeComment": "Kommentar schreiben...",
+    "submitComment": "Kommentar senden",
+    "noComments": "Noch keine Kommentare",
+    "votedFor": "Sie haben für {{choice}} gestimmt",
+    "timeRemaining": {
+      "days": "{{days}} Tage",
+      "hours": "{{hours}} Stunden",
+      "minutes": "{{minutes}} Minuten",
+      "seconds": "{{seconds}} Sekunden"
+    }
+  },
+  "auth": {
+    "phoneNumber": "Telefonnummer",
+    "phoneRequirement": "Wir benötigen eine gültige Telefonnummer, um unser Abstimmungssystem fair zu halten!",
+    "phoneVerify": "Telefonnummer verifizieren",
+    "phoneVerifyCodePlaceholder": "Bestätigungscode eingeben",
+    "phoneVerifyCodeButton": "Verifizieren",
+    "phoneVerified": "Telefonnummer verifiziert!",
+    "error": {
+      "invalidPhone": "Telefonnummer erforderlich",
+      "verificationFailed": "Telefonverifizierung fehlgeschlagen: {{error}}",
+      "phoneAlreadyRegistered": "Diese Telefonnummer ist bereits mit einem anderen Konto registriert. Bitte versuchen Sie eine andere Nummer.",
+      "systemError": "Ein Systemfehler ist aufgetreten. Bitte versuchen Sie es später erneut.",
+      "invalidOtpCode": "Der Bestätigungscode ist falsch.",
+      "authenticationError": "Ein Authentifizierungsfehler ist aufgetreten.",
+      "recordError": "Fehler beim Aufzeichnen der Telefonnummer-Verifizierung.",
+      "emailNotPreregistered": "Diese E-Mail-Adresse ist nicht registriert. Bitte überprüfen Sie die E-Mail, mit der Sie eingeladen wurden.",
+      "preregistrationCheckFailed": "Fehler beim Überprüfen der Voranmeldung. Bitte versuchen Sie es später erneut.",
+      "emailRequired": "E-Mail-Adresse erforderlich",
+      "resetEmailFailed": "Fehler beim Senden der Reset-E-Mail",
+      "passwordTooWeak": "Das Passwort ist zu schwach",
+      "passwordUpdateFailed": "Fehler beim Aktualisieren des Passworts",
+      "usernameInvalidChars": "Der Benutzername darf nur Buchstaben, Zahlen, Unterstriche (_) und Bindestriche (-) enthalten",
+      "usernameAlreadyExists": "Dieser Benutzername ist bereits vergeben. Bitte versuchen Sie einen anderen.",
+      "usernameInvalidLength": "Der Benutzername muss zwischen 3 und 30 Zeichen lang sein.",
+      "emailAlreadyExists": "Diese E-Mail-Adresse ist bereits registriert.",
+      "databaseError": "Ein Datenbankfehler ist aufgetreten. Bitte versuchen Sie es später erneut.",
+      "signupDisabled": "Neue Registrierungen sind vorübergehend deaktiviert.",
+      "invalidCredentials": "Ungültige E-Mail oder Passwort."
+    },
+    "signIn": "Anmelden",
+    "createAccount": "Konto erstellen",
+    "username": "Benutzername",
+    "usernamePlaceholder": "Wählen Sie einen Benutzernamen",
+    "email": "E-Mail",
+    "emailPlaceholder": "Geben Sie Ihre E-Mail ein",
+    "password": "Passwort",
+    "passwordPlaceholder": "Geben Sie Ihr Passwort ein",
+    "passwordRequirement": "Das Passwort muss mindestens 6 Zeichen lang sein",
+    "confirmPassword": "Passwort bestätigen",
+    "confirmPasswordPlaceholder": "Passwort erneut eingeben",
+    "forgotPassword": "Passwort vergessen?",
+    "resetPassword": "Passwort zurücksetzen",
+    "sendResetEmail": "Reset-E-Mail senden",
+    "backToLogin": "Zurück zur Anmeldung",
+    "alreadyHaveAccount": "Haben Sie bereits ein Konto?",
+    "dontHaveAccount": "Haben Sie kein Konto?",
+    "successMessages": {
+      "accountCreated": "Konto erfolgreich erstellt!",
+      "signedIn": "Erfolgreich angemeldet!",
+      "resetEmailSent": "Passwort-Reset-E-Mail gesendet.",
+      "passwordUpdated": "Passwort erfolgreich aktualisiert."
+    }
+  },
+  "settingsPage": {
+    "title": "Einstellungen",
+    "preferences": {
+      "title": "Einstellungen",
+      "saveButton": "Änderungen speichern",
+      "savingButton": "Speichern...",
+      "unsavedChanges": "Es gibt ungespeicherte Änderungen"
+    },
+    "language": {
+      "title": "Sprache",
+      "description": "Wählen Sie Ihre bevorzugte Sprache für die Plattform.",
+      "english": "English",
+      "japanese": "日本語",
+      "korean": "한국어",
+      "chinese": "中文",
+      "spanish": "Español",
+      "portuguese": "Português (Brasil)",
+      "french": "Français",
+      "german": "Deutsch"
+    },
+    "pushNotifications": {
+      "title": "Push-Benachrichtigungen",
+      "description": "Einstellungen verwalten, um Kampf-Updates und Match-Benachrichtigungen zu erhalten.",
+      "enabled": "Push-Benachrichtigungen aktiviert",
+      "disabled": "Push-Benachrichtigungen deaktiviert"
+    },
+    "accountManagement": {
+      "title": "Kontoverwaltung",
+      "changePassword": "Passwort ändern",
+      "deleteAccount": "Konto löschen"
+    },
+    "toasts": {
+      "successTitle": "Erfolg",
+      "errorTitle": "Fehler",
+      "loadLanguageError": "Fehler beim Laden der Spracheinstellung.",
+      "languageUpdateSuccess": "Sprache zu {{language}} geändert.",
+      "languageUpdateError": "Fehler beim Aktualisieren der Spracheinstellung.",
+      "mustBeLoggedIn": "Sie müssen angemeldet sein, um Einstellungen zu ändern.",
+      "noChanges": "Keine Änderungen.",
+      "mustBeLoggedInPassword": "Sie müssen angemeldet sein, um das Passwort zu ändern.",
+      "passwordsDoNotMatch": "Die Passwörter stimmen nicht überein.",
+      "passwordTooShort": "Das Passwort muss mindestens 6 Zeichen lang sein.",
+      "passwordUpdateSuccess": "Passwort erfolgreich aktualisiert.",
+      "passwordUpdateError": "Fehler beim Aktualisieren des Passworts.",
+      "accountDeleteSuccess": "Konto erfolgreich gelöscht.",
+      "accountDeleteError": "Fehler beim Löschen des Kontos."
+    }
+  },
+  "postPage": {
+    "title": "Video hochladen",
+    "description": "Laden Sie Ihr Beatbox-Video hoch, um gegen andere Spieler zu kämpfen!",
+    "battleFormat": {
+      "title": "Kampfformat",
+      "beatbox": "Beatbox",
+      "liproll": "Lip roll",
+      "scratching": "Scratching"
+    },
+    "videoUpload": {
+      "title": "Video-Upload",
+      "dragDrop": "Videodateien hier ablegen oder zum Auswählen klicken",
+      "fileTypes": "Nur MP4-, MOV-, AVI-Dateien werden unterstützt",
+      "maxSize": "Maximale Dateigröße: 100MB"
+    },
+    "submissionGuidelines": {
+      "title": "Einreichungsrichtlinien",
+      "videoLength": "Das Video sollte zwischen 15-60 Sekunden lang sein",
+      "verticalOrientation": "Vertikale Ausrichtung (9:16 Verhältnis) empfohlen",
+      "goodLighting": "Gute Beleuchtung und klarer Ton",
+      "originalContent": "Ihre originale Performance",
+      "noBackgroundMusic": "Keine Hintergrundmusik",
+      "agreeGuidelines": "Ich habe die Einreichungsrichtlinien gelesen und akzeptiert",
+      "understandFacePolicy": "Ich verstehe die Richtlinie für Videos, die das Gesicht zeigen",
+      "confirmOwnPerformance": "Ich bestätige, dass dies meine eigene Performance ist"
+    },
+    "submitButton": "Zum Kampf einreichen",
+    "submitting": "Einreichen...",
+    "errors": {
+      "videoRequired": "Videodatei erforderlich",
+      "acceptGuidelines": "Richtlinien müssen akzeptiert werden",
+      "uploadFailed": "Upload fehlgeschlagen",
+      "processingFailed": "Fehler beim Verarbeiten des Videos"
+    }
+  }
+}

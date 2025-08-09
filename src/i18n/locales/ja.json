@@ -888,7 +888,13 @@
       "title": "言語",
       "description": "プラットフォームの表示言語を選択してください。",
       "english": "English",
-      "japanese": "日本語"
+      "japanese": "日本語",
+      "korean": "한국어",
+      "chinese": "中文",
+      "spanish": "Español",
+      "portuguese": "Português (Brasil)",
+      "french": "Français",
+      "german": "Deutsch"
     },
     "pushNotifications": {
       "title": "プッシュ通知",

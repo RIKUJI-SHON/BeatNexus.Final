@@ -1,0 +1,2127 @@
+{
+  "common": {
+    "upgrade": "升级",
+    "login": "登录",
+    "signup": "注册",
+    "support": "支持",
+    "community": "社区",
+    "battles": "对战",
+    "shop": "商店",
+    "home": "首页",
+    "ranking": "排行榜",
+    "createPost": "创建帖子",
+    "logout": "退出登录",
+    "howToGuide": "使用指南",
+    "locale": "zh-CN",
+    "back": "返回",
+    "next": "下一步",
+    "cancel": "取消",
+    "create": "创建",
+    "creating": "正在创建...",
+    "joining": "正在加入...",
+    "join": "加入",
+    "owner": "所有者",
+    "members": "成员",
+    "avgRating": "平均评分",
+    "loading": "加载中...",
+    "description": "描述",
+    "password": "密码",
+    "enterPassword": "输入密码",
+    "noDescription": "暂无描述",
+    "termsOfService": "服务条款",
+    "privacyPolicy": "隐私政策"
+  },
+  "hoverCard": {
+    "profile": "个人资料",
+    "myBattles": "我的对战",
+    "settings": "设置",
+    "logout": "退出登录"
+  },
+  "submissionModal": {
+    "title": "提交视频",
+    "videoPreview": "视频预览",
+    "processing": "处理中...",
+    "progress": "进度",
+    "estimatedRemaining": "预计剩余时间",
+    "estimatedTime": {
+      "seconds": "约 {{seconds}} 秒",
+      "minutes": "约 {{minutes}} 分 {{seconds}} 秒",
+      "almostDone": "即将完成"
+    },
+    "error": "发生错误",
+    "completed": "提交完成",
+    "cancel": "取消",
+    "close": "关闭",
+    "checking": "正在检查视频...",
+    "compressing": "正在压缩视频...",
+    "uploading": "正在上传视频...",
+    "creating": "正在创建提交...",
+    "matching": "正在寻找对手..."
+  },
+  "subscription": {
+    "title": "选择你的方案",
+    "subtitle": "选择适合你节奏之旅的完美方案",
+    "billing": {
+      "monthly": "按月",
+      "yearly": "按年",
+      "discount": "立减 20%"
+    },
+    "plans": {
+      "free": {
+        "name": "免费版",
+        "description": "体验基础功能",
+        "features": [
+          "每月发布 3 次",
+          "含广告",
+          "每月 0 个 Boost 代币",
+          "基础资料"
+        ],
+        "button": "免费开始"
+      },
+      "crew": {
+        "name": "团队版",
+        "description": "更多发布与权益",
+        "features": [
+          "每月发布 10 次",
+          "无广告体验",
+          "每月 5 个 Boost 代币",
+          "自定义资料颜色",
+          "优先支持"
+        ],
+        "button": "开始使用",
+        "popular": "热门方案"
+      },
+      "pro": {
+        "name": "专业版",
+        "description": "完整创作者体验",
+        "features": [
+          "不限发布次数",
+          "无广告体验",
+          "每月 15 个 Boost 代币",
+          "资料徽章与主题",
+          "优先匹配",
+          "详细统计"
+        ],
+        "button": "升级"
+      }
+    },
+    "features": {
+      "title": "功能对比",
+      "unlimited": {
+        "title": "无限发布",
+        "description": "Pro 方案可无限发布对战"
+      },
+      "boost": {
+        "title": "Boost 代币",
+        "description": "用于提升对战曝光的代币"
+      },
+      "customization": {
+        "title": "个性化",
+        "description": "自定义个人资料与主题"
+      },
+      "badges": {
+        "title": "专属徽章",
+        "description": "Pro 用户专属徽章",
+        "details": {
+          "description": "描述",
+          "earnedDate": "获得日期"
+        }
+      }
+    },
+    "comingSoon": {
+      "title": "即将上线",
+      "description": "订阅功能即将开放"
+    }
+  },
+  "battle": {
+    "title": "对战详情",
+    "loading": "正在加载对战详情...",
+    "notFound": "未找到对战",
+    "voteA": "投票给 A",
+    "voteB": "投票给 B",
+    "voting": "投票中...",
+    "voteSuccess": "投票成功！",
+    "voteError": "投票失败：{{message}}",
+    "alreadyVoted": "你已经在本场对战中投过票。",
+    "loginToVote": "请登录后再投票。",
+    "participantMessage": "作为本场对战的参赛者，你无法投票。一起见证结果吧！",
+    "votes": "票",
+    "format": "对战形式",
+    "formats": {
+      "main_battle": "主战",
+      "mini_battle": "迷你战", 
+      "theme_challenge": "主题挑战"
+    },
+    "result": {
+      "victory": "🎉 胜利！🎉",
+      "defeat": "💪 再接再厉",
+      "against": "对手",
+      "ratingChange": "评分变动",
+      "currentRank": "当前排名",
+      "share": "分享胜利",
+      "viewArchive": "查看存档",
+      "shareText": "🎵 我在 BeatNexus 上击败了 {{opponent}}！评分：{{rating}}｜排名：{{rank}} 🎵",
+      "draw": "🤝 平局 🤝"
+    },
+    "matched": {
+      "title": " 已匹配到对手！ ",
+      "against": "vs",
+      "votingPeriod": "5 天投票期",
+      "encouragement": "你的对战已开始！让社区来为你的表现投票吧。",
+      "viewBattle": "查看对战",
+      "share": "在 Twitter 分享",
+      "shareText": "我与 {{opponent}} 的 {{format}} 已开始！快来投票！"
+    }
+  },
+  "battleView": {
+    "title": "BeatNexus",
+    "subtitle": "对战竞技场",
+    "votingEndsIn": "投票结束于",
+    "votingEnded": "投票已结束",
+    "timeUnits": {
+      "days": "天",
+      "hours": "小时",
+      "minutes": "分钟"
+    },
+    "loading": "加载中...",
+    "participatingInBattle": "参与中的对战",
+    "votedFor": "已投给",
+    "cancellingVote": "正在取消投票...",
+    "cancelVote": "取消投票",
+    "voteFor": "投票给",
+    "totalVotes": "总票数",
+    "comments": "评论",
+    "votes": "票",
+    "leading": "领先",
+    "addComment": "添加你的评论...",
+    "postComment": "发布评论",
+    "voteWithComment": "投票并评论",
+    "loadComments": "加载评论",
+    "noComments": "暂无评论，来发表你的看法吧！",
+    "commentPlaceholder": "分享你对这场对战的看法...",
+    "videoLoading": "视频加载中...",
+    "vote": "投票",
+    "voteToSeeResults": "投票后可查看结果",
+    "voteToSeeComments": "投票后可查看评论",
+    "voteToSeeCommentsDesc": "要查看本场对战的投票结果和评论，请先投票",
+    "timeRemaining": "剩余时间",
+    "tiedVote": "票数持平",
+    "leadingPlayer": "{{player}} 领先",
+    "votingClosed": "投票已关闭",
+    "alreadyVoted": "已投票",
+    "participantCannotVote": "参赛者无法投票",
+    "voteSuccess": "投票提交成功",
+    "voteError": "投票提交失败",
+    "votingGuide": "投票指南",
+    "evaluationCriteria": "评审评分表",
+    "selectVoteMethod": "选择投票方式",
+    "voteForPlayer": "投给选手 {{player}}",
+    "simpleVote": "投票",
+    "criteria": {
+      "technicality": "技术性",
+      "technicalityDesc": "能否以清晰、准确的节奏与不间断的流畅性驾驭复杂的节奏模式？",
+      "musicality": "音乐性", 
+      "musicalityDesc": "节拍、旋律与编曲是否融合成一个有叙事起伏、能打动观众的完整作品？",
+      "originality": "原创性",
+      "originalityDesc": "是否在不依赖模仿的前提下展现出新颖的声音与创意，具备新鲜感与创新？",
+      "showmanship": "舞台表现力",
+      "showmanshipDesc": "表情、肢体与舞台掌控是否能吸引观众，并最大化技术与音乐性的魅力？"
+    },
+    "tipsNote": "以上标准可作为参考，帮助你做出更好的判断",
+    "notSet": "未设置",
+    "totalScores": "总分",
+    "unsetItems": "{{count}} 项未设置"
+  },
+  "battleCard": {
+    "votingEndsIn": "剩余 {{days}}天 {{hours}}小时",
+    "votingEndsInHours": "剩余 {{hours}}小时 {{minutes}}分钟",
+    "votingEndsInMinutes": "剩余 {{minutes}}分钟 {{seconds}}秒",
+    "votingEndsInSeconds": "剩余 {{seconds}}秒",
+    "votingEnded": "投票已结束",
+    "contestantA": "选手 A",
+    "contestantB": "选手 B",
+    "unknownUser": "未知用户",
+    "votes": "票",
+    "totalVotes": "总票数",
+    "comments": "评论",
+    "voteButton": "为本场对战投票",
+    "voteNow": "立即投票",
+    "watch": "观看",
+    "watchReplay": "回放",
+    "archivedOn": "存档于 {{date}}",
+    "battleFormats": {
+      "MAIN_BATTLE": "主战",
+      "MINI_BATTLE": "迷你战",
+      "THEME_CHALLENGE": "主题挑战"
+    },
+    "errors": {
+      "navigationFailed": "跳转到对战页面失败，请重试。"
+    },
+    "viewComments": "查看评论",
+    "commentsModal": {
+      "title": "对战评论",
+      "noComments": "暂无评论",
+      "loading": "正在加载评论...",
+      "playerA": "选手 A",
+      "playerB": "选手 B",
+      "close": "关闭"
+    },
+    "timeLeft": {
+      "minutes": "剩余 {{count}}分钟 {{seconds}}秒",
+      "seconds": "剩余 {{count}}秒"
+    }
+  },
+  "battleFilters": {
+    "searchPlaceholder": "按用户名搜索...",
+    "myBattles": "我的对战",
+    "allFormats": "全部形式",
+    "recent": "最新",
+    "trending": "趋势",
+    "endingSoon": "即将结束",
+    "completed": "已完成",
+    "searchTitle": "用户名搜索",
+    "filtersTitle": "筛选与排序",
+    "myBattlesOnly": "仅我的对战",
+    "activeFilters": "启用的筛选：",
+    "loading": "加载中...",
+    "noRankings": "暂无排名",
+    "buttons": {
+      "profile": "个人资料",
+      "battleStart": "开始对战",
+      "tournament": "锦标赛"
+    }
+  },
+  "monthlyLimit": {
+    "title": "每月发布上限",
+    "subtitle": "本月状态",
+    "remainingPosts": "剩余可发",
+    "usedPosts": "已用：{{count}} 次",
+    "limitPosts": "上限：{{count}} 次",
+    "resetLabel": "重置：",
+    "nearLimitWarning": "即将用尽",
+    "nearLimitMessage": "剩余 {{count}} 次",
+    "limitReachedTitle": "已达本月上限",
+    "limitReachedMessage": "将于 {{date}} 重置",
+    "postVideoButton": "发布视频",
+    "limitReachedButton": "发布次数已达上限",
+    "qualityMessage": "为确保高质量对战，每月最多可发布 30 次",
+    "loginToCheck": "登录后可查看发布状态",
+    "checkingStatus": "正在检查本月发布状态...",
+    "testMode": {
+      "unlimited": "无限制",
+      "remainingUnlimited": "无限制",
+      "testingPhase": "测试阶段无提交上限",
+      "testingMessage": "平台当前处于测试阶段，在正式上线前不设提交上限。",
+      "simpleMessage": "测试阶段可无限发布"
+    },
+    "monthlySubmissions": "每月提交",
+    "unlimitedSubmissions": "提交次数不受限",
+    "remainingSubmissions": "剩余提交 {{count}} 次",
+    "nextReset": "下次重置：{{date}}",
+    "testPeriodMessage": "测试期内提交不限"
+  },
+  "userInfoCard": {
+    "loading": "正在加载个人资料...",
+    "memberSince": "加入于 {{date}}",
+    "currentSeason": "当前赛季",
+    "notParticipating": "未参与赛季",
+    "notParticipatingMessage": "参与对战或投票即可参与赛季排名！",
+    "noActiveSeason": "暂无进行中的赛季",
+    "noActiveSeasonMessage": "当前没有进行中的赛季",
+    "rankings": {
+      "player": "选手",
+      "voter": "评审",
+      "notRanked": "--"
+    },
+    "points": {
+      "seasonPoints": "赛季积分",
+      "votePoints": "投票积分"
+    }
+  },
+  "upload": {
+  },
+  "community": {
+  "title": "社区",
+  "subtitle": "与节奏口技爱好者相连，共同成长",
+  "createCommunity": "创建社区",
+  "createNewCommunity": "创建新社区",
+  "communityName": "社区名称",
+  "enterCommunityName": "输入社区名称",
+  "describeCommunity": "描述你的社区",
+  "privateCommunitySetting": "私密社区（需要密码）",
+  "searchCommunities": "搜索社区...",
+  "myCommunities": "我的社区",
+  "allCommunities": "全部社区",
+  "noCommunitiesFound": "未找到符合搜索的社区",
+  "noCommunitiesYet": "还没有社区",
+  "tryDifferentSearch": "尝试不同的搜索词",
+  "createFirstCommunity": "要不要创建第一个社区？",
+  "communityCreated": "社区创建成功！",
+  "joinedCommunity": "加入社区成功！",
+  "enterCommunity": "进入社区",
+  "privateCommunityPasswordRequired": "该私密社区加入需输入密码。",
+  "publicCommunityJoinConfirm": "确定要加入此社区吗？",
+  "privateCommunityJoinConfirm": "确定要加入此私密社区吗？请输入密码。",
+  "passwordRequired": "需要密码",
+  "joinCommunity": "加入社区",
+  "trending": "趋势",
+  "newest": "最新",
+  "noCommunities": "未找到社区",
+  "communityDescription": "描述",
+  "createSuccess": "社区创建成功",
+  "createError": "社区创建失败",
+  "joinSuccess": "加入社区成功",
+  "joinError": "加入社区失败",
+  "leaveSuccess": "退出社区成功",
+  "leaveError": "退出社区失败",
+  "join": "加入",
+  "leave": "退出",
+  "admin": "管理员",
+  "moderator": "版主",
+  "member": "成员"
+  },
+  "communityTitle": "社区",
+  "communitySubtitle": "与节奏口技爱好者相连，共同成长",
+  "communityNotFound": "未找到社区",
+  "communityNotFoundDesc": "该社区不存在，或你没有访问权限。",
+  "backToCommunities": "返回社区列表",
+  "memberRanking": "成员排名",
+  "chat": "聊天",
+  "memberManagement": "成员管理",
+  "noMembers": "暂无成员",
+  "you": "你",
+  "joined": "已加入",
+  "communityChat": "社区聊天",
+  "messages": "消息",
+  "noMessages": "暂无消息",
+  "startConversation": "开始交流吧！",
+  "typeMessage": "输入消息...",
+  "adminOnly": "仅管理员",
+  "rating": "评分",
+  "promoteToAdmin": "设为管理员",
+  "demoteToMember": "降为成员",
+  "kickMember": "移除",
+  "member": "成员",
+  "admin": "管理员",
+  "leaveCommunity": "退出社区",
+  "confirmLeaveCommunity": "确认退出",
+  "leaveCommunityTitle": "确定要退出吗？",
+  "leaveCommunityDesc": "你将退出 {{name}}。之后需要重新申请加入。",
+  "leaving": "正在退出...",
+  "leftCommunity": "已成功退出社区",
+  "deleteCommunity": "删除社区",
+  "communityDeleted": "社区删除成功！",
+  "dangerZone": "危险操作",
+  "deleteCommunityDescription": "永久删除此社区及其所有数据。",
+  "leaveCommunityDescription": "退出此社区。以后可再次加入。",
+  "confirmDeleteCommunity": "确认删除社区",
+  "deleteCommunityTitle": "删除社区",
+  "deleteCommunityDesc": "确定要删除“{{name}}”吗？",
+  "deleteCommunityWarning": "此操作不可撤销，所有数据将被永久删除。",
+  "deleting": "正在删除...",
+  "confirmKick": "确认移除",
+  "confirmPromote": "确认提升",
+  "confirmDemote": "确认降级",
+  "kickMemberTitle": "移除此成员？",
+  "promoteMemberTitle": "提升为管理员？",
+  "demoteMemberTitle": "降为成员？",
+  "kickMemberDesc": "将把 {{name}} 从社区中移除。",
+  "promoteMemberDesc": "将把 {{name}} 提升为管理员。",
+  "demoteMemberDesc": "将把 {{name}} 降为成员。",
+  "processing": "处理中...",
+  "memberKicked": "已成功移除成员",
+  "memberPromoted": "成员提升成功",
+  "memberDemoted": "成员降级成功",
+  "pwa": {
+    "install": {
+      "title": "安装应用",
+      "description": "将 BeatNexus 添加到主屏幕，获得更佳体验。",
+      "button": "安装",
+      "later": "稍后"
+    }
+  },
+  "offline": {
+    "title": "离线",
+    "description": "请检查你的网络连接"
+  },
+  "online": {
+    "title": "在线",
+    "description": "连接已恢复"
+  },
+  "shortcuts": {
+    "guide": {
+      "title": "应用快捷方式",
+      "description": "长按应用图标，快速访问你喜欢的功能！",
+      "gotIt": "我知道了"
+    },
+    "battles": "对战",
+    "post": "发布视频",
+    "ranking": "排行榜",
+    "myBattles": "我的对战"
+  },
+  "footer": {
+    "description": "面向节奏口技社区的下一步。让新手与高手齐聚一堂，共同提升这门艺术。",
+    "quickLinks": "快速链接",
+    "tournaments": "锦标赛",
+    "resources": "资源",
+    "tutorials": "教程",
+    "communityForum": "社区论坛",
+    "boostPlans": "提升计划",
+    "faq": "常见问题",
+    "contactUs": "联系我们",
+    "contactMessage": "有问题或反馈？随时联系团队！",
+    "allRightsReserved": "保留所有权利。",
+    "termsOfService": "服务条款",
+    "privacyPolicy": "隐私政策",
+    "lastUpdated": "最后更新"
+  },
+  "privacyPolicyPage": {
+    "title": "隐私政策",
+    "subtitle": "请查阅我们如何处理你的个人信息。",
+    "contactMessage": "如对本隐私政策有任何疑问，请与我们联系。",
+    "backButton": "返回",
+    "languageTabs": {
+      "japanese": "日本語",
+      "english": "英语"
+    }
+  },
+  "termsPage": {
+    "title": "服务条款",
+    "subtitle": "请查阅使用 BeatNexus 服务的条款与条件",
+    "backButton": "返回",
+    "languageTabs": {
+      "japanese": "日本語",
+      "english": "英语"
+    },
+    "contactSection": {
+      "title": "联系我们",
+      "description": "如对服务条款有任何问题或咨询，请通过以下方式联系我们。"
+    },
+    "lastUpdated": "最后更新：2025 年 7 月 18 日"
+  },
+  "home": {
+    "landingPage": {
+      "cta": {
+        "joinBeta": "立即加入",
+        "watchBattles": "观看对战"
+      },
+      "hero": {
+        "title": {
+          "forAll": "为所有节奏口技者而来",
+          "nextStep": "你的“下一步”。"
+        },
+        "subtitle": "上传视频即可轻松开战 → 社区投票决定胜负的\n节奏口技对战平台。"
+      },
+      "challenges": {
+        "title": "你是否也面临这些难题？",
+        "motivation": {
+          "title": "动力难以持续",
+          "description": "很难长期保持练习动力"
+        },
+        "skillAssessment": {
+          "title": "水平评估",
+          "description": "想客观了解自己在圈内的大致水平"
+        },
+        "casualChallenge": {
+          "title": "轻松试水",
+          "description": "赛事门槛高，却没有可以随意测水平的地方"
+        },
+        "community": {
+          "title": "社区",
+          "description": "缺少与同好切磋与获得反馈的机会"
+        }
+      },
+      "solution": {
+        "title": " 为你打造“下一步”。",
+        "visualizeGrowth": {
+          "title": "成长可视化",
+          "description": "借助 Elo 评分与排名体系，让你的提升以客观数字呈现。"
+        },
+        "gradualChallenge": {
+          "title": "循序渐进的挑战",
+          "description": "从轻松打分的“主战”到奖金赛事“BeatNexus Summit”，总有适合你水平与目标的舞台。"
+        },
+        "communityConnection": {
+          "title": "连接社区",
+          "description": "通过投票与评论与热爱者相连，形成互相提升的文化。"
+        }
+      },
+      "howItWorks": {
+        "title": "简单 4 步即可开始",
+        "subtitle": "无需复杂设置，立刻享受对战。",
+        "steps": {
+          "upload": {
+            "title": "1. 上传视频",
+            "description": "上传你的节奏视频"
+          },
+          "matching": {
+            "title": "2. 自动匹配",
+            "description": "根据评分自动匹配最合适的对手"
+          },
+          "voting": {
+            "title": "3. 社区投票",
+            "description": "观众化身评审决定胜负"
+          },
+          "results": {
+            "title": "4. 结果与评分更新",
+            "description": "根据结果自动更新评分，亲眼见证成长"
+          }
+        },
+        "features": {
+          "onlineBattle": {
+            "title": "在线对战",
+            "description": "只需上传视频，即可与相近水平对手自动匹配。"
+          },
+          "communityVoting": {
+            "title": "社区投票",
+            "description": "由社区投票决定胜负。不仅选手，每个人都能作为评审发光。"
+          },
+          "seasonRanking": {
+            "title": "赛季排名",
+            "description": "约每 3 个月一个赛季并重置排名。不仅有选手榜，还有表彰优秀评审的“评审榜”。"
+          },
+          "judgeSystem": {
+            "title": "细化评审体系",
+            "description": "从直觉的“我喜欢TA！”投票，到从 4 个专业维度深度评审的“评分表”。"
+          }
+        }
+      },
+      "socialProof": {
+        "title": "已经这么热闹了！",
+        "stats": {
+          "preRegistration": "预注册",
+          "totalBattles": "总对战数",
+          "communityVotes": "社区投票数"
+        },
+        "ranking": {
+          "title": "排名 TOP3",
+          "closedTest": "封测排名 TOP3",
+          "playerRanking": "选手排名",
+          "voterRanking": "评审排名",
+          "noPlayerRanking": "暂无选手排名",
+          "noVoterRanking": "暂无评审排名",
+          "noSeasonEnded": "尚无赛季结束",
+          "betaSeasonNote": "敬请期待 β 赛季结果！",
+          "loading": "加载中..."
+        }
+      },
+      "vision": {
+        "title": "BeatNexus 的宏伟愿景",
+        "subtitle": "不仅是对战工具，更是涉及整个圈子的平台",
+        "disclaimer": "※ 以下内容为未来概念/计划，目前正在开发/考虑中",
+        "summit": {
+          "title": "BeatNexus 峰会概念",
+          "prizeTournament": "顶级赛季表现者将获得奖金锦标赛的参赛资格",
+          "seedRights": "第一赛季前8名将获得下一届锦标赛的种子权",
+          "globalConnection": "计划与全球 Beatbox 圈子建立联系"
+        },
+        "freemium": {
+          "title": "免费增值模式预览",
+          "betaFree": "<span class=\"font-bold text-cyan-400\">β 赛季完全免费</span>，所有功能均可使用",
+          "futureModel": "将来，我们将提供评分对战，每月有指定数量的免费挑战",
+          "unlimited": "计划为志在顶峰的认真选手推出 <span class=\"font-semibold text-purple-400\">\"Nexus Unlimited\"</span>"
+        }
+      },
+      "faq": {
+        "title": "常见问题",
+        "beginner": {
+          "question": "初学者可以参加吗？",
+          "answer": "当然可以！BeatNexus 的诞生就是为了为各个水平的选手提供\"下一步\"。请随时开始上传视频。"
+        },
+        "pricing": {
+          "question": "有费用吗？",
+          "answer": "目前进行的 β 赛季完全免费，所有功能均可使用。"
+        },
+        "mobile": {
+          "question": "可以在智能手机上使用吗？",
+          "answer": "我们目前推荐在 PC 上使用，但移动版本可以像应用程序一样从网站下载。通过 PWA 支持，你可以将其添加到主屏幕以获得原生应用体验。"
+        },
+        "fairness": {
+          "question": "我担心不公平的投票。",
+          "answer": "BeatNexus 通过取消投票匿名性并公开谁投票给谁，旨在建立一个负责任的健康社区。"
+        }
+      },
+      "closing": {
+        "title": {
+          "history": "在历史的开端，",
+          "dontMiss": "不要落后。"
+        },
+        "subtitle": "正式发布已上线！现在所有人都可以加入了！",
+        "schedule": {
+          "earlyAccess": "正式发布日期：",
+          "earlyAccessDate": "8月7日开始",
+          "publicRelease": "当前状态：",
+          "publicReleaseDate": "公开可用！"
+        },
+        "finalCta": "立即加入 β 赛季！"
+      }
+    },
+    "hero": {
+      "title": {
+        "main": "BEATNEXUS",
+        "highlighted": ""
+      },
+      "subtitle": {
+        "main": "为节奏口技者打造的终极平台，用来",
+        "battle": "对战",
+        "share": "分享",
+        "connect": "连接",
+        "and": "与",
+        "grow": "成长",
+        "join": "加入全球社区，让你的实力更进一步。",
+        "nextStep": "你的下一步，从这里开始。",
+        "compete": "参与节奏口技对战，由社区投票决出胜者，并",
+        "climbRanking": "登上排行榜！"
+      },
+      "button": {
+        "startBattle": "开始你的对战",
+        "watchBattles": "观看对战并投票",
+        "joinNow": "立即加入"
+      },
+      "seasonInfo": {
+        "earlyAccess": "现已上线！",
+        "earlyAccessLabel": "公开发布",
+        "publicRelease": "8 月 7 日",
+        "publicReleaseLabel": "已发布！"
+      }
+    },
+    "howItWorks": {
+      "title": "使用方法",
+      "subtitle": "简单 4 步",
+      "description": "从上传视频到决出胜负，一切由对战系统自动完成",
+      "steps": {
+        "upload": {
+          "title": "上传视频",
+          "description": "上传你的节奏口技视频。每小时可发布 1 次，并自动进入匹配队列。"
+        },
+        "matching": {
+          "title": "自动匹配",
+          "description": "根据 ELO 评分自动选择对手。匹配范围会逐步扩大以找到最合适的对手。"
+        },
+        "voting": {
+          "title": "社区投票",
+          "description": "在 5 天投票期内由社区决定胜负。参与投票可获得积分并提升评审排名。"
+        },
+        "results": {
+          "title": "结果与排名",
+          "description": "决出胜负后将自动更新 ELO 评分；对战历史会被存档并更新排名。"
+        }
+      }
+    },
+    "rankings": {
+      "playerRanking": {
+        "title": "选手排名",
+        "description": "每一场对战都会影响你的评分。赢下对战，向世界证明你的实力。唯有登顶者，才能打开下一阶段的大门。",
+        "betaReward": {
+          "title": "β 赛季奖励：",
+          "description": "排名前 8 的选手可获得第一赛季总决赛的种子席位。"
+        }
+      },
+      "voterRanking": {
+        "title": "评审排名",
+        "description": "由社区的慧眼决定胜负。用你的审美评判无数对战，为平台做出贡献。最受信赖的评审将获得特别荣誉。",
+        "betaReward": {
+          "title": "β 赛季奖励：",
+          "description": "顶尖评审将被任命为第一赛季总决赛的官方评审。"
+        }
+      }
+    },
+    "shadows": {
+      "title": {
+        "main": "厌倦了处在",
+        "highlighted": "阴影"
+      },
+      "subtitle": "口技圈正蓬勃发展，但许多艺术家面临相同的门槛。",
+      "card1": {
+        "title": "“看”的人在增长...",
+        "description": "...但“做”和“坚持”的人却难以跟上。许多人在最初的火花后迷失。"
+      },
+      "card2": {
+        "title": "新手瓶颈",
+        "description": "新人难以找到下一步、练习伙伴或提升之处，常常感到孤立。"
+      },
+      "card3": {
+        "title": "社区与机会缺口",
+        "description": "有热情的口技者缺少一个中心舞台，新人被看见的机会有限。"
+      }
+    },
+    "elevate": {
+      "title": {
+        "main": "你所需要的一切，助你",
+        "highlighted": "提升你的节奏"
+      },
+      "card1": {
+        "title": "在线对战",
+        "description": "发布音频/视频，与全球对手一对一对战。收获投票、赚取 BP、攀登排名！"
+      },
+      "card2": {
+        "title": "全球社区",
+        "description": "与全球口技者相连。分享技巧、参与讨论、寻找合作伙伴并收获友谊。"
+      },
+      "card3": {
+        "title": "排名与锦标赛",
+        "description": "在赛季排名中证明实力。参与精彩的线上锦标赛，争夺荣誉与奖励。"
+      },
+      "card4": {
+        "title": "技能成长中心",
+        "description": "获取学习资源，收获来自同伴与 AI 的建设性反馈，持续跟踪你的进步。"
+      }
+    },
+    "ready": {
+      "title": {
+        "main": "准备好掀起",
+        "highlighted": "声浪"
+      },
+      "subtitle": "你的口技之旅从这里起步。现在就加入 BeatNexus，成为变革的一部分。",
+      "button": "免费注册并开战！",
+      "availability": "即将登陆 iOS 与 Android"
+    },
+    "cta": {
+      "title": "准备好了吗？<span>开战吧</span>！",
+      "subtitle": "现在加入，与全球口技者一较高下，冲击排行榜之巅",
+      "button": "立即开始对战",
+      "note": "免费使用 • 24 小时发帖限制"
+    }
+  },
+  "battlesPage": {
+    "welcome": {
+      "title": "欢迎来到",
+      "subtitle": "与全球口技者相连，检验你的实力，一起成长。",
+      "stats": {
+        "activeBattles": "进行中的对战",
+        "completedBattles": "已完成的对战",
+        "totalSubmissions": "提交总数",
+        "communityMembers": "社区成员",
+        "votesCast": "投出票数"
+      },
+      "buttons": {
+        "watchBattles": "观看对战并投票",
+        "postBeat": "发布你的节奏！"
+      },
+      "guide": {
+        "newHere": "第一次来？",
+        "checkGuide": "查看我们的使用指南"
+      }
+    },
+    "activeBattles": {
+      "title": "进行中的对战",
+      "subtitle": "为你喜欢的表演投票",
+      "createBattleButton": "创建对战"
+    },
+    "status": {
+      "loadingBattles": "正在加载对战...",
+      "errorLoadingBattles": "加载对战出错",
+      "tryAgainButton": "重试",
+      "noBattlesFound": "未找到对战",
+      "noBattlesMatchSearch": "没有符合搜索条件的对战",
+      "loadingCompletedBattles": "正在加载已完成的对战...",
+      "noCompletedBattles": "尚无完成的对战",
+      "checkBackSoonCompleted": "稍后再来查看精彩对决的结果。",
+      "loadingRankings": "正在加载排名...",
+      "noRankingsAvailable": "暂无排名数据。",
+      "createBattleHint": "创建新的对战，点燃社区热情！",
+      "completedBattlesHint": "已完成的对战将显示在这里"
+    },
+    "rankings": {
+      "title": "顶级口技者",
+      "titleCompact": "排行榜前列",
+      "viewFullButton": "查看全部",
+      "noRankingsYet": "暂无排名",
+      "table": {
+        "rank": "名次",
+        "player": "选手",
+        "bp": "BP"
+      }
+    },
+    "communityStats": {
+      "title": "社区统计",
+      "submissions": "提交总数",
+      "members": "社区成员",
+      "votes": "投出票数"
+    },
+    "createBattle": {
+      "title": "创建新对战",
+      "description": "准备好一决高下了吗？发布你的视频，向社区发起挑战。",
+      "button": "开始新对战"
+    },
+    "howTo": {
+      "title": "BeatNexus 的运作方式",
+      "description": "了解如何发布对战、进行投票并登上排行榜。",
+      "button": "阅读指南"
+    },
+    "monthlyLimit": {
+      "title": "每月提交上限",
+      "currentStatus": "本月状态",
+      "remainingSubmissions": "剩余提交",
+      "usedCount": "已用",
+      "limitCount": "上限",
+      "resetDate": "重置",
+      "submitVideo": "提交视频",
+      "nearLimitWarning": "可提交次数即将用尽",
+      "nearLimitMessage": "你还可以提交 {count} 次",
+      "limitReached": "已达本月上限",
+      "limitReachedMessage": "将于 {date} 重置",
+      "limitReachedButton": "已达提交上限",
+      "loginToCheck": "登录后查看提交状态",
+      "checkingStatus": "正在检查每月提交状态...",
+      "qualityNote": "为保证对战质量，每月最多提交 30 个视频"
+    }
+  },
+  "archivedBattleCard": {
+    "playerA": "选手 A",
+    "playerB": "选手 B",
+    "me": "我",
+    "votesSuffix": "票",
+    "result": {
+      "draw": "平局",
+      "win": "胜",
+      "loss": "负"
+    },
+    "watchReplayButton": "观看回放"
+  },
+  "settingsPage": {
+    "title": "设置",
+    "loading": "正在加载设置...",
+    "preferences": {
+      "title": "偏好设置",
+      "saveButton": "保存设置",
+      "savingButton": "保存中...",
+      "unsavedChanges": "你有未保存的更改"
+    },
+    "language": {
+      "title": "语言",
+      "description": "选择你偏好的平台语言。",
+      "english": "英语",
+      "japanese": "日本語",
+      "korean": "한국어",
+      "chinese": "中文（简体）",
+      "spanish": "Español",
+      "portuguese": "Português (Brasil)",
+      "french": "Français",
+      "german": "Deutsch"
+    },
+    "pushNotifications": {
+      "title": "推送通知",
+      "description": "管理接收对战更新和匹配通知的设置。",
+      "enabled": "已启用推送通知",
+      "disabled": "已禁用推送通知"
+    },
+    "accountManagement": {
+      "title": "账号管理"
+    },
+    "changePassword": {
+      "title": "修改密码",
+      "description": "更新你的账号密码。",
+      "button": "修改密码"
+    },
+    "dangerZone": {
+      "title": "危险区域"
+    },
+    "deleteAccount": {
+      "title": "删除账号",
+      "description": "永久删除你的账号及所有相关数据。此操作不可撤销。",
+      "button": "删除账号"
+    },
+    "passwordModal": {
+      "title": "修改你的密码",
+      "newPassword": "新密码",
+      "confirmPassword": "确认新密码",
+      "updateButton": "更新密码",
+      "updatingButton": "更新中...",
+      "cancelButton": "取消"
+    },
+    "deleteModal": {
+      "title": "删除你的账号",
+      "confirmationMessage": "确定要删除你的账号吗？此操作不可逆，将永久移除你的所有数据，包括个人资料、对战历史和帖子。",
+      "confirmButton": "确认删除",
+      "deletingButton": "删除中...",
+      "cancelButton": "取消"
+    },
+    "toasts": {
+      "errorTitle": "错误",
+      "successTitle": "成功",
+      "setupComplete": "设置完成",
+      "settingsChanged": "设置已更改",
+      "loadLanguageError": "加载语言偏好失败。",
+      "mustBeLoggedIn": "你必须登录才能更改设置。",
+      "noChanges": "没有可保存的更改。",
+      "languageUpdateSuccess": "语言已更新为 {{language}}。",
+      "languageUpdateError": "更新语言偏好失败。",
+      "passwordsDoNotMatch": "两次输入的密码不一致。",
+      "passwordTooShort": "密码长度至少为 6 个字符。",
+      "mustBeLoggedInPassword": "你必须登录才能修改密码。",
+      "passwordUpdateSuccess": "密码更新成功。",
+      "passwordUpdateFailed": "密码更新失败。",
+      "mustBeLoggedInDelete": "你必须登录才能删除账号。",
+      "accountDeleteSuccess": "你的账号已成功删除。",
+      "accountDeleteFailed": "删除账号失败。"
+    }
+  },
+  "profilePage": {
+    "userNotFound": {
+      "title": "未找到用户",
+      "description": "你要查看的个人资料不存在。可能是用户 ID 不正确，或账号已被删除。",
+      "homeButton": "返回首页"
+    },
+    "profileUnavailable": {
+      "title": "无法查看个人资料",
+      "description": "请登录以查看你的个人资料，或在 URL 中指定用户。"
+    },
+    "seasonRating": "赛季评分",
+    "overallRating": "总评分",
+    "rank": {
+      "currentRank": "当前段位",
+      "nextRank": "下一段位",
+      "points": "积分",
+      "pointsToNext": "距离下一段位还需",
+      "progress": "进度",
+      "complete": "完成",
+      "maxRank": "已达到最高段位！",
+      "legendaryPlayer": "你是传奇选手"
+    },
+    "stats": {
+      "battles": "对战",
+      "wins": "胜场",
+      "active": "进行中",
+      "archived": "已存档"
+    },
+    "edit": {
+      "usernamePlaceholder": "输入你的用户名",
+      "bioPlaceholder": "介绍一下你自己吧...",
+      "saveButton": "保存更改",
+      "cancelButton": "取消",
+      "editButton": "编辑资料",
+      "noBio": "该用户尚未填写个人简介。"
+    },
+    "tabs": {
+      "currentBattles": "当前对战",
+      "battleHistory": "对战历史",
+      "posts": "帖子",
+      "collection": "收藏"
+    },
+    "battles": {
+      "noActiveBattlesTitle": "暂无进行中的对战",
+      "noActiveBattlesDescription": "该用户当前没有进行中的对战。欢迎稍后再来！",
+      "noArchivedBattlesTitle": "暂无对战历史",
+      "noArchivedBattlesDescription": "该用户尚无过往对战记录。"
+    },
+    "posts": {
+      "deleteConfirmation": "确定要删除这条帖子吗？",
+      "editButton": "编辑",
+      "deleteButton": "删除",
+      "saveButton": "保存",
+      "cancelButton": "取消",
+      "noPostsTitle": "暂无帖子",
+      "noPostsDescription": "该用户还没有发布过帖子。"
+    },
+    "toasts": {
+      "errorTitle": "错误",
+      "successTitle": "成功",
+      "loadProfileError": "无法加载个人资料。",
+      "avatarUpdateSuccess": "头像更新成功！",
+      "profileUpdateFailedDB": "数据库更新个人资料失败。",
+      "profileUpdateSuccess": "个人资料更新成功！",
+      "profileUpdateFailed": "更新个人资料失败。"
+    },
+    "emptyStates": {
+      "battleHistory": "多赢几场，积累你的对战历史吧！"
+    }
+  },
+  "rankingPage": {
+    "title": "社区排行榜",
+    "description": "显示社区活动的选手排行榜和投票者排行榜",
+    "tabs": {
+      "playerRankings": "选手排行榜", 
+      "voterRankings": "投票者排行榜",
+      "player": "选手",
+      "voter": "投票者"
+    },
+    "seasonTabs": {
+      "currentSeason": "当前赛季",
+      "allTime": "全时期",
+      "historicalSeasons": "过往赛季"
+    },
+    "seasonSelector": {
+      "selectSeason": "选择赛季",
+      "currentSeasonLabel": "当前赛季",
+      "completedSeasonLabel": "已完成赛季"
+    },
+    "topThree": {
+      "title": "前三名"
+    },
+    "playerDescription": "基于对战表现的 Beatboxer 排行榜",
+    "voterDescription": "基于投票参与度的活跃社区成员排行榜",
+
+    "searchPlaceholder": "按用户名搜索...",
+    "loading": "加载排行榜中...",
+    "eloRating": "Elo 评分",
+    "table": {
+      "rank": "排名",
+      "user": "用户",
+      "rating": "评分",
+      "seasonPoints": "赛季积分",
+      "winRate": "胜率",
+      "voteCount": "投票数"
+    },
+    "tiers": {
+      "grandmaster": "大师",
+      "master": "高手",
+      "expert": "专家",
+      "advanced": "高级",
+      "intermediate": "中级",
+      "beginner": "初级",
+      "unranked": "未排名"
+    },
+    "winLossRecord": "{{wins}}胜 - {{losses}}负",
+    "noUsersFound": "未找到用户",
+    "noData": "暂无数据",
+    "noRankingsYet": "暂无排行榜",
+    "tryDifferentSearch": "尝试不同的搜索词",
+    "rankingsWillAppear": "随着用户参与对战，排行榜将会出现",
+    "error": {
+      "title": "加载排行榜失败",
+      "tryAgain": "重试"
+    }
+  },
+  "postPage": {
+    "title": "提交你的对战视频",
+    "subtitle": "展示你的实力，向社区发起挑战",
+    "timeLimitEmphasis": "🔥 视频必须为 1–2 分钟（60–120 秒）🔥",
+    "videoQualityWarning": "请保持适度画质（避免以 4K 录制）",
+    "backButton": "返回",
+    "selectFormat": {
+      "label": "选择对战形式",
+              "mainBattle": "🔥 主战【必选】60 到 120 秒（1–2 分钟）🔥",
+      "miniBattle": "迷你战（30–59 秒）",
+      "themeChallenge": "技能/主题挑战"
+    },
+    "upload": {
+      "title": "上传视频",
+      "dragDrop": "将视频拖拽到此处",
+      "supportedFormats": "支持格式：MP4、WebM、MOV",
+      "selectFile": "选择文件",
+      "uploading": "正在上传",
+      "submit": "提交到对战池",
+      "dropHere": "把视频拖到这里",
+      "orBrowse": "或点击选择文件（MP4、WebM、MOV）",
+      "selectVideo": "选择视频"
+    },
+    "preview": {
+      "title": "视频预览",
+      "duration": "时长",
+      "size": "大小"
+    },
+    "format": {
+      "mainBattle": "主战"
+    },
+    "guidelines": {
+      "title": "提交须知",
+      "content": "我已阅读并同意《视频提交指南》",
+      "face": "我了解露脸为可选，但建议露出口部区域",
+      "appropriate": "我确认这是我的原创表演，且不包含禁止内容",
+      "detailed": {
+        "greetingRule": {
+          "title": "开场宣言：",
+          "value": "必须",
+          "description": "在开始表演前，你必须用自己的声音进行宣言，其中包含 ①“BeatNexus” 一词 和 ②你的选手名。这是一条重要规则，用于证明你精彩的表演是在 BeatNexus 官方舞台上进行的对战。\n\n宣言的目的：\n• 身份证明：表明你是账号本人，防止冒充。\n• 归属说明：当你的视频被分享到其他 SNS 平台时，能清楚表明这是一场 BeatNexus 对战，提升平台价值。\n• 竞技精神：如同比赛中的运动员宣誓，展现你对对战的认真投入，并提升观众期待。",
+          "examples": {
+            "title": "示例：",
+            "list": [
+              "\"BeatNexus，[选手名]，开始了！\"",
+              "\"我是[选手名]。BeatNexus，现在开始！\"",
+              "\"这里是 BeatNexus 的 [选手名]。\"",
+              "\"我叫[选手名]，这是我为 BeatNexus 提交的作品。\"",
+              "\"向 BeatNexus 致意！[选手名] 到场！\""
+            ],
+            "note": "可以自由表达，但必须同时包含 ①“BeatNexus” 和 ②你的选手名。必须用你自己的声音说出，而不能用文字或字幕代替。缺少开场宣言或缺少要素的视频，可能被视为不符合规则。"
+          }
+        },
+        "performanceTime": {
+          "title": "表演时长：",
+          "value": "1–2 分钟",
+          "description": "请在规定时长内完成表演"
+        },
+        "performanceFormat": {
+          "title": "表演形式：",
+          "value": "录音录像同步",
+          "description": "画面与声音必须同步录制，禁止通过剪辑拼接表演。"
+        },
+        "identityVerification": {
+          "title": "身份确认：",
+          "value": "建议露脸",
+          "description": "露脸不是必须，但推荐。"
+        },
+        "lipSyncBan": {
+          "title": "禁止对口型",
+          "description": "禁止对预录音频进行对口（配音）。"
+        },
+        "audioSource": {
+          "title": "声音来源：",
+          "value": "实时声音",
+          "description": "表演中使用的所有声音必须就地由你的声音或身体发出。"
+        },
+        "sampleBan": {
+          "title": "禁止使用采样",
+          "description": "禁止使用会发声的预录音源（采样）或节拍器。"
+        },
+        "audioProcessing": {
+          "title": "音频处理",
+          "subtitle": "",
+          "allowed": {
+            "title": "允许的处理",
+            "mixing": "混音与母带",
+            "correction": "作用于整段录音的基础音质修正（EQ、压缩、混响）"
+          },
+          "prohibited": {
+            "title": "禁止的处理",
+            "effects": "对原声改变明显的效果，如失真、延迟",
+            "advanced": "针对每个声音自动变化的高级编辑"
+          }
+        },
+        "equipment": {
+          "title": "录制设备",
+          "devices": {
+            "title": "设备",
+            "description": "从手机到专业设备，任何方式都欢迎。"
+          },
+          "resolution": {
+            "title": "分辨率",
+            "description": "请避免以 4K 录制，以免文件过大。"
+          }
+        }
+      }
+    },
+    "cooldown": {
+      "title": "提交冷却",
+      "message": "下次可提交时间：{{time}}"
+    },
+    "seasonOff": {
+      "title": "非赛季期间 - 暂停提交"
+    },
+    "preview": {
+      "title": "视频预览"
+    },
+    "ffmpeg": {
+      "loading": "初始化视频处理器",
+      "preparing": "正在准备压缩引擎，请稍候…",
+      "initializing": "正在准备…",
+      "initializingDescription": "正在准备视频压缩引擎，请稍候。",
+      "initializationError": "初始化错误"
+    },
+    "processing": {
+      "title": "正在处理视频…",
+      "analyzing": "正在分析视频并检查设置…",
+      "optimizing": "正在优化视频质量，请稍候…",
+      "finalizing": "正在进行最终调整…",
+      "loadingVideo": "正在加载视频…",
+      "calculatingCompression": "正在计算压缩设置…",
+      "preparingStream": "正在准备流…",
+      "startingRecording": "正在开始录制…",
+      "completingRecording": "正在完成录制…",
+      "fastProcessing": "正在启动快速处理…",
+      "checkingDuration": "正在检查视频时长…",
+      "preparingPreview": "正在生成预览…",
+      "complete": "完成",
+      "analyzing_video": "正在分析视频…",
+      "recording": "录制中…",
+      "remaining": "约剩余 {{seconds}} 秒",
+      "checkingMemory": "正在检查内存占用…",
+      "noCompressionNeeded": "无需压缩 - 文件大小已最优",
+      "processingVideo": "正在处理视频…",
+      "compressionComplete": "压缩完成。预览已更新。"
+    },
+    "errors": {
+      "problemOccurred": "发生了问题",
+      "videoLoadFailed": "无法加载视频文件",
+      "unsupportedBrowser": "你的浏览器不支持此功能",
+      "playbackFailed": "视频播放失败。请检查浏览器设置。",
+      "recordingFailed": "录制过程中出现错误",
+      "processingError": "处理错误",
+      "videoProcessingFailed": "无法处理视频文件",
+      "fileTooBig": "文件大小超出限制。当前：{{current}}MB（上限：2048MB）",
+      "compressionFailed": "自动压缩失败。请尝试‘快速压缩’或‘简易方法’。",
+      "fastCompressionFailed": "快速压缩失败。请尝试‘简易方法’手动处理。",
+      "fileSizeStillLarge": "压缩后文件大小：{{size}}MB。仍需进一步压缩。",
+      "compressionSuggestion": "为减小视频文件大小，请尝试以下方法：\n\n1. 将手机设置为‘标准’画质录制\n2. 使用视频编辑应用降低分辨率\n3. 缩短视频长度\n4. 重新录制视频",
+      "uploadTooLarge": "文件过大（{{size}}MB）。请先压缩后再上传。",
+      "retakeVideo": "请重新拍摄并再次上传。",
+      "invalidDuration": "视频时长不在指定范围内。",
+      "mainBattleTooShort": "主战视频过短（{{duration}} 秒）。请上传 {{required}} 秒的视频。\n\n💡 提示：使用视频编辑应用调整长度，或录制更长的表演。",
+      "mainBattleTooLong": "主战视频过长（{{duration}} 秒）。请上传 {{required}} 秒的视频。\n\n💡 提示：使用视频编辑应用裁剪不必要的部分，或录制更短的表演。",
+      "miniBattleTooShort": "迷你战视频过短（{{duration}} 秒）。请上传 {{required}} 秒的视频。\n\n💡 提示：录制更长的表演，或考虑切换为主战形式（60–120 秒）。",
+      "miniBattleTooLong": "迷你战视频过长（{{duration}} 秒）。请上传 {{required}} 秒的视频。\n\n💡 提示：使用视频编辑应用缩短，或考虑切换为主战形式（60–120 秒）。",
+      "themeTooShort": "主题挑战视频过短（{{duration}} 秒）。请上传 {{required}} 秒的视频。\n\n💡 提示：录制更长的表演。",
+      "themeTooLong": "主题挑战视频过长（{{duration}} 秒）。请上传 {{required}} 秒的视频。\n\n💡 提示：使用视频编辑应用缩短。",
+      "changeBattleFormat": "更改对战形式",
+      "selectDifferentVideo": "选择其他视频",
+      "fileTooLargeForProcessing": "文件大小（{{size}}MB）过大，无法处理。请使用 2GB 以下的文件。",
+      "compressionTimeout": "压缩过程超时。请减小文件大小后重试。",
+      "compressionFinalizationFailed": "无法生成压缩文件",
+      "compressionAbnormallySmall": "压缩结果异常偏小，可能是原视频存在问题。",
+      "tooManyPreviewAttempts": "预览加载多次失败。文件可能过大。",
+      "compressionInsufficientReduction": "压缩幅度不足，文件仍然过大。",
+      "acceptPolicies": "请同意所有政策与指南。",
+      "uploadFailed": "上传失败。请重试。",
+      "invalidFileType": "文件类型无效。请选择视频文件。",
+      "tooShort": "视频过短（{{current}} 秒）。最小值：{{min}} 秒",
+      "tooLong": "视频过长（{{current}} 秒）。最大值：{{max}} 秒"
+    },
+    "compression": {
+      "autoAvailable": "可进行自动画质调整",
+      "videoDuration": "视频时长：",
+      "fileSize": "文件大小：",
+      "durationOk": "{{duration}} 秒 ✓",
+      "fileSizeLarge": "{{size}}MB ⚠️",
+      "description": "视频时长符合要求，但文件过大。我们可以在保留音质的前提下自动调整视频质量以优化文件大小。",
+      "autoAdjustments": "自动调整：",
+      "resolutionOptimization": "分辨率优化（如 4K→1080p）",
+      "bitrateAdjustment": "比特率调整",
+      "audioQualityMaintained": "保持高音质（128kbps）",
+      "fileSizeTooLarge": "文件过大",
+      "currentFileSize": "当前文件大小：{{size}}MB（上限：200MB）",
+      "recommendedSolutions": "建议的解决方案：",
+      "retakeVideo": "重新拍摄",
+      "recommended": "推荐",
+      "proceedAnyway": "仍要继续",
+      "forTesting": "测试用",
+      "compressionRatio": "压缩比：{{ratio}}%",
+      "format": "格式：{{format}}",
+      "compressionStarting": "正在开始压缩…",
+      "finalizing": "正在最终处理…",
+      "autoCompress": "自动压缩",
+      "optimizeSize": "优化大小",
+      "targetSize": "目标：{{target}}MB（由 {{original}}MB 降至）- {{strategy}}"
+    },
+    "submissionGuidelines": {
+      "title": "视频提交指南",
+      "followFormatLength": "【必需】主战必须严格遵守 60–120 秒规则",
+      "ensureAudioQuality": "确保清晰的音频质量",
+      "faceOptional": "露脸为可选，但推荐露出口部区域",
+      "noBackgroundMusic": "禁止背景音乐或伴奏",
+      "agreeGuidelines": "我已阅读并同意《视频提交指南》",
+      "understandFacePolicy": "我了解露脸为可选，但建议露出口部区域",
+      "confirmOwnPerformance": "我确认这是我的原创表演，且不包含禁止内容"
+    },
+    "buttons": {
+      "cancel": "取消",
+      "submitToBattlePool": "提交到对战池",
+      "viewMyBattles": "查看我的对战",
+      "submitAnother": "再提交一个"
+    },
+    "cooldown": {
+      "title": "1 小时提交限制",
+      "message": "你每小时只能提交一个视频。",
+      "nextSubmissionIn": "下次可提交时间：",
+      "timeRemaining": "距离下次提交还有：{{time}}"
+    },
+    "success": {
+      "title": "视频提交成功！",
+      "description": "你的视频已上传，很快将匹配到对手。对战上线时我们会通知你。"
+    },
+    "submission": {
+      "cooldown": {
+        "canSubmit": "可提交",
+        "restriction": "你每小时只能提交一个视频。剩余时间：{{hours}}小时 {{minutes}}分",
+        "remainingTime": "下次可提交时间：{{time}}",
+        "error": "冷却状态检查出错：{{error}}",
+        "timeFormat": {
+          "hoursMinutes": "{{hours}}小时 {{minutes}}分", 
+          "minutes": "{{minutes}}分"
+        }
+      },
+      "success": {
+        "created": "提交创建成功。"
+      },
+      "error": {
+        "seasonRestriction": "因赛季限制，当前不可提交。",
+        "cooldownActive": "你每小时只能提交一个视频。下次可提交时间：{{hours}}小时 {{minutes}}分",
+        "creationFailed": "创建提交时出错：{{error}}"
+      }
+    },
+    "importantNotice": {
+      "videoDuration": "视频必须为 1–2 分钟",
+      "videoQuality": "录制时请降低画质（避免以 4K 录制）"
+    }
+  },
+  "toasts": {
+    "error": "错误",
+    "success": "成功",
+    "warning": "警告",
+    "info": "信息",
+    "submissionAddedToPool": "已加入对战队列！渐进式匹配系统每 20 分钟扩大评分范围。",
+    "submissionError": "提交失败",
+    "submissionWithdrawn": "已从对战队列中撤回",
+    "withdrawError": "撤回失败"
+  },
+  "communityPage": {
+    "toasts": {
+      "loadPostsError": "加载帖子失败。",
+      "postSuccess": "帖子创建成功！",
+      "postError": "创建帖子失败。",
+      "deleteSuccess": "帖子删除成功。",
+      "deleteError": "删除帖子失败。",
+      "updateSuccess": "帖子更新成功。",
+      "updateError": "更新帖子失败。",
+      "likeError": "更新点赞失败。",
+      "loadCommentsError": "加载评论失败。",
+      "commentSuccess": "评论发布成功！",
+      "commentError": "发布评论失败。"
+    }
+  },
+  "battleStore": {
+    "toasts": {
+      "authError": "认证错误",
+      "loginRequired": "需要登录",
+      "checkLoginStatus": "请检查你的登录状态",
+      "databaseError": "数据库错误",
+      "cannotVoteOwn": "你不能为自己的对战投票",
+      "alreadyVoted": "你已在此对战中投过票",
+      "votingEnded": "此对战的投票已结束",
+      "votingExpired": "投票期限已过",
+      "battleNotFound": "未找到对战",
+      "voteError": "投票失败",
+      "voteSuccess": "已为选手 {{player}} 投票",
+      "voteWithCommentSuccess": "已为选手 {{player}} 投票并评论",
+      "voteCompleted": "投票完成",
+      "votingProcess": "投票处理中",
+      "unexpectedResponse": "投票处理完成但响应格式异常",
+      "functionNotConfigured": "数据库函数配置不正确",
+      "cancelVoteError": "取消投票错误",
+      "cancelVoteSuccess": "已取消对选手 {{player}} 的投票",
+      "cancelVoteCompleted": "投票已取消",
+      "noVoteToCancel": "你尚未在此对战中投票",
+      "cannotCancelExpired": "投票期限已过，无法取消",
+      "cannotCancelEnded": "此对战的投票已结束，无法取消",
+      "systemError": "系统错误",
+      "cancelProcessCompleted": "取消投票处理完成但响应格式异常",
+      "cancelFailed": "取消投票失败"
+    }
+  },
+  "myBattlesPage": {
+    "title": "我的对战",
+    "subtitle": "查看你的对战状态和历史",
+    "tabs": {
+      "active": "进行中",
+      "waiting": "等待中",
+      "completed": "历史记录"
+    },
+    "stats": {
+      "wins": "胜场",
+      "winRate": "胜率",
+      "totalVotes": "总票数"
+    },
+    "loading": "加载中...",
+    "error": {
+      "loadFailed": "加载数据失败",
+      "retry": "重试"
+    },
+    "empty": {
+      "activeBattles": {
+        "title": "暂无进行中的对战",
+        "description": "开始新对战，展示你的实力！",
+        "button": "开始对战"
+      },
+      "waitingSubmissions": {
+        "title": "暂无等待中的提交",
+        "description": "你当前没有等待对手的提交。"
+      },
+      "completedBattles": {
+        "title": "暂无对战历史",
+        "description": "已完成的对战将在此显示。加入新对战来积累历史记录！",
+        "button": "开始对战",
+        "hint": "通过赢得更多对战来积累你的对战历史！"
+      },
+      "loadingHistory": "加载历史记录中..."
+    },
+    "alerts": {
+      "replayComingSoon": "{{format}} 对战回放功能即将推出。"
+    },
+    "waitingSubmissionCard": {
+      "battleFormats": {
+        "MAIN_BATTLE": "主战",
+        "MINI_BATTLE": "迷你战",
+        "THEME_CHALLENGE": "主题挑战"
+      },
+      "postedAt": "发布于：{{time}} 前",
+      "searchingOpponent": "正在寻找对手...",
+      "searchingDescription": "我们正在寻找与你技能水平匹配的对手，请稍候。",
+      "videoUrl": "视频链接：{{url}}",
+      "withdrawButton": "撤回",
+      "withdrawConfirm": "确定要撤回此提交吗？",
+      "withdrawError": "撤回提交失败"
+    }
+  },
+  "howToGuide": {
+    "title": "使用指南",
+    "subtitle": "像专业玩家一样掌握 BeatNexus！",
+    "hero": {
+      "title": "欢迎来到节奏口技的世界！",
+      "description": "无论你是新手还是专业玩家，这个平台都将让你的节奏口技之旅更加精彩。让我们一起开始这段冒险！"
+    },
+    "sections": {
+      "gettingStarted": {
+        "title": "🚀 入门指南",
+        "description": "学习 BeatNexus 的基础知识，立即开始享受乐趣！",
+        "steps": [
+          {
+            "icon": "👤",
+            "title": "创建你的个人资料",
+            "description": "展现你的个性，准备加入社区！",
+            "details": [
+              "设置独特的用户名",
+              "在个人简介中分享你喜爱的风格和目标",
+              "用头像展现你的个性"
+            ]
+          },
+          {
+            "icon": "🎬",
+            "title": "发布你的第一个视频",
+            "description": "不必完美，每个人都从新手开始！",
+            "details": [
+              "即使是手机录制也足以开始",
+              "建议从 30 秒的迷你战开始",
+              "注重音频质量：在安静的地方录制"
+            ]
+          },
+          {
+            "icon": "⚔️",
+            "title": "参加对战",
+            "description": "自动匹配将为你找到完美的对手！",
+            "details": [
+              "与相似技能水平的对手自动匹配",
+              "投票期为 5 分钟（之前是 7 天）",
+              "无论输赢，都是成长的宝贵经验"
+            ]
+          }
+        ]
+      },
+      "battleTypes": {
+        "title": "🎯 对战类型",
+        "description": "从 3 种对战形式中选择，找到你的风格！",
+        "tipsLabel": "💡 提示：",
+        "types": [
+          {
+            "name": "主战",
+            "duration": "60-90 秒",
+            "icon": "👑",
+            "description": "全面展示你技能的完整对战",
+            "tips": [
+              "考虑结构：开场 → 发展 → 高潮",
+              "结合各种技巧来打动观众",
+              "保持专注直到最后一刻"
+            ],
+            "perfect": "适合想要展示精湛表演的人"
+          },
+          {
+            "name": "迷你战",
+            "duration": "30-45 秒",
+            "icon": "⚡",
+            "description": "在短时间内浓缩你魅力的快速对战",
+            "tips": [
+              "注重冲击力：在前 5 秒抓住观众的心",
+              "毫无保留地展示你的招牌动作",
+              "在这种短格式中每一刻都很重要"
+            ],
+            "perfect": "适合想要轻松开始的新手或忙碌的人"
+          },
+          {
+            "name": "主题挑战",
+            "duration": "灵活",
+            "icon": "🎨",
+            "description": "挑战特定技巧或主题的创意对战",
+            "tips": [
+              "对主题采取独特的方法",
+              "不要害怕技术挑战",
+              "重视与他人不同的视角"
+            ],
+            "perfect": "适合想要尝试新技巧的冒险者"
+          }
+        ]
+      },
+      "votingTips": {
+        "title": "🗳️ 投票技巧",
+        "description": "成为出色的投票者，为社区注入活力！",
+        "guidelines": [
+          {
+            "icon": "🎵",
+            "title": "关注音乐性",
+            "description": "节奏、律动和音乐完整性"
+          },
+          {
+            "icon": "💫",
+            "title": "技术技能",
+            "description": "精确度、难度和技巧的多样性"
+          },
+          {
+            "icon": "🎭",
+            "title": "娱乐价值",
+            "description": "观看乐趣、感动性、令人难忘"
+          },
+          {
+            "icon": "🔥",
+            "title": "原创性",
+            "description": "创造力、创新性和个性"
+          }
+        ],
+        "fairPlay": {
+          "title": "公平竞技精神",
+          "points": [
+            "基于技能而非个人偏好进行评判",
+            "投票前仔细观看两个视频",
+            "用建设性的评论给予支持",
+            "始终保持尊重"
+          ]
+        }
+      },
+      "community": {
+        "title": "🤝 享受社区",
+        "description": "与全球节奏口技者联系并共同成长！",
+        "features": [
+          {
+            "icon": "💬",
+            "title": "评论功能",
+            "description": "对对战视频发表评论以加深互动",
+            "tips": [
+              "尽量给予积极的反馈",
+              "提及具体技巧会很受欢迎",
+              "欢迎提问和技术建议"
+            ]
+          },
+          {
+            "icon": "🏆",
+            "title": "排名系统",
+            "description": "通过赛季排名证明你的实力",
+            "tips": [
+              "持续参与是提升排名的关键",
+              "不仅是对战胜利，投票数也很重要",
+              "每个赛季结束时有特殊奖励"
+            ]
+          },
+          {
+            "icon": "👥",
+            "title": "论坛",
+            "description": "技术问题和信息交流的地方",
+            "tips": [
+              "新手问题非常欢迎",
+              "分享技巧名称和练习方法",
+              "也要查看地区活动信息"
+            ]
+          }
+        ]
+      },
+      "tips": {
+        "title": "🎤 提升技巧",
+        "description": "专业玩家的升级秘诀！",
+        "categories": [
+          {
+            "title": "录制技巧",
+            "icon": "📹",
+            "tips": [
+              "在明亮的地方录制（面部可见性）",
+              "固定手机以防抖动",
+              "距离麦克风不太近不太远（约30厘米）",
+              "保持背景简单（你才是主角！）"
+            ]
+          },
+          {
+            "title": "练习方法",
+            "icon": "🎯",
+            "tips": [
+              "一致性是关键，即使每天只练一点",
+              "通过观看他人视频来学习",
+              "录制自己来客观观察",
+              "有勇气尝试新技巧"
+            ]
+          },
+          {
+            "title": "心态",
+            "icon": "🧠",
+            "tips": [
+              "即使失败也有学习价值（成长机会）",
+              "不要与他人比较，按自己的节奏",
+              "享受乐趣是最重要的",
+              "与社区成员相互支持"
+            ]
+          }
+        ]
+      },
+      "troubleshooting": {
+        "title": "🔧 常见问题与故障排除",
+        "description": "遇到困难时请查看这里！",
+        "faqs": [
+          {
+            "question": "视频上传失败",
+            "answer": "检查文件大小（75MB 或更小）和格式（MP4、WebM、MOV）。还要验证你的网络连接。"
+          },
+          {
+            "question": "匹配时间很长",
+            "answer": "我们在寻找技能水平匹配的对手，可能需要一些时间。热门时段往往匹配更快。"
+          },
+          {
+            "question": "我错过了投票期",
+            "answer": "投票期只有 5 分钟，所以我们建议开启通知。"
+          },
+          {
+            "question": "我的视频无法播放",
+            "answer": "尝试刷新浏览器或使用不同的浏览器。如果仍然不行，请联系客服。"
+          }
+        ],
+        "support": {
+          "title": "如果问题仍未解决...",
+          "description": "我们的客服团队将真诚地帮助你！",
+          "contact": "联系我们"
+        }
+      }
+    },
+    "cta": {
+      "title": "准备好进入节奏口技的世界！",
+      "description": "你已经准备就绪。是时候让你的声音响彻全世界了。",
+      "startButton": "开始你的第一场对战",
+      "exploreButton": "探索其他对战"
+    }
+  },
+  "tournament": {
+    "comingSoonPage": {
+      "title": "锦标赛",
+      "subtitle": "即将推出"
+    }
+  },
+  "comingSoon": {
+    "title": "即将推出",
+    "subtitle": "我们正在为你精心制作一个精彩的使用指南！以易于理解的格式学习 BeatNexus 的一切。",
+    "features": {
+      "stepByStep": "循序渐进",
+      "stepByStepDesc": "非常适合新手的详细指南",
+      "proTips": "专业技巧",
+      "proTipsDesc": "高级技术和策略",
+      "videoGuides": "视频指南",
+      "videoGuidesDesc": "通过视频教程观看和学习"
+    },
+    "launch": {
+      "title": "🚀 即将推出",
+      "description": "我们正在努力为你带来最佳的指南体验。敬请期待！"
+    },
+    "meanwhile": "与此同时，何不探索一些对战？",
+    "exploreBattles": "探索对战"
+  },
+  "tournament": {
+    "title": "锦标赛",
+    "subtitle": "终极赛季对决",
+    "comingSoon": "🔥 即将推出 🔥",
+    "features": {
+      "eliteOnly": {
+        "title": "仅限精英",
+        "description": "专为赛季顶级选手举办的独家锦标赛。与最高水平的节奏口技者对决。"
+      },
+      "seasonal": {
+        "title": "赛季形式",
+        "description": "每 3 个月举办一次大型锦标赛。每个赛季都会诞生新的冠军。"
+      },
+      "bigPrizes": {
+        "title": "丰厚奖励",
+        "description": "获胜者将获得独家奖杯和特殊称号。顶级选手将获得丰厚奖励。"
+      }
+    },
+    "structure": {
+      "title": "锦标赛结构",
+      "step1": {
+        "title": "资格赛",
+        "description": "来自赛季排名的前 32 名选手参加。1v1 对战形式决定获胜者。"
+      },
+      "step2": {
+        "title": "主锦标赛",
+        "description": "16 名合格选手在主赛事中对战。双败淘汰赛制。"
+      },
+      "step3": {
+        "title": "总决赛",
+        "description": "最后 2 名选手之间的终极对决。争夺真正的 BeatNexus 冠军的战斗。"
+      }
+    },
+    "launch": {
+      "title": "🏆 第一赛季锦标赛筹备中",
+      "description": "我们目前正在筹备首届锦标赛。攀登赛季排名以赢得锦标赛席位！",
+      "checkRankings": "查看排名",
+      "practiceNow": "立即练习"
+    }
+  },
+  "faq": {
+    "title": "常见问题",
+    "subtitle": "在此找到关于 BeatNexus 常见问题的答案。",
+    "categories": {
+      "gettingStarted": "入门指南",
+      "battles": "对战",
+      "technical": "技术",
+      "community": "社区"
+    },
+    "items": {
+      "howToStart": {
+        "question": "如何开始使用 BeatNexus？",
+        "answer": "只需创建账户并设置个人资料即可开始。首先观看其他对战并投票来熟悉平台。准备好后，上传视频参与对战。"
+      },
+      "isFree": {
+        "question": "BeatNexus 是免费的吗？",
+        "answer": "是的，BeatNexus 的所有核心功能完全免费。你可以发布对战、观看他人对战并投票，无需任何费用。"
+      },
+      "beginnerFriendly": {
+        "question": "新手可以参加吗？",
+        "answer": "当然可以！BeatNexus 欢迎所有技能水平的节奏口技者，从新手到专业选手。我们的评分系统确保你与同水平的对手匹配。"
+      },
+      "battleTypes": {
+        "question": "有哪些类型的对战？",
+        "answer": "目前只有主战形式可用。这是一种 60-120 秒的对战形式，你可以在其中充分展示技能。"
+      },
+      "votingPeriod": {
+        "question": "投票期有多长？",
+        "answer": "投票期为 5 天。对战上线后你有 5 天时间投票。投票结束后公布结果。"
+      },
+      "matching": {
+        "question": "对手是如何匹配的？",
+        "answer": "我们使用评分系统自动寻找接近你技能水平的对手。我们的等待池系统通过考虑评分差异确保更公平的匹配。"
+      },
+      "showFace": {
+        "question": "我需要露脸吗？",
+        "answer": "露脸是可选的。不过建议露出口部区域，因为这可能有助于更好的评价。以让你感到舒适的方式录制。"
+      },
+      "videoFormats": {
+        "question": "支持哪些视频格式？",
+        "answer": "我们支持 MP4、WebM 和 MOV 格式。文件大小必须在 2GB 以下。为获得最佳节奏口技体验，我们建议以高视频质量和清晰音频录制。"
+      },
+      "uploadFailed": {
+        "question": "我的视频上传失败",
+        "answer": "检查你的文件大小是否在 2GB 以下，格式是否为 MP4、WebM 或 MOV。还要验证你的网络连接并尝试刷新浏览器。"
+      },
+      "mobile": {
+        "question": "我可以在手机上使用 BeatNexus 吗？",
+        "answer": "可以，BeatNexus 支持 PWA（渐进式网络应用）。你可以将其添加到主屏幕，在移动设备上获得原生应用体验。"
+      },
+      "battleFormat": {
+        "question": "对战形式是什么？",
+        "answer": "• 视频必须为 60-120 秒（1-2 分钟）长度\\n• 开始时需要包含\"BeatNexus\"的问候\\n• 同步录音录像（禁止对口型）\\n• 仅限实时音频（禁止采样或伴奏）\\n• 允许基础音频处理（EQ、压缩、混响）\\n• 露脸可选，建议露出口部区域"
+      },
+      "ranking": {
+        "question": "排名系统如何工作？",
+        "answer": "我们使用 Elo 评分系统。获胜会提高你的评分，失败会降低评分。排名每赛季重置，顶级选手可以参加锦标赛。"
+      },
+      "prohibited": {
+        "question": "有什么是不被允许的？",
+        "answer": "背景音乐、伴奏和版权内容都是被禁止的。不当内容或让他人感到不适的行为也不被允许。"
+      }
+    },
+    "stillNeedHelp": {
+      "title": "仍需帮助？",
+      "description": "如果你有这里未涵盖的问题或需要帮助，请随时与我们联系。",
+      "contactSupport": "联系客服",
+      "readGuide": "阅读指南"
+    }
+  },
+  "notifications": {
+    "title": "通知",
+    "empty": "暂无新通知",
+    "markAllRead": "全部删除",
+    "viewAll": "查看全部",
+    "timeAgo": {
+      "justNow": "刚刚",
+      "minutes": "{{count}} 分钟前",
+      "hours": "{{count}} 小时前",
+      "days": "{{count}} 天前"
+    },
+    "battleMatched": {
+      "title": "找到对战匹配！",
+      "message": "已找到对手。你的对战已开始！"
+    },
+    "battleCompleted": {
+      "title": "对战结果公布！",
+      "winMessage": "恭喜！你赢得了对战！",
+      "loseMessage": "努力了！下次好运！",
+      "drawMessage": "平局！精彩的对战！"
+    }
+  },
+  "latestBattles": {
+    "title": "最新对战",
+    "description": "为你喜爱的表演投票",
+    "createBattle": "创建对战",
+    "loading": "加载对战中...",
+    "error": {
+      "title": "加载对战出错",
+      "tryAgain": "重试"
+    },
+    "noBattles": {
+      "title": "暂无对战",
+      "description": "成为第一个创建对战并开始竞争的人！",
+      "createFirst": "创建你的第一场对战"
+    },
+    "viewMore": "查看更多对战",
+    "ranking": {
+      "title": "顶级排名",
+      "viewAll": "查看全部",
+      "noRankings": {
+        "title": "暂无排名",
+        "description": "当用户参与对战时将显示排名"
+      },
+      "seasonEnds": "赛季将在 {{days}} 天后结束"
+    }
+  },
+  "archive": {
+    "title": "存档功能",
+    "description": "永久保存重要对战",
+    "limit": "每月最多 3 个",
+    "status": {
+      "title": "存档使用情况",
+      "usage": "本月使用量",
+      "remaining": "剩余",
+      "limit": "上限"
+    },
+    "button": {
+      "archive": "存档",
+      "archived": "已存档",
+      "processing": "处理中..."
+    },
+    "info": {
+      "title": "关于存档功能",
+      "important": "重要",
+      "deletionWarning": "视频将在对战完成后 3 天自动删除。",
+      "features": {
+        "title": "功能：",
+        "preserve": "• 永久保存重要的对战视频",
+        "limit": "• 每月最多存档 3 个",
+        "history": "• 对战历史和评分变化始终保留"
+      }
+    },
+    "messages": {
+      "success": {
+        "archived": "对战存档成功",
+        "unarchived": "存档移除成功"
+      },
+      "error": {
+        "limitReached": "已达月度存档上限（3/3）",
+        "notFound": "未找到对战",
+        "alreadyArchived": "已存档",
+        "failed": "存档操作失败"
+      }
+    }
+  },
+  "battleReplay": {
+    "title": "对战回放",
+    "backButton": "返回",
+    "notFound": {
+      "title": "未找到对战",
+      "description": "你要查找的对战回放不存在或已被删除。",
+      "backButton": "返回",
+      "myBattlesButton": "前往我的对战"
+    },
+    "result": {
+      "battleResult": "对战结果"
+    },
+    "playerInfo": {
+      "playerA": "选手 A",
+      "playerB": "选手 B",
+      "totalVotes": "总票数"
+    },
+    "videoNotAvailable": {
+      "title": "视频未保存",
+      "participantMessage": "此视频未存档，无法显示。",
+      "nonParticipantMessage": "你需要是此对战的参与者才能观看视频。"
+    },
+    "videoDeleted": {
+      "title": "视频已删除",
+      "description": "此账户的视频已被删除，无法播放。对战历史和评分变化仍有记录。"
+    },
+    "videoNotSupported": "你的浏览器不支持视频播放。",
+    "videoError": "加载视频失败",
+    "finalResults": "最终结果",
+    "archived": "已存档"
+  },
+  "pagination": {
+    "previous": "上一页",
+    "next": "下一页",
+    "page": "第",
+    "of": "页，共",
+    "goToPage": "前往页面：",
+    "showing": "显示第 {{start}}-{{end}} 项，共 {{total}} 项结果",
+    "noResults": "未找到结果"
+  },
+  "onboarding": {
+    "slide1": {
+      "welcome": "欢迎",
+      "title": "来到 BeatNexus。",
+      "description": "这是一个全新的传奇舞台，来自世界各地的节奏口技者在这里用技巧和灵魂碰撞。"
+    },
+    "slide2": {
+      "title": "对战之路\n出乎意料地简单。",
+      "description": "上传视频，系统会自动为你匹配对手。胜负由社区投票决定。",
+      "videoAlt": "你的浏览器不支持视频播放。"
+    },
+    "slide3": {
+      "title": "通往荣耀的\n多条道路。",
+      "description": "成为排行榜顶级选手的道路。以及成为用出色审美眼光决定胜负的'官方评审'的道路。你将书写哪种传奇？"
+    },
+    "slide4": {
+      "title": "个人资料设置",
+      "avatar": {
+        "title": "头像",
+        "description": "用头像和个人简介展现你的个性。你可以稍后在设置中更改这些。"
+      },
+      "bio": {
+        "title": "个人简介",
+        "placeholder": "告诉大家关于你自己、你的风格以及你的独特之处...",
+        "saveButton": "保存",
+        "saving": "保存中...",
+        "saveSuccess": "已保存",
+        "characterCount": "{{count}}/200 字符"
+      }
+    },
+    "slide5": {
+      "title": "准备开始。",
+      "description": "你的第一场对战现在开始。",
+      "clickToStart": "↑ 点击开始对战"
+    },
+    "avatarSetup": {
+      "title": "设置你的头像"
+    },
+    "skipTour": "跳过",
+    "previous": "返回",
+    "close": "关闭",
+    "getStarted": "开始使用"
+  },
+  "profile": "查看个人资料",
+  "editProfile": "编辑个人资料",
+  "voteCommentModal": {
+    "title": "为 {{player}} 投票",
+    "subtitle": "为 {{playerName}} 投票",
+    "description": "你可以添加评论或直接投票。",
+    "commentLabel": "评论（可选）",
+    "commentPlaceholder": "分享你对 {{player}} 的想法...",
+    "commentRequired": "评论投票需要评论内容",
+    "voteButton": "投票",
+    "voting": "投票中...",
+    "characterCount": "{{count}}/500 字符",
+    "close": "关闭",
+    "templateTitle": "选择模板",
+    "templates": [
+      "天哪！！太不可思议了🔥",
+      "起鸡皮疙瘩了！⚡",
+      "太酷了！✨",
+      "这个人是天才🎵",
+      "技巧绝对完美",
+      "节奏控制如神"
+    ],
+    "commentVote": "评论投票",
+    "simpleVote": "仅投票",
+    "commentVotePoints": "+300VP",
+    "simpleVotePoints": "+100VP"
+  },
+  "auth": {
+    "phoneNumber": "手机号码",
+    "phoneRequirement": "我们需要有效的手机号码来保持投票系统的公平！",
+    "phoneVerify": "验证手机号码",
+    "phoneVerifyCodePlaceholder": "输入验证码",
+    "phoneVerifyCodeButton": "验证",
+    "phoneVerified": "手机号码已验证！",
+    "error": {
+      "invalidPhone": "手机号码为必填项",
+      "verificationFailed": "手机验证失败：{{error}}",
+      "phoneAlreadyRegistered": "此手机号码已被其他账户注册。请尝试使用不同的手机号码。",
+      "systemError": "发生系统错误。请稍后重试。",
+      "invalidOtpCode": "验证码不正确。",
+      "authenticationError": "发生认证错误。",
+      "recordError": "记录手机号码验证失败。",
+      "emailNotPreregistered": "此邮箱地址未注册。请检查你受邀时使用的邮箱地址。",
+      "preregistrationCheckFailed": "验证预注册失败。请稍后重试。",
+      "emailRequired": "邮箱地址为必填项",
+      "resetEmailFailed": "发送重置邮件失败",
+      "passwordTooWeak": "密码过于简单",
+      "passwordUpdateFailed": "更新密码失败",
+      "usernameInvalidChars": "用户名只能包含字母、数字、下划线（_）和连字符（-）",
+      "usernameAlreadyExists": "此用户名已被使用。请尝试不同的用户名。",
+      "usernameInvalidLength": "用户名长度必须在 3 到 30 个字符之间。",
+      "emailAlreadyExists": "此邮箱地址已被注册。",
+      "databaseError": "发生数据库错误。请稍后重试。",
+      "signupDisabled": "新用户注册目前暂时禁用。",
+      "invalidCredentials": "邮箱或密码无效。"
+    },
+    "signIn": "登录",
+    "createAccount": "创建账户",
+    "username": "用户名",
+    "usernamePlaceholder": "选择用户名",
+    "email": "邮箱",
+    "emailPlaceholder": "输入你的邮箱",
+    "password": "密码",
+    "passwordPlaceholder": "输入你的密码",
+    "passwordRequirement": "密码长度至少为 6 个字符",
+    "usernameRequirement": "用户名长度必须在 3 到 30 个字符之间",
+    "usernameDescription": "3-30 个字符，仅限字母/数字/下划线/连字符",
+    "confirmPassword": "确认密码",
+    "confirmPasswordPlaceholder": "重新输入你的密码",
+    "passwordMismatch": "两次输入的密码不一致",
+    "rememberMe": "记住我",
+    "sending": "发送中...",
+    "verifying": "验证中...",
+    "signingIn": "登录中...",
+    "creatingAccount": "创建账户中...",
+    "confirmEmailTitle": "确认你的邮箱",
+    "confirmEmailDescription": "我们已向 <strong>{{email}}</strong> 发送确认链接。请检查你的收件箱（和垃圾邮件文件夹）以完成注册。",
+    "gotIt": "知道了！",
+    "country": "国家",
+    "forgotPassword": "忘记密码？",
+    "resetPassword": "重置密码",
+    "resetPasswordDescription": "输入你注册时使用的邮箱地址。我们将向你发送密码重置链接。",
+    "sendResetEmail": "发送重置邮件",
+    "sendingResetEmail": "发送中...",
+    "resetEmailSent": "邮件已发送",
+    "resetEmailSentDescription": "我们已向 {{email}} 发送密码重置链接。请检查你的邮箱。",
+    "backToLogin": "返回登录",
+    "setNewPassword": "设置新密码",
+    "setNewPasswordDescription": "输入你的新密码。",
+    "newPassword": "新密码",
+    "confirmNewPassword": "确认新密码",
+    "newPasswordPlaceholder": "输入新密码",
+    "confirmNewPasswordPlaceholder": "重新输入新密码",
+    "updatePassword": "更新密码",
+    "updatingPassword": "更新中...",
+    "passwordResetSuccess": "密码重置成功",
+    "passwordStrength": {
+      "very_weak": "非常弱",
+      "weak": "弱", 
+      "fair": "一般",
+      "good": "良好",
+      "strong": "强"
+    }
+  },
+  "newSeasonModal": {
+    "title": "🎉 新赛季开始了！",
+    "description": "新的赛季已经开始！参加对战攀登排行榜，或为你喜欢的创作者投票赚取积分！",
+    "goToBattle": "参加对战",
+    "goToVote": "前往投票"
+  },
+  "premium": {
+    "badges": {
+      "details": {
+        "description": "描述",
+        "earnedDate": "获得日期"
+      }
+    }
+  },
+  "pushNotificationSetup": {
+    "title": "推送通知",
+    "unsupported": "你的浏览器不支持推送通知",
+    "status": {
+      "denied": "已拒绝",
+      "enabled": "已启用",
+      "disabled": "已禁用",
+      "notSet": "未设置"
+    },
+    "buttons": {
+      "enabling": "设置中...",
+      "enable": "启用通知",
+      "browserSettings": "请在浏览器设置中允许",
+      "disabling": "禁用中...",
+      "disable": "禁用通知"
+    },
+    "help": {
+      "title": "启用通知的步骤：",
+      "step1": "点击浏览器地址栏左侧的 🔒 图标",
+      "step2": "将\"通知\"设置改为\"允许\"",
+      "step3": "重新加载页面"
+    }
+  }
+}

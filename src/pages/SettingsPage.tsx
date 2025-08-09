@@ -275,7 +275,15 @@ const SettingsPage: React.FC = () => {
                       aria-expanded={isDropdownOpen}
                       onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                     >
-                      {selectedLanguage === 'en' ? t('settingsPage.language.english') : selectedLanguage === 'ja' ? t('settingsPage.language.japanese') : t('settingsPage.language.english')}
+                      {selectedLanguage === 'en' ? t('settingsPage.language.english') : 
+                       selectedLanguage === 'ja' ? t('settingsPage.language.japanese') :
+                       selectedLanguage === 'ko' ? t('settingsPage.language.korean') :
+                       selectedLanguage === 'zh-CN' ? t('settingsPage.language.chinese') :
+                       selectedLanguage === 'es' ? t('settingsPage.language.spanish') :
+                       selectedLanguage === 'pt-BR' ? t('settingsPage.language.portuguese') :
+                       selectedLanguage === 'fr' ? t('settingsPage.language.french') :
+                       selectedLanguage === 'de' ? t('settingsPage.language.german') :
+                       t('settingsPage.language.english')}
                       <ChevronDown className="-mr-1 ml-2 h-5 w-5 text-gray-400" aria-hidden="true" />
                     </button>
                   </div>
@@ -310,6 +318,90 @@ const SettingsPage: React.FC = () => {
                         >
                           {t('settingsPage.language.japanese')}
                           {selectedLanguage === 'ja' && <Check className="h-5 w-5 text-cyan-400" />}
+                        </a>
+                        <a
+                          href="#"
+                          className={`flex justify-between items-center px-4 py-3 text-sm hover:bg-gray-700 hover:text-white transition-colors duration-150 ${
+                            selectedLanguage === 'ko' ? 'text-cyan-400 font-semibold' : 'text-gray-300'
+                          }`}
+                          role="menuitem"
+                          onClick={(e) => { 
+                            e.preventDefault(); 
+                            handleLanguageSelect('ko'); 
+                          }}
+                        >
+                          {t('settingsPage.language.korean')}
+                          {selectedLanguage === 'ko' && <Check className="h-5 w-5 text-cyan-400" />}
+                        </a>
+                        <a
+                          href="#"
+                          className={`flex justify-between items-center px-4 py-3 text-sm hover:bg-gray-700 hover:text-white transition-colors duration-150 ${
+                            selectedLanguage === 'zh-CN' ? 'text-cyan-400 font-semibold' : 'text-gray-300'
+                          }`}
+                          role="menuitem"
+                          onClick={(e) => { 
+                            e.preventDefault(); 
+                            handleLanguageSelect('zh-CN'); 
+                          }}
+                        >
+                          {t('settingsPage.language.chinese')}
+                          {selectedLanguage === 'zh-CN' && <Check className="h-5 w-5 text-cyan-400" />}
+                        </a>
+                        <a
+                          href="#"
+                          className={`flex justify-between items-center px-4 py-3 text-sm hover:bg-gray-700 hover:text-white transition-colors duration-150 ${
+                            selectedLanguage === 'es' ? 'text-cyan-400 font-semibold' : 'text-gray-300'
+                          }`}
+                          role="menuitem"
+                          onClick={(e) => { 
+                            e.preventDefault(); 
+                            handleLanguageSelect('es'); 
+                          }}
+                        >
+                          {t('settingsPage.language.spanish')}
+                          {selectedLanguage === 'es' && <Check className="h-5 w-5 text-cyan-400" />}
+                        </a>
+                        <a
+                          href="#"
+                          className={`flex justify-between items-center px-4 py-3 text-sm hover:bg-gray-700 hover:text-white transition-colors duration-150 ${
+                            selectedLanguage === 'pt-BR' ? 'text-cyan-400 font-semibold' : 'text-gray-300'
+                          }`}
+                          role="menuitem"
+                          onClick={(e) => { 
+                            e.preventDefault(); 
+                            handleLanguageSelect('pt-BR'); 
+                          }}
+                        >
+                          {t('settingsPage.language.portuguese')}
+                          {selectedLanguage === 'pt-BR' && <Check className="h-5 w-5 text-cyan-400" />}
+                        </a>
+                        <a
+                          href="#"
+                          className={`flex justify-between items-center px-4 py-3 text-sm hover:bg-gray-700 hover:text-white transition-colors duration-150 ${
+                            selectedLanguage === 'fr' ? 'text-cyan-400 font-semibold' : 'text-gray-300'
+                          }`}
+                          role="menuitem"
+                          onClick={(e) => { 
+                            e.preventDefault(); 
+                            handleLanguageSelect('fr'); 
+                          }}
+                        >
+                          {t('settingsPage.language.french')}
+                          {selectedLanguage === 'fr' && <Check className="h-5 w-5 text-cyan-400" />}
+                        </a>
+                        <a
+                          href="#"
+                          className={`flex justify-between items-center px-4 py-3 text-sm hover:bg-gray-700 hover:text-white transition-colors duration-150 ${
+                            selectedLanguage === 'de' ? 'text-cyan-400 font-semibold' : 'text-gray-300'
+                          }`}
+                          role="menuitem"
+                          onClick={(e) => { 
+                            e.preventDefault(); 
+                            handleLanguageSelect('de'); 
+                          }}
+                        >
+                          {t('settingsPage.language.german')}
+                          {selectedLanguage === 'de' && <Check className="h-5 w-5 text-cyan-400" />}
                         </a>
                       </div>
                     </div>

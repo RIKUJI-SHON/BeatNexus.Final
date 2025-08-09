@@ -1,0 +1,2127 @@
+{
+  "common": {
+    "upgrade": "업그레이드",
+    "login": "로그인",
+    "signup": "회원가입",
+    "support": "지원",
+    "community": "커뮤니티",
+    "battles": "배틀",
+    "shop": "상점",
+    "home": "홈",
+    "ranking": "랭킹",
+    "createPost": "게시물 작성",
+    "logout": "로그아웃",
+    "howToGuide": "사용법 가이드",
+    "locale": "ko-KR",
+    "back": "뒤로",
+    "next": "다음",
+    "cancel": "취소",
+    "create": "생성",
+    "creating": "생성 중...",
+    "joining": "가입 중...",
+    "join": "가입",
+    "owner": "소유자",
+    "members": "멤버",
+    "avgRating": "평균 평점",
+    "loading": "로딩 중...",
+    "description": "설명",
+    "password": "비밀번호",
+    "enterPassword": "비밀번호 입력",
+    "noDescription": "설명이 없습니다",
+    "termsOfService": "이용약관",
+    "privacyPolicy": "개인정보처리방침"
+  },
+  "hoverCard": {
+    "profile": "프로필",
+    "myBattles": "내 배틀",
+    "settings": "설정",
+    "logout": "로그아웃"
+  },
+  "submissionModal": {
+    "title": "비디오 제출",
+    "videoPreview": "비디오 미리보기",
+    "processing": "처리 중...",
+    "progress": "진행률",
+    "estimatedRemaining": "예상 남은 시간",
+    "estimatedTime": {
+      "seconds": "약 {{seconds}}초",
+      "minutes": "약 {{minutes}}분 {{seconds}}초",
+      "almostDone": "거의 완료"
+    },
+    "error": "오류가 발생했습니다",
+    "completed": "제출 완료",
+    "cancel": "취소",
+    "close": "닫기",
+    "checking": "비디오 확인 중...",
+    "compressing": "비디오 압축 중...",
+    "uploading": "비디오 업로드 중...",
+    "creating": "제출 생성 중...",
+    "matching": "상대방 찾는 중..."
+  },
+  "subscription": {
+    "title": "요금제 선택",
+    "subtitle": "비트박스 여정을 지원할 완벽한 요금제를 선택하세요",
+    "billing": {
+      "monthly": "월간",
+      "yearly": "연간",
+      "discount": "20% 할인"
+    },
+    "plans": {
+      "free": {
+        "name": "무료",
+        "description": "기본 기능 체험",
+        "features": [
+          "월 3회 게시",
+          "광고 포함",
+          "월 0개 부스트 토큰",
+          "기본 프로필"
+        ],
+        "button": "무료 시작"
+      },
+      "crew": {
+        "name": "크루",
+        "description": "더 많은 게시물과 혜택",
+        "features": [
+          "월 10회 게시",
+          "광고 없는 경험",
+          "월 5개 부스트 토큰",
+          "커스텀 프로필 색상",
+          "우선 지원"
+        ],
+        "button": "시작하기",
+        "popular": "인기 요금제"
+      },
+      "pro": {
+        "name": "프로",
+        "description": "완전한 크리에이터 경험",
+        "features": [
+          "무제한 게시",
+          "광고 없는 경험",
+          "월 15개 부스트 토큰",
+          "프로필 배지 & 테마",
+          "우선 매칭",
+          "상세 통계"
+        ],
+        "button": "업그레이드"
+      }
+    },
+    "features": {
+      "title": "모든 기능 비교",
+      "unlimited": {
+        "title": "무제한 게시",
+        "description": "프로 요금제로 무제한 배틀 게시"
+      },
+      "boost": {
+        "title": "부스트 토큰",
+        "description": "배틀 노출을 증가시키는 토큰"
+      },
+      "customization": {
+        "title": "커스터마이징",
+        "description": "프로필과 테마 커스터마이징"
+      },
+      "badges": {
+        "title": "특별 배지",
+        "description": "프로 사용자 전용 배지",
+        "details": {
+          "description": "설명",
+          "earnedDate": "획득 날짜"
+        }
+      }
+    },
+    "comingSoon": {
+      "title": "출시 예정",
+      "description": "구독 기능이 곧 출시됩니다"
+    }
+  },
+  "battle": {
+    "title": "배틀 상세",
+    "loading": "배틀 상세 로딩 중...",
+    "notFound": "배틀을 찾을 수 없습니다",
+    "voteA": "A에게 투표",
+    "voteB": "B에게 투표",
+    "voting": "투표 중...",
+    "voteSuccess": "투표가 성공적으로 완료되었습니다!",
+    "voteError": "투표 실패: {{message}}",
+    "alreadyVoted": "이미 이 배틀에 투표하셨습니다.",
+    "loginToVote": "투표하려면 로그인해주세요.",
+    "participantMessage": "이 배틀의 참가자로서 투표할 수 없습니다. 투표 과정을 지켜보세요!",
+    "votes": "표",
+    "format": "배틀 형식",
+    "formats": {
+      "main_battle": "메인 배틀",
+      "mini_battle": "미니 배틀", 
+      "theme_challenge": "테마 챌린지"
+    },
+    "result": {
+      "victory": "🎉 승리! 🎉",
+      "defeat": "💪 다음에 더 잘하세요",
+      "against": "상대",
+      "ratingChange": "레이팅 변화",
+      "currentRank": "현재 순위",
+      "share": "승리 공유",
+      "viewArchive": "아카이브 보기",
+      "shareText": "🎵 방금 BeatNexus에서 {{opponent}}를 상대로 비트박스 배틀에서 승리했습니다! 레이팅: {{rating}} | 순위: {{rank}} 🎵",
+      "draw": "🤝 무승부 🤝"
+    },
+    "matched": {
+      "title": " 배틀 상대를 찾았습니다! ",
+      "against": "vs",
+      "votingPeriod": "5일 투표 기간",
+      "encouragement": "배틀이 시작되었습니다! 커뮤니티가 당신의 퍼포먼스에 투표하도록 하세요.",
+      "viewBattle": "배틀 보기",
+      "share": "트위터에 공유",
+      "shareText": "{{format}}에서 {{opponent}}와의 배틀이 시작되었습니다! 와서 투표해주세요!"
+    }
+  },
+  "battleView": {
+    "title": "BeatNexus",
+    "subtitle": "배틀 아레나",
+    "votingEndsIn": "투표 종료까지",
+    "votingEnded": "투표 종료",
+    "timeUnits": {
+      "days": "일",
+      "hours": "시간",
+      "minutes": "분"
+    },
+    "loading": "로딩 중...",
+    "participatingInBattle": "배틀 참여 중",
+    "votedFor": "투표함",
+    "cancellingVote": "투표 취소 중...",
+    "cancelVote": "투표 취소",
+    "voteFor": "투표하기",
+    "totalVotes": "총 투표 수",
+    "comments": "댓글",
+    "votes": "표",
+    "leading": "선두",
+    "addComment": "댓글을 추가하세요...",
+    "postComment": "댓글 게시",
+    "voteWithComment": "투표 & 댓글",
+    "loadComments": "댓글 로드",
+    "noComments": "아직 댓글이 없습니다. 첫 번째로 의견을 공유해보세요!",
+    "commentPlaceholder": "이 배틀에 대한 의견을 공유하세요...",
+    "videoLoading": "비디오 로딩 중...",
+    "vote": "투표",
+    "voteToSeeResults": "결과를 보려면 투표하세요",
+    "voteToSeeComments": "댓글을 보려면 투표하세요",
+    "voteToSeeCommentsDesc": "이 배틀의 투표 결과와 댓글을 보려면 먼저 투표해주세요",
+    "timeRemaining": "남은 시간",
+    "tiedVote": "동점",
+    "leadingPlayer": "{{player}}가 선두입니다",
+    "votingClosed": "투표가 마감되었습니다",
+    "alreadyVoted": "이미 투표함",
+    "participantCannotVote": "참가자는 투표할 수 없습니다",
+    "voteSuccess": "투표가 성공적으로 제출되었습니다",
+    "voteError": "투표 제출에 실패했습니다",
+    "votingGuide": "투표 가이드",
+    "evaluationCriteria": "심사 기준표",
+    "selectVoteMethod": "투표 방법 선택",
+    "voteForPlayer": "플레이어 {{player}}에게 투표",
+    "simpleVote": "투표",
+    "criteria": {
+      "technicality": "기술력",
+      "technicalityDesc": "복잡한 패턴을 명확하고 정확한 타이밍과 끊김없는 플로우로 제어할 수 있는가?",
+      "musicality": "음악성", 
+      "musicalityDesc": "비트, 멜로디, 구성이 하나의 곡으로 어우러져 스토리텔링과 감정적 기복이 청중을 사로잡는가?",
+      "originality": "독창성",
+      "originalityDesc": "다른 사람의 모방에 의존하지 않고 새로운 사운드와 아이디어로 신선함과 혁신을 보여주는가?",
+      "showmanship": "무대 매너",
+      "showmanshipDesc": "표정, 동작, 무대 컨트롤로 청중을 사로잡고 기술과 음악성의 매력을 극대화할 수 있는가?"
+    },
+    "tipsNote": "더 나은 판단을 위해 이 기준을 참고로 사용하세요",
+    "notSet": "설정되지 않음",
+    "totalScores": "총점",
+    "unsetItems": "{{count}}개 항목이 설정되지 않음"
+  },
+  "battleCard": {
+    "votingEndsIn": "{{days}}일 {{hours}}시간 남음",
+    "votingEndsInHours": "{{hours}}시간 {{minutes}}분 남음",
+    "votingEndsInMinutes": "{{minutes}}분 {{seconds}}초 남음",
+    "votingEndsInSeconds": "{{seconds}}초 남음",
+    "votingEnded": "투표 종료",
+    "contestantA": "참가자 A",
+    "contestantB": "참가자 B",
+    "unknownUser": "알 수 없는 사용자",
+    "votes": "표",
+    "totalVotes": "총 투표 수",
+    "comments": "댓글",
+    "voteButton": "이 배틀에 투표하기",
+    "voteNow": "지금 투표",
+    "watch": "시청",
+    "watchReplay": "다시보기",
+    "archivedOn": "{{date}}에 아카이브됨",
+    "battleFormats": {
+      "MAIN_BATTLE": "메인 배틀",
+      "MINI_BATTLE": "미니 배틀",
+      "THEME_CHALLENGE": "테마 챌린지"
+    },
+    "errors": {
+      "navigationFailed": "배틀 페이지로 이동에 실패했습니다. 다시 시도해주세요."
+    },
+    "viewComments": "댓글 보기",
+    "commentsModal": {
+      "title": "배틀 댓글",
+      "noComments": "아직 댓글이 없습니다",
+      "loading": "댓글 로딩 중...",
+      "playerA": "플레이어 A",
+      "playerB": "플레이어 B",
+      "close": "닫기"
+    },
+    "timeLeft": {
+      "minutes": "{{count}}분 {{seconds}}초 남음",
+      "seconds": "{{count}}초 남음"
+    }
+  },
+  "battleFilters": {
+    "searchPlaceholder": "사용자명으로 검색...",
+    "myBattles": "내 배틀",
+    "allFormats": "모든 형식",
+    "recent": "최근",
+    "trending": "인기",
+    "endingSoon": "곧 종료",
+    "completed": "완료됨",
+    "searchTitle": "사용자명 검색",
+    "filtersTitle": "필터 & 정렬",
+    "myBattlesOnly": "내 배틀만",
+    "activeFilters": "활성 필터:",
+    "loading": "로딩 중...",
+    "noRankings": "랭킹 없음",
+    "buttons": {
+      "profile": "프로필",
+      "battleStart": "배틀 시작",
+      "tournament": "토너먼트"
+    }
+  },
+  "monthlyLimit": {
+    "title": "월간 게시 제한",
+    "subtitle": "이번 달 상태",
+    "remainingPosts": "남은 게시물",
+    "usedPosts": "사용함: {{count}}회",
+    "limitPosts": "제한: {{count}}회",
+    "resetLabel": "리셋:",
+    "nearLimitWarning": "부족함",
+    "nearLimitMessage": "{{count}}개 게시물 남음",
+    "limitReachedTitle": "월간 제한 도달",
+    "limitReachedMessage": "{{date}}에 리셋됨",
+    "postVideoButton": "비디오 게시",
+    "limitReachedButton": "게시 제한 도달",
+    "qualityMessage": "고품질 배틀을 유지하기 위해 월 최대 30회까지 게시할 수 있습니다",
+    "loginToCheck": "게시 상태를 확인하려면 로그인하세요",
+    "checkingStatus": "월간 게시 상태 확인 중...",
+    "testMode": {
+      "unlimited": "무제한",
+      "remainingUnlimited": "무제한",
+      "testingPhase": "테스트 단계에서는 제출 제한이 없습니다",
+      "testingMessage": "플랫폼이 현재 테스트 단계에 있습니다. 정식 출시까지 제출 제한이 없습니다.",
+      "simpleMessage": "테스트 단계에서는 무제한 게시"
+    },
+    "monthlySubmissions": "월간 제출",
+    "unlimitedSubmissions": "무제한 제출 가능",
+    "remainingSubmissions": "{{count}}개 제출 남음",
+    "nextReset": "다음 리셋: {{date}}",
+    "testPeriodMessage": "테스트 기간 중 무제한 제출"
+  },
+  "userInfoCard": {
+    "loading": "프로필 정보 로딩 중...",
+    "memberSince": "{{date}}부터 회원",
+    "currentSeason": "현재 시즌",
+    "notParticipating": "시즌 미참여",
+    "notParticipatingMessage": "배틀이나 투표에 참여하여 시즌 랭킹에 참가하세요!",
+    "noActiveSeason": "활성 시즌 없음",
+    "noActiveSeasonMessage": "현재 활성화된 시즌이 없습니다",
+    "rankings": {
+      "player": "플레이어",
+      "voter": "투표자", 
+      "notRanked": "--"
+    },
+    "points": {
+      "seasonPoints": "시즌 포인트",
+      "votePoints": "투표 포인트"
+    }
+  },
+  "upload": {
+  },
+  "community": {
+    "title": "커뮤니티",
+    "subtitle": "비트박서들과 연결하고 함께 성장하세요",
+    "createCommunity": "커뮤니티 생성",
+    "createNewCommunity": "새 커뮤니티 생성",
+    "communityName": "커뮤니티 이름",
+    "enterCommunityName": "커뮤니티 이름 입력",
+    "describeCommunity": "커뮤니티 설명",
+    "privateCommunitySetting": "비공개 커뮤니티 (비밀번호 필요)",
+    "searchCommunities": "커뮤니티 검색...",
+    "myCommunities": "내 커뮤니티",
+    "allCommunities": "모든 커뮤니티",
+    "noCommunitiesFound": "검색에 일치하는 커뮤니티가 없습니다",
+    "noCommunitiesYet": "아직 커뮤니티가 없습니다",
+    "tryDifferentSearch": "다른 검색어를 시도해보세요",
+    "createFirstCommunity": "첫 번째 커뮤니티를 만들어보는 것은 어떨까요?",
+    "communityCreated": "커뮤니티가 성공적으로 생성되었습니다!",
+    "joinedCommunity": "커뮤니티에 성공적으로 가입했습니다!",
+    "enterCommunity": "커뮤니티 입장",
+    "privateCommunityPasswordRequired": "이 비공개 커뮤니티에 가입하려면 비밀번호가 필요합니다.",
+    "publicCommunityJoinConfirm": "이 커뮤니티에 가입하시겠습니까?",
+    "privateCommunityJoinConfirm": "이 비공개 커뮤니티에 가입하시겠습니까? 비밀번호를 입력해주세요.",
+    "passwordRequired": "비밀번호가 필요합니다",
+    "joinCommunity": "커뮤니티 가입",
+    "trending": "인기",
+    "newest": "최신",
+    "noCommunities": "커뮤니티를 찾을 수 없습니다",
+    "communityDescription": "설명",
+    "createSuccess": "커뮤니티가 성공적으로 생성되었습니다",
+    "createError": "커뮤니티 생성에 실패했습니다",
+    "joinSuccess": "커뮤니티에 성공적으로 가입했습니다",
+    "joinError": "커뮤니티 가입에 실패했습니다",
+    "leaveSuccess": "커뮤니티를 성공적으로 떠났습니다",
+    "leaveError": "커뮤니티 떠나기에 실패했습니다",
+    "join": "가입",
+    "leave": "떠나기",
+    "admin": "관리자",
+    "moderator": "운영자",
+    "member": "멤버"
+  },
+  "communityTitle": "커뮤니티",
+  "communitySubtitle": "비트박서들과 연결하고 함께 성장하세요",
+  "communityNotFound": "커뮤니티를 찾을 수 없습니다",
+  "communityNotFoundDesc": "이 커뮤니티가 존재하지 않거나 접근 권한이 없습니다.",
+  "backToCommunities": "커뮤니티로 돌아가기",
+  "memberRanking": "멤버 랭킹",
+  "chat": "채팅",
+  "memberManagement": "멤버 관리",
+  "noMembers": "멤버가 없습니다",
+  "you": "나",
+  "joined": "가입함",
+  "communityChat": "커뮤니티 채팅",
+  "messages": "메시지",
+  "noMessages": "아직 메시지가 없습니다",
+  "startConversation": "대화를 시작하세요!",
+  "typeMessage": "메시지를 입력하세요...",
+  "adminOnly": "관리자 전용",
+  "rating": "레이팅",
+  "promoteToAdmin": "관리자로 승급",
+  "demoteToMember": "멤버로 강등",
+  "kickMember": "추방",
+  "member": "멤버",
+  "admin": "관리자",
+  "leaveCommunity": "커뮤니티 떠나기",
+  "confirmLeaveCommunity": "떠나기 확인",
+  "leaveCommunityTitle": "정말로 떠나시겠습니까?",
+  "leaveCommunityDesc": "{{name}}을(를) 떠나게 됩니다. 다시 가입하려면 요청해야 합니다.",
+  "leaving": "떠나는 중...",
+  "leftCommunity": "커뮤니티를 성공적으로 떠났습니다",
+  "deleteCommunity": "커뮤니티 삭제",
+  "communityDeleted": "커뮤니티가 성공적으로 삭제되었습니다!",
+  "dangerZone": "위험 구역",
+  "deleteCommunityDescription": "이 커뮤니티와 모든 데이터를 영구적으로 삭제합니다.",
+  "leaveCommunityDescription": "이 커뮤니티를 떠납니다. 나중에 다시 가입할 수 있습니다.",
+  "confirmDeleteCommunity": "커뮤니티 삭제 확인",
+  "deleteCommunityTitle": "커뮤니티 삭제",
+  "deleteCommunityDesc": "정말로 \"{{name}}\"을(를) 삭제하시겠습니까?",
+  "deleteCommunityWarning": "이 작업은 되돌릴 수 없습니다. 모든 데이터가 영구적으로 손실됩니다.",
+  "deleting": "삭제 중...",
+  "confirmKick": "추방 확인",
+  "confirmPromote": "승급 확인",
+  "confirmDemote": "강등 확인",
+  "kickMemberTitle": "이 멤버를 추방하시겠습니까?",
+  "promoteMemberTitle": "관리자로 승급하시겠습니까?",
+  "demoteMemberTitle": "멤버로 강등하시겠습니까?",
+  "kickMemberDesc": "{{name}}이(가) 커뮤니티에서 제거됩니다.",
+  "promoteMemberDesc": "{{name}}이(가) 관리자로 승급됩니다.",
+  "demoteMemberDesc": "{{name}}이(가) 멤버로 강등됩니다.",
+  "processing": "처리 중...",
+  "memberKicked": "멤버가 성공적으로 추방되었습니다",
+  "memberPromoted": "멤버가 성공적으로 승급되었습니다",
+  "memberDemoted": "멤버가 성공적으로 강등되었습니다",
+  "pwa": {
+    "install": {
+      "title": "앱 설치",
+      "description": "더 나은 경험을 위해 BeatNexus를 홈 화면에 추가하세요.",
+      "button": "설치",
+      "later": "나중에"
+    }
+  },
+  "offline": {
+    "title": "오프라인",
+    "description": "인터넷 연결을 확인해주세요"
+  },
+  "online": {
+    "title": "온라인",
+    "description": "연결이 복원되었습니다"
+  },
+  "shortcuts": {
+    "guide": {
+      "title": "앱 바로가기",
+      "description": "앱 아이콘을 길게 눌러 즐겨찾는 기능에 빠르게 접근하세요!",
+      "gotIt": "확인!"
+    },
+    "battles": "배틀",
+    "post": "비디오 게시",
+    "ranking": "랭킹",
+    "myBattles": "내 배틀"
+  },
+  "footer": {
+    "description": "비트박스 커뮤니티의 다음 단계. 초보자와 프로를 하나로 모아 예술을 승화시킵니다.",
+    "quickLinks": "빠른 링크",
+    "tournaments": "토너먼트",
+    "resources": "리소스",
+    "tutorials": "튜토리얼",
+    "communityForum": "커뮤니티 포럼",
+    "boostPlans": "부스트 요금제",
+    "faq": "자주 묻는 질문",
+    "contactUs": "문의하기",
+    "contactMessage": "질문이나 피드백이 있나요? 저희 팀에 연락하세요!",
+    "allRightsReserved": "모든 권리 보유.",
+    "termsOfService": "이용약관",
+    "privacyPolicy": "개인정보처리방침",
+    "lastUpdated": "최종 업데이트"
+  },
+  "privacyPolicyPage": {
+    "title": "개인정보처리방침",
+    "subtitle": "개인정보 처리 방법에 대한 정책을 검토해주세요.",
+    "contactMessage": "이 개인정보처리방침에 대한 질문이 있으시면 저희에게 연락하세요.",
+    "backButton": "뒤로",
+    "languageTabs": {
+      "japanese": "日本語",
+      "english": "English"
+    }
+  },
+  "termsPage": {
+    "title": "이용약관",
+    "subtitle": "BeatNexus 서비스 이용을 위한 약관을 검토해주세요",
+    "backButton": "뒤로",
+    "languageTabs": {
+      "japanese": "日本語",
+      "english": "English"
+    },
+    "contactSection": {
+      "title": "문의하기",
+      "description": "이용약관에 대한 질문이나 문의사항이 있으시면 아래로 연락해주세요."
+    },
+    "lastUpdated": "최종 업데이트: 2025년 7월 18일"
+  },
+  "home": {
+    "landingPage": {
+      "cta": {
+        "joinBeta": "지금 가입",
+        "watchBattles": "배틀 시청"
+      },
+      "hero": {
+        "title": {
+          "forAll": "모든 비트박서를 위한",
+          "nextStep": "\"다음 단계\"."
+        },
+        "subtitle": "비디오 업로드로 간편한 배틀 → 커뮤니티 투표로 승자 결정,\n비트박서 배틀 플랫폼."
+      },
+      "challenges": {
+        "title": "이런 고민을 겪고 계신가요?",
+        "motivation": {
+          "title": "동기 유지",
+          "description": "연습에 대한 동기를 유지하기 어렵습니다"
+        },
+        "skillAssessment": {
+          "title": "실력 평가",
+          "description": "씬에서 내 실력이 어느 정도인지 객관적으로 알고 싶습니다"
+        },
+        "casualChallenge": {
+          "title": "가벼운 실력 테스트",
+          "description": "토너먼트는 진입 장벽이 높은데 가볍게 실력을 테스트할 곳이 없습니다"
+        },
+        "community": {
+          "title": "커뮤니티",
+          "description": "동료들과 경쟁하고 피드백을 받을 기회가 적습니다"
+        }
+      },
+      "solution": {
+        "title": "이(가) 당신의 \"다음 단계\"를 만들어 드립니다.",
+        "visualizeGrowth": {
+          "title": "성장 시각화",
+          "description": "Elo 레이팅과 랭킹 시스템으로 실력 향상이 객관적인 수치로 보입니다."
+        },
+        "gradualChallenge": {
+          "title": "단계적 도전",
+          "description": "캐주얼한 레이트 배틀 \"메인 배틀\"부터 상금이 걸린 \"BeatNexus Summit\"까지. 당신의 수준과 목표에 맞는 도전이 있습니다."
+        },
+        "communityConnection": {
+          "title": "커뮤니티 연결",
+          "description": "투표와 댓글을 통해 열정적인 동료들과 연결되어 서로 발전하는 문화를 만들어 갑니다."
+        }
+      },
+      "howItWorks": {
+    "title": "간단한 4단계로 시작",
+    "subtitle": "복잡한 설정 없이 바로 배틀을 즐길 수 있습니다.",
+        "steps": {
+          "upload": {
+      "title": "1. 동영상 업로드",
+      "description": "당신의 비트 영상(동영상)을 업로드하세요"
+          },
+          "matching": {
+      "title": "2. 자동 매칭",
+      "description": "레이팅을 바탕으로 최적의 상대가 자동으로 선택됩니다"
+          },
+          "voting": {
+      "title": "3. 커뮤니티 투표",
+      "description": "관객(커뮤니티)이 심사위원이 되어 승자를 결정합니다"
+          },
+          "results": {
+      "title": "4. 결과 & 레이팅 업데이트",
+      "description": "결과에 따라 레이팅이 업데이트되고 성장을 체감합니다"
+          }
+        },
+        "features": {
+          "onlineBattle": {
+            "title": "온라인 배틀",
+            "description": "동영상을 업로드하면 최적의 레이팅 수준의 상대와 자동으로 매칭됩니다."
+          },
+          "communityVoting": {
+            "title": "커뮤니티 투표",
+            "description": "관객의 투표가 배틀 결과를 결정합니다. 플레이어뿐만 아니라 모든 사람이 심사위원으로서 스타가 될 수 있습니다."
+          },
+          "seasonRanking": {
+            "title": "시즌 기반 랭킹",
+            "description": "시즌은 약 3개월마다 변경되며 랭킹이 리셋됩니다. 플레이어뿐만 아니라 우수한 심사위원을 위한 \"투표자 랭킹\"도 있습니다."
+          },
+          "judgeSystem": {
+            "title": "세부 심사 시스템",
+            "description": "직관적인 \"이 사람이 좋아!\" 투표부터 4가지 전문적 관점에서 배틀을 심층 분석하는 \"심사위원 스코어카드\" 기능까지."
+          }
+        }
+      },
+      "socialProof": {
+        "title": "이미 이만큼 열기가!",
+        "stats": {
+          "preRegistration": "사전 등록",
+          "totalBattles": "총 배틀",
+          "communityVotes": "커뮤니티 투표"
+        },
+        "ranking": {
+          "title": "랭킹 TOP3",
+          "closedTest": "클로즈드 테스트 랭킹 TOP3",
+          "playerRanking": "플레이어 랭킹",
+          "voterRanking": "투표자 랭킹",
+          "noPlayerRanking": "플레이어 랭킹이 없습니다",
+          "noVoterRanking": "투표자 랭킹이 없습니다",
+          "noSeasonEnded": "아직 종료된 시즌이 없습니다",
+          "betaSeasonNote": "β 시즌 결과를 기대해 주세요!",
+          "loading": "로딩 중..."
+        }
+      },
+      "vision": {
+        "title": "BeatNexus의 그랜드 비전",
+        "subtitle": "단순한 배틀 도구가 아닌, 씬 전체가 참여하는 플랫폼",
+        "disclaimer": "※ 아래 내용은 향후 콘셉트/계획으로 현재 개발/검토 중입니다",
+        "summit": {
+          "title": "BeatNexus Summit 콘셉트",
+          "prizeTournament": "시즌 상위 성과자에게 상금 토너먼트의 길이 열립니다",
+          "seedRights": "시즌 1 상위 8명은 다음 토너먼트의 시드권을 획득합니다",
+          "globalConnection": "글로벌 비트박스 씬과의 연결을 기획 중"
+        },
+        "freemium": {
+          "title": "프리미엄/프리미엄 모델 미리보기",
+          "betaFree": "<span class=\"font-bold text-cyan-400\">β 시즌은 완전 무료</span>로 모든 기능을 사용할 수 있습니다",
+          "futureModel": "향후에는 월별 무료 도전 횟수가 제공되는 레이트 배틀 모델을 제공합니다",
+          "unlimited": "정상을 노리는 진지한 플레이어를 위한 <span class=\"font-semibold text-purple-400\">\"Nexus Unlimited\"</span> 도입을 계획 중"
+        }
+      },
+      "faq": {
+        "title": "자주 묻는 질문",
+        "beginner": {
+          "question": "초보자도 참여할 수 있나요?",
+          "answer": "물론입니다! BeatNexus는 모든 레벨의 플레이어에게 ‘다음 단계’를 제공하기 위해 탄생했습니다. 먼저 동영상을 업로드하며 가볍게 시작해보세요."
+        },
+        "pricing": {
+          "question": "이용 요금이 있나요?",
+          "answer": "현재 진행 중인 β 시즌은 모든 기능을 완전 무료로 이용할 수 있습니다."
+        },
+        "mobile": {
+          "question": "스마트폰에서도 사용할 수 있나요?",
+          "answer": "현재는 PC 이용을 권장하지만, 사이트에서 앱처럼 설치해 사용할 수 있습니다. PWA를 지원하므로 홈 화면에 추가하여 네이티브 앱 같은 경험을 즐길 수 있습니다."
+        },
+        "fairness": {
+          "question": "불공정한 투표가 걱정돼요.",
+          "answer": "BeatNexus는 투표의 익명성을 제거하고 누가 누구에게 투표했는지 공개함으로써 책임 있는 건전한 커뮤니티를 지향합니다."
+        }
+      },
+      "closing": {
+        "title": {
+          "history": "역사가 시작되는 이 순간,",
+          "dontMiss": "놓치지 마세요."
+        },
+        "subtitle": "정식 릴리스가 라이브 중입니다! 지금 누구나 참여할 수 있어요!",
+        "schedule": {
+          "earlyAccess": "정식 릴리스 날짜:",
+          "earlyAccessDate": "8월 7일 시작",
+          "publicRelease": "현재 상태:",
+          "publicReleaseDate": "공개 이용 가능!"
+        },
+        "finalCta": "지금 바로 β 시즌에 참여하세요!"
+      }
+    },
+    "hero": {
+      "title": {
+        "main": "BEATNEXUS",
+        "highlighted": ""
+      },
+      "subtitle": {
+        "main": "비트박서들을 위한 궁극의 플랫폼에서",
+        "battle": "배틀하고",
+        "share": "공유하고",
+        "connect": "연결되고",
+        "and": "그리고",
+        "grow": "성장하세요",
+        "join": "글로벌 커뮤니티에 참여하고 실력을 한 단계 끌어올리세요.",
+        "nextStep": "당신의 다음 단계가 여기서 시작됩니다.",
+        "compete": "비트박스 배틀에서 경쟁하고, 커뮤니티 투표로 승자를 결정하며, ",
+        "climbRanking": "랭킹을 올려보세요!"
+      },
+      "button": {
+        "startBattle": "배틀 시작하기",
+        "watchBattles": "배틀 보기 & 투표",
+        "joinNow": "지금 참여"
+      },
+      "seasonInfo": {
+        "earlyAccess": "지금 라이브!",
+        "earlyAccessLabel": "퍼블릭 릴리스",
+        "publicRelease": "8월 7일",
+        "publicReleaseLabel": "출시됨!"
+      }
+    },
+    "howItWorks": {
+      "title": "HOW IT WORKS",
+      "subtitle": "간단한 4단계",
+      "description": "동영상 업로드부터 승자 결정까지, 배틀 시스템의 모든 것이 자동화되어 있습니다",
+      "steps": {
+        "upload": {
+          "title": "동영상 업로드",
+          "description": "비트박스 동영상을 업로드하세요. 매시간마다 한 번 게시할 수 있으며 자동으로 매칭 대기열에 입장합니다."
+        },
+        "matching": {
+          "title": "자동 매칭",
+          "description": "ELO 레이팅을 기반으로 상대가 자동 선택됩니다. 점진적으로 매칭 범위를 확장하여 최적의 상대를 찾습니다."
+        },
+        "voting": {
+          "title": "커뮤니티 투표",
+          "description": "5일간의 투표 기간 동안 커뮤니티가 승자를 결정합니다. 투표에 참여하여 포인트를 얻고 투표자 랭킹을 올려보세요."
+        },
+        "results": {
+          "title": "결과 & 랭킹",
+          "description": "승자가 결정된 후 ELO 레이팅이 자동으로 업데이트됩니다. 배틀 기록이 보관되고 랭킹이 업데이트됩니다."
+        }
+      }
+    },
+    "rankings": {
+      "playerRanking": {
+        "title": "플레이어 랭킹",
+        "description": "모든 배틀은 레이팅에 영향을 미치는 진지한 경기입니다. 배틀에서 승리하고 세계에 실력을 증명하세요. 랭킹 최상위에 도달한 자만이 다음 단계의 문을 열 수 있습니다.",
+        "betaReward": {
+          "title": "β 시즌 보상:",
+          "description": "랭킹 상위 8명은 시즌 1 결승 토너먼트에 시드 진출권을 얻습니다."
+        }
+      },
+      "voterRanking": {
+        "title": "투표자 랭킹",
+        "description": "커뮤니티의 예리한 눈이 승부를 결정합니다. 수많은 배틀을 심사하고 미적 감각으로 플랫폼에 기여하세요. 가장 신뢰받는 심사위원은 특별한 영예를 받습니다.",
+        "betaReward": {
+          "title": "β 시즌 보상:",
+          "description": "최고 투표자는 시즌 1 결승 토너먼트의 공식 심사위원으로 임명됩니다."
+        }
+      }
+    },
+    "shadows": {
+      "title": {
+        "main": "그림자 속 비트박스에",
+        "highlighted": "지치셨나요"
+      },
+      "subtitle": "비트박스 씬은 폭발적으로 성장하고 있지만, 많은 아티스트들이 같은 장벽에 직면하고 있습니다.",
+      "card1": {
+        "title": "\"보는\" 것은 성장하고 있지만...",
+        "description": "...\"하는\" 것과 예술 형태에 \"머무는\" 것은 따라가지 못하고 있습니다. 많은 사람들이 초기 열정 이후 길을 잃습니다."
+      },
+      "card2": {
+        "title": "초보자의 병목 현상",
+        "description": "신규 참여자들은 다음 단계, 연습 파트너, 또는 개선할 장소를 찾기 어려워하며 종종 고립감을 느낍니다."
+      },
+      "card3": {
+        "title": "커뮤니티 & 기회의 격차",
+        "description": "열정적인 비트박서들에게는 중심 허브가 부족합니다. 새로운 재능이 인정받을 기회가 제한적입니다."
+      }
+    },
+    "elevate": {
+      "title": {
+        "main": "당신의 비트를 끌어올리는데",
+        "highlighted": "필요한 모든 것"
+      },
+      "card1": {
+        "title": "온라인 배틀",
+        "description": "오디오/비디오를 게시하고, 글로벌 상대와 1대1 배틀을 하세요. 투표를 받고, BP를 얻고, 랭킹을 올려보세요!"
+      },
+      "card2": {
+        "title": "글로벌 커뮤니티",
+        "description": "전 세계 비트박서들과 연결하세요. 기술을 공유하고, 토론에 참여하고, 협력자를 찾고, 친구를 사귀세요."
+      },
+      "card3": {
+        "title": "랭킹 & 토너먼트",
+        "description": "시즌별 랭킹에서 실력을 증명하세요. 영광과 보상을 위한 흥미진진한 온라인 토너먼트에 참여하세요."
+      },
+      "card4": {
+        "title": "스킬 성장 허브",
+        "description": "학습 리소스에 액세스하고, 동료와 AI로부터 건설적인 피드백을 받고, 진행 상황을 추적하세요."
+      }
+    },
+    "ready": {
+      "title": {
+        "main": "준비되셨나요?",
+        "highlighted": "소리를 내볼 시간"
+      },
+      "subtitle": "당신의 비트박스 여정이 여기서 시작됩니다. 지금 BeatNexus에 합류해 변화의 일부가 되세요.",
+      "button": "무료로 가입하고 배틀 시작!",
+      "availability": "iOS/Android도 제공 예정 (Coming Soon)"
+    },
+    "cta": {
+      "title": "준비되셨나요? <span>지금 배틀을 시작</span>해요!",
+      "subtitle": "지금 참여하여 전 세계 비트박서들과 경쟁하고 랭킹 최상위에 도전하세요",
+      "button": "지금 배틀 시작",
+      "note": "무료 이용 • 24시간 게시 제한"
+    }
+  },
+  "battlesPage": {
+    "welcome": {
+      "title": "환영합니다",
+      "subtitle": "전 세계 비트박서들과 연결하고, 실력을 테스트하며, 함께 성장하세요.",
+      "stats": {
+        "activeBattles": "활성 배틀",
+        "completedBattles": "완료된 배틀",
+        "totalSubmissions": "총 제출 수",
+        "communityMembers": "커뮤니티 멤버",
+        "votesCast": "투표 수"
+      },
+      "buttons": {
+        "watchBattles": "배틀 시청 & 투표",
+        "postBeat": "당신의 비트를 게시하세요!"
+      },
+      "guide": {
+        "newHere": "처음 오셨나요?",
+        "checkGuide": "사용법 가이드를 확인해보세요"
+      }
+    },
+    "activeBattles": {
+      "title": "활성 배틀",
+      "subtitle": "좋아하는 퍼포먼스에 투표하세요",
+      "createBattleButton": "배틀 생성"
+    },
+    "status": {
+      "loadingBattles": "배틀 로딩 중...",
+      "errorLoadingBattles": "배틀 로딩 오류",
+      "tryAgainButton": "다시 시도",
+      "noBattlesFound": "배틀을 찾을 수 없음",
+      "noBattlesMatchSearch": "검색 조건에 맞는 배틀이 없습니다",
+      "loadingCompletedBattles": "완료된 배틀 로딩 중...",
+      "noCompletedBattles": "완료된 배틀이 아직 없음",
+      "checkBackSoonCompleted": "과거 대결의 결과를 보려면 곧 다시 확인해주세요.",
+      "loadingRankings": "랭킹 로딩 중...",
+      "noRankingsAvailable": "아직 사용 가능한 랭킹이 없습니다.",
+      "createBattleHint": "새로운 배틀을 생성하고 커뮤니티에 활력을 불어넣으세요!",
+      "completedBattlesHint": "완료된 배틀이 여기에 표시됩니다"
+    },
+    "rankings": {
+      "title": "최고의 비트박서들",
+      "titleCompact": "상위 랭킹",
+      "viewFullButton": "전체 보기",
+      "noRankingsYet": "아직 랭킹이 없음",
+      "table": {
+        "rank": "순위",
+        "player": "플레이어",
+        "bp": "BP"
+      }
+    },
+    "communityStats": {
+      "title": "커뮤니티 통계",
+      "submissions": "총 제출 수",
+      "members": "커뮤니티 멤버",
+      "votes": "투표 수"
+    },
+    "createBattle": {
+      "title": "새 배틀 생성",
+      "description": "준비되셨나요? 비디오를 게시하고 커뮤니티에 도전하세요.",
+      "button": "새 배틀 시작"
+    },
+    "howTo": {
+      "title": "BeatNexus 작동 방식",
+      "description": "배틀 게시, 투표, 리더보드 오르기 방법을 알아보세요.",
+      "button": "가이드 읽기"
+    },
+    "monthlyLimit": {
+      "title": "월간 제출 한도",
+      "currentStatus": "이번 달 현황",
+      "remainingSubmissions": "남은 제출 수",
+      "usedCount": "사용됨",
+      "limitCount": "한도",
+      "resetDate": "리셋",
+      "submitVideo": "동영상 제출",
+      "nearLimitWarning": "제출 횟수가 부족합니다",
+      "nearLimitMessage": "{count}번 더 제출할 수 있습니다",
+      "limitReached": "월간 한도 도달",
+      "limitReachedMessage": "{date}에 리셋됩니다",
+      "limitReachedButton": "제출 한도 도달",
+      "loginToCheck": "로그인하여 제출 상태 확인",
+      "checkingStatus": "월간 제출 상태 확인 중...",
+      "qualityNote": "고품질 배틀 유지를 위해 월 최대 30개 동영상을 제출할 수 있습니다"
+    }
+  },
+  "archivedBattleCard": {
+    "playerA": "플레이어 A",
+    "playerB": "플레이어 B",
+    "me": "나",
+    "votesSuffix": "표",
+    "result": {
+      "draw": "무승부",
+      "win": "승리",
+      "loss": "패배"
+    },
+    "watchReplayButton": "리플레이 보기"
+  },
+  "settingsPage": {
+    "title": "설정",
+    "loading": "설정 로딩 중...",
+    "preferences": {
+      "title": "환경설정",
+      "saveButton": "설정 저장",
+      "savingButton": "저장 중...",
+      "unsavedChanges": "저장되지 않은 변경사항이 있습니다"
+    },
+    "language": {
+      "title": "언어",
+      "description": "플랫폼에서 사용할 언어를 선택하세요.",
+      "english": "English",
+      "japanese": "日本語",
+      "korean": "한국어",
+      "chinese": "中文",
+      "spanish": "Español",
+      "portuguese": "Português (Brasil)",
+      "french": "Français",
+      "german": "Deutsch"
+    },
+    "pushNotifications": {
+      "title": "푸시 알림",
+      "description": "배틀 업데이트 및 매치 알림 수신 설정을 관리합니다.",
+      "enabled": "푸시 알림이 활성화되었습니다",
+      "disabled": "푸시 알림이 비활성화되었습니다"
+    },
+    "accountManagement": {
+      "title": "계정 관리"
+    },
+    "changePassword": {
+      "title": "비밀번호 변경",
+      "description": "계정 비밀번호를 업데이트합니다.",
+      "button": "비밀번호 변경"
+    },
+    "dangerZone": {
+      "title": "위험 구역"
+    },
+    "deleteAccount": {
+      "title": "계정 삭제",
+      "description": "계정과 모든 관련 데이터를 영구적으로 삭제합니다. 이 작업은 되돌릴 수 없습니다.",
+      "button": "계정 삭제"
+    },
+    "passwordModal": {
+      "title": "비밀번호 변경",
+      "newPassword": "새 비밀번호",
+      "confirmPassword": "새 비밀번호 확인",
+      "updateButton": "비밀번호 업데이트",
+      "updatingButton": "업데이트 중...",
+      "cancelButton": "취소"
+    },
+    "deleteModal": {
+      "title": "계정 삭제",
+      "confirmationMessage": "정말로 계정을 삭제하시겠습니까? 이 작업은 되돌릴 수 없으며 프로필 정보, 배틀 기록, 게시물을 포함한 모든 데이터가 영구적으로 제거됩니다.",
+      "confirmButton": "삭제 확인",
+      "deletingButton": "삭제 중...",
+      "cancelButton": "취소"
+    },
+    "toasts": {
+      "errorTitle": "오류",
+      "successTitle": "성공",
+      "setupComplete": "설정 완료",
+      "settingsChanged": "설정 변경됨",
+      "loadLanguageError": "언어 설정을 불러오는데 실패했습니다.",
+      "mustBeLoggedIn": "설정을 변경하려면 로그인해야 합니다.",
+      "noChanges": "저장할 변경사항이 없습니다.",
+      "languageUpdateSuccess": "언어가 {{language}}(으)로 업데이트되었습니다.",
+      "languageUpdateError": "언어 설정 업데이트에 실패했습니다.",
+      "passwordsDoNotMatch": "비밀번호가 일치하지 않습니다.",
+      "passwordTooShort": "비밀번호는 최소 6자 이상이어야 합니다.",
+      "mustBeLoggedInPassword": "비밀번호를 변경하려면 로그인해야 합니다.",
+      "passwordUpdateSuccess": "비밀번호가 성공적으로 업데이트되었습니다.",
+      "passwordUpdateFailed": "비밀번호 업데이트에 실패했습니다.",
+      "mustBeLoggedInDelete": "계정을 삭제하려면 로그인해야 합니다.",
+      "accountDeleteSuccess": "계정이 성공적으로 삭제되었습니다.",
+      "accountDeleteFailed": "계정 삭제에 실패했습니다."
+    }
+  },
+  "profilePage": {
+    "userNotFound": {
+      "title": "사용자를 찾을 수 없음",
+      "description": "찾고 있는 프로필이 존재하지 않습니다. 사용자 ID가 잘못되었거나 계정이 삭제되었을 수 있습니다.",
+      "homeButton": "홈페이지로 이동"
+    },
+    "profileUnavailable": {
+      "title": "프로필을 사용할 수 없음",
+      "description": "프로필을 보려면 로그인하거나 URL에 사용자를 지정해주세요."
+    },
+    "seasonRating": "시즌 레이팅",
+    "overallRating": "전체 레이팅",
+    "rank": {
+      "currentRank": "현재 랭크",
+      "nextRank": "다음 랭크",
+      "points": "포인트",
+      "pointsToNext": "다음까지 포인트",
+      "progress": "진행률",
+      "complete": "완료",
+      "maxRank": "최고 랭크 달성!",
+      "legendaryPlayer": "당신은 전설적인 플레이어입니다"
+    },
+    "stats": {
+  "battles": "배틀",
+  "wins": "승리",
+  "active": "진행 중",
+  "archived": "아카이브됨"
+    },
+    "edit": {
+  "usernamePlaceholder": "사용자명을 입력하세요",
+  "bioPlaceholder": "자기소개를 작성해 주세요...",
+  "saveButton": "변경 사항 저장",
+  "cancelButton": "취소",
+  "editButton": "프로필 편집",
+  "noBio": "아직 소개가 없습니다."
+    },
+    "tabs": {
+  "currentBattles": "현재 배틀",
+  "battleHistory": "배틀 기록",
+  "posts": "게시물",
+  "collection": "컬렉션"
+    },
+    "battles": {
+  "noActiveBattlesTitle": "진행 중인 배틀 없음",
+  "noActiveBattlesDescription": "현재 이 사용자는 진행 중인 배틀이 없습니다. 나중에 다시 확인해 주세요!",
+  "noArchivedBattlesTitle": "배틀 기록 없음",
+  "noArchivedBattlesDescription": "이 사용자의 과거 배틀 기록이 없습니다."
+    },
+    "posts": {
+  "deleteConfirmation": "이 게시물을 삭제하시겠습니까?",
+  "editButton": "편집",
+  "deleteButton": "삭제",
+  "saveButton": "저장",
+  "cancelButton": "취소",
+  "noPostsTitle": "게시물 없음",
+  "noPostsDescription": "이 사용자는 아직 게시물을 작성하지 않았습니다."
+    },
+    "toasts": {
+  "errorTitle": "오류",
+  "successTitle": "성공",
+  "loadProfileError": "프로필을 불러올 수 없습니다.",
+  "avatarUpdateSuccess": "아바타가 성공적으로 업데이트되었습니다!",
+  "profileUpdateFailedDB": "데이터베이스에서 프로필 업데이트에 실패했습니다.",
+  "profileUpdateSuccess": "프로필이 성공적으로 업데이트되었습니다!",
+  "profileUpdateFailed": "프로필 업데이트에 실패했습니다."
+    },
+    "emptyStates": {
+  "battleHistory": "더 많은 배틀에서 승리하여 배틀 기록을 쌓아보세요!"
+    }
+  },
+  "rankingPage": {
+    "title": "커뮤니티 랭킹",
+    "description": "플레이어 랭킹 및 투표자 랭킹을 통한 커뮤니티 활동 표시",
+    "tabs": {
+      "playerRankings": "플레이어 랭킹", 
+      "voterRankings": "투표자 랭킹",
+      "player": "플레이어",
+      "voter": "투표자"
+    },
+    "seasonTabs": {
+      "currentSeason": "현재 시즌",
+      "allTime": "전체 기간",
+      "historicalSeasons": "과거 시즌"
+    },
+    "seasonSelector": {
+      "selectSeason": "시즌 선택",
+      "currentSeasonLabel": "현재 시즌",
+      "completedSeasonLabel": "완료된 시즌"
+    },
+    "topThree": {
+      "title": "TOP 3"
+    },
+    "playerDescription": "배틀 성과 기반 비트박서 랭킹",
+    "voterDescription": "투표 참여 기반 활성 커뮤니티 멤버 랭킹",
+
+    "searchPlaceholder": "사용자명으로 검색...",
+    "loading": "랭킹 로딩 중...",
+    "eloRating": "Elo 레이팅",
+    "table": {
+      "rank": "순위",
+      "user": "사용자",
+      "rating": "레이팅",
+      "seasonPoints": "시즌 포인트",
+      "winRate": "승률",
+      "voteCount": "투표 수"
+    },
+    "tiers": {
+      "grandmaster": "그랜드마스터",
+      "master": "마스터",
+      "expert": "전문가",
+      "advanced": "고급",
+      "intermediate": "중급",
+      "beginner": "초급",
+      "unranked": "언랭크"
+    },
+    "winLossRecord": "{{wins}}승 - {{losses}}패",
+    "noUsersFound": "사용자를 찾을 수 없습니다",
+    "noData": "데이터가 없습니다",
+    "noRankingsYet": "아직 랭킹이 없습니다",
+    "tryDifferentSearch": "다른 검색어를 시도해보세요",
+    "rankingsWillAppear": "사용자가 배틀에 참여하면 랭킹이 표시됩니다",
+    "error": {
+      "title": "랭킹 로딩 실패",
+      "tryAgain": "다시 시도"
+    }
+  },
+  "postPage": {
+    "title": "배틀 동영상 제출",
+    "subtitle": "실력을 뽐내고 커뮤니티에 도전하세요",
+    "timeLimitEmphasis": "🔥 동영상은 반드시 1-2분(60-120초) 길이여야 합니다 🔥",
+    "videoQualityWarning": "동영상 품질은 적당히 유지해주세요 (4K 녹화 피하기)",
+    "backButton": "뒤로",
+    "selectFormat": {
+      "label": "배틀 형식 선택",
+              "mainBattle": "🔥 메인 배틀 【필수】60초~120초 (1-2분) 🔥",
+      "miniBattle": "미니 배틀 (30-59초)",
+      "themeChallenge": "스킬/테마 챌린지"
+    },
+    "upload": {
+      "title": "동영상 업로드",
+      "dragDrop": "동영상을 여기에 드래그 앤 드롭하세요",
+      "supportedFormats": "지원 형식: MP4, WebM, MOV",
+      "selectFile": "파일 선택",
+      "uploading": "업로드 중",
+      "submit": "배틀 풀에 제출",
+      "dropHere": "동영상을 여기에 드롭",
+      "orBrowse": "또는 클릭하여 파일 선택 (MP4, WebM, MOV)",
+      "selectVideo": "동영상 선택"
+    },
+    "preview": {
+      "title": "동영상 미리보기",
+      "duration": "길이",
+      "size": "크기"
+    },
+    "format": {
+      "mainBattle": "메인 배틀"
+    },
+    "guidelines": {
+      "title": "가이드라인",
+      "content": "동영상 제출 가이드라인을 읽고 동의합니다",
+      "face": "얼굴 노출은 선택사항이며, 입 부분 노출이 권장됨을 이해합니다",
+      "appropriate": "이것이 제 자신의 공연이며 금지된 콘텐츠가 포함되지 않았음을 확인합니다",
+      "detailed": {
+        "greetingRule": {
+          "title": "오프닝 인사: ",
+          "value": "필수",
+          "description": "공연을 시작하기 전에 ①'BeatNexus'라는 단어와 ②플레이어 이름을 포함하여 본인의 음성으로 참여를 선언해야 합니다. 이는 당신의 멋진 공연이 공식 BeatNexus 무대에서 일어나는 배틀임을 증명하는 중요한 규칙입니다.\n\n선언의 목적:\n• 신원 증명: 실제 계정 소유자임을 보여주어 사칭을 방지합니다.\n• 콘텐츠 귀속: 동영상이 다른 SNS 플랫폼에 공유될 때 이것이 BeatNexus 배틀임을 명확히 표시하여 플랫폼의 가치를 높입니다.\n• 경쟁 정신: 경기에서의 선수 선서처럼 배틀에 대한 진지한 참여 의지를 보여주고 시청자의 기대감을 높입니다.",
+          "examples": {
+            "title": "예시: ",
+            "list": [
+              "\"BeatNexus, [플레이어 이름], 시작해보자!\"",
+              "\"나는 [플레이어 이름]이다. BeatNexus, 간다!\"",
+              "\"BeatNexus의 [플레이어 이름]입니다.\"",
+              "\"제 이름은 [플레이어 이름]이고, BeatNexus에 제출하는 영상입니다.\"",
+              "\"BeatNexus에 인사드립니다! [플레이어 이름] 등장!\""
+            ],
+            "note": "자유롭게 표현할 수 있지만 ①'BeatNexus'라는 단어와 ②플레이어 이름을 반드시 포함해야 합니다. 텍스트나 자막이 아닌 본인의 음성으로 말해야 합니다. 오프닝 인사가 없거나 필수 요소가 누락된 동영상은 규칙 위반으로 간주될 수 있습니다."
+          }
+        },
+        "performanceTime": {
+          "title": "공연 시간: ",
+          "value": "1-2분",
+          "description": "지정된 시간 내에서 공연해주세요"
+        },
+        "performanceFormat": {
+          "title": "공연 형식: ",
+          "value": "동시 음성-영상 녹화",
+          "description": "동영상과 음성은 동시에 녹화되어야 합니다. 컷 편집으로 공연을 연결하는 것은 금지됩니다."
+        },
+        "identityVerification": {
+          "title": "신원 확인: ",
+          "value": "얼굴 노출 권장",
+          "description": "얼굴을 보여주는 것은 필수가 아니지만 권장됩니다."
+        },
+        "lipSyncBan": {
+          "title": "립싱크 금지",
+          "description": "사전 녹음된 오디오에 립싱크하는 것(더빙)은 금지됩니다."
+        },
+        "audioSource": {
+          "title": "오디오 소스: ",
+          "value": "실시간 오디오",
+          "description": "공연에 사용되는 모든 소리는 현장에서 목소리나 몸으로 생성되어야 합니다."
+        },
+        "sampleBan": {
+          "title": "샘플 사용 금지",
+          "description": "사전 녹음된 오디오 소스(샘플)나 소리를 녹음하는 메트로놈의 사용은 금지됩니다."
+        },
+        "audioProcessing": {
+          "title": "오디오 처리",
+          "subtitle": "",
+          "allowed": {
+            "title": "허용되는 처리",
+            "mixing": "믹싱 및 마스터링",
+            "correction": "전체 녹음에 적용되는 기본 오디오 품질 보정 (EQ, 컴프레서, 리버브)"
+          },
+          "prohibited": {
+            "title": "금지되는 처리",
+            "effects": "디스토션 및 딜레이와 같이 원음을 크게 변화시키는 이펙트",
+            "advanced": "각 소리에 대해 자동으로 처리를 변경하는 고급 편집"
+          }
+        },
+        "equipment": {
+          "title": "녹화 장비",
+          "devices": {
+            "title": "장비",
+            "description": "스마트폰부터 전문 장비까지 모든 방법을 환영합니다."
+          },
+          "resolution": {
+            "title": "해상도",
+            "description": "파일 크기가 증가하므로 4K 녹화는 피해주세요."
+          }
+        }
+      }
+    },
+    "cooldown": {
+      "title": "제출 쿨다운",
+      "message": "다음 제출 가능 시간: {{time}}"
+    },
+    "seasonOff": {
+      "title": "시즌 오프 - 제출 제한"
+    },
+    "preview": {
+      "title": "동영상 미리보기"
+    },
+    "ffmpeg": {
+      "loading": "동영상 프로세서 초기화 중",
+      "preparing": "압축 엔진을 준비하고 있습니다. 잠시만 기다려주세요...",
+      "initializing": "준비 중...",
+      "initializingDescription": "동영상 압축 엔진을 준비하는 동안 잠시 기다려주세요.",
+      "initializationError": "초기화 오류"
+    },
+    "processing": {
+      "title": "동영상 처리 중...",
+      "analyzing": "동영상을 분석하고 설정을 확인하는 중...",
+      "optimizing": "동영상 품질을 최적화하는 중입니다. 잠시 기다려주세요...",
+      "finalizing": "최종 조정을 수행하는 중...",
+      "loadingVideo": "동영상 로딩 중...",
+      "calculatingCompression": "압축 설정을 계산하는 중...",
+      "preparingStream": "스트림을 준비하는 중...",
+      "startingRecording": "녹화를 시작하는 중...",
+      "completingRecording": "녹화를 완료하는 중...",
+      "fastProcessing": "고속 처리를 시작하는 중...",
+      "checkingDuration": "동영상 길이를 확인하는 중...",
+      "preparingPreview": "미리보기를 준비하는 중...",
+      "complete": "완료",
+      "analyzing_video": "동영상 분석 중...",
+      "recording": "녹화 중...",
+      "remaining": "남은 시간 ~{{seconds}}초",
+      "checkingMemory": "메모리 사용량을 확인하는 중...",
+      "noCompressionNeeded": "압축이 필요하지 않습니다 - 파일 크기가 최적입니다",
+      "processingVideo": "동영상 처리 중...",
+      "compressionComplete": "압축이 완료되었습니다. 미리보기가 업데이트되었습니다."
+    },
+    "errors": {
+      "problemOccurred": "문제가 발생했습니다",
+      "videoLoadFailed": "동영상 파일 로딩 실패",
+      "unsupportedBrowser": "이 기능은 사용 중인 브라우저에서 지원되지 않습니다",
+      "playbackFailed": "동영상을 재생하지 못했습니다. 브라우저 설정을 확인해주세요.",
+      "recordingFailed": "녹화 중 오류가 발생했습니다",
+      "processingError": "처리 오류",
+      "videoProcessingFailed": "동영상 파일 처리 실패",
+      "fileTooBig": "파일 크기가 제한을 초과했습니다. 현재: {{current}}MB (한도: 2048MB)",
+      "compressionFailed": "자동 압축에 실패했습니다. '고속 압축' 또는 '간단 모드'를 시도해주세요.",
+      "fastCompressionFailed": "고속 압축에 실패했습니다. 수동 처리를 위해 '간단 모드'를 시도해주세요.",
+      "fileSizeStillLarge": "압축된 파일 크기: {{size}}MB. 추가 압축이 필요합니다.",
+      "compressionSuggestion": "동영상 파일 크기를 줄이려면 다음 방법을 시도해보세요:\n\n1. 휴대폰 설정을 '표준' 화질로 변경\n2. 편집 앱으로 해상도 낮추기\n3. 동영상 길이 줄이기\n4. 동영상을 다시 녹화",
+      "uploadTooLarge": "파일 크기가 너무 큽니다 ({{size}}MB). 업로드 전에 동영상을 압축해주세요.",
+      "retakeVideo": "동영상을 다시 촬영하여 업로드해주세요.",
+      "invalidDuration": "동영상 길이가 지정된 범위를 벗어났습니다.",
+      "mainBattleTooShort": "메인 배틀 동영상이 너무 짧습니다({{duration}}초). {{required}}초 길이의 동영상을 업로드해주세요.\n\n💡 팁: 편집 앱으로 길이를 조정하거나 더 길게 녹화하세요.",
+      "mainBattleTooLong": "메인 배틀 동영상이 너무 깁니다({{duration}}초). {{required}}초 길이의 동영상을 업로드해주세요.\n\n💡 팁: 편집 앱으로 불필요한 부분을 자르거나 더 짧게 녹화하세요.",
+      "miniBattleTooShort": "미니 배틀 동영상이 너무 짧습니다({{duration}}초). {{required}}초 길이의 동영상을 업로드해주세요.\n\n💡 팁: 더 길게 녹화하거나 메인 배틀 형식(60-120초)으로 전환을 고려하세요.",
+      "miniBattleTooLong": "미니 배틀 동영상이 너무 깁니다({{duration}}초). {{required}}초 길이의 동영상을 업로드해주세요.\n\n💡 팁: 편집 앱으로 길이를 줄이거나 메인 배틀 형식(60-120초)으로 전환을 고려하세요.",
+      "themeTooShort": "테마 챌린지 동영상이 너무 짧습니다({{duration}}초). {{required}}초 길이의 동영상을 업로드해주세요.\n\n💡 팁: 더 길게 녹화하세요.",
+      "themeTooLong": "테마 챌린지 동영상이 너무 깁니다({{duration}}초). {{required}}초 길이의 동영상을 업로드해주세요.\n\n💡 팁: 편집 앱으로 길이를 줄이세요.",
+      "changeBattleFormat": "배틀 형식 변경",
+      "selectDifferentVideo": "다른 동영상 선택",
+      "fileTooLargeForProcessing": "파일 크기({{size}}MB)가 처리하기에 너무 큽니다. 2GB 이하 파일을 사용해주세요.",
+      "compressionTimeout": "압축 과정이 시간 초과되었습니다. 파일 크기를 줄인 후 다시 시도해주세요.",
+      "compressionFinalizationFailed": "압축 파일 생성에 실패했습니다",
+      "compressionAbnormallySmall": "압축 결과 파일 크기가 비정상적으로 작습니다. 원본 동영상에 문제가 있을 수 있습니다.",
+      "tooManyPreviewAttempts": "미리보기 로딩이 여러 번 실패했습니다. 파일 크기가 너무 클 수 있습니다.",
+      "compressionInsufficientReduction": "압축이 충분하지 않았습니다. 파일이 아직 너무 큽니다.",
+      "acceptPolicies": "모든 정책과 가이드라인에 동의해주세요.",
+      "uploadFailed": "업로드에 실패했습니다. 다시 시도해주세요.",
+      "invalidFileType": "잘못된 파일 형식입니다. 동영상 파일을 선택해주세요.",
+      "tooShort": "동영상이 너무 짧습니다({{current}}초). 최소: {{min}}초",
+      "tooLong": "동영상이 너무 깁니다({{current}}초). 최대: {{max}}초"
+    },
+    "compression": {
+      "autoAvailable": "자동 화질 조정 가능",
+      "videoDuration": "동영상 길이:",
+      "fileSize": "파일 크기:",
+      "durationOk": "{{duration}}초 ✓",
+      "fileSizeLarge": "{{size}}MB ⚠️",
+      "description": "동영상 길이는 지정된 범위 내이지만, 파일 크기가 너무 큽니다. 오디오 품질을 유지하면서 파일 크기를 최적화하도록 자동으로 화질을 조정할 수 있습니다.",
+      "autoAdjustments": "자동 조정 사항:",
+      "resolutionOptimization": "해상도 최적화(예: 4K→1080p)",
+      "bitrateAdjustment": "비트레이트 조정",
+      "audioQualityMaintained": "고음질 오디오 유지(128kbps)",
+      "fileSizeTooLarge": "파일 크기가 너무 큽니다",
+      "currentFileSize": "현재 파일 크기: {{size}}MB (한도: 200MB)",
+      "recommendedSolutions": "권장 해결책:",
+      "retakeVideo": "다시 촬영",
+      "recommended": "권장",
+      "proceedAnyway": "그래도 진행",
+      "forTesting": "테스트용",
+      "compressionRatio": "압축률: {{ratio}}%",
+      "format": "형식: {{format}}",
+      "compressionStarting": "압축 시작 중...",
+      "finalizing": "최종 처리 중...",
+      "autoCompress": "자동 압축",
+      "optimizeSize": "크기 최적화",
+      "targetSize": "목표: {{target}}MB (원본 {{original}}MB) - {{strategy}}"
+    },
+    "submissionGuidelines": {
+      "title": "동영상 제출 가이드라인",
+      "followFormatLength": "【필수】메인 배틀은 60-120초 규칙을 엄격히 준수해야 합니다",
+      "ensureAudioQuality": "오디오를 선명하게 유지하세요",
+      "faceOptional": "얼굴 노출은 선택사항이며, 입 부분 노출을 권장합니다",
+      "noBackgroundMusic": "배경음악 및 반주 트랙 금지",
+      "agreeGuidelines": "동영상 제출 가이드라인을 읽고 동의합니다",
+      "understandFacePolicy": "얼굴 노출은 선택사항이며 입 부분 노출 권장 정책에 동의합니다",
+      "confirmOwnPerformance": "본인의 공연이며 금지된 콘텐츠가 없음을 확인합니다"
+    },
+    "buttons": {
+      "cancel": "취소",
+      "submitToBattlePool": "배틀 풀에 제출",
+      "viewMyBattles": "내 배틀 보기",
+      "submitAnother": "다른 영상 제출"
+    },
+    "cooldown": {
+      "title": "1시간 제출 제한",
+      "message": "한 시간에 한 개의 동영상만 제출할 수 있습니다.",
+      "nextSubmissionIn": "다음 제출 가능 시간:",
+      "timeRemaining": "다음 제출까지 {{time}}"
+    },
+    "success": {
+      "title": "동영상이 성공적으로 제출되었습니다!",
+      "description": "동영상이 업로드되었으며 곧 다른 비트박서와 매칭됩니다. 배틀 시작 시 알림을 보내드릴게요."
+    },
+    "submission": {
+      "cooldown": {
+        "canSubmit": "제출 가능",
+        "restriction": "한 시간에 한 개의 동영상만 제출할 수 있습니다. 남은 시간: {{hours}}시간 {{minutes}}분",
+        "remainingTime": "다음 제출 가능 시간: {{time}}",
+        "error": "쿨다운 확인 중 오류: {{error}}",
+        "timeFormat": {
+          "hoursMinutes": "{{hours}}시간 {{minutes}}분", 
+          "minutes": "{{minutes}}분"
+        }
+      },
+      "success": {
+        "created": "제출이 성공적으로 생성되었습니다."
+      },
+      "error": {
+        "seasonRestriction": "시즌 제한으로 인해 제출할 수 없습니다.",
+        "cooldownActive": "한 시간에 한 개의 동영상만 제출할 수 있습니다. 다음 제출 가능 시간: {{hours}}시간 {{minutes}}분",
+        "creationFailed": "제출 생성 중 오류가 발생했습니다: {{error}}"
+      }
+    },
+    "importantNotice": {
+      "videoDuration": "동영상은 1-2분 길이여야 합니다",
+      "videoQuality": "녹화 시 영상 화질을 낮춰주세요(4K 녹화 지양)"
+    }
+  },
+  "toasts": {
+    "error": "오류",
+    "success": "성공",
+    "warning": "경고",
+    "info": "정보",
+    "submissionAddedToPool": "배틀 대기열에 추가되었습니다! 진보적 매칭 시스템이 20분마다 레이팅 범위를 확장합니다.",
+    "submissionError": "제출 실패",
+    "submissionWithdrawn": "배틀 대기열에서 철회됨",
+    "withdrawError": "철회 실패"
+  },
+  "communityPage": {
+    "toasts": {
+      "loadPostsError": "게시물 로딩에 실패했습니다.",
+      "postSuccess": "게시물이 성공적으로 생성되었습니다!",
+      "postError": "게시물 생성에 실패했습니다.",
+      "deleteSuccess": "게시물이 성공적으로 삭제되었습니다.",
+      "deleteError": "게시물 삭제에 실패했습니다.",
+      "updateSuccess": "게시물이 성공적으로 업데이트되었습니다.",
+      "updateError": "게시물 업데이트에 실패했습니다.",
+      "likeError": "좋아요 업데이트에 실패했습니다.",
+      "loadCommentsError": "댓글 로딩에 실패했습니다.",
+      "commentSuccess": "댓글이 성공적으로 게시되었습니다!",
+      "commentError": "댓글 게시에 실패했습니다."
+    }
+  },
+  "battleStore": {
+    "toasts": {
+      "authError": "인증 오류",
+      "loginRequired": "로그인이 필요합니다",
+      "checkLoginStatus": "로그인 상태를 확인해주세요",
+      "databaseError": "데이터베이스 오류",
+      "cannotVoteOwn": "본인의 배틀에는 투표할 수 없습니다",
+      "alreadyVoted": "이미 이 배틀에 투표했습니다",
+      "votingEnded": "이 배틀의 투표가 종료되었습니다",
+      "votingExpired": "투표 기간이 만료되었습니다",
+      "battleNotFound": "배틀을 찾을 수 없습니다",
+      "voteError": "투표에 실패했습니다",
+      "voteSuccess": "플레이어 {{player}}에게 투표했습니다",
+      "voteWithCommentSuccess": "플레이어 {{player}}에게 코멘트와 함께 투표했습니다",
+      "voteCompleted": "투표 완료",
+      "votingProcess": "투표 처리 중",
+      "unexpectedResponse": "투표 처리가 완료되었지만 응답 형식이 예상과 다릅니다",
+      "functionNotConfigured": "데이터베이스 기능이 제대로 구성되지 않았습니다",
+      "cancelVoteError": "투표 취소 오류",
+      "cancelVoteSuccess": "플레이어 {{player}}에 대한 투표를 취소했습니다",
+      "cancelVoteCompleted": "투표 취소됨",
+      "noVoteToCancel": "이 배틀에서 투표하지 않았습니다",
+      "cannotCancelExpired": "투표 기간이 만료되어 취소할 수 없습니다",
+      "cannotCancelEnded": "이 배틀의 투표가 종료되어 취소할 수 없습니다",
+      "systemError": "시스템 오류",
+      "cancelProcessCompleted": "투표 취소 처리가 완료되었지만 응답 형식이 예상과 다릅니다",
+      "cancelFailed": "투표 취소에 실패했습니다"
+    }
+  },
+  "myBattlesPage": {
+    "title": "내 배틀",
+    "subtitle": "배틀 상태와 기록을 확인하세요",
+    "tabs": {
+      "active": "진행 중",
+      "waiting": "대기 중",
+      "completed": "기록"
+    },
+    "stats": {
+      "wins": "승리",
+      "winRate": "승률",
+      "totalVotes": "총 투표 수"
+    },
+    "loading": "로딩 중...",
+    "error": {
+      "loadFailed": "데이터 로딩 실패",
+      "retry": "다시 시도"
+    },
+    "empty": {
+      "activeBattles": {
+        "title": "진행 중인 배틀이 없습니다",
+        "description": "새로운 배틀을 시작하고 실력을 보여주세요!",
+        "button": "배틀 시작"
+      },
+      "waitingSubmissions": {
+        "title": "대기 중인 제출이 없습니다",
+        "description": "현재 상대를 기다리는 제출이 없습니다."
+      },
+      "completedBattles": {
+        "title": "배틀 기록이 없습니다",
+        "description": "완료된 배틀이 여기에 표시됩니다. 새로운 배틀에 참여하여 기록을 쌓아보세요!",
+        "button": "배틀 시작",
+        "hint": "더 많은 배틀에서 승리하여 배틀 기록을 쌓아보세요!"
+      },
+      "loadingHistory": "기록 로딩 중..."
+    },
+    "alerts": {
+      "replayComingSoon": "{{format}} 배틀 리플레이 기능이 곧 출시될 예정입니다."
+    },
+    "waitingSubmissionCard": {
+      "battleFormats": {
+        "MAIN_BATTLE": "메인 배틀",
+        "MINI_BATTLE": "미니 배틀",
+        "THEME_CHALLENGE": "테마 챌린지"
+      },
+      "postedAt": "게시됨: {{time}} 전",
+      "searchingOpponent": "상대 찾는 중...",
+      "searchingDescription": "당신의 실력에 맞는 상대를 찾고 있습니다. 잠시만 기다려주세요.",
+      "videoUrl": "비디오 URL: {{url}}",
+      "withdrawButton": "철회",
+      "withdrawConfirm": "정말로 이 제출을 철회하시겠습니까?",
+      "withdrawError": "제출 철회 실패"
+    }
+  },
+  "howToGuide": {
+    "title": "사용법 가이드",
+    "subtitle": "프로처럼 BeatNexus를 마스터하세요!",
+    "hero": {
+      "title": "비트박스의 세계에 오신 것을 환영합니다!",
+      "description": "초보자든 프로든, 이 플랫폼은 당신의 비트박스 여정을 더욱 흥미롭게 만들어 줄 거예요. 함께 이 모험을 시작해요!"
+    },
+    "sections": {
+      "gettingStarted": {
+        "title": "🚀 시작하기",
+        "description": "BeatNexus의 기본을 익히고 지금 바로 즐겨보세요!",
+        "steps": [
+          {
+            "icon": "👤",
+            "title": "프로필 만들기",
+            "description": "당신의 개성을 표현하고 커뮤니티에 참여할 준비를 하세요!",
+            "details": [
+              "개성 있는 사용자명을 설정하세요",
+              "소개에 좋아하는 스타일과 목표를 공유하세요",
+              "프로필 사진으로 개성을 보여주세요"
+            ]
+          },
+          {
+            "icon": "🎬",
+            "title": "첫 동영상 게시",
+            "description": "완벽할 필요 없어요. 모두가 초보자로 시작했습니다!",
+            "details": [
+              "시작은 스마트폰 녹화만으로도 충분해요",
+              "30초 미니 배틀부터 시작해보는 것을 추천해요",
+              "오디오 품질에 집중: 조용한 곳에서 녹음하세요"
+            ]
+          },
+          {
+            "icon": "⚔️",
+            "title": "배틀 참여",
+            "description": "자동 매칭이 당신에게 딱 맞는 상대를 찾아줘요!",
+            "details": [
+              "유사한 실력의 상대와 자동으로 매칭",
+              "투표 시간은 5분입니다(이전엔 7일)",
+              "승패와 상관없이 성장에 소중한 경험"
+            ]
+          }
+        ]
+      },
+      "battleTypes": {
+        "title": "🎯 배틀 유형",
+        "description": "3가지 배틀 형식 중에서 당신의 스타일을 찾아보세요!",
+        "tipsLabel": "💡 팁:",
+        "types": [
+          {
+            "name": "메인 배틀",
+            "duration": "60-90초",
+            "icon": "👑",
+            "description": "기량을 충분히 보여주는 본격적인 배틀",
+            "tips": [
+              "구성을 생각하세요: 인트로 → 전개 → 클라이맥스",
+              "다양한 기술을 조합해 감동을 주세요",
+              "마지막 포즈까지 집중력을 유지하세요"
+            ],
+            "perfect": "완성도 높은 퍼포먼스를 보여주고 싶은 분께 적합"
+          },
+          {
+            "name": "미니 배틀",
+            "duration": "30-45초",
+            "icon": "⚡",
+            "description": "짧은 시간에 매력을 응축한 빠른 배틀",
+            "tips": [
+              "임팩트에 집중: 첫 5초에 시선을 사로잡으세요",
+              "트레이드마크 기술을 아끼지 말고 보여주세요",
+              "짧은 형식에서는 매 순간이 중요합니다"
+            ],
+            "perfect": "가볍게 시작하려는 초보자나 바쁜 분들에게 적합"
+          },
+          {
+            "name": "테마 챌린지",
+            "duration": "자유",
+            "icon": "🎨",
+            "description": "특정 기술이나 테마에 도전하는 창의적 배틀",
+            "tips": [
+              "테마에 대해 독창적으로 접근해 보세요",
+              "기술적 도전을 두려워하지 마세요",
+              "남들과 다른 관점을 소중히 하세요"
+            ],
+            "perfect": "새로운 기술에 도전하고 싶은 모험가에게 적합"
+          }
+        ]
+      },
+      "votingTips": {
+        "title": "🗳️ 투표 팁",
+        "description": "훌륭한 투표자가 되어 커뮤니티에 활력을 주세요!",
+        "guidelines": [
+          {
+            "icon": "🎵",
+            "title": "음악성에 집중",
+            "description": "리듬, 그루브, 음악적 완성도"
+          },
+          {
+            "icon": "💫",
+            "title": "기술적 역량",
+            "description": "정확성, 난이도, 테크닉의 다양성"
+          },
+          {
+            "icon": "🎭",
+            "title": "엔터테인먼트 가치",
+            "description": "보는 재미, 감동, 기억에 남음"
+          },
+          {
+            "icon": "🔥",
+            "title": "독창성",
+            "description": "창의성, 혁신성, 개성"
+          }
+        ],
+        "fairPlay": {
+          "title": "페어플레이 정신",
+          "points": [
+            "개인 취향이 아닌 실력에 기반해 판단하세요",
+            "투표 전 두 영상 모두 꼼꼼히 시청하세요",
+            "건설적인 댓글로 응원하세요",
+            "항상 서로를 존중하세요"
+          ]
+        }
+      },
+      "community": {
+        "title": "🤝 커뮤니티를 즐기세요",
+        "description": "전 세계 비트박서들과 연결되어 함께 성장하세요!",
+        "features": [
+          {
+            "icon": "💬",
+            "title": "댓글 기능",
+            "description": "배틀 영상에 댓글을 남겨 상호작용을 깊게 하세요",
+            "tips": [
+              "긍정적인 피드백을 남겨보세요",
+              "구체적인 기술을 언급하면 더욱 좋아요",
+              "질문과 기술적 조언도 환영합니다"
+            ]
+          },
+          {
+            "icon": "🏆",
+            "title": "랭킹 시스템",
+            "description": "시즌 랭킹으로 실력을 증명하세요",
+            "tips": [
+              "꾸준한 참여가 랭킹 상승의 열쇠",
+              "배틀 승리뿐 아니라 투표 수 역시 중요",
+              "매 시즌 종료 시 특별 보상이 있어요"
+            ]
+          },
+          {
+            "icon": "👥",
+            "title": "포럼",
+            "description": "기술 질문과 정보 교류의 장",
+            "tips": [
+              "초보자의 질문도 대환영",
+              "기술 이름과 연습 방법을 공유하세요",
+              "지역 행사 정보도 확인해 보세요"
+            ]
+          }
+        ]
+      },
+      "tips": {
+        "title": "🎤 실력 향상 팁",
+        "description": "레벨업을 위한 프로의 비밀!",
+        "categories": [
+          {
+            "title": "녹음 팁",
+            "icon": "📹",
+            "tips": [
+              "밝은 곳에서 촬영하세요(얼굴이 잘 보이게)",
+              "폰을 고정해 흔들림을 줄이세요",
+              "마이크와 너무 가깝지도 멀지도 않게(~30cm)",
+              "배경은 단순하게(당신이 주인공!)"
+            ]
+          },
+          {
+            "title": "연습 방법",
+            "icon": "🎯",
+            "tips": [
+              "하루에 조금이라도 꾸준함이 핵심",
+              "다른 사람의 영상을 보며 배우세요",
+              "자신을 녹화해 객관적으로 보세요",
+              "새로운 기술에 도전할 용기를 가지세요"
+            ]
+          },
+          {
+            "title": "마인드셋",
+            "icon": "🧠",
+            "tips": [
+              "패배에도 배움이 있어요(성장 기회)",
+              "타인과 비교하지 말고 자신의 속도로",
+              "즐기는 것이 가장 중요",
+              "커뮤니티와 서로를 응원하세요"
+            ]
+          }
+        ]
+      },
+      "troubleshooting": {
+        "title": "🔧 FAQ & 문제 해결",
+        "description": "문제가 생기면 여기에서 확인하세요!",
+        "faqs": [
+          {
+            "question": "동영상 업로드가 실패해요",
+            "answer": "파일 크기(75MB 이하)와 형식(MP4, WebM, MOV)을 확인하고 인터넷 연결도 점검하세요."
+          },
+          {
+            "question": "매칭에 시간이 오래 걸려요",
+            "answer": "실력이 맞는 상대를 찾고 있어 시간이 다소 걸릴 수 있어요. 이용자가 많은 시간대에는 더 빨리 매칭됩니다."
+          },
+          {
+            "question": "투표 시간을 놓쳤어요",
+            "answer": "투표 시간은 5분뿐이니 알림을 켜두는 것을 추천합니다."
+          },
+          {
+            "question": "영상이 재생되지 않아요",
+            "answer": "브라우저 새로고침 또는 다른 브라우저 사용을 시도하세요. 그래도 안 되면 지원팀에 문의해 주세요."
+          }
+        ],
+        "support": {
+          "title": "그래도 해결되지 않는다면...",
+          "description": "지원팀이 성심껏 도와드릴게요!",
+          "contact": "문의하기"
+        }
+      }
+    },
+    "cta": {
+      "title": "비트박스 세계로 뛰어들 준비 완료!",
+      "description": "이제 모든 준비가 끝났어요. 당신의 사운드를 전 세계에 울려 퍼지게 하세요.",
+      "startButton": "첫 배틀 시작",
+      "exploreButton": "다른 배틀 둘러보기"
+    }
+  },
+  "tournament": {
+    "comingSoonPage": {
+      "title": "토너먼트",
+      "subtitle": "곧 출시"
+    }
+  },
+  "comingSoon": {
+    "title": "곧 출시",
+    "subtitle": "멋진 사용법 가이드를 준비하고 있습니다! 따라하기 쉬운 형식으로 BeatNexus의 모든 것을 배워보세요.",
+    "features": {
+      "stepByStep": "단계별 가이드",
+      "stepByStepDesc": "초보자에게 완벽한 상세한 가이드",
+      "proTips": "프로 팁",
+      "proTipsDesc": "고급 기술과 전략",
+      "videoGuides": "비디오 가이드",
+      "videoGuidesDesc": "비디오 튜토리얼로 보고 배우기"
+    },
+    "launch": {
+      "title": "🚀 커밍 순",
+      "description": "최고의 가이드 경험을 제공하기 위해 열심히 준비 중입니다. 기대해 주세요!"
+    },
+    "meanwhile": "그동안 배틀을 둘러보는 건 어떠세요?",
+    "exploreBattles": "배틀 둘러보기"
+  },
+  "tournament": {
+    "title": "토너먼트",
+    "subtitle": "시즌 최고의 대결",
+    "comingSoon": "🔥 곧 공개 🔥",
+    "features": {
+      "eliteOnly": {
+        "title": "엘리트 전용",
+        "description": "시즌 상위 플레이어만을 위한 독점 토너먼트. 최고 수준의 비트박서와 맞붙으세요."
+      },
+      "seasonal": {
+        "title": "시즌제 형식",
+        "description": "3개월마다 열리는 대규모 토너먼트. 시즌마다 새로운 챔피언이 탄생합니다."
+      },
+      "bigPrizes": {
+        "title": "놀라운 보상",
+        "description": "우승자는 독점 트로피와 특별한 타이틀을 받습니다. 상위 입상자에게도 큰 보상이 기다립니다."
+      }
+    },
+    "structure": {
+      "title": "토너먼트 구조",
+      "step1": {
+        "title": "예선 라운드",
+        "description": "시즌 랭킹 상위 32명이 참가합니다. 1대1 배틀 형식으로 승자를 가립니다."
+      },
+      "step2": {
+        "title": "본선 토너먼트",
+        "description": "예선을 통과한 16명이 본선에서 대결합니다. 더블 엘리미네이션 형식."
+      },
+      "step3": {
+        "title": "그랜드 파이널",
+        "description": "최종 2인의 마지막 대결. 진정한 BeatNexus 챔피언을 가리는 배틀."
+      }
+    },
+    "launch": {
+      "title": "🏆 시즌 1 토너먼트 준비 중",
+      "description": "첫 토너먼트를 준비하고 있습니다. 시즌 랭킹을 올려 토너먼트 출전권을 획득하세요!",
+      "checkRankings": "랭킹 보기",
+      "practiceNow": "지금 연습하기"
+    }
+  },
+  "faq": {
+    "title": "자주 묻는 질문",
+    "subtitle": "BeatNexus에 대한 일반적인 질문의 답을 찾아보세요.",
+    "categories": {
+      "gettingStarted": "시작하기",
+      "battles": "배틀",
+      "technical": "기술적 문제",
+      "community": "커뮤니티"
+    },
+    "items": {
+      "howToStart": {
+        "question": "BeatNexus를 어떻게 시작하나요?",
+        "answer": "계정을 만들고 프로필을 설정하면 시작할 수 있습니다. 먼저 다른 배틀을 보고 투표하여 플랫폼에 익숙해지세요. 준비가 되면 동영상을 업로드하여 배틀에 참여하세요."
+      },
+      "isFree": {
+        "question": "BeatNexus는 무료인가요?",
+        "answer": "네, BeatNexus는 모든 핵심 기능을 완전 무료로 사용할 수 있습니다. 배틀 게시, 시청, 투표 모두 무료입니다."
+      },
+      "beginnerFriendly": {
+        "question": "초보자도 참여할 수 있나요?",
+        "answer": "물론입니다! BeatNexus는 초보자부터 전문가까지 모든 실력의 비트박서를 환영합니다. 레이팅 시스템이 비슷한 실력의 상대와 매칭해드립니다."
+      },
+      "battleTypes": {
+        "question": "어떤 종류의 배틀이 있나요?",
+        "answer": "현재는 메인 배틀 형식만 제공됩니다. 이는 60-120초 배틀 형식으로 실력을 충분히 보여줄 수 있습니다."
+      },
+      "votingPeriod": {
+        "question": "투표 기간은 얼마나 되나요?",
+        "answer": "투표 기간은 5일입니다. 배틀이 시작된 후 5일 동안 투표할 수 있습니다. 투표가 끝나면 결과가 발표됩니다."
+      },
+      "matching": {
+        "question": "상대는 어떻게 매칭되나요?",
+        "answer": "레이팅 시스템을 사용하여 비슷한 실력의 상대를 자동으로 찾습니다. 대기 풀 시스템이 레이팅 차이를 고려하여 더 공정한 매칭을 보장합니다."
+      },
+      "showFace": {
+        "question": "얼굴을 보여줘야 하나요?",
+        "answer": "얼굴을 보여주는 것은 선택사항입니다. 하지만 입 부분을 보여주는 것은 평가에 도움이 될 수 있어 권장됩니다. 편안한 방식으로 녹화하세요."
+      },
+      "videoFormats": {
+        "question": "어떤 동영상 형식을 지원하나요?",
+        "answer": "MP4, WebM, MOV 형식을 지원합니다. 파일 크기는 2GB 이하여야 합니다. 최고의 비트박스 경험을 위해 고화질 영상과 선명한 오디오로 녹화하는 것을 권장합니다."
+      },
+      "uploadFailed": {
+        "question": "동영상 업로드가 실패합니다",
+        "answer": "파일 크기가 2GB 이하이고 형식이 MP4, WebM, MOV인지 확인하세요. 인터넷 연결을 확인하고 브라우저를 새로고침해보세요."
+      },
+      "mobile": {
+        "question": "모바일에서 BeatNexus를 사용할 수 있나요?",
+        "answer": "네, BeatNexus는 PWA(Progressive Web App)를 지원합니다. 홈 화면에 추가하여 모바일 기기에서 네이티브 앱 경험을 할 수 있습니다."
+      },
+      "battleFormat": {
+        "question": "배틀 형식은 어떻게 되나요?",
+        "answer": "• 동영상은 60-120초(1-2분) 길이여야 합니다\n• 시작할 때 \"BeatNexus\" 인사 필수\n• 동시 음성-영상 녹화(립싱크 금지)\n• 실시간 오디오만 허용(샘플이나 반주 트랙 금지)\n• 기본적인 오디오 처리 허용(EQ, 컴프레션, 리버브)\n• 얼굴 노출은 선택사항, 입 부분은 권장"
+      },
+      "ranking": {
+        "question": "랭킹 시스템은 어떻게 작동하나요?",
+        "answer": "Elo 레이팅 시스템을 사용합니다. 승리하면 레이팅이 오르고 패배하면 내려갑니다. 랭킹은 시즌마다 리셋되며, 상위 플레이어는 토너먼트에 참여할 수 있습니다."
+      },
+      "prohibited": {
+        "question": "무엇이 금지되나요?",
+        "answer": "배경음악, 반주 트랙, 저작권이 있는 콘텐츠는 금지됩니다. 부적절한 콘텐츠나 다른 사람을 불편하게 하는 행동도 허용되지 않습니다."
+      }
+    },
+    "stillNeedHelp": {
+      "title": "여전히 도움이 필요하신가요?",
+      "description": "여기에서 다루지 않은 질문이 있거나 도움이 필요하시면 언제든지 연락해주세요.",
+      "contactSupport": "지원팀 문의",
+      "readGuide": "가이드 읽기"
+    }
+  },
+  "notifications": {
+    "title": "알림",
+    "empty": "새로운 알림이 없습니다",
+    "markAllRead": "모두 삭제",
+    "viewAll": "모두 보기",
+    "timeAgo": {
+      "justNow": "방금 전",
+      "minutes": "{{count}}분 전",
+      "hours": "{{count}}시간 전",
+      "days": "{{count}}일 전"
+    },
+    "battleMatched": {
+      "title": "배틀 매칭 완료!",
+      "message": "상대를 찾았습니다. 배틀이 시작되었습니다!"
+    },
+    "battleCompleted": {
+      "title": "배틀 결과 발표!",
+      "winMessage": "축하합니다! 배틀에서 승리했습니다!",
+      "loseMessage": "수고하셨습니다! 다음 기회에 더 좋은 결과가 있을 거예요!",
+      "drawMessage": "무승부입니다! 훌륭한 배틀이었어요!"
+    }
+  },
+  "latestBattles": {
+    "title": "최신 배틀",
+    "description": "좋아하는 퍼포먼스에 투표하세요",
+    "createBattle": "배틀 생성",
+    "loading": "배틀 로딩 중...",
+    "error": {
+      "title": "배틀 로딩 오류",
+      "tryAgain": "다시 시도"
+    },
+    "noBattles": {
+      "title": "아직 배틀이 없습니다",
+      "description": "첫 번째 배틀을 생성하고 경쟁을 시작하세요!",
+      "createFirst": "첫 배틀 생성하기"
+    },
+    "viewMore": "더 많은 배틀 보기",
+    "ranking": {
+      "title": "상위 랭킹",
+      "viewAll": "전체 보기",
+      "noRankings": {
+        "title": "아직 랭킹이 없습니다",
+        "description": "사용자가 배틀에 참여하면 랭킹이 표시됩니다"
+      },
+      "seasonEnds": "시즌 종료까지 {{days}}일"
+    }
+  },
+  "archive": {
+    "title": "아카이브 기능",
+    "description": "중요한 배틀을 영구 보관",
+    "limit": "월 최대 3개",
+    "status": {
+      "title": "아카이브 사용 현황",
+      "usage": "이번 달 사용량",
+      "remaining": "남은 개수",
+      "limit": "한도"
+    },
+    "button": {
+      "archive": "아카이브",
+      "archived": "아카이브됨",
+      "processing": "처리 중..."
+    },
+    "info": {
+      "title": "아카이브 기능 안내",
+      "important": "중요",
+      "deletionWarning": "배틀 종료 3일 후 영상은 자동 삭제됩니다.",
+      "features": {
+        "title": "기능:",
+        "preserve": "• 중요한 배틀 영상을 영구 보관",
+        "limit": "• 월 최대 3개까지 아카이브",
+        "history": "• 배틀 기록과 레이팅 변화는 항상 유지"
+      }
+    },
+    "messages": {
+      "success": {
+        "archived": "아카이브에 성공적으로 저장되었습니다",
+        "unarchived": "아카이브가 성공적으로 해제되었습니다"
+      },
+      "error": {
+        "limitReached": "월간 아카이브 한도에 도달했습니다 (3/3)",
+        "notFound": "배틀을 찾을 수 없습니다",
+        "alreadyArchived": "이미 아카이브됨",
+        "failed": "아카이브 작업 실패"
+      }
+    }
+  },
+  "battleReplay": {
+    "title": "배틀 리플레이",
+    "backButton": "뒤로",
+    "notFound": {
+      "title": "배틀을 찾을 수 없음",
+      "description": "찾으시는 배틀 리플레이가 존재하지 않거나 삭제되었습니다.",
+      "backButton": "뒤로",
+      "myBattlesButton": "내 배틀로 이동"
+    },
+    "result": {
+      "battleResult": "배틀 결과"
+    },
+    "playerInfo": {
+      "playerA": "플레이어 A",
+      "playerB": "플레이어 B",
+      "totalVotes": "총 투표 수"
+    },
+    "videoNotAvailable": {
+      "title": "영상이 저장되지 않았습니다",
+      "participantMessage": "이 영상은 아카이브되지 않아 표시할 수 없습니다.",
+      "nonParticipantMessage": "영상을 보려면 이 배틀의 참가자여야 합니다."
+    },
+    "videoDeleted": {
+      "title": "영상 삭제됨",
+      "description": "이 계정의 영상이 삭제되어 재생할 수 없습니다. 배틀 기록과 레이팅 변화는 계속 기록됩니다."
+    },
+    "videoNotSupported": "사용 중인 브라우저는 동영상 재생을 지원하지 않습니다.",
+    "videoError": "동영상을 불러오지 못했습니다",
+    "finalResults": "최종 결과",
+    "archived": "아카이브됨"
+  },
+  "pagination": {
+    "previous": "이전",
+    "next": "다음",
+    "page": "페이지",
+    "of": "/",
+    "goToPage": "이동할 페이지:",
+    "showing": "총 {{total}}개 중 {{start}}-{{end}} 표시",
+    "noResults": "결과가 없습니다"
+  },
+  "onboarding": {
+    "slide1": {
+      "welcome": "BeatNexus에",
+      "title": "오신 것을 환영합니다.",
+      "description": "전 세계 비트박서들이 실력과 혼으로 맞붙는 새로운 전설의 무대입니다."
+    },
+    "slide2": {
+      "title": "배틀로 가는 길은\n놀라울 만큼 간단합니다.",
+      "description": "동영상을 업로드하면 시스템이 자동으로 상대를 매칭합니다. 승부는 커뮤니티 투표로 결정됩니다.",
+      "videoAlt": "사용 중인 브라우저는 동영상 재생을 지원하지 않습니다."
+    },
+    "slide3": {
+      "title": "영광으로 가는\n여러 길.",
+      "description": "랭킹 최상위 플레이어가 되는 길. 그리고 탁월한 심미안으로 승부를 가르는 ‘공식 심사위원’이 되는 길. 당신은 어떤 전설을 새기겠습니까?"
+    },
+    "slide4": {
+      "title": "프로필 설정",
+      "avatar": {
+        "title": "프로필 사진",
+        "description": "프로필 사진과 소개로 개성을 표현하세요. 설정에서 언제든 변경할 수 있습니다."
+      },
+      "bio": {
+        "title": "소개",
+        "placeholder": "당신과 당신의 스타일, 그리고 당신만의 매력을 소개해 주세요...",
+        "saveButton": "저장",
+        "saving": "저장 중...",
+        "saveSuccess": "저장됨",
+        "characterCount": "{{count}}/200자"
+      }
+    },
+    "slide5": {
+      "title": "시작할 준비 완료.",
+      "description": "당신의 첫 배틀이 지금 시작됩니다.",
+      "clickToStart": "↑ 클릭하여 배틀 시작"
+    },
+    "avatarSetup": {
+      "title": "프로필 사진 설정"
+    },
+    "skipTour": "건너뛰기",
+    "previous": "뒤로",
+    "close": "닫기",
+    "getStarted": "시작하기"
+  },
+  "profile": "프로필 보기",
+  "editProfile": "프로필 편집",
+  "voteCommentModal": {
+    "title": "{{player}}에게 투표",
+    "subtitle": "{{playerName}}에게 투표",
+    "description": "댓글을 추가하거나 바로 투표할 수 있습니다.",
+    "commentLabel": "댓글(선택)",
+    "commentPlaceholder": "{{player}}에 대한 생각을 공유하세요...",
+    "commentRequired": "댓글 투표에는 댓글이 필요합니다",
+    "voteButton": "투표",
+    "voting": "투표 중...",
+    "characterCount": "{{count}}/500자",
+    "close": "닫기",
+    "templateTitle": "템플릿 선택",
+    "templates": [
+      "헉!! 정말 굉장해요🔥",
+      "소름 돋았어요!⚡",
+      "진짜 미쳤다!✨",
+      "이 사람은 천재네요🎵",
+      "기술이 완벽 그 자체",
+      "리듬 컨트롤이 신급"
+    ],
+    "commentVote": "댓글과 함께 투표",
+    "simpleVote": "투표만",
+    "commentVotePoints": "+300VP",
+    "simpleVotePoints": "+100VP"
+  },
+  "auth": {
+    "phoneNumber": "전화번호",
+    "phoneRequirement": "투표 시스템의 공정성을 위해 유효한 전화번호 인증이 필요합니다!",
+    "phoneVerify": "전화번호 인증",
+    "phoneVerifyCodePlaceholder": "인증코드 입력",
+    "phoneVerifyCodeButton": "인증",
+    "phoneVerified": "전화번호가 인증되었습니다!",
+    "error": {
+      "invalidPhone": "전화번호가 필요합니다",
+      "verificationFailed": "전화번호 인증 실패: {{error}}",
+      "phoneAlreadyRegistered": "이 전화번호는 이미 다른 계정에 등록되어 있습니다. 다른 전화번호를 시도해주세요.",
+      "systemError": "시스템 오류가 발생했습니다. 나중에 다시 시도해주세요.",
+      "invalidOtpCode": "인증코드가 올바르지 않습니다.",
+      "authenticationError": "인증 오류가 발생했습니다.",
+      "recordError": "전화번호 인증 기록에 실패했습니다.",
+      "emailNotPreregistered": "이 이메일 주소는 등록되지 않았습니다. 초대받은 이메일 주소를 확인해주세요.",
+      "preregistrationCheckFailed": "사전 등록 확인에 실패했습니다. 나중에 다시 시도해주세요.",
+      "emailRequired": "이메일 주소가 필요합니다",
+      "resetEmailFailed": "재설정 이메일 전송에 실패했습니다",
+      "passwordTooWeak": "비밀번호가 너무 약합니다",
+      "passwordUpdateFailed": "비밀번호 업데이트에 실패했습니다",
+      "usernameInvalidChars": "사용자명은 문자, 숫자, 밑줄(_), 하이픈(-)만 포함할 수 있습니다",
+      "usernameAlreadyExists": "이 사용자명은 이미 사용 중입니다. 다른 사용자명을 시도해주세요.",
+      "usernameInvalidLength": "사용자명은 3자에서 30자 사이여야 합니다.",
+      "emailAlreadyExists": "이 이메일 주소는 이미 등록되어 있습니다.",
+      "databaseError": "데이터베이스 오류가 발생했습니다. 나중에 다시 시도해주세요.",
+      "signupDisabled": "신규 등록이 현재 일시적으로 비활성화되어 있습니다.",
+      "invalidCredentials": "유효하지 않은 이메일 또는 비밀번호입니다."
+    },
+    "signIn": "로그인",
+    "createAccount": "계정 생성",
+    "username": "사용자명",
+    "usernamePlaceholder": "사용자명을 선택하세요",
+    "email": "이메일",
+    "emailPlaceholder": "이메일을 입력하세요",
+    "password": "비밀번호",
+    "passwordPlaceholder": "비밀번호를 입력하세요",
+    "passwordRequirement": "비밀번호는 최소 6자 이상이어야 합니다",
+    "usernameRequirement": "사용자명은 3자에서 30자 사이여야 합니다",
+    "usernameDescription": "3-30자, 문자/숫자/밑줄/하이픈만 사용 가능",
+    "confirmPassword": "비밀번호 확인",
+    "confirmPasswordPlaceholder": "비밀번호를 다시 입력하세요",
+    "passwordMismatch": "비밀번호가 일치하지 않습니다",
+    "rememberMe": "로그인 상태 유지",
+    "sending": "전송 중...",
+    "verifying": "인증 중...",
+    "signingIn": "로그인 중...",
+    "creatingAccount": "계정 생성 중...",
+    "confirmEmailTitle": "이메일 확인",
+    "confirmEmailDescription": "<strong>{{email}}</strong>으로 확인 링크를 보냈습니다. 받은편지함(및 스팸폴더)을 확인하여 등록을 완료해주세요.",
+    "gotIt": "확인!",
+    "country": "국가",
+    "forgotPassword": "비밀번호를 잊으셨나요?",
+    "resetPassword": "비밀번호 재설정",
+    "resetPasswordDescription": "등록된 이메일 주소를 입력하세요. 비밀번호 재설정 링크를 보내드립니다.",
+    "sendResetEmail": "재설정 이메일 전송",
+    "sendingResetEmail": "전송 중...",
+    "resetEmailSent": "이메일 전송됨",
+    "resetEmailSentDescription": "{{email}}으로 비밀번호 재설정 링크를 보냈습니다. 이메일을 확인해주세요.",
+    "backToLogin": "로그인으로 돌아가기",
+    "setNewPassword": "새 비밀번호 설정",
+    "setNewPasswordDescription": "새 비밀번호를 입력하세요.",
+    "newPassword": "새 비밀번호",
+    "confirmNewPassword": "새 비밀번호 확인",
+    "newPasswordPlaceholder": "새 비밀번호 입력",
+    "confirmNewPasswordPlaceholder": "새 비밀번호 다시 입력",
+    "updatePassword": "비밀번호 업데이트",
+    "updatingPassword": "업데이트 중...",
+    "passwordResetSuccess": "비밀번호가 성공적으로 재설정되었습니다",
+    "passwordStrength": {
+      "very_weak": "매우 약함",
+      "weak": "약함", 
+      "fair": "보통",
+      "good": "좋음",
+      "strong": "강함"
+    }
+  },
+  "newSeasonModal": {
+  "title": "🎉 새로운 시즌 시작!",
+  "description": "새 시즌이 시작되었습니다! 배틀에 참여해 랭킹을 올리거나, 좋아하는 크리에이터에게 투표해 포인트를 획득하세요!",
+  "goToBattle": "배틀 참여",
+  "goToVote": "투표하러 가기"
+  },
+  "premium": {
+    "badges": {
+      "details": {
+    "description": "설명",
+    "earnedDate": "획득 날짜"
+      }
+    }
+  },
+  "pushNotificationSetup": {
+  "title": "푸시 알림",
+  "unsupported": "사용 중인 브라우저는 푸시 알림을 지원하지 않습니다",
+    "status": {
+    "denied": "거부됨",
+    "enabled": "활성화됨",
+    "disabled": "비활성화됨",
+    "notSet": "미설정"
+    },
+    "buttons": {
+    "enabling": "설정 중...",
+    "enable": "알림 활성화",
+    "browserSettings": "브라우저 설정에서 허용해 주세요",
+    "disabling": "비활성화 중...",
+    "disable": "알림 비활성화"
+    },
+    "help": {
+    "title": "알림을 활성화하는 방법:",
+    "step1": "브라우저 주소창 왼쪽의 🔒 아이콘을 클릭",
+    "step2": "\"알림(Notifications)\"을 \"허용(Allow)\"으로 변경",
+    "step3": "페이지 새로고침"
+    }
+  }
+}

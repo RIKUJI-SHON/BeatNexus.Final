@@ -1,0 +1,218 @@
+{
+  "common": {
+    "upgrade": "升级",
+    "login": "登录",
+    "signup": "注册",
+    "support": "支持",
+    "community": "社区",
+    "battles": "对战",
+    "shop": "商店",
+    "home": "主页",
+    "ranking": "排名",
+    "createPost": "创建帖子",
+    "logout": "登出",
+    "howToGuide": "使用指南",
+    "locale": "zh-CN",
+    "back": "返回",
+    "next": "下一步",
+    "cancel": "取消",
+    "create": "创建",
+    "creating": "创建中...",
+    "joining": "加入中...",
+    "join": "加入",
+    "owner": "拥有者",
+    "members": "成员",
+    "avgRating": "平均评分",
+    "loading": "加载中...",
+    "description": "描述",
+    "password": "密码",
+    "enterPassword": "输入密码",
+    "noDescription": "无描述",
+    "termsOfService": "服务条款",
+    "privacyPolicy": "隐私政策"
+  },
+  "hoverCard": {
+    "profile": "个人资料",
+    "myBattles": "我的对战",
+    "settings": "设置",
+    "logout": "登出"
+  },
+  "submissionModal": {
+    "title": "提交视频",
+    "videoPreview": "视频预览",
+    "processing": "处理中...",
+    "progress": "进度",
+    "estimatedRemaining": "预计剩余时间",
+    "estimatedTime": {
+      "seconds": "大约{{seconds}}秒",
+      "minutes": "大约{{minutes}}分{{seconds}}秒",
+      "almostDone": "即将完成"
+    },
+    "cancel": "取消",
+    "close": "关闭"
+  },
+  "battle": {
+    "title": "对战",
+    "voteA": "投票给A",
+    "voteB": "投票给B",
+    "votingEndsIn": "投票结束时间",
+    "ended": "已结束",
+    "vs": "对战",
+    "viewBattle": "查看对战",
+    "alreadyVoted": "已投票",
+    "submissionA": "作品A",
+    "submissionB": "作品B",
+    "loading": "加载中...",
+    "noActiveBattles": "暂无活跃对战",
+    "viewResults": "查看结果",
+    "winner": "获胜者",
+    "tie": "平局",
+    "comments": "评论",
+    "writeComment": "写评论...",
+    "submitComment": "提交评论",
+    "noComments": "暂无评论",
+    "votedFor": "已投票给{{choice}}",
+    "timeRemaining": {
+      "days": "{{days}}天",
+      "hours": "{{hours}}小时",
+      "minutes": "{{minutes}}分钟",
+      "seconds": "{{seconds}}秒"
+    }
+  },
+  "auth": {
+    "phoneNumber": "手机号码",
+    "phoneRequirement": "我们需要有效的手机号码来保持投票系统的公正性！",
+    "phoneVerify": "验证手机号码",
+    "phoneVerifyCodePlaceholder": "输入验证码",
+    "phoneVerifyCodeButton": "验证",
+    "phoneVerified": "手机号码验证成功！",
+    "error": {
+      "invalidPhone": "需要手机号码",
+      "verificationFailed": "手机验证失败：{{error}}",
+      "phoneAlreadyRegistered": "此手机号码已被其他账户注册。请尝试其他手机号码。",
+      "systemError": "系统错误，请稍后重试。",
+      "invalidOtpCode": "验证码不正确。",
+      "authenticationError": "认证错误。",
+      "recordError": "记录手机号码验证失败。",
+      "emailNotPreregistered": "此邮箱地址未注册。请检查您受邀时使用的邮箱地址。",
+      "preregistrationCheckFailed": "预注册验证失败。请稍后重试。",
+      "emailRequired": "需要邮箱地址",
+      "resetEmailFailed": "发送重置邮件失败",
+      "passwordTooWeak": "密码过于简单",
+      "passwordUpdateFailed": "密码更新失败",
+      "usernameInvalidChars": "用户名只能包含字母、数字、下划线(_)和连字符(-)",
+      "usernameAlreadyExists": "此用户名已被使用。请尝试其他用户名。",
+      "usernameInvalidLength": "用户名长度必须在3-30个字符之间。",
+      "emailAlreadyExists": "此邮箱地址已被注册。",
+      "databaseError": "数据库错误，请稍后重试。",
+      "signupDisabled": "新用户注册当前暂时禁用。",
+      "invalidCredentials": "邮箱或密码无效。"
+    },
+    "signIn": "登录",
+    "createAccount": "创建账户",
+    "username": "用户名",
+    "usernamePlaceholder": "选择用户名",
+    "email": "邮箱",
+    "emailPlaceholder": "输入您的邮箱",
+    "password": "密码",
+    "passwordPlaceholder": "输入您的密码",
+    "passwordRequirement": "密码至少需要6个字符",
+    "confirmPassword": "确认密码",
+    "confirmPasswordPlaceholder": "再次输入密码",
+    "forgotPassword": "忘记密码？",
+    "resetPassword": "重置密码",
+    "sendResetEmail": "发送重置邮件",
+    "backToLogin": "返回登录",
+    "alreadyHaveAccount": "已有账户？",
+    "dontHaveAccount": "没有账户？",
+    "successMessages": {
+      "accountCreated": "账户创建成功！",
+      "signedIn": "登录成功！",
+      "resetEmailSent": "密码重置邮件已发送。",
+      "passwordUpdated": "密码更新成功。"
+    }
+  },
+  "settingsPage": {
+    "title": "设置",
+    "preferences": {
+      "title": "偏好设置",
+      "saveButton": "保存更改",
+      "savingButton": "保存中...",
+      "unsavedChanges": "有未保存的更改"
+    },
+    "language": {
+      "title": "语言",
+      "description": "选择您在平台上的首选语言。",
+      "english": "English",
+      "japanese": "日本語",
+      "korean": "한국어",
+      "chinese": "中文",
+      "spanish": "Español",
+      "portuguese": "Português (Brasil)",
+      "french": "Français",
+      "german": "Deutsch"
+    },
+    "pushNotifications": {
+      "title": "推送通知",
+      "description": "管理接收对战更新和匹配通知的设置。",
+      "enabled": "推送通知已启用",
+      "disabled": "推送通知已禁用"
+    },
+    "accountManagement": {
+      "title": "账户管理",
+      "changePassword": "修改密码",
+      "deleteAccount": "删除账户"
+    },
+    "toasts": {
+      "successTitle": "成功",
+      "errorTitle": "错误",
+      "loadLanguageError": "加载语言偏好失败。",
+      "languageUpdateSuccess": "语言已更新为{{language}}。",
+      "languageUpdateError": "语言偏好更新失败。",
+      "mustBeLoggedIn": "必须登录才能更改设置。",
+      "noChanges": "没有更改。",
+      "mustBeLoggedInPassword": "必须登录才能更改密码。",
+      "passwordsDoNotMatch": "密码不匹配。",
+      "passwordTooShort": "密码至少需要6个字符。",
+      "passwordUpdateSuccess": "密码更新成功。",
+      "passwordUpdateError": "密码更新失败。",
+      "accountDeleteSuccess": "账户删除成功。",
+      "accountDeleteError": "账户删除失败。"
+    }
+  },
+  "postPage": {
+    "title": "上传视频",
+    "description": "上传您的节拍盒视频与其他玩家对战！",
+    "battleFormat": {
+      "title": "对战格式",
+      "beatbox": "节拍盒",
+      "liproll": "唇颤音",
+      "scratching": "刮擦音"
+    },
+    "videoUpload": {
+      "title": "视频上传",
+      "dragDrop": "将视频文件拖放到此处或点击选择",
+      "fileTypes": "仅支持MP4、MOV、AVI文件",
+      "maxSize": "最大文件大小：100MB"
+    },
+    "submissionGuidelines": {
+      "title": "提交指南",
+      "videoLength": "视频长度应在15-60秒之间",
+      "verticalOrientation": "推荐竖向方向（9:16比例）",
+      "goodLighting": "良好的照明和清晰的音频",
+      "originalContent": "您的原创表演",
+      "noBackgroundMusic": "无背景音乐",
+      "agreeGuidelines": "我已阅读并同意提交指南",
+      "understandFacePolicy": "我理解显示面部的视频政策",
+      "confirmOwnPerformance": "我确认这是我自己的表演"
+    },
+    "submitButton": "提交到对战",
+    "submitting": "提交中...",
+    "errors": {
+      "videoRequired": "需要视频文件",
+      "acceptGuidelines": "必须同意指南",
+      "uploadFailed": "上传失败",
+      "processingFailed": "视频处理失败"
+    }
+  }
+}
