@@ -15,6 +15,7 @@ export interface NewsItem {
   published_at: string;
   created_at: string;
   updated_at: string;
+  language: 'en'|'ja'|'ko'|'zh-CN'|'es'|'pt-BR'|'fr'|'de';
 }
 
 export interface NewsHookState {
@@ -27,6 +28,7 @@ export interface NewsHookState {
 export interface NewsQuery {
   limit?: number;
   includeUnpublished?: boolean;
+  language?: string;
 }
 
 export interface ArticleModalProps {
