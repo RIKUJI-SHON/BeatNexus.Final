@@ -1,659 +1,659 @@
 {
   "common": {
     "upgrade": "Upgrade",
-    "login": "Login",
-    "signup": "Sign Up",
+    "login": "Anmelden",
+    "signup": "Registrieren",
     "support": "Support",
     "community": "Community",
     "battles": "Battles",
     "shop": "Shop",
-    "home": "Home",
-    "ranking": "Ranking",
-    "createPost": "Create Post",
-    "logout": "Logout",
-    "howToGuide": "How-to Guide",
-    "locale": "en-US",
-    "back": "Back",
-    "next": "Next",
-    "cancel": "Cancel",
-    "create": "Create",
-    "creating": "Creating...",
-    "joining": "Joining...",
-    "join": "Join",
-    "owner": "Owner",
-    "members": "Members",
-    "avgRating": "Avg Rating",
-    "loading": "Loading...",
-    "description": "Description",
-    "password": "Password",
-    "enterPassword": "Enter password",
-    "noDescription": "No description available",
-    "termsOfService": "Terms of Service",
-    "privacyPolicy": "Privacy Policy"
+    "home": "Startseite",
+    "ranking": "Rangliste",
+    "createPost": "Post erstellen",
+    "logout": "Abmelden",
+    "howToGuide": "Anleitung",
+    "locale": "de-DE",
+    "back": "Zurück",
+    "next": "Weiter",
+    "cancel": "Abbrechen",
+    "create": "Erstellen",
+    "creating": "Erstelle...",
+    "joining": "Trete bei...",
+    "join": "Beitreten",
+    "owner": "Besitzer",
+    "members": "Mitglieder",
+    "avgRating": "Ø Bewertung",
+    "loading": "Lädt...",
+    "description": "Beschreibung",
+    "password": "Passwort",
+    "enterPassword": "Passwort eingeben",
+    "noDescription": "Keine Beschreibung verfügbar",
+    "termsOfService": "Nutzungsbedingungen",
+    "privacyPolicy": "Datenschutzrichtlinie"
   },
   "hoverCard": {
-    "profile": "Profile",
-    "myBattles": "My Battles",
-    "settings": "Settings",
-    "logout": "Logout"
+    "profile": "Profil",
+    "myBattles": "Meine Battles",
+    "settings": "Einstellungen",
+    "logout": "Abmelden"
   },
   "submissionModal": {
-    "title": "Submitting Video",
-    "videoPreview": "Video Preview",
-    "processing": "Processing...",
-    "progress": "Progress",
-    "estimatedRemaining": "Estimated time remaining",
+    "title": "Video wird eingereicht",
+    "videoPreview": "Video-Vorschau",
+    "processing": "Verarbeitung...",
+    "progress": "Fortschritt",
+    "estimatedRemaining": "Geschätzte verbleibende Zeit",
     "estimatedTime": {
-      "seconds": "About {{seconds}} seconds",
-      "minutes": "About {{minutes}}m {{seconds}}s",
-      "almostDone": "Almost done"
+      "seconds": "Etwa {{seconds}} Sekunden",
+      "minutes": "Etwa {{minutes}}m {{seconds}}s",
+      "almostDone": "Fast fertig"
     },
-    "error": "An error occurred",
-    "completed": "Submission completed",
-    "cancel": "Cancel",
-    "close": "Close",
-    "checking": "Checking video...",
-    "compressing": "Compressing video...",
-    "uploading": "Uploading video...",
-    "creating": "Creating submission...",
-    "matching": "Finding opponent..."
+    "error": "Ein Fehler ist aufgetreten",
+    "completed": "Einreichung abgeschlossen",
+    "cancel": "Abbrechen",
+    "close": "Schließen",
+    "checking": "Video wird überprüft...",
+    "compressing": "Video wird komprimiert...",
+    "uploading": "Video wird hochgeladen...",
+    "creating": "Einreichung wird erstellt...",
+    "matching": "Suche Gegner..."
   },
   "subscription": {
-    "title": "Choose Your Plan",
-    "subtitle": "Select the perfect plan to support your beatbox journey",
+    "title": "Wählen Sie Ihren Plan",
+    "subtitle": "Wählen Sie den perfekten Plan zur Unterstützung Ihrer Beatbox-Reise",
     "billing": {
-      "monthly": "Monthly",
-      "yearly": "Yearly",
-      "discount": "20% OFF"
+      "monthly": "Monatlich",
+      "yearly": "Jährlich",
+      "discount": "20% RABATT"
     },
     "plans": {
       "free": {
-        "name": "Free",
-        "description": "Experience basic features",
+        "name": "Kostenlos",
+        "description": "Grundfunktionen erleben",
         "features": [
-          "3 posts per month",
-          "With ads",
-          "0 Boost tokens per month",
-          "Basic profile"
+          "3 Posts pro Monat",
+          "Mit Werbung",
+          "0 Boost-Token pro Monat",
+          "Basis-Profil"
         ],
-        "button": "Start Free"
+        "button": "Kostenlos starten"
       },
       "crew": {
         "name": "Crew",
-        "description": "More posts and perks",
+        "description": "Mehr Posts und Vorteile",
         "features": [
-          "10 posts per month",
-          "Ad-free experience",
-          "5 Boost tokens per month",
-          "Custom profile colors",
-          "Priority support"
+          "10 Posts pro Monat",
+          "Werbefreies Erlebnis",
+          "5 Boost-Token pro Monat",
+          "Benutzerdefinierte Profilfarben",
+          "Prioritäts-Support"
         ],
-        "button": "Get Started",
-        "popular": "Popular Plan"
+        "button": "Loslegen",
+        "popular": "Beliebter Plan"
       },
       "pro": {
         "name": "Pro",
-        "description": "Complete creator experience",
+        "description": "Vollständiges Creator-Erlebnis",
         "features": [
-          "Unlimited posts",
-          "Ad-free experience",
-          "15 Boost tokens per month",
-          "Profile badges & themes",
-          "Priority matching",
-          "Detailed statistics"
+          "Unbegrenzte Posts",
+          "Werbefreies Erlebnis",
+          "15 Boost-Token pro Monat",
+          "Profil-Abzeichen & Themes",
+          "Prioritäts-Matching",
+          "Detaillierte Statistiken"
         ],
-        "button": "Upgrade"
+        "button": "Upgraden"
       }
     },
     "features": {
-      "title": "Compare All Features",
+      "title": "Alle Funktionen vergleichen",
       "unlimited": {
-        "title": "Unlimited Posts",
-        "description": "Post unlimited battles with Pro plan"
+        "title": "Unbegrenzte Posts",
+        "description": "Unbegrenzte Battles mit Pro-Plan posten"
       },
       "boost": {
-        "title": "Boost Tokens",
-        "description": "Tokens to increase battle exposure"
+        "title": "Boost-Token",
+        "description": "Token zur Erhöhung der Battle-Sichtbarkeit"
       },
       "customization": {
-        "title": "Customization",
-        "description": "Customize your profile and themes"
+        "title": "Anpassung",
+        "description": "Passen Sie Ihr Profil und Themes an"
       },
       "badges": {
-        "title": "Special Badges",
-        "description": "Exclusive badges for Pro users",
+        "title": "Spezielle Abzeichen",
+        "description": "Exklusive Abzeichen für Pro-Nutzer",
         "details": {
-          "description": "Description",
-          "earnedDate": "Earned Date"
+          "description": "Beschreibung",
+          "earnedDate": "Erhalten am"
         }
       }
     },
     "comingSoon": {
-      "title": "Coming Soon",
-      "description": "Subscription features will be available soon"
+      "title": "Demnächst",
+      "description": "Abonnement-Funktionen werden bald verfügbar sein"
     }
   },
   "battle": {
-    "title": "Battle Detail",
-    "loading": "Loading battle details...",
-    "notFound": "Battle not found",
-    "voteA": "Vote for A",
-    "voteB": "Vote for B",
-    "voting": "Voting...",
-    "voteSuccess": "Vote cast successfully!",
-    "voteError": "Failed to cast vote: {{message}}",
-    "alreadyVoted": "You have already voted in this battle.",
-    "loginToVote": "Please login to vote.",
-    "participantMessage": "As a participant in this battle, you cannot vote. Watch the voting unfold!",
-    "votes": "votes",
-    "format": "Battle Format",
+    "title": "Battle-Details",
+    "loading": "Lade Battle-Details...",
+    "notFound": "Battle nicht gefunden",
+    "voteA": "Stimme für A",
+    "voteB": "Stimme für B",
+    "voting": "Abstimmung...",
+    "voteSuccess": "Stimme erfolgreich abgegeben!",
+    "voteError": "Fehler beim Abstimmen: {{message}}",
+    "alreadyVoted": "Sie haben bereits in diesem Battle abgestimmt.",
+    "loginToVote": "Bitte melden Sie sich an, um abzustimmen.",
+    "participantMessage": "Als Teilnehmer dieses Battles können Sie nicht abstimmen. Beobachten Sie die Abstimmung!",
+    "votes": "Stimmen",
+    "format": "Battle-Format",
     "formats": {
-      "main_battle": "Main Battle",
-      "mini_battle": "Mini Battle", 
-      "theme_challenge": "Theme Challenge"
+      "main_battle": "Haupt-Battle",
+      "mini_battle": "Mini-Battle", 
+      "theme_challenge": "Themen-Challenge"
     },
     "result": {
-      "victory": "🎉 VICTORY! 🎉",
-      "defeat": "💪 Better Luck Next Time",
-      "against": "Against",
-      "ratingChange": "Rating Change",
-      "currentRank": "Current Rank",
-      "share": "Share Victory",
-      "viewArchive": "View Archive",
-      "shareText": "🎵 I just won a beatbox battle against {{opponent}} on BeatNexus! Rating: {{rating}} | Rank: {{rank}} 🎵",
-      "draw": "🤝 DRAW 🤝"
+      "victory": "🎉 SIEG! 🎉",
+      "defeat": "💪 Mehr Glück beim nächsten Mal",
+      "against": "Gegen",
+      "ratingChange": "Bewertungsänderung",
+      "currentRank": "Aktueller Rang",
+      "share": "Sieg teilen",
+      "viewArchive": "Archiv ansehen",
+      "shareText": "🎵 Ich habe gerade einen Beatbox-Battle gegen {{opponent}} auf BeatNexus gewonnen! Bewertung: {{rating}} | Rang: {{rank}} 🎵",
+      "draw": "🤝 UNENTSCHIEDEN 🤝"
     },
     "matched": {
-      "title": " Battle Match Found! ",
+      "title": " Battle-Match gefunden! ",
       "against": "vs",
-      "votingPeriod": "5-day voting period",
-      "encouragement": "Your battle has started! Let the community vote on your performance.",
-      "viewBattle": "View Battle",
-      "share": "Share on Twitter",
-      "shareText": "My battle against {{opponent}} in {{format}} has started! Come vote!"
+      "votingPeriod": "5-tägige Abstimmungsperiode",
+      "encouragement": "Ihr Battle hat begonnen! Lassen Sie die Community über Ihre Leistung abstimmen.",
+      "viewBattle": "Battle ansehen",
+      "share": "Auf Twitter teilen",
+      "shareText": "Mein Battle gegen {{opponent}} in {{format}} hat begonnen! Kommt abstimmen!"
     }
   },
   "battleView": {
     "title": "BeatNexus",
-    "subtitle": "Battle Arena",
-    "votingEndsIn": "Voting ends in",
-    "votingEnded": "Voting Ended",
+    "subtitle": "Battle-Arena",
+    "votingEndsIn": "Abstimmung endet in",
+    "votingEnded": "Abstimmung beendet",
     "timeUnits": {
-      "days": "days",
-      "hours": "hours",
-      "minutes": "minutes"
+      "days": "Tage",
+      "hours": "Stunden",
+      "minutes": "Minuten"
     },
-    "loading": "Loading...",
-    "participatingInBattle": "Participating in Battle",
-    "votedFor": "VOTED FOR",
-    "cancellingVote": "Cancelling Vote...",
-    "cancelVote": "Cancel Vote",
-    "voteFor": "Vote for",
-    "totalVotes": "Total Votes",
-    "comments": "Comments",
-    "votes": "votes",
-    "leading": "Leading",
-    "addComment": "Add your comment...",
-    "postComment": "Post Comment",
-    "voteWithComment": "Vote & Comment",
-    "loadComments": "Load Comments",
-    "noComments": "No comments yet. Be the first to share your thoughts!",
-    "commentPlaceholder": "Share your thoughts about this battle...",
-    "videoLoading": "Video loading...",
-    "vote": "Vote",
-    "voteToSeeResults": "Vote to see results",
-    "voteToSeeComments": "Vote to see comments",
-    "voteToSeeCommentsDesc": "To see voting results and comments for this battle, please vote first",
-    "timeRemaining": "Time Remaining",
-    "tiedVote": "Tied Vote",
-    "leadingPlayer": "{{player}} is leading",
-    "votingClosed": "Voting is closed",
-    "alreadyVoted": "Already voted",
-    "participantCannotVote": "Participants cannot vote",
-    "voteSuccess": "Vote submitted successfully",
-    "voteError": "Failed to submit vote",
-    "votingGuide": "Voting Guide",
-    "evaluationCriteria": "Judge's Scorecard",
-    "selectVoteMethod": "Select Voting Method",
-    "voteForPlayer": "Vote for Player {{player}}",
-    "simpleVote": "Vote",
+    "loading": "Lädt...",
+    "participatingInBattle": "Nimmt am Battle teil",
+    "votedFor": "GESTIMMT FÜR",
+    "cancellingVote": "Stimme wird storniert...",
+    "cancelVote": "Stimme stornieren",
+    "voteFor": "Stimme für",
+    "totalVotes": "Gesamtstimmen",
+    "comments": "Kommentare",
+    "votes": "Stimmen",
+    "leading": "Führend",
+    "addComment": "Ihren Kommentar hinzufügen...",
+    "postComment": "Kommentar posten",
+    "voteWithComment": "Abstimmen & Kommentieren",
+    "loadComments": "Kommentare laden",
+    "noComments": "Noch keine Kommentare. Seien Sie der Erste, der seine Gedanken teilt!",
+    "commentPlaceholder": "Teilen Sie Ihre Gedanken zu diesem Battle...",
+    "videoLoading": "Video lädt...",
+    "vote": "Abstimmen",
+    "voteToSeeResults": "Abstimmen, um Ergebnisse zu sehen",
+    "voteToSeeComments": "Abstimmen, um Kommentare zu sehen",
+    "voteToSeeCommentsDesc": "Um Abstimmungsergebnisse und Kommentare für diesen Battle zu sehen, stimmen Sie bitte zuerst ab",
+    "timeRemaining": "Verbleibende Zeit",
+    "tiedVote": "Gleichstand",
+    "leadingPlayer": "{{player}} führt",
+    "votingClosed": "Abstimmung geschlossen",
+    "alreadyVoted": "Bereits abgestimmt",
+    "participantCannotVote": "Teilnehmer können nicht abstimmen",
+    "voteSuccess": "Stimme erfolgreich abgegeben",
+    "voteError": "Fehler beim Abstimmen",
+    "votingGuide": "Abstimmungshilfe",
+    "evaluationCriteria": "Bewertungskriterien",
+    "selectVoteMethod": "Abstimmungsmethode wählen",
+    "voteForPlayer": "Stimme für Spieler {{player}}",
+    "simpleVote": "Abstimmen",
     "criteria": {
-      "technicality": "Technicality",
-      "technicalityDesc": "Can complex patterns be controlled as clear, accurate timing and uninterrupted flow?",
-      "musicality": "Musicality", 
-      "musicalityDesc": "Do beats, melodies, and composition come together as one song with storytelling and emotional ups and downs that captivate the audience?",
-      "originality": "Originality",
-      "originalityDesc": "Does it show freshness and innovation with novel sounds and ideas without relying on imitation of others?",
+      "technicality": "Technik",
+      "technicalityDesc": "Können komplexe Patterns mit klarem, präzisem Timing und unterbrochenem Flow kontrolliert werden?",
+      "musicality": "Musikalität", 
+      "musicalityDesc": "Kommen Beats, Melodien und Komposition als ein Lied mit Storytelling und emotionalen Höhen und Tiefen zusammen, die das Publikum fesseln?",
+      "originality": "Originalität",
+      "originalityDesc": "Zeigt es Frische und Innovation mit neuartigen Klängen und Ideen ohne sich auf Nachahmung anderer zu verlassen?",
       "showmanship": "Showmanship",
-      "showmanshipDesc": "Can facial expressions, movements, and stage control captivate the audience and maximize the appeal of technique and musicality?"
+      "showmanshipDesc": "Können Gesichtsausdrücke, Bewegungen und Bühnenkontrolle das Publikum fesseln und die Anziehungskraft von Technik und Musikalität maximieren?"
     },
-    "tipsNote": "Use these criteria as reference for better judgment",
-    "notSet": "Not Set",
-    "totalScores": "Total Scores",
-    "unsetItems": "{{count}} items not set"
+    "tipsNote": "Nutzen Sie diese Kriterien als Referenz für bessere Beurteilung",
+    "notSet": "Nicht gesetzt",
+    "totalScores": "Gesamtpunktzahl",
+    "unsetItems": "{{count}} Elemente nicht gesetzt"
   },
   "battleCard": {
-    "votingEndsIn": "{{days}}d {{hours}}h left",
-    "votingEndsInHours": "{{hours}}h {{minutes}}m left",
-    "votingEndsInMinutes": "{{minutes}}m {{seconds}}s left",
-    "votingEndsInSeconds": "{{seconds}}s left",
-    "votingEnded": "Voting Ended",
-    "contestantA": "Contestant A",
-    "contestantB": "Contestant B",
-    "unknownUser": "Unknown User",
-    "votes": "votes",
-    "totalVotes": "Total Votes",
-    "comments": "Comments",
-    "voteButton": "Vote on this battle",
-    "voteNow": "Vote Now",
-    "watch": "Watch",
-    "watchReplay": "Replay",
-    "archivedOn": "Archived on {{date}}",
+    "votingEndsIn": "{{days}}T {{hours}}h übrig",
+    "votingEndsInHours": "{{hours}}h {{minutes}}m übrig",
+    "votingEndsInMinutes": "{{minutes}}m {{seconds}}s übrig",
+    "votingEndsInSeconds": "{{seconds}}s übrig",
+    "votingEnded": "Abstimmung beendet",
+    "contestantA": "Teilnehmer A",
+    "contestantB": "Teilnehmer B",
+    "unknownUser": "Unbekannter Nutzer",
+    "votes": "Stimmen",
+    "totalVotes": "Gesamtstimmen",
+    "comments": "Kommentare",
+    "voteButton": "Bei diesem Battle abstimmen",
+    "voteNow": "Jetzt abstimmen",
+    "watch": "Ansehen",
+    "watchReplay": "Wiederholung",
+    "archivedOn": "Archiviert am {{date}}",
     "battleFormats": {
-      "MAIN_BATTLE": "Main Battle",
-      "MINI_BATTLE": "Mini Battle",
-      "THEME_CHALLENGE": "Theme Challenge"
+      "MAIN_BATTLE": "Haupt-Battle",
+      "MINI_BATTLE": "Mini-Battle",
+      "THEME_CHALLENGE": "Themen-Challenge"
     },
     "errors": {
-      "navigationFailed": "Failed to navigate to battle page. Please try again."
+      "navigationFailed": "Navigation zur Battle-Seite fehlgeschlagen. Bitte versuchen Sie es erneut."
     },
-    "viewComments": "View Comments",
+    "viewComments": "Kommentare ansehen",
     "commentsModal": {
-      "title": "Battle Comments",
-      "noComments": "No comments yet",
-      "loading": "Loading comments...",
-      "playerA": "Player A",
-      "playerB": "Player B",
-      "close": "Close"
+      "title": "Battle-Kommentare",
+      "noComments": "Noch keine Kommentare",
+      "loading": "Kommentare werden geladen...",
+      "playerA": "Spieler A",
+      "playerB": "Spieler B",
+      "close": "Schließen"
     },
     "timeLeft": {
-      "minutes": "{{count}}m {{seconds}}s left",
-      "seconds": "{{count}}s left"
+      "minutes": "{{count}}m {{seconds}}s übrig",
+      "seconds": "{{count}}s übrig"
     }
   },
   "battleFilters": {
-    "searchPlaceholder": "Search by username...",
-    "myBattles": "MY BATTLES",
-    "allFormats": "All Formats",
-    "recent": "Recent",
+    "searchPlaceholder": "Nach Benutzername suchen...",
+    "myBattles": "MEINE BATTLES",
+    "allFormats": "Alle Formate",
+    "recent": "Aktuell",
     "trending": "Trending",
-    "endingSoon": "Ending Soon",
-    "completed": "Completed",
-    "searchTitle": "Username Search",
-    "filtersTitle": "Filters & Sort",
-    "myBattlesOnly": "My Battles",
-    "activeFilters": "Active Filters:",
-    "loading": "Loading...",
-    "noRankings": "No Rankings",
+    "endingSoon": "Endet bald",
+    "completed": "Abgeschlossen",
+    "searchTitle": "Benutzername-Suche",
+    "filtersTitle": "Filter & Sortierung",
+    "myBattlesOnly": "Nur meine Battles",
+    "activeFilters": "Aktive Filter:",
+    "loading": "Lädt...",
+    "noRankings": "Keine Ranglisten",
     "buttons": {
-      "profile": "Profile",
-      "battleStart": "Battle Start",
-      "tournament": "Tournament"
+      "profile": "Profil",
+      "battleStart": "Battle starten",
+      "tournament": "Turnier"
     }
   },
   "monthlyLimit": {
-    "title": "Monthly Post Limit",
-    "subtitle": "This Month's Status",
-    "remainingPosts": "Remaining Posts",
-    "usedPosts": "Used: {{count}} times",
-    "limitPosts": "Limit: {{count}} times",
-    "resetLabel": "Reset:",
-    "nearLimitWarning": "Running low",
-    "nearLimitMessage": "{{count}} posts remaining",
-    "limitReachedTitle": "Monthly limit reached",
-    "limitReachedMessage": "Resets on {{date}}",
-    "postVideoButton": "Post Video",
-    "limitReachedButton": "Post limit reached",
-    "qualityMessage": "To maintain high-quality battles, you can post up to 30 times per month",
-    "loginToCheck": "Login to check posting status",
-    "checkingStatus": "Checking monthly posting status...",
+    "title": "Monatliches Post-Limit",
+    "subtitle": "Status dieses Monats",
+    "remainingPosts": "Verbleibende Posts",
+    "usedPosts": "Verwendet: {{count}} mal",
+    "limitPosts": "Limit: {{count}} mal",
+    "resetLabel": "Zurücksetzen:",
+    "nearLimitWarning": "Fast erreicht",
+    "nearLimitMessage": "{{count}} Posts verbleibend",
+    "limitReachedTitle": "Monatliches Limit erreicht",
+    "limitReachedMessage": "Zurücksetzen am {{date}}",
+    "postVideoButton": "Video posten",
+    "limitReachedButton": "Post-Limit erreicht",
+    "qualityMessage": "Um hochwertige Battles zu gewährleisten, können Sie bis zu 30 mal pro Monat posten",
+    "loginToCheck": "Anmelden, um Posting-Status zu prüfen",
+    "checkingStatus": "Prüfe monatlichen Posting-Status...",
     "testMode": {
-      "unlimited": "Unlimited",
-      "remainingUnlimited": "Unlimited",
-      "testingPhase": "No submission limits during testing phase",
-      "testingMessage": "The platform is currently in testing phase. There are no submission limits until official launch.",
-      "simpleMessage": "Unlimited posts during testing phase"
+      "unlimited": "Unbegrenzt",
+      "remainingUnlimited": "Unbegrenzt",
+      "testingPhase": "Keine Einreichungslimits während der Testphase",
+      "testingMessage": "Die Plattform befindet sich derzeit in der Testphase. Es gibt keine Einreichungslimits bis zum offiziellen Start.",
+      "simpleMessage": "Unbegrenzte Posts während der Testphase"
     },
-    "monthlySubmissions": "Monthly Submissions",
-    "unlimitedSubmissions": "Unlimited submissions available",
-    "remainingSubmissions": "{{count}} submissions remaining",
-    "nextReset": "Next reset: {{date}}",
-    "testPeriodMessage": "Unlimited submissions during test period"
+    "monthlySubmissions": "Monatliche Einreichungen",
+    "unlimitedSubmissions": "Unbegrenzte Einreichungen verfügbar",
+    "remainingSubmissions": "{{count}} Einreichungen verbleibend",
+    "nextReset": "Nächstes Zurücksetzen: {{date}}",
+    "testPeriodMessage": "Unbegrenzte Einreichungen während der Testperiode"
   },
   "userInfoCard": {
-    "loading": "Loading profile information...",
-    "memberSince": "Member since {{date}}",
-    "currentSeason": "Current Season",
-    "notParticipating": "Not Participating in Season",
-    "notParticipatingMessage": "Join battles or vote to participate in season rankings!",
-    "noActiveSeason": "No Active Season",
-    "noActiveSeasonMessage": "There is currently no active season",
+    "loading": "Lade Profilinformationen...",
+    "memberSince": "Mitglied seit {{date}}",
+    "currentSeason": "Aktuelle Saison",
+    "notParticipating": "Nimmt nicht an der Saison teil",
+    "notParticipatingMessage": "Treten Sie Battles bei oder stimmen Sie ab, um an den Saison-Rankings teilzunehmen!",
+    "noActiveSeason": "Keine aktive Saison",
+    "noActiveSeasonMessage": "Es gibt derzeit keine aktive Saison",
     "rankings": {
-      "player": "Player",
-      "voter": "Voter", 
+      "player": "Spieler",
+      "voter": "Wähler", 
       "notRanked": "--"
     },
     "points": {
-      "seasonPoints": "Season Points",
-      "votePoints": "Vote Points"
+      "seasonPoints": "Saison-Punkte",
+      "votePoints": "Abstimmungs-Punkte"
     }
   },
   "upload": {
   },
   "community": {
     "title": "Community",
-    "subtitle": "Connect with beatboxers and grow together",
-    "createCommunity": "Create Community",
-    "createNewCommunity": "Create New Community",
-    "communityName": "Community Name",
-    "enterCommunityName": "Enter community name",
-    "describeCommunity": "Describe your community",
-    "privateCommunitySetting": "Private community (password required)",
-    "searchCommunities": "Search communities...",
-    "myCommunities": "My Communities",
-    "allCommunities": "All Communities",
-    "noCommunitiesFound": "No communities found matching your search",
-    "noCommunitiesYet": "No communities yet",
-    "tryDifferentSearch": "Try different search terms",
-    "createFirstCommunity": "Why not create the first community?",
-    "communityCreated": "Community created successfully!",
-    "joinedCommunity": "Joined community successfully!",
-    "enterCommunity": "Enter Community",
-    "privateCommunityPasswordRequired": "This private community requires a password to join.",
-    "publicCommunityJoinConfirm": "Do you want to join this community?",
-    "privateCommunityJoinConfirm": "Do you want to join this private community? Please enter the password.",
-    "passwordRequired": "Password is required",
-    "joinCommunity": "Join Community",
+    "subtitle": "Verbinden Sie sich mit Beatboxern und wachsen Sie gemeinsam",
+    "createCommunity": "Community erstellen",
+    "createNewCommunity": "Neue Community erstellen",
+    "communityName": "Community-Name",
+    "enterCommunityName": "Community-Namen eingeben",
+    "describeCommunity": "Beschreiben Sie Ihre Community",
+    "privateCommunitySetting": "Private Community (Passwort erforderlich)",
+    "searchCommunities": "Communities suchen...",
+    "myCommunities": "Meine Communities",
+    "allCommunities": "Alle Communities",
+    "noCommunitiesFound": "Keine Communities zu Ihrer Suche gefunden",
+    "noCommunitiesYet": "Noch keine Communities",
+    "tryDifferentSearch": "Versuchen Sie andere Suchbegriffe",
+    "createFirstCommunity": "Warum nicht die erste Community erstellen?",
+    "communityCreated": "Community erfolgreich erstellt!",
+    "joinedCommunity": "Community erfolgreich beigetreten!",
+    "enterCommunity": "Community betreten",
+    "privateCommunityPasswordRequired": "Diese private Community benötigt ein Passwort zum Beitreten.",
+    "publicCommunityJoinConfirm": "Möchten Sie dieser Community beitreten?",
+    "privateCommunityJoinConfirm": "Möchten Sie dieser privaten Community beitreten? Bitte geben Sie das Passwort ein.",
+    "passwordRequired": "Passwort ist erforderlich",
+    "joinCommunity": "Community beitreten",
     "trending": "Trending",
-    "newest": "Newest",
-    "noCommunities": "No communities found",
-    "communityDescription": "Description",
-    "createSuccess": "Community created successfully",
-    "createError": "Failed to create community",
-    "joinSuccess": "Joined community successfully",
-    "joinError": "Failed to join community",
-    "leaveSuccess": "Left community successfully",
-    "leaveError": "Failed to leave community",
-    "join": "Join",
-    "leave": "Leave",
+    "newest": "Neueste",
+    "noCommunities": "Keine Communities gefunden",
+    "communityDescription": "Beschreibung",
+    "createSuccess": "Community erfolgreich erstellt",
+    "createError": "Fehler beim Erstellen der Community",
+    "joinSuccess": "Community erfolgreich beigetreten",
+    "joinError": "Fehler beim Beitreten der Community",
+    "leaveSuccess": "Community erfolgreich verlassen",
+    "leaveError": "Fehler beim Verlassen der Community",
+    "join": "Beitreten",
+    "leave": "Verlassen",
     "admin": "Admin",
     "moderator": "Moderator",
-    "member": "Member"
+    "member": "Mitglied"
   },
   "communityTitle": "Community",
-  "communitySubtitle": "Connect with beatboxers and grow together",
-  "communityNotFound": "Community not found",
-  "communityNotFoundDesc": "This community doesn't exist or you don't have access to it.",
-  "backToCommunities": "Back to Communities",
-  "memberRanking": "Member Ranking",
+  "communitySubtitle": "Verbinden Sie sich mit Beatboxern und wachsen Sie gemeinsam",
+  "communityNotFound": "Community nicht gefunden",
+  "communityNotFoundDesc": "Diese Community existiert nicht oder Sie haben keinen Zugang dazu.",
+  "backToCommunities": "Zurück zu Communities",
+  "memberRanking": "Mitglieder-Rangliste",
   "chat": "Chat",
-  "memberManagement": "Member Management",
-  "noMembers": "No members",
-  "you": "You",
-  "joined": "Joined",
-  "communityChat": "Community Chat",
-  "messages": "Messages",
-  "noMessages": "No messages yet",
-  "startConversation": "Start the conversation!",
-  "typeMessage": "Type a message...",
-  "adminOnly": "Admin Only",
-  "rating": "Rating",
-  "promoteToAdmin": "Promote to Admin",
-  "demoteToMember": "Demote to Member",
-  "kickMember": "Kick",
-  "member": "Member",
+  "memberManagement": "Mitgliederverwaltung",
+  "noMembers": "Keine Mitglieder",
+  "you": "Sie",
+  "joined": "Beigetreten",
+  "communityChat": "Community-Chat",
+  "messages": "Nachrichten",
+  "noMessages": "Noch keine Nachrichten",
+  "startConversation": "Starten Sie die Unterhaltung!",
+  "typeMessage": "Nachricht eingeben...",
+  "adminOnly": "Nur Admin",
+  "rating": "Bewertung",
+  "promoteToAdmin": "Zum Admin befördern",
+  "demoteToMember": "Zum Mitglied degradieren",
+  "kickMember": "Kicken",
+  "member": "Mitglied",
   "admin": "Admin",
-  "leaveCommunity": "Leave Community",
-  "confirmLeaveCommunity": "Confirm Leave",
-  "leaveCommunityTitle": "Are you sure you want to leave?",
-  "leaveCommunityDesc": "You will leave {{name}}. You'll need to request to join again.",
-  "leaving": "Leaving...",
-  "leftCommunity": "Successfully left the community",
-  "deleteCommunity": "Delete Community",
-  "communityDeleted": "Community deleted successfully!",
-  "dangerZone": "Danger Zone",
-  "deleteCommunityDescription": "Permanently delete this community and all its data.",
-  "leaveCommunityDescription": "Leave this community. You can rejoin later.",
-  "confirmDeleteCommunity": "Confirm Community Deletion",
-  "deleteCommunityTitle": "Delete Community",
-  "deleteCommunityDesc": "Are you sure you want to delete \"{{name}}\"?",
-  "deleteCommunityWarning": "This action cannot be undone. All data will be permanently lost.",
-  "deleting": "Deleting...",
-  "confirmKick": "Confirm Kick",
-  "confirmPromote": "Confirm Promotion",
-  "confirmDemote": "Confirm Demotion",
-  "kickMemberTitle": "Kick this member?",
-  "promoteMemberTitle": "Promote to admin?",
-  "demoteMemberTitle": "Demote to member?",
-  "kickMemberDesc": "{{name}} will be removed from the community.",
-  "promoteMemberDesc": "{{name}} will be promoted to admin.",
-  "demoteMemberDesc": "{{name}} will be demoted to member.",
-  "processing": "Processing...",
-  "memberKicked": "Member kicked successfully",
-  "memberPromoted": "Member promoted successfully",
-  "memberDemoted": "Member demoted successfully",
+  "leaveCommunity": "Community verlassen",
+  "confirmLeaveCommunity": "Verlassen bestätigen",
+  "leaveCommunityTitle": "Sind Sie sicher, dass Sie verlassen möchten?",
+  "leaveCommunityDesc": "Sie werden {{name}} verlassen. Sie müssen erneut um Beitritt bitten.",
+  "leaving": "Verlasse...",
+  "leftCommunity": "Community erfolgreich verlassen",
+  "deleteCommunity": "Community löschen",
+  "communityDeleted": "Community erfolgreich gelöscht!",
+  "dangerZone": "Gefahrenzone",
+  "deleteCommunityDescription": "Diese Community und alle ihre Daten dauerhaft löschen.",
+  "leaveCommunityDescription": "Diese Community verlassen. Sie können später wieder beitreten.",
+  "confirmDeleteCommunity": "Community-Löschung bestätigen",
+  "deleteCommunityTitle": "Community löschen",
+  "deleteCommunityDesc": "Sind Sie sicher, dass Sie \"{{name}}\" löschen möchten?",
+  "deleteCommunityWarning": "Diese Aktion kann nicht rückgängig gemacht werden. Alle Daten gehen dauerhaft verloren.",
+  "deleting": "Lösche...",
+  "confirmKick": "Kick bestätigen",
+  "confirmPromote": "Beförderung bestätigen",
+  "confirmDemote": "Degradierung bestätigen",
+  "kickMemberTitle": "Dieses Mitglied kicken?",
+  "promoteMemberTitle": "Zum Admin befördern?",
+  "demoteMemberTitle": "Zum Mitglied degradieren?",
+  "kickMemberDesc": "{{name}} wird aus der Community entfernt.",
+  "promoteMemberDesc": "{{name}} wird zum Admin befördert.",
+  "demoteMemberDesc": "{{name}} wird zum Mitglied degradiert.",
+  "processing": "Verarbeitung...",
+  "memberKicked": "Mitglied erfolgreich gekickt",
+  "memberPromoted": "Mitglied erfolgreich befördert",
+  "memberDemoted": "Mitglied erfolgreich degradiert",
   "pwa": {
     "install": {
-      "title": "Install App",
-      "description": "Add BeatNexus to your home screen for a better experience.",
-      "button": "Install",
-      "later": "Later"
+      "title": "App installieren",
+      "description": "Fügen Sie BeatNexus zu Ihrem Startbildschirm hinzu für ein besseres Erlebnis.",
+      "button": "Installieren",
+      "later": "Später"
     }
   },
   "offline": {
     "title": "Offline",
-    "description": "Please check your internet connection"
+    "description": "Bitte überprüfen Sie Ihre Internetverbindung"
   },
   "online": {
     "title": "Online",
-    "description": "Connection restored"
+    "description": "Verbindung wiederhergestellt"
   },
   "shortcuts": {
     "guide": {
-      "title": "App Shortcuts",
-      "description": "Long press the app icon to quickly access your favorite features!",
-      "gotIt": "Got it!"
+      "title": "App-Verknüpfungen",
+      "description": "Halten Sie das App-Symbol lange gedrückt, um schnell auf Ihre Lieblingsfunktionen zuzugreifen!",
+      "gotIt": "Verstanden!"
     },
     "battles": "Battles",
-    "post": "Post Video",
-    "ranking": "Ranking",
-    "myBattles": "My Battles"
+    "post": "Video posten",
+    "ranking": "Rangliste",
+    "myBattles": "Meine Battles"
   },
   "footer": {
-    "description": "The next step for the beatbox community. Bringing together beginners and pros to elevate the art.",
-    "quickLinks": "Quick Links",
-    "tournaments": "Tournaments",
-    "resources": "Resources",
+    "description": "Der nächste Schritt für die Beatbox-Community. Bringt Anfänger und Profis zusammen, um die Kunst zu erheben.",
+    "quickLinks": "Schnellzugriff",
+    "tournaments": "Turniere",
+    "resources": "Ressourcen",
     "tutorials": "Tutorials",
-    "communityForum": "Community Forum",
-    "boostPlans": "Boost Plans",
+    "communityForum": "Community-Forum",
+    "boostPlans": "Boost-Pläne",
     "faq": "FAQ",
-    "contactUs": "Contact Us",
-    "contactMessage": "Have a question or feedback? Reach out to our team!",
-    "allRightsReserved": "All rights reserved.",
-    "termsOfService": "Terms of Service",
-    "privacyPolicy": "Privacy Policy",
-    "lastUpdated": "Last Updated"
+    "contactUs": "Kontakt",
+    "contactMessage": "Haben Sie eine Frage oder Feedback? Wenden Sie sich an unser Team!",
+    "allRightsReserved": "Alle Rechte vorbehalten.",
+    "termsOfService": "Nutzungsbedingungen",
+    "privacyPolicy": "Datenschutzrichtlinie",
+    "lastUpdated": "Zuletzt aktualisiert"
   },
   "privacyPolicyPage": {
-    "title": "Privacy Policy",
-    "subtitle": "Please review our policy on how we handle your personal information.",
-    "contactMessage": "For any questions regarding this privacy policy, please contact us.",
-    "backButton": "Back",
+    "title": "Datenschutzrichtlinie",
+    "subtitle": "Bitte lesen Sie unsere Richtlinie zum Umgang mit Ihren persönlichen Daten.",
+    "contactMessage": "Bei Fragen zu dieser Datenschutzrichtlinie wenden Sie sich bitte an uns.",
+    "backButton": "Zurück",
     "languageTabs": {
       "japanese": "日本語",
       "english": "English"
     }
   },
   "termsPage": {
-    "title": "Terms of Service",
-    "subtitle": "Please review the terms and conditions for using BeatNexus services",
-    "backButton": "Back",
+    "title": "Nutzungsbedingungen",
+    "subtitle": "Bitte lesen Sie die Geschäftsbedingungen für die Nutzung der BeatNexus-Dienste",
+    "backButton": "Zurück",
     "languageTabs": {
       "japanese": "日本語",
       "english": "English"
     },
     "contactSection": {
-      "title": "Contact Us",
-      "description": "For any questions or inquiries regarding the terms of service, please contact us below."
+      "title": "Kontakt",
+      "description": "Bei Fragen oder Anfragen zu den Nutzungsbedingungen wenden Sie sich bitte unten an uns."
     },
-    "lastUpdated": "Last Updated: July 18, 2025"
+    "lastUpdated": "Zuletzt aktualisiert: 18. Juli 2025"
   },
   "home": {
     "landingPage": {
       "cta": {
-        "joinBeta": "Join Now",
-        "watchBattles": "Watch Battles"
+        "joinBeta": "Jetzt beitreten",
+        "watchBattles": "Battles ansehen"
       },
       "hero": {
         "title": {
-          "forAll": "For All Beatboxers",
-          "nextStep": "The \"Next Step\"."
+          "forAll": "Für alle Beatboxer",
+          "nextStep": "Der \"Nächste Schritt\"."
         },
-        "subtitle": "Easy battles through video uploads → Community voting determines the winner,\nBeatboxer battle platform."
+        "subtitle": "Einfache Battles durch Video-Uploads → Community-Abstimmung bestimmt den Gewinner,\nBeatboxer-Battle-Plattform."
       },
       "challenges": {
-        "title": "Do you face these challenges?",
+        "title": "Stehen Sie vor diesen Herausforderungen?",
         "motivation": {
-          "title": "Motivation Persistence",
-          "description": "It's hard to maintain motivation for practice"
+          "title": "Motivation aufrechterhalten",
+          "description": "Es ist schwer, die Motivation fürs Üben beizubehalten"
         },
         "skillAssessment": {
-          "title": "Skill Assessment",
-          "description": "Want to objectively know what level your skills are in the scene"
+          "title": "Skill-Einschätzung",
+          "description": "Möchten objektiv wissen, auf welchem Level Ihre Fähigkeiten in der Szene stehen"
         },
         "casualChallenge": {
-          "title": "Casual Skill Testing",
-          "description": "Tournaments have high barriers, but there's no place to casually test your skills"
+          "title": "Lockere Skill-Tests",
+          "description": "Turniere haben hohe Hürden, aber es gibt keinen Ort für lockere Skill-Tests"
         },
         "community": {
           "title": "Community",
-          "description": "Few opportunities to compete with peers and get feedback"
+          "description": "Wenige Gelegenheiten, mit Gleichgesinnten zu konkurrieren und Feedback zu erhalten"
         }
       },
       "solution": {
-        "title": " creates your \"Next Step\".",
+        "title": " schafft Ihren \"Nächsten Schritt\".",
         "visualizeGrowth": {
-          "title": "Visualize Growth",
-          "description": "With the Elo rating and ranking system, your skill improvement becomes visible as objective numbers."
+          "title": "Wachstum visualisieren",
+          "description": "Mit dem Elo-Rating und Ranglisten-System wird Ihre Skill-Verbesserung als objektive Zahlen sichtbar."
         },
         "gradualChallenge": {
-          "title": "Gradual Challenges",
-          "description": "From casual rate battles \"Main Battle\" to prize money \"BeatNexus Summit\". There are challenges suited to your level and goals."
+          "title": "Schrittweise Herausforderungen",
+          "description": "Von lockeren Rate-Battles \"Main Battle\" bis hin zu Preisgeld \"BeatNexus Summit\". Es gibt Herausforderungen für Ihr Level und Ihre Ziele."
         },
         "communityConnection": {
-          "title": "Community Connection",
-          "description": "Connect with passionate peers through voting and comments, building a culture of mutual improvement."
+          "title": "Community-Verbindung",
+          "description": "Verbinden Sie sich durch Abstimmungen und Kommentare mit leidenschaftlichen Gleichgesinnten und bauen Sie eine Kultur der gegenseitigen Verbesserung auf."
         }
       },
       "howItWorks": {
-        "title": "Start with Simple 4 Steps",
-        "subtitle": "No complex setup required. Start enjoying battles immediately.",
+        "title": "Start mit einfachen 4 Schritten",
+        "subtitle": "Keine komplexe Einrichtung erforderlich. Beginnen Sie sofort mit Battles.",
         "steps": {
           "upload": {
-            "title": "1. Video Upload",
-            "description": "Upload your beat video"
+            "title": "1. Video-Upload",
+            "description": "Laden Sie Ihr Beat-Video hoch"
           },
           "matching": {
-            "title": "2. Auto Matching",
-            "description": "Optimal opponents automatically selected based on rating"
+            "title": "2. Auto-Matching",
+            "description": "Optimale Gegner werden automatisch basierend auf der Bewertung ausgewählt"
           },
           "voting": {
-            "title": "3. Community Voting",
-            "description": "Audience acts as judges to determine the winner"
+            "title": "3. Community-Abstimmung",
+            "description": "Das Publikum fungiert als Richter zur Bestimmung des Gewinners"
           },
           "results": {
-            "title": "4. Results & Rating Update",
-            "description": "Ratings are updated based on results and you feel your growth"
+            "title": "4. Ergebnisse & Bewertungsupdate",
+            "description": "Bewertungen werden basierend auf Ergebnissen aktualisiert und Sie spüren Ihr Wachstum"
           }
         },
         "features": {
           "onlineBattle": {
-            "title": "Online Battles",
-            "description": "Just upload a video and get automatically matched with opponents at your optimal rating level."
+            "title": "Online-Battles",
+            "description": "Laden Sie einfach ein Video hoch und werden automatisch mit Gegnern auf Ihrem optimalen Rating-Level gematcht."
           },
           "communityVoting": {
-            "title": "Community Voting",
-            "description": "The audience's vote decides battle outcomes. Not just players, but everyone can be the star as a judge."
+            "title": "Community-Abstimmung",
+            "description": "Die Stimme des Publikums entscheidet über Battle-Ausgänge. Nicht nur Spieler, sondern jeder kann als Richter zum Star werden."
           },
           "seasonRanking": {
-            "title": "Season-based Rankings",
-            "description": "Seasons change every ~3 months with ranking resets. There's also a \"Voter Ranking\" to honor excellent judges, not just players."
+            "title": "Saison-basierte Rankings",
+            "description": "Saisons wechseln alle ~3 Monate mit Ranking-Resets. Es gibt auch eine \"Wähler-Rangliste\" zur Ehrung exzellenter Richter, nicht nur Spieler."
           },
           "judgeSystem": {
-            "title": "Detailed Judge System",
-            "description": "From intuitive \"I like this person!\" voting to the \"Judge's Scorecard\" feature for deeper battle analysis from 4 professional perspectives."
+            "title": "Detailliertes Richter-System",
+            "description": "Von intuitiver \"Ich mag diese Person!\" Abstimmung bis zur \"Richter-Scorecard\" Funktion für tiefere Battle-Analyse aus 4 professionellen Perspektiven."
           }
         }
       },
       "socialProof": {
-        "title": "Already this much excitement!",
+        "title": "Bereits so viel Begeisterung!",
         "stats": {
-          "preRegistration": "Pre-registrations",
-          "totalBattles": "Total Battles",
-          "communityVotes": "Community Votes"
+          "preRegistration": "Voranmeldungen",
+          "totalBattles": "Gesamte Battles",
+          "communityVotes": "Community-Stimmen"
         },
         "ranking": {
           "title": "Ranking TOP3",
-          "closedTest": "Closed Test Ranking TOP3",
-          "playerRanking": "Player Ranking",
-          "voterRanking": "Voter Ranking",
-          "noPlayerRanking": "No player rankings available",
-          "noVoterRanking": "No voter rankings available",
-          "noSeasonEnded": "No seasons have ended yet",
-          "betaSeasonNote": "Look forward to the β season results!",
-          "loading": "Loading..."
+          "closedTest": "Geschlossener Test Ranking TOP3",
+          "playerRanking": "Spieler-Rangliste",
+          "voterRanking": "Wähler-Rangliste",
+          "noPlayerRanking": "Keine Spieler-Rankings verfügbar",
+          "noVoterRanking": "Keine Wähler-Rankings verfügbar",
+          "noSeasonEnded": "Noch keine Saisons beendet",
+          "betaSeasonNote": "Freuen Sie sich auf die β-Saison-Ergebnisse!",
+          "loading": "Lädt..."
         }
       },
       "vision": {
-        "title": "BeatNexus's Grand Vision",
-        "subtitle": "Not just a battle tool, but a platform involving the entire scene",
-        "disclaimer": "※ The following content is a future concept/plan and is currently under development/consideration",
+        "title": "BeatNexus' Große Vision",
+        "subtitle": "Nicht nur ein Battle-Tool, sondern eine Plattform für die gesamte Szene",
+        "disclaimer": "※ Der folgende Inhalt ist ein Zukunftskonzept/Plan und befindet sich derzeit in Entwicklung/Überlegung",
         "summit": {
-          "title": "BeatNexus Summit Concept",
-          "prizeTournament": "Top season performers will have the path to prize money tournaments opened",
-          "seedRights": "Top 8 of Season 1 will gain seed rights to the next tournament",
-          "globalConnection": "Planning connections with the global beatbox scene"
+          "title": "BeatNexus Summit Konzept",
+          "prizeTournament": "Top-Saison-Performer werden den Weg zu Preisgeld-Turnieren geöffnet bekommen",
+          "seedRights": "Top 8 der Saison 1 erhalten Setzrechte für das nächste Turnier",
+          "globalConnection": "Planen Verbindungen mit der globalen Beatbox-Szene"
         },
         "freemium": {
-          "title": "Freemium Model Preview",
-          "betaFree": "<span class=\"font-bold text-cyan-400\">β Season is completely free</span> with all features available",
-          "futureModel": "In the future, we'll provide rate battles with a specified number of free challenges per month",
-          "unlimited": "Planning to introduce <span class=\"font-semibold text-purple-400\">\"Nexus Unlimited\"</span> for serious players aiming for the top"
+          "title": "Freemium-Modell Vorschau",
+          "betaFree": "<span class=\"font-bold text-cyan-400\">β-Saison ist komplett kostenlos</span> mit allen verfügbaren Funktionen",
+          "futureModel": "In Zukunft werden wir Rate-Battles mit einer bestimmten Anzahl kostenloser Herausforderungen pro Monat anbieten",
+          "unlimited": "Planen die Einführung von <span class=\"font-semibold text-purple-400\">\"Nexus Unlimited\"</span> für ernsthafte Spieler, die an die Spitze streben"
         }
       },
       "faq": {
-        "title": "Frequently Asked Questions",
+        "title": "Häufig gestellte Fragen",
         "beginner": {
-          "question": "Can beginners participate?",
-          "answer": "Of course! BeatNexus was born to provide the \"next step\" for players of all levels. Please feel free to start by uploading a video."
+          "question": "Können Anfänger teilnehmen?",
+          "answer": "Natürlich! BeatNexus wurde geboren, um den \"nächsten Schritt\" für Spieler aller Level zu bieten. Beginnen Sie gerne mit dem Upload eines Videos."
         },
         "pricing": {
-          "question": "Are there any fees?",
-          "answer": "The currently ongoing β season is completely free with all features available."
+          "question": "Gibt es Gebühren?",
+          "answer": "Die derzeit laufende β-Saison ist komplett kostenlos mit allen verfügbaren Funktionen."
         },
         "mobile": {
-          "question": "Can I use it on smartphones?",
-          "answer": "We currently recommend PC usage, but mobile versions can be downloaded from the site like an app. With PWA support, you can add it to your home screen for a native app experience."
+          "question": "Kann ich es auf Smartphones nutzen?",
+          "answer": "Wir empfehlen derzeit die PC-Nutzung, aber Mobile-Versionen können von der Seite wie eine App heruntergeladen werden. Mit PWA-Support können Sie es zum Startbildschirm hinzufügen für eine native App-Erfahrung."
         },
         "fairness": {
-          "question": "I'm concerned about unfair voting.",
-          "answer": "BeatNexus aims for a healthy community with responsibility by removing voting anonymity and making public who voted for whom."
+          "question": "Ich sorge mich um unfaire Abstimmungen.",
+          "answer": "BeatNexus strebt eine gesunde Community mit Verantwortung an, indem die Anonymität der Abstimmung entfernt und öffentlich gemacht wird, wer für wen gestimmt hat."
         }
       },
       "closing": {
         "title": {
-          "history": "At the beginning of history,",
-          "dontMiss": "don't be left behind."
+          "history": "Am Anfang der Geschichte",
+          "dontMiss": "verpassen Sie nicht den Anschluss."
         },
-        "subtitle": "Official release is live! Everyone can join now!",
+        "subtitle": "Offizielle Veröffentlichung ist live! Jeder kann jetzt beitreten!",
         "schedule": {
-          "earlyAccess": "Official Release Date:",
-          "earlyAccessDate": "Started August 7th",
-          "publicRelease": "Current Status:",
-          "publicReleaseDate": "Publicly Available!"
+          "earlyAccess": "Offizielles Veröffentlichungsdatum:",
+          "earlyAccessDate": "Gestartet am 7. August",
+          "publicRelease": "Aktueller Status:",
+          "publicReleaseDate": "Öffentlich verfügbar!"
         },
-        "finalCta": "Join β Season Now!"
+        "finalCta": "Treten Sie jetzt der β-Saison bei!"
       }
     },
     "hero": {
@@ -662,235 +662,235 @@
         "highlighted": ""
       },
       "subtitle": {
-        "main": "The ultimate platform for beatboxers to",
-        "battle": "battle",
-        "share": "share",
-        "connect": "connect",
-        "and": "and",
-        "grow": "grow",
-        "join": "Join a global community and take your skills to the next level.",
-        "nextStep": "Your Next Step Starts Here.",
-        "compete": "Compete in beatbox battles, let the community vote decide the winner, and ",
-        "climbRanking": "climb the rankings!"
+        "main": "Die ultimative Plattform für Beatboxer zum",
+        "battle": "Battle",
+        "share": "Teilen",
+        "connect": "Verbinden",
+        "and": "und",
+        "grow": "Wachsen",
+        "join": "Treten Sie einer globalen Community bei und bringen Sie Ihre Skills auf das nächste Level.",
+        "nextStep": "Ihr nächster Schritt beginnt hier.",
+        "compete": "Konkurrieren Sie in Beatbox-Battles, lassen Sie die Community-Abstimmung den Gewinner bestimmen und ",
+        "climbRanking": "erklimmen Sie die Rankings!"
       },
       "button": {
-        "startBattle": "Start Your Battle",
-        "watchBattles": "Watch Battles & Vote",
-        "joinNow": "Join Now"
+        "startBattle": "Starten Sie Ihr Battle",
+        "watchBattles": "Battles ansehen & Abstimmen",
+        "joinNow": "Jetzt beitreten"
       },
       "seasonInfo": {
-        "earlyAccess": "Now Live!",
-        "earlyAccessLabel": "Public Release",
-        "publicRelease": "August 7th",
-        "publicReleaseLabel": "Released!"
+        "earlyAccess": "Jetzt live!",
+        "earlyAccessLabel": "Öffentliche Veröffentlichung",
+        "publicRelease": "7. August",
+        "publicReleaseLabel": "Veröffentlicht!"
       }
     },
     "howItWorks": {
-      "title": "HOW IT WORKS",
-      "subtitle": "Simple 4 Steps",
-      "description": "From video upload to winner determination, everything is automated in our battle system",
+      "title": "WIE ES FUNKTIONIERT",
+      "subtitle": "Einfache 4 Schritte",
+      "description": "Vom Video-Upload bis zur Gewinner-Bestimmung ist alles in unserem Battle-System automatisiert",
       "steps": {
         "upload": {
-          "title": "Video Upload",
-          "description": "Upload your beatbox video. You can post once every hour and automatically enter the matching queue."
+          "title": "Video-Upload",
+          "description": "Laden Sie Ihr Beatbox-Video hoch. Sie können einmal pro Stunde posten und automatisch in die Matching-Warteschlange eintreten."
         },
         "matching": {
-          "title": "Auto Matching",
-          "description": "Opponents are automatically selected based on ELO rating. Gradually expand matching range to find optimal opponents."
+          "title": "Auto-Matching",
+          "description": "Gegner werden automatisch basierend auf ELO-Rating ausgewählt. Erweitern Sie schrittweise den Matching-Bereich, um optimale Gegner zu finden."
         },
         "voting": {
-          "title": "Community Voting",
-          "description": "Community decides the winner during a 5-day voting period. Earn points by participating in votes and climb the voter rankings."
+          "title": "Community-Abstimmung",
+          "description": "Die Community entscheidet während einer 5-tägigen Abstimmungsperiode über den Gewinner. Sammeln Sie Punkte durch Teilnahme an Abstimmungen und erklimmen Sie die Wähler-Rankings."
         },
         "results": {
-          "title": "Results & Rankings",
-          "description": "After winner determination, ELO ratings are automatically updated. Battle history is archived and rankings are updated."
+          "title": "Ergebnisse & Rankings",
+          "description": "Nach der Gewinner-Bestimmung werden ELO-Ratings automatisch aktualisiert. Battle-Historie wird archiviert und Rankings werden aktualisiert."
         }
       }
     },
     "rankings": {
       "playerRanking": {
-        "title": "Player Rankings",
-        "description": "Every battle is a serious match that affects your rating. Win battles and prove your skills to the world. Only those who reach the top of the rankings can open the door to the next stage.",
+        "title": "Spieler-Rankings",
+        "description": "Jeder Battle ist ein ernsthafter Wettkampf, der Ihre Bewertung beeinflusst. Gewinnen Sie Battles und beweisen Sie der Welt Ihre Fähigkeiten. Nur wer die Spitze der Rankings erreicht, kann die Tür zur nächsten Stufe öffnen.",
         "betaReward": {
-          "title": "β Season Rewards:",
-          "description": "Top 8 in rankings earn seeded entry to Season 1 Final Tournament."
+          "title": "β-Saison Belohnungen:",
+          "description": "Die Top 8 der Rankings erhalten gesetzten Einzug zum Saison 1 Final-Turnier."
         }
       },
       "voterRanking": {
-        "title": "Voter Rankings",
-        "description": "The community's keen eye decides victory. Judge countless battles and contribute to the platform with your aesthetic sense. The most trusted judges receive special honors.",
+        "title": "Wähler-Rankings",
+        "description": "Das scharfe Auge der Community entscheidet über den Sieg. Beurteilen Sie unzählige Battles und tragen Sie mit Ihrem ästhetischen Sinn zur Plattform bei. Die vertrauenswürdigsten Richter erhalten besondere Ehrungen.",
         "betaReward": {
-          "title": "β Season Rewards:",
-          "description": "Top voters will be appointed as official judges for Season 1 Final Tournament."
+          "title": "β-Saison Belohnungen:",
+          "description": "Top-Wähler werden zu offiziellen Richtern für das Saison 1 Final-Turnier ernannt."
         }
       }
     },
     "shadows": {
       "title": {
-        "main": "Tired of Beatbox in the",
-        "highlighted": "Shadows"
+        "main": "Müde von Beatbox im",
+        "highlighted": "Schatten"
       },
-      "subtitle": "The beatbox scene is exploding, but many artists face the same hurdles.",
+      "subtitle": "Die Beatbox-Szene explodiert, aber viele Künstler stehen vor denselben Hürden.",
       "card1": {
-        "title": "\"Watching\" is growing...",
-        "description": "...but \"doing\" and \"staying\" in the art form isn't keeping up. Many get lost after the initial spark."
+        "title": "\"Zuschauen\" wächst...",
+        "description": "...aber \"Machen\" und \"Bleiben\" in der Kunstform halten nicht Schritt. Viele verlieren sich nach dem ersten Funken."
       },
       "card2": {
-        "title": "Beginner's Bottleneck",
-        "description": "Newcomers struggle to find their next step, practice partners, or a place to improve, often feeling isolated."
+        "title": "Anfänger-Engpass",
+        "description": "Neulinge haben Schwierigkeiten, ihren nächsten Schritt, Übungspartner oder einen Ort zur Verbesserung zu finden und fühlen sich oft isoliert."
       },
       "card3": {
-        "title": "Community & Opportunity Gap",
-        "description": "Passionate beatboxers lack a central hub. Opportunities for new talents to get recognized are limited."
+        "title": "Community & Gelegenheits-Lücke",
+        "description": "Leidenschaftliche Beatboxer fehlt ein zentraler Hub. Gelegenheiten für neue Talente, erkannt zu werden, sind begrenzt."
       }
     },
     "elevate": {
       "title": {
-        "main": "Everything You Need to",
-        "highlighted": "Elevate Your Beat"
+        "main": "Alles was Sie brauchen, um",
+        "highlighted": "Ihren Beat zu erheben"
       },
       "card1": {
-        "title": "Online Battles",
-        "description": "Post your audio/video, battle 1-on-1 with global opponents. Get votes, earn BP, and climb the ranks!"
+        "title": "Online-Battles",
+        "description": "Posten Sie Ihr Audio/Video, kämpfen Sie 1-gegen-1 mit globalen Gegnern. Erhalten Sie Stimmen, verdienen Sie BP und erklimmen Sie die Ränge!"
       },
       "card2": {
-        "title": "Global Community",
-        "description": "Connect with beatboxers worldwide. Share techniques, join discussions, find collaborators, and make friends."
+        "title": "Globale Community",
+        "description": "Verbinden Sie sich mit Beatboxern weltweit. Teilen Sie Techniken, treten Sie Diskussionen bei, finden Sie Mitarbeiter und schließen Sie Freundschaften."
       },
       "card3": {
-        "title": "Rankings & Tournaments",
-        "description": "Prove your skills in seasonal rankings. Compete in exciting online tournaments for glory and rewards."
+        "title": "Rankings & Turniere",
+        "description": "Beweisen Sie Ihre Fähigkeiten in Saison-Rankings. Konkurrieren Sie in aufregenden Online-Turnieren um Ruhm und Belohnungen."
       },
       "card4": {
-        "title": "Skill Growth Hub",
-        "description": "Access learning resources, get constructive feedback from peers and AI, and track your progress."
+        "title": "Skill-Wachstums-Hub",
+        "description": "Greifen Sie auf Lernressourcen zu, erhalten Sie konstruktives Feedback von Gleichgesinnten und KI und verfolgen Sie Ihren Fortschritt."
       }
     },
     "ready": {
       "title": {
-        "main": "Ready to Make Some",
-        "highlighted": "Noise"
+        "main": "Bereit, etwas",
+        "highlighted": "Lärm zu machen"
       },
-      "subtitle": "Your beatbox journey starts here. Join BeatNexus today and become part of the revolution.",
-      "button": "Sign Up For Free & Battle!",
-      "availability": "Also available on iOS and Android (Coming Soon!)"
+      "subtitle": "Ihre Beatbox-Reise beginnt hier. Treten Sie heute BeatNexus bei und werden Sie Teil der Revolution.",
+      "button": "Kostenlos anmelden & Kämpfen!",
+      "availability": "Auch verfügbar auf iOS und Android (Demnächst!)"
     },
     "cta": {
-      "title": "Ready? <span>Let's Start the Battle</span>!",
-      "subtitle": "Join now and compete with beatboxers worldwide to reach the top of the rankings",
-      "button": "Start Battle Now",
-      "note": "Free to use • 24-hour posting limit"
+      "title": "Bereit? <span>Lassen Sie uns den Battle starten</span>!",
+      "subtitle": "Treten Sie jetzt bei und konkurrieren Sie mit Beatboxern weltweit, um die Spitze der Rankings zu erreichen",
+      "button": "Battle jetzt starten",
+      "note": "Kostenlos zu nutzen • 24-Stunden Posting-Limit"
     }
   },
   "battlesPage": {
     "welcome": {
-      "title": "Welcome to",
-      "subtitle": "Connect with beatboxers worldwide, test your skills, and grow together.",
+      "title": "Willkommen bei",
+      "subtitle": "Verbinden Sie sich mit Beatboxern weltweit, testen Sie Ihre Fähigkeiten und wachsen Sie gemeinsam.",
       "stats": {
-        "activeBattles": "Active Battles",
-        "completedBattles": "Completed Battles",
-        "totalSubmissions": "Total Submissions",
-        "communityMembers": "Community Members",
-        "votesCast": "Votes Cast"
+        "activeBattles": "Aktive Battles",
+        "completedBattles": "Abgeschlossene Battles",
+        "totalSubmissions": "Gesamte Einreichungen",
+        "communityMembers": "Community-Mitglieder",
+        "votesCast": "Abgegebene Stimmen"
       },
       "buttons": {
-        "watchBattles": "Watch Battles & Vote",
-        "postBeat": "Post Your Beat!"
+        "watchBattles": "Battles ansehen & Abstimmen",
+        "postBeat": "Posten Sie Ihren Beat!"
       },
       "guide": {
-        "newHere": "New here?",
-        "checkGuide": "Check out our How-to Guide"
+        "newHere": "Neu hier?",
+        "checkGuide": "Schauen Sie sich unseren Leitfaden an"
       }
     },
     "activeBattles": {
-      "title": "Active Battles",
-      "subtitle": "Vote on your favorite performances",
-      "createBattleButton": "Create Battle"
+      "title": "Aktive Battles",
+      "subtitle": "Stimmen Sie für Ihre Lieblings-Performances ab",
+      "createBattleButton": "Battle erstellen"
     },
     "status": {
-      "loadingBattles": "Loading battles...",
-      "errorLoadingBattles": "Error Loading Battles",
-      "tryAgainButton": "Try Again",
-      "noBattlesFound": "No Battles Found",
-      "noBattlesMatchSearch": "No battles match your search criteria",
-      "loadingCompletedBattles": "Loading completed battles...",
-      "noCompletedBattles": "No Completed Battles Yet",
-      "checkBackSoonCompleted": "Check back soon to see the results of past clashes.",
-      "loadingRankings": "Loading rankings...",
-      "noRankingsAvailable": "No rankings available yet.",
-      "createBattleHint": "Create a new battle and energize the community!",
-      "completedBattlesHint": "Completed battles will be displayed here"
+      "loadingBattles": "Lade Battles...",
+      "errorLoadingBattles": "Fehler beim Laden der Battles",
+      "tryAgainButton": "Erneut versuchen",
+      "noBattlesFound": "Keine Battles gefunden",
+      "noBattlesMatchSearch": "Keine Battles entsprechen Ihren Suchkriterien",
+      "loadingCompletedBattles": "Lade abgeschlossene Battles...",
+      "noCompletedBattles": "Noch keine abgeschlossenen Battles",
+      "checkBackSoonCompleted": "Schauen Sie bald wieder vorbei, um die Ergebnisse vergangener Kämpfe zu sehen.",
+      "loadingRankings": "Lade Rankings...",
+      "noRankingsAvailable": "Noch keine Rankings verfügbar.",
+      "createBattleHint": "Erstellen Sie einen neuen Battle und beleben Sie die Community!",
+      "completedBattlesHint": "Abgeschlossene Battles werden hier angezeigt"
     },
     "rankings": {
-      "title": "Top Beatboxers",
-      "titleCompact": "Top Rankings",
-      "viewFullButton": "View All",
-      "noRankingsYet": "No Rankings Yet",
+      "title": "Top-Beatboxer",
+      "titleCompact": "Top-Rankings",
+      "viewFullButton": "Alle ansehen",
+      "noRankingsYet": "Noch keine Rankings",
       "table": {
-        "rank": "Rank",
-        "player": "Player",
+        "rank": "Rang",
+        "player": "Spieler",
         "bp": "BP"
       }
     },
     "communityStats": {
-      "title": "Community Stats",
-      "submissions": "Total Submissions",
-      "members": "Community Members",
-      "votes": "Votes Cast"
+      "title": "Community-Statistiken",
+      "submissions": "Gesamte Einreichungen",
+      "members": "Community-Mitglieder",
+      "votes": "Abgegebene Stimmen"
     },
     "createBattle": {
-      "title": "Create a New Battle",
-      "description": "Ready to throw down? Post your video and challenge the community.",
-      "button": "Start New Battle"
+      "title": "Neuen Battle erstellen",
+      "description": "Bereit für den Showdown? Posten Sie Ihr Video und fordern Sie die Community heraus.",
+      "button": "Neuen Battle starten"
     },
     "howTo": {
-      "title": "How BeatNexus Works",
-      "description": "Learn how to post battles, vote, and climb the leaderboards.",
-      "button": "Read the Guide"
+      "title": "Wie BeatNexus funktioniert",
+      "description": "Lernen Sie, wie Sie Battles posten, abstimmen und die Bestenlisten erklimmen.",
+      "button": "Leitfaden lesen"
     },
     "monthlyLimit": {
-      "title": "Monthly Submission Limit",
-      "currentStatus": "This Month's Status",
-      "remainingSubmissions": "Remaining Submissions",
-      "usedCount": "Used",
+      "title": "Monatliches Einreichungs-Limit",
+      "currentStatus": "Status dieses Monats",
+      "remainingSubmissions": "Verbleibende Einreichungen",
+      "usedCount": "Verwendet",
       "limitCount": "Limit",
-      "resetDate": "Reset",
-      "submitVideo": "Submit Video",
-      "nearLimitWarning": "Running low on submissions",
-      "nearLimitMessage": "You can submit {count} more times",
-      "limitReached": "Monthly limit reached",
-      "limitReachedMessage": "Resets on {date}",
-      "limitReachedButton": "Submission limit reached",
-      "loginToCheck": "Login to check submission status",
-      "checkingStatus": "Checking monthly submission status...",
-      "qualityNote": "To maintain high-quality battles, you can submit up to 30 videos per month"
+      "resetDate": "Zurücksetzen",
+      "submitVideo": "Video einreichen",
+      "nearLimitWarning": "Wenige Einreichungen übrig",
+      "nearLimitMessage": "Sie können noch {count} mal einreichen",
+      "limitReached": "Monatliches Limit erreicht",
+      "limitReachedMessage": "Zurücksetzen am {date}",
+      "limitReachedButton": "Einreichungs-Limit erreicht",
+      "loginToCheck": "Anmelden, um Einreichungs-Status zu prüfen",
+      "checkingStatus": "Prüfe monatlichen Einreichungs-Status...",
+      "qualityNote": "Um hochwertige Battles zu gewährleisten, können Sie bis zu 30 Videos pro Monat einreichen"
     }
   },
   "archivedBattleCard": {
-    "playerA": "Player A",
-    "playerB": "Player B",
-    "me": "Me",
-    "votesSuffix": "votes",
+    "playerA": "Spieler A",
+    "playerB": "Spieler B",
+    "me": "Ich",
+    "votesSuffix": "Stimmen",
     "result": {
-      "draw": "Draw",
-      "win": "Win",
-      "loss": "Loss"
+      "draw": "Unentschieden",
+      "win": "Sieg",
+      "loss": "Niederlage"
     },
-    "watchReplayButton": "Watch Replay"
+    "watchReplayButton": "Wiederholung ansehen"
   },
   "settingsPage": {
-    "title": "Settings",
-    "loading": "Loading settings...",
+    "title": "Einstellungen",
+    "loading": "Lade Einstellungen...",
     "preferences": {
-      "title": "Preferences",
-      "saveButton": "Save Settings",
-      "savingButton": "Saving...",
-      "unsavedChanges": "You have unsaved changes"
+      "title": "Einstellungen",
+      "saveButton": "Einstellungen speichern",
+      "savingButton": "Speichere...",
+      "unsavedChanges": "Sie haben ungespeicherte Änderungen"
     },
     "language": {
-      "title": "Language",
-      "description": "Choose your preferred language for the platform.",
+      "title": "Sprache",
+      "description": "Wählen Sie Ihre bevorzugte Sprache für die Plattform.",
       "english": "English",
       "japanese": "日本語",
       "korean": "한국어",
@@ -901,1227 +901,1206 @@
       "german": "Deutsch"
     },
     "pushNotifications": {
-      "title": "Push Notifications",
-      "description": "Manage settings for receiving battle updates and match notifications.",
-      "enabled": "Push notifications have been enabled",
-      "disabled": "Push notifications have been disabled"
+      "title": "Push-Benachrichtigungen",
+      "description": "Verwalten Sie Einstellungen für den Erhalt von Kampf-Updates und Match-Benachrichtigungen.",
+      "enabled": "Push-Benachrichtigungen wurden aktiviert",
+      "disabled": "Push-Benachrichtigungen wurden deaktiviert"
     },
     "accountManagement": {
-      "title": "Account Management"
+      "title": "Kontoverwaltung"
     },
     "changePassword": {
-      "title": "Change Password",
-      "description": "Update your account password.",
-      "button": "Change Password"
+      "title": "Passwort ändern",
+      "description": "Aktualisieren Sie Ihr Kontopasswort.",
+      "button": "Passwort ändern"
     },
     "dangerZone": {
-      "title": "Danger Zone"
+      "title": "Gefahrenzone"
     },
     "deleteAccount": {
-      "title": "Delete Account",
-      "description": "Permanently delete your account and all associated data. This action cannot be undone.",
-      "button": "Delete Account"
+      "title": "Konto löschen",
+      "description": "Löschen Sie Ihr Konto und alle zugehörigen Daten dauerhaft. Diese Aktion kann nicht rückgängig gemacht werden.",
+      "button": "Konto löschen"
     },
     "passwordModal": {
-      "title": "Change Your Password",
-      "newPassword": "New Password",
-      "confirmPassword": "Confirm New Password",
-      "updateButton": "Update Password",
-      "updatingButton": "Updating...",
-      "cancelButton": "Cancel"
+      "title": "Passwort ändern",
+      "newPassword": "Neues Passwort",
+      "confirmPassword": "Neues Passwort bestätigen",
+      "updateButton": "Passwort aktualisieren",
+      "updatingButton": "Wird aktualisiert...",
+      "cancelButton": "Abbrechen"
     },
     "deleteModal": {
-      "title": "Delete Your Account",
-      "confirmationMessage": "Are you sure you want to delete your account? This action is irreversible and will permanently remove all your data, including profile information, battle history, and posts.",
-      "confirmButton": "Confirm Deletion",
-      "deletingButton": "Deleting...",
-      "cancelButton": "Cancel"
+      "title": "Konto löschen",
+      "confirmationMessage": "Sind Sie sicher, dass Sie Ihr Konto löschen möchten? Diese Aktion ist unwiderruflich und entfernt dauerhaft alle Ihre Daten, einschließlich Profilinformationen, Kampfhistorie und Beiträge.",
+      "confirmButton": "Löschung bestätigen",
+      "deletingButton": "Wird gelöscht...",
+      "cancelButton": "Abbrechen"
     },
     "toasts": {
-      "errorTitle": "Error",
-      "successTitle": "Success",
-      "setupComplete": "Setup Complete",
-      "settingsChanged": "Settings Changed",
-      "loadLanguageError": "Failed to load language preference.",
-      "mustBeLoggedIn": "You must be logged in to change settings.",
-      "noChanges": "No changes to save.",
-      "languageUpdateSuccess": "Language updated to {{language}}.",
-      "languageUpdateError": "Failed to update language preference.",
-      "passwordsDoNotMatch": "Passwords do not match.",
-      "passwordTooShort": "Password must be at least 6 characters long.",
-      "mustBeLoggedInPassword": "You must be logged in to change your password.",
-      "passwordUpdateSuccess": "Password updated successfully.",
-      "passwordUpdateFailed": "Failed to update password.",
-      "mustBeLoggedInDelete": "You must be logged in to delete your account.",
-      "accountDeleteSuccess": "Your account has been successfully deleted.",
-      "accountDeleteFailed": "Failed to delete account."
+      "errorTitle": "Fehler",
+      "successTitle": "Erfolg",
+      "setupComplete": "Einrichtung abgeschlossen",
+      "settingsChanged": "Einstellungen geändert",
+      "loadLanguageError": "Fehler beim Laden der Spracheinstellungen.",
+      "mustBeLoggedIn": "Sie müssen angemeldet sein, um Einstellungen zu ändern.",
+      "noChanges": "Keine Änderungen zu speichern.",
+      "languageUpdateSuccess": "Sprache aktualisiert auf {{language}}.",
+      "languageUpdateError": "Fehler beim Aktualisieren der Spracheinstellungen.",
+      "passwordsDoNotMatch": "Passwörter stimmen nicht überein.",
+      "passwordTooShort": "Passwort muss mindestens 6 Zeichen lang sein.",
+      "mustBeLoggedInPassword": "Sie müssen angemeldet sein, um Ihr Passwort zu ändern.",
+      "passwordUpdateSuccess": "Passwort erfolgreich aktualisiert.",
+      "passwordUpdateFailed": "Fehler beim Aktualisieren des Passworts.",
+      "mustBeLoggedInDelete": "Sie müssen angemeldet sein, um Ihr Konto zu löschen.",
+      "accountDeleteSuccess": "Ihr Konto wurde erfolgreich gelöscht.",
+      "accountDeleteFailed": "Fehler beim Löschen des Kontos."
     }
   },
   "profilePage": {
     "userNotFound": {
-      "title": "User Not Found",
-      "description": "The profile you are looking for does not exist. This could be because the user ID is incorrect or the account has been deleted.",
-      "homeButton": "Go to Homepage"
+      "title": "Benutzer nicht gefunden",
+      "description": "Das gesuchte Profil existiert nicht. Dies könnte daran liegen, dass die Benutzer-ID falsch ist oder das Konto gelöscht wurde.",
+      "homeButton": "Zur Startseite"
     },
     "profileUnavailable": {
-      "title": "Profile Unavailable",
-      "description": "Please log in to view your profile, or specify a user in the URL."
+      "title": "Profil nicht verfügbar",
+      "description": "Bitte melden Sie sich an, um Ihr Profil zu sehen, oder geben Sie einen Benutzer in der URL an."
     },
-    "seasonRating": "Season Rating",
-    "overallRating": "Overall Rating",
+    "seasonRating": "Saison-Bewertung",
+    "overallRating": "Gesamtbewertung",
     "rank": {
-      "currentRank": "Current Rank",
-      "nextRank": "Next Rank",
-      "points": "Points",
-      "pointsToNext": "points to next",
-      "progress": "Progress",
-      "complete": "complete",
-      "maxRank": "Maximum Rank Achieved!",
-      "legendaryPlayer": "You are a legendary player"
+      "currentRank": "Aktueller Rang",
+      "nextRank": "Nächster Rang",
+      "points": "Punkte",
+      "pointsToNext": "Punkte bis zum nächsten",
+      "progress": "Fortschritt",
+      "complete": "abgeschlossen",
+      "maxRank": "Maximaler Rang erreicht!",
+      "legendaryPlayer": "Du bist ein legendärer Spieler"
     },
     "stats": {
-      "battles": "Battles",
-      "wins": "Wins",
-      "active": "Active",
-      "archived": "Archived"
+      "battles": "Kämpfe",
+      "wins": "Siege",
+      "active": "Aktiv",
+      "archived": "Archiviert"
     },
     "edit": {
-      "usernamePlaceholder": "Enter your username",
-      "bioPlaceholder": "Tell us about yourself...",
-      "saveButton": "Save Changes",
-      "cancelButton": "Cancel",
-      "editButton": "Edit Profile",
-      "noBio": "This user has not provided a bio yet."
+      "usernamePlaceholder": "Benutzername eingeben",
+      "bioPlaceholder": "Erzähl uns von dir...",
+      "saveButton": "Änderungen speichern",
+      "cancelButton": "Abbrechen",
+      "editButton": "Profil bearbeiten",
+      "noBio": "Dieser Benutzer hat noch keine Biografie angegeben."
     },
     "tabs": {
-      "currentBattles": "Current Battles",
-      "battleHistory": "Battle History",
-      "posts": "Posts",
-      "collection": "Collection"
+      "currentBattles": "Aktuelle Kämpfe",
+      "battleHistory": "Kampfhistorie",
+      "posts": "Beiträge",
+      "collection": "Sammlung"
     },
     "battles": {
-      "noActiveBattlesTitle": "No Active Battles",
-      "noActiveBattlesDescription": "This user is not currently in any active battles. Check back later!",
-      "noArchivedBattlesTitle": "No Battle History",
-      "noArchivedBattlesDescription": "This user has no past battles recorded."
+      "noActiveBattlesTitle": "Keine aktiven Kämpfe",
+      "noActiveBattlesDescription": "Dieser Benutzer ist derzeit in keinen aktiven Kämpfen. Schauen Sie später wieder vorbei!",
+      "noArchivedBattlesTitle": "Keine Kampfhistorie",
+      "noArchivedBattlesDescription": "Dieser Benutzer hat keine vergangenen Kämpfe aufgezeichnet."
     },
     "posts": {
-      "deleteConfirmation": "Are you sure you want to delete this post?",
-      "editButton": "Edit",
-      "deleteButton": "Delete",
-      "saveButton": "Save",
-      "cancelButton": "Cancel",
-      "noPostsTitle": "No Posts",
-      "noPostsDescription": "This user hasn't made any posts yet."
+      "deleteConfirmation": "Sind Sie sicher, dass Sie diesen Beitrag löschen möchten?",
+      "editButton": "Bearbeiten",
+      "deleteButton": "Löschen",
+      "saveButton": "Speichern",
+      "cancelButton": "Abbrechen",
+      "noPostsTitle": "Keine Beiträge",
+      "noPostsDescription": "Dieser Benutzer hat noch keine Beiträge erstellt."
     },
     "toasts": {
-      "errorTitle": "Error",
-      "successTitle": "Success",
-      "loadProfileError": "Could not load profile.",
-      "avatarUpdateSuccess": "Avatar updated successfully!",
-      "profileUpdateFailedDB": "Failed to update profile in database.",
-      "profileUpdateSuccess": "Profile updated successfully!",
-      "profileUpdateFailed": "Failed to update profile."
+      "errorTitle": "Fehler",
+      "successTitle": "Erfolg",
+      "loadProfileError": "Profil konnte nicht geladen werden.",
+      "avatarUpdateSuccess": "Avatar erfolgreich aktualisiert!",
+      "profileUpdateFailedDB": "Fehler beim Aktualisieren des Profils in der Datenbank.",
+      "profileUpdateSuccess": "Profil erfolgreich aktualisiert!",
+      "profileUpdateFailed": "Fehler beim Aktualisieren des Profils."
     },
     "emptyStates": {
-      "battleHistory": "Build your battle history by winning more battles!"
+      "battleHistory": "Bauen Sie Ihre Kampfhistorie auf, indem Sie mehr Kämpfe gewinnen!"
     }
   },
   "rankingPage": {
-    "title": "Community Rankings",
-    "description": "Player rankings and voter rankings showing community activity",
+    "title": "Community-Rangliste",
+    "description": "Spieler-Rangliste und Wähler-Rangliste zeigen Community-Aktivität",
     "tabs": {
-      "playerRankings": "Player Rankings", 
-      "voterRankings": "Voter Rankings",
-      "player": "Player",
-      "voter": "Voter"
+      "playerRankings": "Spieler-Rangliste", 
+      "voterRankings": "Wähler-Rangliste",
+      "player": "Spieler",
+      "voter": "Wähler"
     },
     "seasonTabs": {
-      "currentSeason": "Current Season",
-      "allTime": "All Time",
-      "historicalSeasons": "Past Seasons"
+      "currentSeason": "Aktuelle Saison",
+      "allTime": "Alle Zeiten",
+      "historicalSeasons": "Vergangene Saisons"
     },
     "seasonSelector": {
-      "selectSeason": "Select Season",
-      "currentSeasonLabel": "Current Season",
-      "completedSeasonLabel": "Completed Season"
+      "selectSeason": "Saison wählen",
+      "currentSeasonLabel": "Aktuelle Saison",
+      "completedSeasonLabel": "Abgeschlossene Saison"
     },
     "topThree": {
       "title": "TOP 3"
     },
-    "playerDescription": "Beatboxer rankings based on battle performance",
-    "voterDescription": "Active community member rankings based on voting participation",
-
-    "searchPlaceholder": "Search by username...",
-    "loading": "Loading rankings...",
-    "eloRating": "Elo Rating",
+    "playerDescription": "Beatboxer-Rangliste basierend auf Kampfleistung",
+    "voterDescription": "Aktive Community-Mitglieder-Rangliste basierend auf Abstimmungsteilnahme",
+    "searchPlaceholder": "Nach Benutzername suchen...",
+    "loading": "Lade Rangliste...",
+    "eloRating": "Elo-Bewertung",
     "table": {
-      "rank": "Rank",
-      "user": "User",
-      "rating": "Rating",
-      "seasonPoints": "Season Points",
-      "winRate": "Win Rate",
-      "voteCount": "Vote Count"
+      "rank": "Rang",
+      "user": "Benutzer",
+      "rating": "Bewertung",
+      "seasonPoints": "Saison-Punkte",
+      "winRate": "Siegrate",
+      "voteCount": "Anzahl Stimmen"
     },
     "tiers": {
-      "grandmaster": "Grandmaster",
-      "master": "Master",
-      "expert": "Expert",
-      "advanced": "Advanced",
-      "intermediate": "Intermediate",
-      "beginner": "Beginner",
-      "unranked": "Unranked"
+      "grandmaster": "Großmeister",
+      "master": "Meister",
+      "expert": "Experte",
+      "advanced": "Fortgeschritten",
+      "intermediate": "Mittelstufe",
+      "beginner": "Anfänger",
+      "unranked": "Ohne Rang"
     },
-    "winLossRecord": "{{wins}}W - {{losses}}L",
-    "noUsersFound": "No users found",
-    "noData": "No data available",
-    "noRankingsYet": "No rankings yet",
-    "tryDifferentSearch": "Try a different search term",
-    "rankingsWillAppear": "Rankings will appear as users participate in battles",
+    "winLossRecord": "{{wins}}S - {{losses}}N",
+    "noUsersFound": "Keine Benutzer gefunden",
+    "noData": "Keine Daten verfügbar",
+    "noRankingsYet": "Noch keine Rangliste",
+    "tryDifferentSearch": "Versuchen Sie einen anderen Suchbegriff",
+    "rankingsWillAppear": "Ranglisten erscheinen, sobald Benutzer an Kämpfen teilnehmen",
     "error": {
-      "title": "Failed to Load Rankings",
-      "tryAgain": "Try Again"
+      "title": "Fehler beim Laden der Rangliste",
+      "tryAgain": "Erneut versuchen"
     }
   },
   "postPage": {
-    "title": "Submit Your Battle Video",
-    "subtitle": "Show off your skills and challenge the community",
-    "timeLimitEmphasis": "🔥 Videos MUST be 1-2 minutes (60-120 seconds) long 🔥",
-    "videoQualityWarning": "Please keep video quality moderate (avoid 4K recording)",
-    "backButton": "Back",
+    "title": "Senden Sie Ihr Kampfvideo",
+    "subtitle": "Zeigen Sie Ihre Fähigkeiten und fordern Sie die Community heraus",
+    "timeLimitEmphasis": "🔥 Videos MÜSSEN 1-2 Minuten (60-120 Sekunden) lang sein 🔥",
+    "videoQualityWarning": "Bitte halten Sie die Videoqualität moderat (vermeiden Sie 4K-Aufnahmen)",
+    "backButton": "Zurück",
     "selectFormat": {
-      "label": "Select Battle Format",
-              "mainBattle": "🔥 Main Battle 【REQUIRED】60 to 120 seconds (1-2 minutes) 🔥",
-      "miniBattle": "Mini Battle (30-59 seconds)",
-      "themeChallenge": "Skill/Theme Challenge"
+      "label": "Kampfformat wählen",
+      "mainBattle": "🔥 Hauptkampf 【ERFORDERLICH】60 bis 120 Sekunden (1-2 Minuten) 🔥",
+      "miniBattle": "Mini-Kampf (30-59 Sekunden)",
+      "themeChallenge": "Fähigkeits-/Themen-Herausforderung"
     },
     "upload": {
-      "title": "Upload Video",
-      "dragDrop": "Drag and drop your video here",
-      "supportedFormats": "Supported formats: MP4, WebM, MOV",
-      "selectFile": "Select File",
-      "uploading": "Uploading",
-      "submit": "Submit to Battle Pool",
-      "dropHere": "Drop video here",
-      "orBrowse": "or click to select file (MP4, WebM, MOV)",
-      "selectVideo": "Select Video"
-    },
-    "preview": {
-      "title": "Video Preview",
-      "duration": "Duration",
-      "size": "Size"
+      "title": "Video hochladen",
+      "dragDrop": "Ziehen Sie Ihr Video hierher",
+      "supportedFormats": "Unterstützte Formate: MP4, WebM, MOV",
+      "selectFile": "Datei auswählen",
+      "uploading": "Wird hochgeladen",
+      "submit": "Zum Kampfpool senden",
+      "dropHere": "Video hier ablegen",
+      "orBrowse": "oder klicken zum Auswählen (MP4, WebM, MOV)",
+      "selectVideo": "Video auswählen"
     },
     "format": {
-      "mainBattle": "Main Battle"
+      "mainBattle": "Hauptkampf"
     },
     "guidelines": {
-      "title": "Guidelines",
-      "content": "I have read and agree to the Video Submission Guidelines",
-      "face": "I understand that showing my face is optional, and showing my mouth area is recommended",
-      "appropriate": "I confirm this is my own performance and does not contain prohibited content",
+      "title": "Richtlinien",
+      "content": "Ich habe die Video-Einreichungsrichtlinien gelesen und akzeptiere sie",
+      "face": "Ich verstehe, dass das Zeigen meines Gesichts optional ist, und das Zeigen meines Mundbereichs wird empfohlen",
+      "appropriate": "Ich bestätige, dass dies meine eigene Leistung ist und keine verbotenen Inhalte enthält",
       "detailed": {
         "greetingRule": {
-          "title": "Opening Greeting: ",
-          "value": "Required",
-          "description": "Before starting your performance, you must declare your participation with your own voice including both ①the word 'BeatNexus' and ②your player name. This is an important rule to prove that your wonderful performance is a battle taking place on the official BeatNexus stage.\n\nPurpose of Declaration:\n• Identity Proof: Shows that you are the actual account owner, preventing impersonation.\n• Content Attribution: When your video is shared on other SNS platforms, it clearly indicates that this is a BeatNexus battle, enhancing the platform's value.\n• Competitive Spirit: Like athlete's oath in competitions, it demonstrates your serious commitment to the battle and heightens viewers' expectations.",
+          "title": "Eröffnungsgruß: ",
+          "value": "Erforderlich",
+          "description": "Vor Beginn Ihrer Darbietung müssen Sie Ihre Teilnahme mit Ihrer eigenen Stimme erklären, einschließlich sowohl ①des Wortes 'BeatNexus' als auch ②Ihres Spielernamens. Dies ist eine wichtige Regel, um zu beweisen, dass Ihre wunderbare Leistung ein Kampf ist, der auf der offiziellen BeatNexus-Bühne stattfindet.\n\nZweck der Erklärung:\n• Identitätsnachweis: Zeigt, dass Sie der tatsächliche Kontoinhaber sind und verhindert Identitätsmissbrauch.\n• Inhaltszuordnung: Wenn Ihr Video auf anderen SNS-Plattformen geteilt wird, zeigt es deutlich, dass dies ein BeatNexus-Kampf ist und erhöht den Wert der Plattform.\n• Wettkampfgeist: Wie ein Athleteneid bei Wettkämpfen zeigt es Ihr ernsthaftes Engagement für den Kampf und erhöht die Erwartungen der Zuschauer.",
           "examples": {
-            "title": "Examples: ",
+            "title": "Beispiele: ",
             "list": [
-              "\"BeatNexus, [Player Name], let's do this!\"",
-              "\"I'm [Player Name]. BeatNexus, here I go!\"",
-              "\"This is [Player Name] for BeatNexus.\"",
-              "\"My name is [Player Name], and this is my submission for BeatNexus.\"",
-              "\"Shout out to BeatNexus! [Player Name] in the house!\""
+              "\"BeatNexus, [Spielername], lasst uns das machen!\"",
+              "\"Ich bin [Spielername]. BeatNexus, hier komme ich!\"",
+              "\"Das ist [Spielername] für BeatNexus.\"",
+              "\"Mein Name ist [Spielername], und das ist mein Beitrag für BeatNexus.\"",
+              "\"Grüße an BeatNexus! [Spielername] ist im Haus!\""
             ],
-            "note": "You can express it freely, but you must include both ①the word 'BeatNexus' and ②your player name. You must speak with your own voice, not with text or subtitles. Videos without opening greetings or missing essential elements may be considered non-compliant with the rules."
+            "note": "Sie können es frei ausdrücken, aber Sie müssen sowohl ①das Wort 'BeatNexus' als auch ②Ihren Spielernamen einschließen. Sie müssen mit Ihrer eigenen Stimme sprechen, nicht mit Text oder Untertiteln. Videos ohne Eröffnungsgrüße oder fehlende wesentliche Elemente können als nicht regelkonform betrachtet werden."
           }
         },
         "performanceTime": {
-          "title": "Performance Time: ",
-          "value": "1-2 minutes",
-          "description": "Please perform within the specified time frame"
+          "title": "Aufführungszeit: ",
+          "value": "1-2 Minuten",
+          "description": "Bitte führen Sie innerhalb des angegebenen Zeitrahmens auf"
         },
         "performanceFormat": {
-          "title": "Performance Format: ",
-          "value": "Simultaneous Audio-Video Recording",
-          "description": "Video and audio must be recorded simultaneously. Connecting performances with cut editing is prohibited."
+          "title": "Aufführungsformat: ",
+          "value": "Gleichzeitige Audio-Video-Aufnahme",
+          "description": "Video und Audio müssen gleichzeitig aufgenommen werden. Das Verbinden von Aufführungen durch Schnittbearbeitung ist verboten."
         },
         "identityVerification": {
-          "title": "Identity Verification: ",
-          "value": "Face showing recommended",
-          "description": "Showing your face is not required but recommended."
+          "title": "Identitätsverifikation: ",
+          "value": "Gesicht zeigen empfohlen",
+          "description": "Das Zeigen Ihres Gesichts ist nicht erforderlich, aber empfohlen."
         },
         "lipSyncBan": {
-          "title": "Lip Sync Prohibition",
-          "description": "Lip syncing to pre-recorded audio (dubbing) is prohibited."
+          "title": "Lippensynchronisationsverbot",
+          "description": "Lippensynchronisation zu vorab aufgenommenem Audio (Synchronisation) ist verboten."
         },
         "audioSource": {
-          "title": "Audio Source: ",
-          "value": "Real-time audio",
-          "description": "All sounds used in the performance must be generated on the spot from your voice or body."
+          "title": "Audioquelle: ",
+          "value": "Echtzeit-Audio",
+          "description": "Alle in der Aufführung verwendeten Töne müssen spontan aus Ihrer Stimme oder Ihrem Körper erzeugt werden."
         },
         "sampleBan": {
-          "title": "Sample Use Prohibition",
-          "description": "The use of pre-recorded audio sources (samples) or metronomes that record sound is prohibited."
+          "title": "Sample-Verwendungsverbot",
+          "description": "Die Verwendung von vorab aufgenommenen Audioquellen (Samples) oder Metronomen, die Ton aufzeichnen, ist verboten."
         },
         "audioProcessing": {
-          "title": "Audio Processing",
+          "title": "Audioverarbeitung",
           "subtitle": "",
           "allowed": {
-            "title": "Allowed Processing",
-            "mixing": "Mixing and mastering",
-            "correction": "Basic audio quality correction applied to the entire recording (EQ, compressor, reverb)"
+            "title": "Erlaubte Verarbeitung",
+            "mixing": "Mischen und Mastering",
+            "correction": "Grundlegende Audioqualitätskorrektur für die gesamte Aufnahme (EQ, Kompressor, Reverb)"
           },
           "prohibited": {
-            "title": "Prohibited Processing",
-            "effects": "Effects that significantly change the original sound, such as distortion and delay",
-            "advanced": "Advanced editing that automatically changes processing for each sound"
+            "title": "Verbotene Verarbeitung",
+            "effects": "Effekte, die den ursprünglichen Klang erheblich verändern, wie Verzerrung und Delay",
+            "advanced": "Erweiterte Bearbeitung, die die Verarbeitung für jeden Klang automatisch ändert"
           }
         },
         "equipment": {
-          "title": "Recording Equipment",
+          "title": "Aufnahmegeräte",
           "devices": {
-            "title": "Equipment",
-            "description": "All methods are welcome, from smartphones to professional equipment."
+            "title": "Geräte",
+            "description": "Alle Methoden sind willkommen, von Smartphones bis hin zu professionellen Geräten."
           },
           "resolution": {
-            "title": "Resolution",
-            "description": "Please avoid 4K recording as it increases file size."
+            "title": "Auflösung",
+            "description": "Bitte vermeiden Sie 4K-Aufnahmen, da sie die Dateigröße erhöhen."
           }
         }
       }
     },
-    "cooldown": {
-      "title": "Submission Cooldown",
-      "message": "Next submission available in: {{time}}"
-    },
     "seasonOff": {
-      "title": "Season Off - Submission Restricted"
-    },
-    "preview": {
-      "title": "Video Preview"
+      "title": "Saison aus - Einreichung eingeschränkt"
     },
     "ffmpeg": {
-      "loading": "Initializing Video Processor",
-      "preparing": "Preparing compression engine, please wait...",
-      "initializing": "Preparing...",
-      "initializingDescription": "Please wait while we prepare the video compression engine.",
-      "initializationError": "Initialization Error"
+      "loading": "Initialisiere Video-Prozessor",
+      "preparing": "Bereite Komprimierungs-Engine vor, bitte warten...",
+      "initializing": "Vorbereitung...",
+      "initializingDescription": "Bitte warten Sie, während wir die Video-Komprimierungs-Engine vorbereiten.",
+      "initializationError": "Initialisierungsfehler"
     },
     "processing": {
-      "title": "Processing video...",
-      "analyzing": "Analyzing video and checking settings...",
-      "optimizing": "Optimizing video quality. Please wait...",
-      "finalizing": "Performing final adjustments...",
-      "loadingVideo": "Loading video...",
-      "calculatingCompression": "Calculating compression settings...",
-      "preparingStream": "Preparing stream...",
-      "startingRecording": "Starting recording...",
-      "completingRecording": "Completing recording...",
-      "fastProcessing": "Starting fast processing...",
-      "checkingDuration": "Checking video duration...",
-      "preparingPreview": "Preparing preview...",
-      "complete": "Complete",
-      "analyzing_video": "Analyzing video...",
-      "recording": "Recording...",
-      "remaining": "Remaining ~{{seconds}}s",
-      "checkingMemory": "Checking memory usage...",
-      "noCompressionNeeded": "No compression needed - file size is optimal",
-      "processingVideo": "Processing video...",
-      "compressionComplete": "Compression completed. Preview has been updated."
+      "title": "Video wird verarbeitet...",
+      "analyzing": "Video wird analysiert und Einstellungen überprüft...",
+      "optimizing": "Videoqualität wird optimiert. Bitte warten...",
+      "finalizing": "Abschließende Anpassungen werden durchgeführt...",
+      "loadingVideo": "Video wird geladen...",
+      "calculatingCompression": "Komprimierungseinstellungen werden berechnet...",
+      "preparingStream": "Stream wird vorbereitet...",
+      "startingRecording": "Aufnahme wird gestartet...",
+      "completingRecording": "Aufnahme wird abgeschlossen...",
+      "fastProcessing": "Schnelle Verarbeitung wird gestartet...",
+      "checkingDuration": "Videodauer wird überprüft...",
+      "preparingPreview": "Vorschau wird vorbereitet...",
+      "complete": "Abgeschlossen",
+      "analyzing_video": "Video wird analysiert...",
+      "recording": "Aufzeichnung...",
+      "remaining": "Verbleibend ~{{seconds}}s",
+      "checkingMemory": "Speicherverbrauch wird überprüft...",
+      "noCompressionNeeded": "Keine Komprimierung erforderlich - Dateigröße ist optimal",
+      "processingVideo": "Video wird verarbeitet...",
+      "compressionComplete": "Komprimierung abgeschlossen. Vorschau wurde aktualisiert."
     },
     "errors": {
-      "problemOccurred": "Problem occurred",
-      "videoLoadFailed": "Failed to load video file",
-      "unsupportedBrowser": "This feature is not supported in your browser",
-      "playbackFailed": "Failed to play video. Please check your browser settings.",
-      "recordingFailed": "Error occurred during recording",
-      "processingError": "Processing error",
-      "videoProcessingFailed": "Failed to process video file",
-      "fileTooBig": "File size exceeds limit. Current: {{current}}MB (Limit: 2048MB)",
-      "compressionFailed": "Automatic compression failed. Please try 'Fast Compression' or 'Simple Method'.",
-      "fastCompressionFailed": "Fast compression failed. Please try 'Simple Method' for manual handling.",
-      "fileSizeStillLarge": "Compressed file size: {{size}}MB. Further compression needed.",
-      "compressionSuggestion": "To reduce your video file size, please try the following methods:\n\n1. Change phone settings to 'Standard' video quality\n2. Lower resolution using video editing apps\n3. Shorten video length\n4. Re-record the video",
-      "uploadTooLarge": "File size is too large ({{size}}MB). Please compress the video before uploading.",
-      "retakeVideo": "Please retake the video and upload again.",
-      "invalidDuration": "Video duration is outside the specified range.",
-      "mainBattleTooShort": "Main Battle video is too short ({{duration}}s). Please upload a video of {{required}} seconds.\n\n💡 Tip: Use a video editing app to adjust the length or record a longer performance.",
-      "mainBattleTooLong": "Main Battle video is too long ({{duration}}s). Please upload a video of {{required}} seconds.\n\n💡 Tip: Use a video editing app to trim unnecessary parts or record a shorter performance.",
-      "miniBattleTooShort": "Mini Battle video is too short ({{duration}}s). Please upload a video of {{required}} seconds.\n\n💡 Tip: Record a longer performance or consider switching to Main Battle format (60-120 seconds).",
-      "miniBattleTooLong": "Mini Battle video is too long ({{duration}}s). Please upload a video of {{required}} seconds.\n\n💡 Tip: Use a video editing app to shorten it or consider switching to Main Battle format (60-120 seconds).",
-      "themeTooShort": "Theme Challenge video is too short ({{duration}}s). Please upload a video of {{required}} seconds.\n\n💡 Tip: Record a longer performance.",
-      "themeTooLong": "Theme Challenge video is too long ({{duration}}s). Please upload a video of {{required}} seconds.\n\n💡 Tip: Use a video editing app to shorten it.",
-      "changeBattleFormat": "Change Battle Format",
-      "selectDifferentVideo": "Select Different Video",
-      "fileTooLargeForProcessing": "File size ({{size}}MB) is too large for processing. Please use files under 2GB.",
-      "compressionTimeout": "Compression process timed out. Please reduce file size and try again.",
-      "compressionFinalizationFailed": "Failed to create compressed file",
-      "compressionAbnormallySmall": "Compression resulted in abnormally small file. There may be an issue with the original video.",
-      "tooManyPreviewAttempts": "Preview loading failed multiple times. File size may be too large.",
-      "compressionInsufficientReduction": "Compression was insufficient. File is still too large.",
-      "acceptPolicies": "Please accept all policies and guidelines.",
-      "uploadFailed": "Upload failed. Please try again.",
-      "invalidFileType": "Invalid file type. Please select a video file.",
-      "tooShort": "Video is too short ({{current}}s). Minimum: {{min}}s",
-      "tooLong": "Video is too long ({{current}}s). Maximum: {{max}}s"
+      "problemOccurred": "Problem aufgetreten",
+      "videoLoadFailed": "Fehler beim Laden der Videodatei",
+      "unsupportedBrowser": "Diese Funktion wird in Ihrem Browser nicht unterstützt",
+      "playbackFailed": "Fehler beim Abspielen des Videos. Bitte überprüfen Sie Ihre Browser-Einstellungen.",
+      "recordingFailed": "Fehler während der Aufnahme aufgetreten",
+      "processingError": "Verarbeitungsfehler",
+      "videoProcessingFailed": "Fehler beim Verarbeiten der Videodatei",
+      "fileTooBig": "Dateigröße überschreitet Limit. Aktuell: {{current}}MB (Limit: 2048MB)",
+      "compressionFailed": "Automatische Komprimierung fehlgeschlagen. Bitte versuchen Sie 'Schnelle Komprimierung' oder 'Einfache Methode'.",
+      "fastCompressionFailed": "Schnelle Komprimierung fehlgeschlagen. Bitte versuchen Sie 'Einfache Methode' für manuelle Behandlung.",
+      "fileSizeStillLarge": "Komprimierte Dateigröße: {{size}}MB. Weitere Komprimierung erforderlich.",
+      "compressionSuggestion": "Um Ihre Videodateigröße zu reduzieren, versuchen Sie bitte die folgenden Methoden:\n\n1. Ändern Sie die Telefoneinstellungen auf 'Standard'-Videoqualität\n2. Reduzieren Sie die Auflösung mit Video-Bearbeitungs-Apps\n3. Verkürzen Sie die Videolänge\n4. Nehmen Sie das Video erneut auf",
+      "uploadTooLarge": "Dateigröße ist zu groß ({{size}}MB). Bitte komprimieren Sie das Video vor dem Hochladen.",
+      "retakeVideo": "Bitte nehmen Sie das Video erneut auf und laden Sie es wieder hoch.",
+      "invalidDuration": "Videodauer liegt außerhalb des angegebenen Bereichs.",
+      "mainBattleTooShort": "Hauptkampf-Video ist zu kurz ({{duration}}s). Bitte laden Sie ein Video von {{required}} Sekunden hoch.\n\n💡 Tipp: Verwenden Sie eine Video-Bearbeitungs-App, um die Länge anzupassen oder nehmen Sie eine längere Aufführung auf.",
+      "mainBattleTooLong": "Hauptkampf-Video ist zu lang ({{duration}}s). Bitte laden Sie ein Video von {{required}} Sekunden hoch.\n\n💡 Tipp: Verwenden Sie eine Video-Bearbeitungs-App, um unnötige Teile zu entfernen oder nehmen Sie eine kürzere Aufführung auf.",
+      "miniBattleTooShort": "Mini-Kampf-Video ist zu kurz ({{duration}}s). Bitte laden Sie ein Video von {{required}} Sekunden hoch.\n\n💡 Tipp: Nehmen Sie eine längere Aufführung auf oder wechseln Sie zum Hauptkampf-Format (60-120 Sekunden).",
+      "miniBattleTooLong": "Mini-Kampf-Video ist zu lang ({{duration}}s). Bitte laden Sie ein Video von {{required}} Sekunden hoch.\n\n💡 Tipp: Verwenden Sie eine Video-Bearbeitungs-App, um es zu verkürzen oder wechseln Sie zum Hauptkampf-Format (60-120 Sekunden).",
+      "themeTooShort": "Themen-Herausforderungs-Video ist zu kurz ({{duration}}s). Bitte laden Sie ein Video von {{required}} Sekunden hoch.\n\n💡 Tipp: Nehmen Sie eine längere Aufführung auf.",
+      "themeTooLong": "Themen-Herausforderungs-Video ist zu lang ({{duration}}s). Bitte laden Sie ein Video von {{required}} Sekunden hoch.\n\n💡 Tipp: Verwenden Sie eine Video-Bearbeitungs-App, um es zu verkürzen.",
+      "changeBattleFormat": "Kampfformat ändern",
+      "selectDifferentVideo": "Anderes Video auswählen",
+      "fileTooLargeForProcessing": "Dateigröße ({{size}}MB) ist zu groß für die Verarbeitung. Bitte verwenden Sie Dateien unter 2GB.",
+      "compressionTimeout": "Komprimierungsvorgang abgebrochen. Bitte reduzieren Sie die Dateigröße und versuchen Sie es erneut.",
+      "compressionFinalizationFailed": "Fehler beim Erstellen der komprimierten Datei",
+      "compressionAbnormallySmall": "Komprimierung führte zu ungewöhnlich kleiner Datei. Möglicherweise gibt es ein Problem mit dem ursprünglichen Video.",
+      "tooManyPreviewAttempts": "Vorschau-Laden mehrfach fehlgeschlagen. Dateigröße könnte zu groß sein.",
+      "compressionInsufficientReduction": "Komprimierung war unzureichend. Datei ist immer noch zu groß.",
+      "acceptPolicies": "Bitte akzeptieren Sie alle Richtlinien und Regeln.",
+      "uploadFailed": "Upload fehlgeschlagen. Bitte versuchen Sie es erneut.",
+      "invalidFileType": "Ungültiger Dateityp. Bitte wählen Sie eine Videodatei.",
+      "tooShort": "Video ist zu kurz ({{current}}s). Minimum: {{min}}s",
+      "tooLong": "Video ist zu lang ({{current}}s). Maximum: {{max}}s"
     },
     "compression": {
-      "autoAvailable": "Automatic quality adjustment is available",
-      "videoDuration": "Video duration:",
-      "fileSize": "File size:",
+      "autoAvailable": "Automatische Qualitätsanpassung ist verfügbar",
+      "videoDuration": "Videodauer:",
+      "fileSize": "Dateigröße:",
       "durationOk": "{{duration}}s ✓",
       "fileSizeLarge": "{{size}}MB ⚠️",
-      "description": "The video length is within the specified range, but the file size is too large. We can automatically adjust the video quality while preserving audio quality to optimize file size.",
-      "autoAdjustments": "Automatic adjustments:",
-      "resolutionOptimization": "Resolution optimization (4K→1080p etc.)",
-      "bitrateAdjustment": "Bitrate adjustment",
-      "audioQualityMaintained": "High audio quality maintained (128kbps)",
-      "fileSizeTooLarge": "File size is too large",
-      "currentFileSize": "Current file size: {{size}}MB (Limit: 200MB)",
-      "recommendedSolutions": "Recommended solutions:",
-      "retakeVideo": "Retake video",
-      "recommended": "Recommended",
-      "proceedAnyway": "Proceed anyway",
-      "forTesting": "For testing",
-      "compressionRatio": "Compression ratio: {{ratio}}%",
+      "description": "Die Videolänge liegt im angegebenen Bereich, aber die Dateigröße ist zu groß. Wir können die Videoqualität automatisch anpassen, während die Audioqualität erhalten bleibt, um die Dateigröße zu optimieren.",
+      "autoAdjustments": "Automatische Anpassungen:",
+      "resolutionOptimization": "Auflösungsoptimierung (4K→1080p etc.)",
+      "bitrateAdjustment": "Bitrate-Anpassung",
+      "audioQualityMaintained": "Hohe Audioqualität beibehalten (128kbps)",
+      "fileSizeTooLarge": "Dateigröße ist zu groß",
+      "currentFileSize": "Aktuelle Dateigröße: {{size}}MB (Limit: 200MB)",
+      "recommendedSolutions": "Empfohlene Lösungen:",
+      "retakeVideo": "Video erneut aufnehmen",
+      "recommended": "Empfohlen",
+      "proceedAnyway": "Trotzdem fortfahren",
+      "forTesting": "Zum Testen",
+      "compressionRatio": "Komprimierungsverhältnis: {{ratio}}%",
       "format": "Format: {{format}}",
-      "compressionStarting": "Starting compression...",
-      "finalizing": "Final processing...",
-      "autoCompress": "Auto Compress",
-      "optimizeSize": "Optimize Size",
-      "targetSize": "Target: {{target}}MB (from {{original}}MB) - {{strategy}}"
+      "compressionStarting": "Komprimierung wird gestartet...",
+      "finalizing": "Abschließende Verarbeitung...",
+      "autoCompress": "Auto-Komprimierung",
+      "optimizeSize": "Größe optimieren",
+      "targetSize": "Ziel: {{target}}MB (von {{original}}MB) - {{strategy}}"
     },
     "submissionGuidelines": {
-      "title": "Video Submission Guidelines",
-      "followFormatLength": "【REQUIRED】Main battles must strictly follow 60-120 seconds rule",
-      "ensureAudioQuality": "Ensure clear audio quality",
-      "faceOptional": "Showing your face is optional, but mouth area is recommended",
-      "noBackgroundMusic": "No background music or backing tracks",
-      "agreeGuidelines": "I have read and agree to the Video Submission Guidelines",
-      "understandFacePolicy": "I understand that showing my face is optional, and showing my mouth area is recommended",
-      "confirmOwnPerformance": "I confirm this is my own performance and does not contain prohibited content"
+      "title": "Video-Einreichungsrichtlinien",
+      "followFormatLength": "【ERFORDERLICH】Hauptkämpfe müssen strikt die 60-120 Sekunden Regel befolgen",
+      "ensureAudioQuality": "Sorgen Sie für klare Audioqualität",
+      "faceOptional": "Das Zeigen Ihres Gesichts ist optional, aber der Mundbereich wird empfohlen",
+      "noBackgroundMusic": "Keine Hintergrundmusik oder Backing-Tracks",
+      "agreeGuidelines": "Ich habe die Video-Einreichungsrichtlinien gelesen und akzeptiere sie",
+      "understandFacePolicy": "Ich verstehe, dass das Zeigen meines Gesichts optional ist, und das Zeigen meines Mundbereichs wird empfohlen",
+      "confirmOwnPerformance": "Ich bestätige, dass dies meine eigene Leistung ist und keine verbotenen Inhalte enthält"
     },
     "buttons": {
-      "cancel": "Cancel",
-      "submitToBattlePool": "Submit to Battle Pool",
-      "viewMyBattles": "View My Battles",
-      "submitAnother": "Submit Another"
-    },
-    "cooldown": {
-      "title": "1-Hour Submission Limit",
-      "message": "You can only submit one video per hour.",
-      "nextSubmissionIn": "Next submission available in:",
-      "timeRemaining": "{{time}} until next submission"
+      "cancel": "Abbrechen",
+      "submitToBattlePool": "Zum Kampfpool senden",
+      "viewMyBattles": "Meine Kämpfe ansehen",
+      "submitAnother": "Weiteres einreichen"
     },
     "success": {
-      "title": "Video Submitted Successfully!",
-      "description": "Your video has been uploaded and will be matched with another beatboxer soon. We'll notify you when your battle goes live."
+      "title": "Video erfolgreich eingereicht!",
+      "description": "Ihr Video wurde hochgeladen und wird bald mit einem anderen Beatboxer gematcht. Wir benachrichtigen Sie, wenn Ihr Kampf live geht."
     },
     "submission": {
       "cooldown": {
-        "canSubmit": "Submission available",
-        "restriction": "You can only submit one video per hour. Time remaining: {{hours}}h {{minutes}}m",
-        "remainingTime": "Next submission available in: {{time}}",
-        "error": "Error during cooldown check: {{error}}",
+        "canSubmit": "Einreichung verfügbar",
+        "restriction": "Sie können nur ein Video pro Stunde einreichen. Verbleibende Zeit: {{hours}}h {{minutes}}m",
+        "remainingTime": "Nächste Einreichung verfügbar in: {{time}}",
+        "error": "Fehler bei der Cooldown-Überprüfung: {{error}}",
         "timeFormat": {
           "hoursMinutes": "{{hours}}h {{minutes}}m", 
           "minutes": "{{minutes}}m"
         }
       },
       "success": {
-        "created": "Submission created successfully."
+        "created": "Einreichung erfolgreich erstellt."
       },
       "error": {
-        "seasonRestriction": "Submission not allowed due to season restrictions.",
-        "cooldownActive": "You can only submit one video per hour. Next submission available in: {{hours}}h {{minutes}}m",
-        "creationFailed": "Error occurred during submission creation: {{error}}"
+        "seasonRestriction": "Einreichung aufgrund von Saisonbeschränkungen nicht erlaubt.",
+        "cooldownActive": "Sie können nur ein Video pro Stunde einreichen. Nächste Einreichung verfügbar in: {{hours}}h {{minutes}}m",
+        "creationFailed": "Fehler bei der Erstellung der Einreichung aufgetreten: {{error}}"
       }
     },
     "importantNotice": {
-      "videoDuration": "Videos must be 1-2 minutes long",
-      "videoQuality": "Please lower video quality when recording (avoid 4K recording)"
+      "videoDuration": "Videos müssen 1-2 Minuten lang sein",
+      "videoQuality": "Bitte senken Sie die Videoqualität bei der Aufnahme (vermeiden Sie 4K-Aufnahmen)"
     }
   },
   "toasts": {
-    "error": "Error",
-    "success": "Success",
-    "warning": "Warning",
+    "error": "Fehler",
+    "success": "Erfolg",
+    "warning": "Warnung",
     "info": "Info",
-    "submissionAddedToPool": "Added to battle queue! Progressive matchmaking system expands rating range every 20 minutes.",
-    "submissionError": "Submission failed",
-    "submissionWithdrawn": "Withdrawn from battle queue",
-    "withdrawError": "Withdrawal failed"
+    "submissionAddedToPool": "Zur Kampfwarteschlange hinzugefügt! Progressives Matchmaking-System erweitert den Bewertungsbereich alle 20 Minuten.",
+    "submissionError": "Einreichung fehlgeschlagen",
+    "submissionWithdrawn": "Aus der Kampfwarteschlange zurückgezogen",
+    "withdrawError": "Rückzug fehlgeschlagen"
   },
   "communityPage": {
     "toasts": {
-      "loadPostsError": "Failed to load posts.",
-      "postSuccess": "Post created successfully!",
-      "postError": "Failed to create post.",
-      "deleteSuccess": "Post deleted successfully.",
-      "deleteError": "Failed to delete post.",
-      "updateSuccess": "Post updated successfully.",
-      "updateError": "Failed to update post.",
-      "likeError": "Failed to update like.",
-      "loadCommentsError": "Failed to load comments.",
-      "commentSuccess": "Comment posted successfully!",
-      "commentError": "Failed to post comment."
+      "loadPostsError": "Fehler beim Laden der Beiträge.",
+      "postSuccess": "Beitrag erfolgreich erstellt!",
+      "postError": "Fehler beim Erstellen des Beitrags.",
+      "deleteSuccess": "Beitrag erfolgreich gelöscht.",
+      "deleteError": "Fehler beim Löschen des Beitrags.",
+      "updateSuccess": "Beitrag erfolgreich aktualisiert.",
+      "updateError": "Fehler beim Aktualisieren des Beitrags.",
+      "likeError": "Fehler beim Aktualisieren der Bewertung.",
+      "loadCommentsError": "Fehler beim Laden der Kommentare.",
+      "commentSuccess": "Kommentar erfolgreich gepostet!",
+      "commentError": "Fehler beim Posten des Kommentars."
     }
   },
   "battleStore": {
     "toasts": {
-      "authError": "Authentication Error",
-      "loginRequired": "Login required",
-      "checkLoginStatus": "Please check your login status",
-      "databaseError": "Database Error",
-      "cannotVoteOwn": "You cannot vote for your own battle",
-      "alreadyVoted": "You have already voted in this battle",
-      "votingEnded": "Voting for this battle has ended",
-      "votingExpired": "Voting period has expired",
-      "battleNotFound": "Battle not found",
-      "voteError": "Failed to vote",
-      "voteSuccess": "Voted for Player {{player}}",
-      "voteWithCommentSuccess": "Voted for Player {{player}} with comment",
-      "voteCompleted": "Vote Completed",
-      "votingProcess": "Vote Processing",
-      "unexpectedResponse": "Vote processing completed but response format was unexpected",
-      "functionNotConfigured": "Database function is not properly configured",
-      "cancelVoteError": "Cancel Vote Error",
-      "cancelVoteSuccess": "Cancelled vote for Player {{player}}",
-      "cancelVoteCompleted": "Vote Cancelled",
-      "noVoteToCancel": "You have not voted in this battle",
-      "cannotCancelExpired": "Voting period has expired and cannot be cancelled",
-      "cannotCancelEnded": "Voting for this battle has ended and cannot be cancelled",
-      "systemError": "System Error",
-      "cancelProcessCompleted": "Vote cancellation processing completed but response format was unexpected",
-      "cancelFailed": "Failed to cancel vote"
+      "authError": "Authentifizierungsfehler",
+      "loginRequired": "Anmeldung erforderlich",
+      "checkLoginStatus": "Bitte überprüfen Sie Ihren Anmeldestatus",
+      "databaseError": "Datenbankfehler",
+      "cannotVoteOwn": "Sie können nicht für Ihren eigenen Kampf abstimmen",
+      "alreadyVoted": "Sie haben bereits in diesem Kampf abgestimmt",
+      "votingEnded": "Die Abstimmung für diesen Kampf ist beendet",
+      "votingExpired": "Die Abstimmungsperiode ist abgelaufen",
+      "battleNotFound": "Kampf nicht gefunden",
+      "voteError": "Abstimmung fehlgeschlagen",
+      "voteSuccess": "Für Spieler {{player}} abgestimmt",
+      "voteWithCommentSuccess": "Für Spieler {{player}} mit Kommentar abgestimmt",
+      "voteCompleted": "Abstimmung abgeschlossen",
+      "votingProcess": "Abstimmung wird verarbeitet",
+      "unexpectedResponse": "Abstimmungsverarbeitung abgeschlossen, aber Antwortformat war unerwartet",
+      "functionNotConfigured": "Datenbankfunktion ist nicht ordnungsgemäß konfiguriert",
+      "cancelVoteError": "Abstimmung stornieren Fehler",
+      "cancelVoteSuccess": "Abstimmung für Spieler {{player}} storniert",
+      "cancelVoteCompleted": "Abstimmung storniert",
+      "noVoteToCancel": "Sie haben in diesem Kampf nicht abgestimmt",
+      "cannotCancelExpired": "Abstimmungsperiode ist abgelaufen und kann nicht storniert werden",
+      "cannotCancelEnded": "Die Abstimmung für diesen Kampf ist beendet und kann nicht storniert werden",
+      "systemError": "Systemfehler",
+      "cancelProcessCompleted": "Abstimmungsstornierungsverarbeitung abgeschlossen, aber Antwortformat war unerwartet",
+      "cancelFailed": "Fehler beim Stornieren der Abstimmung"
     }
   },
   "myBattlesPage": {
-    "title": "My Battles",
-    "subtitle": "View your battle status and history",
+    "title": "Meine Kämpfe",
+    "subtitle": "Sehen Sie Ihren Kampfstatus und Ihre Historie",
     "tabs": {
-      "active": "Active",
-      "waiting": "Waiting",
-      "completed": "History"
+      "active": "Aktiv",
+      "waiting": "Wartend",
+      "completed": "Historie"
     },
     "stats": {
-      "wins": "Wins",
-      "winRate": "Win Rate",
-      "totalVotes": "Total Votes"
+      "wins": "Siege",
+      "winRate": "Siegrate",
+      "totalVotes": "Gesamtstimmen"
     },
-    "loading": "Loading...",
+    "loading": "Wird geladen...",
     "error": {
-      "loadFailed": "Failed to load data",
-      "retry": "Retry"
+      "loadFailed": "Fehler beim Laden der Daten",
+      "retry": "Erneut versuchen"
     },
     "empty": {
       "activeBattles": {
-        "title": "No Active Battles",
-        "description": "Start a new battle and showcase your skills!",
-        "button": "Start Battle"
+        "title": "Keine aktiven Kämpfe",
+        "description": "Starten Sie einen neuen Kampf und zeigen Sie Ihre Fähigkeiten!",
+        "button": "Kampf starten"
       },
       "waitingSubmissions": {
-        "title": "No Waiting Submissions",
-        "description": "You currently have no submissions waiting for opponents."
+        "title": "Keine wartenden Einreichungen",
+        "description": "Sie haben derzeit keine Einreichungen, die auf Gegner warten."
       },
       "completedBattles": {
-        "title": "No Battle History",
-        "description": "Completed battles will appear here. Join new battles to build your history!",
-        "button": "Start Battle",
-        "hint": "Build your battle history by winning more battles!"
+        "title": "Keine Kampfhistorie",
+        "description": "Abgeschlossene Kämpfe werden hier angezeigt. Nehmen Sie an neuen Kämpfen teil, um Ihre Historie aufzubauen!",
+        "button": "Kampf starten",
+        "hint": "Bauen Sie Ihre Kampfhistorie auf, indem Sie mehr Kämpfe gewinnen!"
       },
-      "loadingHistory": "Loading history..."
+      "loadingHistory": "Historie wird geladen..."
     },
     "alerts": {
-      "replayComingSoon": "{{format}} battle replay feature is coming soon."
+      "replayComingSoon": "{{format}} Kampf-Replay-Funktion kommt bald."
     },
     "waitingSubmissionCard": {
       "battleFormats": {
-        "MAIN_BATTLE": "Main Battle",
-        "MINI_BATTLE": "Mini Battle",
-        "THEME_CHALLENGE": "Theme Challenge"
+        "MAIN_BATTLE": "Hauptkampf",
+        "MINI_BATTLE": "Mini-Kampf",
+        "THEME_CHALLENGE": "Themen-Herausforderung"
       },
-      "postedAt": "Posted: {{time}} ago",
-      "searchingOpponent": "Searching for opponent...",
-      "searchingDescription": "We're finding an opponent that matches your skill level. Please wait a moment.",
-      "videoUrl": "Video URL: {{url}}",
-      "withdrawButton": "Withdraw",
-      "withdrawConfirm": "Are you sure you want to withdraw this submission?",
-      "withdrawError": "Failed to withdraw submission"
+      "postedAt": "Gepostet: vor {{time}}",
+      "searchingOpponent": "Suche nach Gegner...",
+      "searchingDescription": "Wir finden einen Gegner, der Ihrem Fähigkeitsniveau entspricht. Bitte warten Sie einen Moment.",
+      "videoUrl": "Video-URL: {{url}}",
+      "withdrawButton": "Zurückziehen",
+      "withdrawConfirm": "Sind Sie sicher, dass Sie diese Einreichung zurückziehen möchten?",
+      "withdrawError": "Fehler beim Zurückziehen der Einreichung"
     }
   },
   "howToGuide": {
-    "title": "How-to Guide",
-    "subtitle": "Master BeatNexus like a pro!",
+    "title": "Anleitung",
+    "subtitle": "Meistern Sie BeatNexus wie ein Profi!",
     "hero": {
-      "title": "Welcome to the World of Beatbox!",
-      "description": "Whether you're a beginner or a pro, this platform will make your beatbox journey more exciting. Let's start this adventure together!"
+      "title": "Willkommen in der Welt des Beatbox!",
+      "description": "Egal ob Sie Anfänger oder Profi sind, diese Plattform wird Ihre Beatbox-Reise aufregender machen. Lassen Sie uns dieses Abenteuer gemeinsam beginnen!"
     },
     "sections": {
       "gettingStarted": {
-        "title": "🚀 Getting Started",
-        "description": "Learn the basics of BeatNexus and start having fun right away!",
+        "title": "🚀 Erste Schritte",
+        "description": "Lernen Sie die Grundlagen von BeatNexus und fangen Sie sofort an, Spaß zu haben!",
         "steps": [
           {
             "icon": "👤",
-            "title": "Create Your Profile",
-            "description": "Express your personality and get ready to join the community!",
+            "title": "Erstellen Sie Ihr Profil",
+            "description": "Drücken Sie Ihre Persönlichkeit aus und machen Sie sich bereit, der Community beizutreten!",
             "details": [
-              "Set a unique username",
-              "Share your favorite styles and goals in your bio",
-              "Show your personality with a profile picture"
+              "Setzen Sie einen einzigartigen Benutzernamen",
+              "Teilen Sie Ihre Lieblingsstile und Ziele in Ihrer Bio",
+              "Zeigen Sie Ihre Persönlichkeit mit einem Profilbild"
             ]
           },
           {
             "icon": "🎬",
-            "title": "Post Your First Video",
-            "description": "It doesn't have to be perfect. Everyone started as a beginner!",
+            "title": "Posten Sie Ihr erstes Video",
+            "description": "Es muss nicht perfekt sein. Jeder hat als Anfänger begonnen!",
             "details": [
-              "Even smartphone recording is enough to get started",
-              "We recommend starting with 30-second mini battles",
-              "Focus on audio quality: record in a quiet place"
+              "Sogar Smartphone-Aufnahmen sind genug, um anzufangen",
+              "Wir empfehlen, mit 30-Sekunden-Mini-Kämpfen zu beginnen",
+              "Konzentrieren Sie sich auf Audioqualität: nehmen Sie an einem ruhigen Ort auf"
             ]
           },
           {
             "icon": "⚔️",
-            "title": "Join Battles",
-            "description": "Auto-matching will find the perfect opponent for you!",
+            "title": "Nehmen Sie an Kämpfen teil",
+            "description": "Auto-Matching findet den perfekten Gegner für Sie!",
             "details": [
-              "Automatic matching with opponents of similar skill level",
-              "Voting period is 5 minutes (previously 7 days)",
-              "Win or lose, it's a valuable experience for growth"
+              "Automatisches Matching mit Gegnern ähnlichen Fähigkeitsniveaus",
+              "Abstimmungsperiode ist 5 Minuten (früher 7 Tage)",
+              "Sieg oder Niederlage, es ist eine wertvolle Erfahrung für Wachstum"
             ]
           }
         ]
       },
       "battleTypes": {
-        "title": "🎯 Battle Types",
-        "description": "Choose from 3 battle formats and find your style!",
-        "tipsLabel": "💡 Tips:",
+        "title": "🎯 Kampftypen",
+        "description": "Wählen Sie aus 3 Kampfformaten und finden Sie Ihren Stil!",
+        "tipsLabel": "💡 Tipps:",
         "types": [
           {
-            "name": "Main Battle",
-            "duration": "60-90 seconds",
+            "name": "Hauptkampf",
+            "duration": "60-90 Sekunden",
             "icon": "👑",
-            "description": "Full-scale battle to showcase your skills thoroughly",
+            "description": "Vollwertiger Kampf, um Ihre Fähigkeiten gründlich zu zeigen",
             "tips": [
-              "Think about structure: intro → development → climax",
-              "Combine various techniques to impress",
-              "Stay focused until the final pose"
+              "Denken Sie an Struktur: Intro → Entwicklung → Höhepunkt",
+              "Kombinieren Sie verschiedene Techniken, um zu beeindrucken",
+              "Bleiben Sie bis zur finalen Pose konzentriert"
             ],
-            "perfect": "Perfect for those who want to show polished performances"
+            "perfect": "Perfekt für diejenigen, die polierte Aufführungen zeigen möchten"
           },
           {
-            "name": "Mini Battle",
-            "duration": "30-45 seconds",
+            "name": "Mini-Kampf",
+            "duration": "30-45 Sekunden",
             "icon": "⚡",
-            "description": "Quick battle condensing your charm in a short time",
+            "description": "Schneller Kampf, der Ihren Charme in kurzer Zeit verdichtet",
             "tips": [
-              "Focus on impact: capture hearts in the first 5 seconds",
-              "Show off your signature moves without holding back",
-              "Every moment counts in this short format"
+              "Konzentrieren Sie sich auf Wirkung: erobern Sie Herzen in den ersten 5 Sekunden",
+              "Zeigen Sie Ihre Signature-Moves ohne Zurückhaltung",
+              "Jeder Moment zählt in diesem kurzen Format"
             ],
-            "perfect": "Perfect for beginners who want to start easily or busy people"
+            "perfect": "Perfekt für Anfänger, die einfach beginnen möchten, oder beschäftigte Menschen"
           },
           {
-            "name": "Theme Challenge",
-            "duration": "flexible",
+            "name": "Themen-Herausforderung",
+            "duration": "flexibel",
             "icon": "🎨",
-            "description": "Creative battle challenging specific techniques or themes",
+            "description": "Kreativer Kampf, der spezifische Techniken oder Themen herausfordert",
             "tips": [
-              "Take a unique approach to the theme",
-              "Don't fear technical challenges",
-              "Value perspectives different from others"
+              "Nehmen Sie einen einzigartigen Ansatz zum Thema",
+              "Fürchten Sie sich nicht vor technischen Herausforderungen",
+              "Schätzen Sie Perspektiven, die sich von anderen unterscheiden"
             ],
-            "perfect": "Perfect for adventurers who want to try new techniques"
+            "perfect": "Perfekt für Abenteurer, die neue Techniken ausprobieren möchten"
           }
         ]
       },
       "votingTips": {
-        "title": "🗳️ Voting Tips",
-        "description": "Become a great voter and energize the community!",
+        "title": "🗳️ Abstimmungstipps",
+        "description": "Werden Sie ein großartiger Wähler und beleben Sie die Community!",
         "guidelines": [
           {
             "icon": "🎵",
-            "title": "Focus on Musicality",
-            "description": "Rhythm, groove, and musical completeness"
+            "title": "Fokus auf Musikalität",
+            "description": "Rhythmus, Groove und musikalische Vollständigkeit"
           },
           {
             "icon": "💫",
-            "title": "Technical Skills",
-            "description": "Precision, difficulty, and variety of techniques"
+            "title": "Technische Fähigkeiten",
+            "description": "Präzision, Schwierigkeit und Vielfalt der Techniken"
           },
           {
             "icon": "🎭",
-            "title": "Entertainment Value",
-            "description": "Fun to watch, moving, memorable"
+            "title": "Unterhaltungswert",
+            "description": "Spaß beim Zusehen, bewegend, einprägsam"
           },
           {
             "icon": "🔥",
-            "title": "Originality",
-            "description": "Creativity, innovation, and personality"
+            "title": "Originalität",
+            "description": "Kreativität, Innovation und Persönlichkeit"
           }
         ],
         "fairPlay": {
-          "title": "Spirit of Fair Play",
+          "title": "Geist des Fair Play",
           "points": [
-            "Judge based on skill, not personal preference",
-            "Watch both videos carefully before voting",
-            "Support with constructive comments",
-            "Always maintain respect"
+            "Beurteilen Sie basierend auf Fähigkeiten, nicht auf persönlichen Vorlieben",
+            "Schauen Sie beide Videos sorgfältig an, bevor Sie abstimmen",
+            "Unterstützen Sie mit konstruktiven Kommentaren",
+            "Bewahren Sie immer Respekt"
           ]
         }
       },
       "community": {
-        "title": "🤝 Enjoy the Community",
-        "description": "Connect with beatboxers worldwide and grow together!",
+        "title": "🤝 Genießen Sie die Community",
+        "description": "Verbinden Sie sich mit Beatboxern weltweit und wachsen Sie gemeinsam!",
         "features": [
           {
             "icon": "💬",
-            "title": "Comment Feature",
-            "description": "Comment on battle videos to deepen interactions",
+            "title": "Kommentar-Funktion",
+            "description": "Kommentieren Sie Kampfvideos, um Interaktionen zu vertiefen",
             "tips": [
-              "Try to give positive feedback",
-              "Mentioning specific techniques is appreciated",
-              "Questions and technical advice are welcome"
+              "Versuchen Sie, positives Feedback zu geben",
+              "Das Erwähnen spezifischer Techniken wird geschätzt",
+              "Fragen und technische Ratschläge sind willkommen"
             ]
           },
           {
             "icon": "🏆",
-            "title": "Ranking System",
-            "description": "Prove your skills with seasonal rankings",
+            "title": "Ranglisten-System",
+            "description": "Beweisen Sie Ihre Fähigkeiten mit saisonalen Ranglisten",
             "tips": [
-              "Consistent participation is key to ranking up",
-              "Not just battle wins, but vote count matters too",
-              "Special rewards at the end of each season"
+              "Konsistente Teilnahme ist der Schlüssel zum Rangaufstieg",
+              "Nicht nur Kampfsiege, sondern auch die Anzahl der Stimmen zählt",
+              "Besondere Belohnungen am Ende jeder Saison"
             ]
           },
           {
             "icon": "👥",
             "title": "Forum",
-            "description": "A place for technical questions and information exchange",
+            "description": "Ein Ort für technische Fragen und Informationsaustausch",
             "tips": [
-              "Beginner questions are very welcome",
-              "Share technique names and practice methods",
-              "Check for regional event information too"
+              "Anfängerfragen sind sehr willkommen",
+              "Teilen Sie Techniknamen und Übungsmethoden",
+              "Überprüfen Sie auch regionale Veranstaltungsinformationen"
             ]
           }
         ]
       },
       "tips": {
-        "title": "🎤 Tips for Improvement",
-        "description": "Pro secrets for leveling up!",
+        "title": "🎤 Tipps zur Verbesserung",
+        "description": "Profi-Geheimnisse für das Levelup!",
         "categories": [
           {
-            "title": "Recording Tips",
+            "title": "Aufnahme-Tipps",
             "icon": "📹",
             "tips": [
-              "Record in bright places (face visibility)",
-              "Fix your phone to prevent shaking",
-              "Not too close, not too far from mic (~30cm)",
-              "Keep background simple (you're the star!)"
+              "Nehmen Sie an hellen Orten auf (Gesichtssichtbarkeit)",
+              "Fixieren Sie Ihr Telefon, um Wackeln zu verhindern",
+              "Nicht zu nah, nicht zu weit vom Mikrofon (~30cm)",
+              "Halten Sie den Hintergrund einfach (Sie sind der Star!)"
             ]
           },
           {
-            "title": "Practice Methods",
+            "title": "Übungsmethoden",
             "icon": "🎯",
             "tips": [
-              "Consistency is key, even if just a little daily",
-              "Learn by watching others' videos",
-              "Record yourself to view objectively",
-              "Have courage to try new techniques"
+              "Konsistenz ist der Schlüssel, auch wenn nur ein wenig täglich",
+              "Lernen Sie, indem Sie Videos anderer ansehen",
+              "Nehmen Sie sich selbst auf, um objektiv zu betrachten",
+              "Haben Sie Mut, neue Techniken auszuprobieren"
             ]
           },
           {
-            "title": "Mindset",
+            "title": "Denkweise",
             "icon": "🧠",
             "tips": [
-              "There's learning even in losses (growth opportunity)",
-              "Don't compare with others, go at your own pace",
-              "Having fun is most important",
-              "Support each other with community members"
+              "Es gibt Lernen auch in Niederlagen (Wachstumschance)",
+              "Vergleichen Sie sich nicht mit anderen, gehen Sie in Ihrem eigenen Tempo",
+              "Spaß zu haben ist am wichtigsten",
+              "Unterstützen Sie einander mit Community-Mitgliedern"
             ]
           }
         ]
       },
       "troubleshooting": {
-        "title": "🔧 FAQ & Troubleshooting",
-        "description": "Check here when you're in trouble!",
+        "title": "🔧 FAQ & Fehlerbehebung",
+        "description": "Schauen Sie hier nach, wenn Sie Probleme haben!",
         "faqs": [
           {
-            "question": "Video upload fails",
-            "answer": "Check file size (75MB or less) and format (MP4, WebM, MOV). Also verify your internet connection."
+            "question": "Video-Upload schlägt fehl",
+            "answer": "Überprüfen Sie Dateigröße (75MB oder weniger) und Format (MP4, WebM, MOV). Überprüfen Sie auch Ihre Internetverbindung."
           },
           {
-            "question": "Matching takes a long time",
-            "answer": "We're looking for opponents with matching skill levels, which may take some time. Popular hours tend to match faster."
+            "question": "Matching dauert lange",
+            "answer": "Wir suchen nach Gegnern mit passendem Fähigkeitsniveau, was einige Zeit dauern kann. Beliebte Stunden neigen dazu, schneller zu matchen."
           },
           {
-            "question": "I missed the voting period",
-            "answer": "The voting period is only 5 minutes, so we recommend turning on notifications."
+            "question": "Ich habe die Abstimmungsperiode verpasst",
+            "answer": "Die Abstimmungsperiode beträgt nur 5 Minuten, daher empfehlen wir, Benachrichtigungen einzuschalten."
           },
           {
-            "question": "My video won't play",
-            "answer": "Try refreshing your browser or using a different browser. If it still doesn't work, contact support."
+            "question": "Mein Video spielt nicht ab",
+            "answer": "Versuchen Sie, Ihren Browser zu aktualisieren oder einen anderen Browser zu verwenden. Wenn es immer noch nicht funktioniert, kontaktieren Sie den Support."
           }
         ],
         "support": {
-          "title": "If it still doesn't resolve...",
-          "description": "Our support team will sincerely help you!",
-          "contact": "Contact Us"
+          "title": "Wenn es sich immer noch nicht löst...",
+          "description": "Unser Support-Team wird Ihnen aufrichtig helfen!",
+          "contact": "Kontaktieren Sie uns"
         }
       }
     },
     "cta": {
-              "title": "Ready to dive into the beatbox world!",
-      "description": "You're all set. It's time to make your sound resonate across the world.",
-      "startButton": "Start Your First Battle",
-      "exploreButton": "Explore Other Battles"
+      "title": "Bereit, in die Beatbox-Welt einzutauchen!",
+      "description": "Sie sind bereit. Es ist Zeit, Ihren Sound über die Welt klingen zu lassen.",
+      "startButton": "Starten Sie Ihren ersten Kampf",
+      "exploreButton": "Erkunden Sie andere Kämpfe"
     }
   },
   "tournament": {
-    "comingSoonPage": {
-      "title": "Tournament",
-      "subtitle": "Coming soon"
-    }
-  },
-  "comingSoon": {
-    "title": "Coming Soon",
-    "subtitle": "We're crafting an amazing How-to Guide for you! Learn everything about BeatNexus in an easy-to-follow format.",
-    "features": {
-      "stepByStep": "Step by Step",
-      "stepByStepDesc": "Detailed guides perfect for beginners",
-      "proTips": "Pro Tips",
-      "proTipsDesc": "Advanced techniques and strategies",
-      "videoGuides": "Video Guides",
-      "videoGuidesDesc": "Watch and learn with video tutorials"
-    },
-    "launch": {
-      "title": "🚀 Coming Soon",
-      "description": "We're working hard to bring you the best guide experience. Stay tuned!"
-    },
-    "meanwhile": "In the meantime, why not explore some battles?",
-    "exploreBattles": "Explore Battles"
-  },
-  "tournament": {
-    "title": "Tournament",
-    "subtitle": "The Ultimate Seasonal Showdown",
-    "comingSoon": "🔥 Coming Soon 🔥",
+    "title": "Turnier",
+    "subtitle": "Der ultimative saisonale Showdown",
+    "comingSoon": "🔥 Kommt bald 🔥",
     "features": {
       "eliteOnly": {
-        "title": "Elite Only",
-        "description": "Exclusive tournament for top-ranked players of the season. Face off against the highest level beatboxers."
+        "title": "Nur Elite",
+        "description": "Exklusives Turnier für Top-Ranglisten-Spieler der Saison. Treten Sie gegen die höchstrangigen Beatboxer an."
       },
       "seasonal": {
-        "title": "Seasonal Format",
-        "description": "Large-scale tournaments held every 3 months. New champions emerge with each season."
+        "title": "Saisonales Format",
+        "description": "Große Turniere alle 3 Monate. Neue Champions entstehen mit jeder Saison."
       },
       "bigPrizes": {
-        "title": "Amazing Prizes",
-        "description": "Winners receive exclusive trophies and special titles. Great rewards await top finishers."
+        "title": "Erstaunliche Preise",
+        "description": "Gewinner erhalten exklusive Trophäen und spezielle Titel. Große Belohnungen warten auf die Bestplatzierten."
       }
     },
     "structure": {
-      "title": "Tournament Structure",
+      "title": "Turnierstruktur",
       "step1": {
-        "title": "Qualifying Round",
-        "description": "Top 32 players from season rankings participate. 1v1 battle format determines winners."
+        "title": "Qualifikationsrunde",
+        "description": "Top 32 Spieler aus Saison-Ranglisten nehmen teil. 1v1 Kampfformat bestimmt Gewinner."
       },
       "step2": {
-        "title": "Main Tournament",
-        "description": "16 qualified players battle in the main event. Double elimination format."
+        "title": "Hauptturnier",
+        "description": "16 qualifizierte Spieler kämpfen im Hauptevent. Double-Elimination-Format."
       },
       "step3": {
-        "title": "Grand Final",
-        "description": "The ultimate showdown between the final 2 players. The battle to crown the true BeatNexus champion."
+        "title": "Großfinale",
+        "description": "Der ultimative Showdown zwischen den letzten 2 Spielern. Der Kampf um die Krönung des wahren BeatNexus-Champions."
       }
     },
     "launch": {
-      "title": "🏆 Season 1 Tournament in Preparation",
-      "description": "We're currently preparing for our inaugural tournament. Climb the season rankings to earn your spot in the tournament!",
-      "checkRankings": "Check Rankings",
-      "practiceNow": "Practice Now"
+      "title": "🏆 Saison 1 Turnier in Vorbereitung",
+      "description": "Wir bereiten derzeit unser erstes Turnier vor. Klettern Sie in den Saison-Ranglisten, um sich Ihren Platz im Turnier zu verdienen!",
+      "checkRankings": "Ranglisten überprüfen",
+      "practiceNow": "Jetzt üben"
+    },
+    "comingSoonPage": {
+      "title": "Turnier",
+      "subtitle": "Kommt bald"
     }
   },
+  "comingSoon": {
+    "title": "Kommt bald",
+    "subtitle": "Wir erstellen eine erstaunliche Anleitung für Sie! Lernen Sie alles über BeatNexus in einem leicht verständlichen Format.",
+    "features": {
+      "stepByStep": "Schritt für Schritt",
+      "stepByStepDesc": "Detaillierte Anleitungen perfekt für Anfänger",
+      "proTips": "Profi-Tipps",
+      "proTipsDesc": "Fortgeschrittene Techniken und Strategien",
+      "videoGuides": "Video-Anleitungen",
+      "videoGuidesDesc": "Schauen und lernen Sie mit Video-Tutorials"
+    },
+    "launch": {
+      "title": "🚀 Kommt bald",
+      "description": "Wir arbeiten hart daran, Ihnen die beste Anleitung-Erfahrung zu bringen. Bleiben Sie dran!"
+    },
+    "meanwhile": "In der Zwischenzeit, warum erkunden Sie nicht einige Kämpfe?",
+    "exploreBattles": "Kämpfe erkunden"
+  },
   "faq": {
-    "title": "Frequently Asked Questions",
-    "subtitle": "Find answers to common questions about BeatNexus.",
+    "title": "Häufig gestellte Fragen",
+    "subtitle": "Finden Sie Antworten auf häufige Fragen zu BeatNexus.",
     "categories": {
-      "gettingStarted": "Getting Started",
-      "battles": "Battles",
-      "technical": "Technical",
+      "gettingStarted": "Erste Schritte",
+      "battles": "Kämpfe",
+      "technical": "Technisch",
       "community": "Community"
     },
     "items": {
       "howToStart": {
-        "question": "How do I get started with BeatNexus?",
-        "answer": "Simply create an account and set up your profile to get started. Begin by watching other battles and voting to get familiar with the platform. When you're ready, upload a video to participate in battles."
+        "question": "Wie fange ich mit BeatNexus an?",
+        "answer": "Erstellen Sie einfach ein Konto und richten Sie Ihr Profil ein, um zu beginnen. Beginnen Sie damit, andere Kämpfe anzusehen und abzustimmen, um sich mit der Plattform vertraut zu machen. Wenn Sie bereit sind, laden Sie ein Video hoch, um an Kämpfen teilzunehmen."
       },
       "isFree": {
-        "question": "Is BeatNexus free to use?",
-        "answer": "Yes, BeatNexus is completely free to use for all core features. You can post battles, watch others, and vote without any cost."
+        "question": "Ist BeatNexus kostenlos zu nutzen?",
+        "answer": "Ja, BeatNexus ist für alle Kernfunktionen völlig kostenlos zu nutzen. Sie können Kämpfe posten, andere ansehen und abstimmen, ohne dass Kosten anfallen."
       },
       "beginnerFriendly": {
-        "question": "Can beginners participate?",
-        "answer": "Absolutely! BeatNexus welcomes beatboxers of all skill levels, from beginners to professionals. Our rating system ensures you're matched with opponents at your skill level."
+        "question": "Können Anfänger teilnehmen?",
+        "answer": "Absolut! BeatNexus begrüßt Beatboxer aller Fähigkeitsniveaus, von Anfängern bis zu Profis. Unser Bewertungssystem stellt sicher, dass Sie mit Gegnern auf Ihrem Fähigkeitsniveau gematcht werden."
       },
       "battleTypes": {
-        "question": "What types of battles are available?",
-        "answer": "Currently, only Main Battle format is available. This is a 60-120 second battle format where you can showcase your skills thoroughly."
+        "question": "Welche Arten von Kämpfen sind verfügbar?",
+        "answer": "Derzeit ist nur das Hauptkampf-Format verfügbar. Dies ist ein 60-120 Sekunden Kampfformat, in dem Sie Ihre Fähigkeiten gründlich zeigen können."
       },
       "votingPeriod": {
-        "question": "How long is the voting period?",
-        "answer": "The voting period is 5 days. You have 5 days to cast your vote after the battle goes live. Results are announced once voting closes."
+        "question": "Wie lange ist die Abstimmungsperiode?",
+        "answer": "Die Abstimmungsperiode beträgt 5 Tage. Sie haben 5 Tage Zeit, Ihre Stimme abzugeben, nachdem der Kampf live geht. Ergebnisse werden bekannt gegeben, sobald die Abstimmung geschlossen ist."
       },
       "matching": {
-        "question": "How are opponents matched?",
-        "answer": "We use a rating system to automatically find opponents close to your skill level. Our waiting pool system ensures fairer matches by considering rating differences."
+        "question": "Wie werden Gegner gematcht?",
+        "answer": "Wir verwenden ein Bewertungssystem, um automatisch Gegner nahe Ihrem Fähigkeitsniveau zu finden. Unser Warteschlangen-System sorgt für fairere Matches, indem es Bewertungsunterschiede berücksichtigt."
       },
       "showFace": {
-        "question": "Do I need to show my face?",
-        "answer": "Showing your face is optional. However, showing your mouth area is recommended as it may help with better evaluation. Record in whatever way makes you comfortable."
+        "question": "Muss ich mein Gesicht zeigen?",
+        "answer": "Das Zeigen Ihres Gesichts ist optional. Jedoch wird das Zeigen Ihres Mundbereichs empfohlen, da es bei einer besseren Bewertung helfen kann. Nehmen Sie auf, wie es für Sie bequem ist."
       },
       "videoFormats": {
-        "question": "What video formats are supported?",
-        "answer": "We support MP4, WebM, and MOV formats. File size must be under 2GB. For the best beatbox experience, we recommend recording with high video quality and crystal-clear audio."
+        "question": "Welche Videoformate werden unterstützt?",
+        "answer": "Wir unterstützen MP4, WebM und MOV Formate. Dateigröße muss unter 2GB sein. Für die beste Beatbox-Erfahrung empfehlen wir, mit hoher Videoqualität und kristallklarem Audio aufzunehmen."
       },
       "uploadFailed": {
-        "question": "My video upload is failing",
-        "answer": "Check that your file size is under 2GB and format is MP4, WebM, or MOV. Also verify your internet connection and try refreshing your browser."
+        "question": "Mein Video-Upload schlägt fehl",
+        "answer": "Überprüfen Sie, dass Ihre Dateigröße unter 2GB ist und das Format MP4, WebM oder MOV ist. Überprüfen Sie auch Ihre Internetverbindung und versuchen Sie, Ihren Browser zu aktualisieren."
       },
       "mobile": {
-        "question": "Can I use BeatNexus on mobile?",
-        "answer": "Yes, BeatNexus supports PWA (Progressive Web App). You can add it to your home screen for a native app experience on mobile devices."
+        "question": "Kann ich BeatNexus auf dem Handy nutzen?",
+        "answer": "Ja, BeatNexus unterstützt PWA (Progressive Web App). Sie können es zu Ihrem Startbildschirm hinzufügen für eine native App-Erfahrung auf mobilen Geräten."
       },
       "battleFormat": {
-        "question": "What is the battle format?",
-        "answer": "• Video must be 60-120 seconds (1-2 minutes) long\n• Greeting with \"BeatNexus\" at the beginning is required\n• Simultaneous audio-video recording (no lip sync)\n• Real-time audio only (no samples or backing tracks)\n• Basic audio processing is allowed (EQ, compression, reverb)\n• Face showing is optional, mouth area is recommended"
+        "question": "Was ist das Kampfformat?",
+        "answer": "• Video muss 60-120 Sekunden (1-2 Minuten) lang sein\n• Begrüßung mit \"BeatNexus\" am Anfang ist erforderlich\n• Gleichzeitige Audio-Video-Aufnahme (keine Lippensynchronisation)\n• Nur Echtzeit-Audio (keine Samples oder Backing-Tracks)\n• Grundlegende Audioverarbeitung ist erlaubt (EQ, Kompression, Reverb)\n• Gesicht zeigen ist optional, Mundbereich wird empfohlen"
       },
       "ranking": {
-        "question": "How does the ranking system work?",
-        "answer": "We use an Elo rating system. Winning increases your rating while losing decreases it. Rankings reset each season, and top players can participate in tournaments."
+        "question": "Wie funktioniert das Ranglisten-System?",
+        "answer": "Wir verwenden ein Elo-Bewertungssystem. Gewinnen erhöht Ihre Bewertung, während Verlieren sie senkt. Ranglisten werden jede Saison zurückgesetzt, und Top-Spieler können an Turnieren teilnehmen."
       },
       "prohibited": {
-        "question": "What is not allowed?",
-        "answer": "Background music, backing tracks, and copyrighted content are prohibited. Inappropriate content or behavior that makes others uncomfortable is also not allowed."
+        "question": "Was ist nicht erlaubt?",
+        "answer": "Hintergrundmusik, Backing-Tracks und urheberrechtlich geschützte Inhalte sind verboten. Unangemessene Inhalte oder Verhalten, das andere unwohl fühlen lässt, ist auch nicht erlaubt."
       }
     },
     "stillNeedHelp": {
-      "title": "Still need help?",
-      "description": "If you have questions not covered here or need assistance, feel free to reach out to us.",
-      "contactSupport": "Contact Support",
-      "readGuide": "Read Guide"
+      "title": "Brauchen Sie noch Hilfe?",
+      "description": "Wenn Sie Fragen haben, die hier nicht behandelt werden, oder Hilfe benötigen, können Sie sich gerne an uns wenden.",
+      "contactSupport": "Support kontaktieren",
+      "readGuide": "Anleitung lesen"
     }
   },
   "notifications": {
-    "title": "Notifications",
-    "empty": "No new notifications",
-    "markAllRead": "Delete all",
-    "viewAll": "View all",
+    "title": "Benachrichtigungen",
+    "empty": "Keine neuen Benachrichtigungen",
+    "markAllRead": "Alle löschen",
+    "viewAll": "Alle anzeigen",
     "timeAgo": {
-      "justNow": "Just now",
-      "minutes": "{{count}}m ago",
-      "hours": "{{count}}h ago",
-      "days": "{{count}}d ago"
+      "justNow": "Gerade eben",
+      "minutes": "vor {{count}}min",
+      "hours": "vor {{count}}h",
+      "days": "vor {{count}}T"
     },
     "battleMatched": {
-      "title": "Battle Match Found!",
-      "message": "An opponent has been found. Your battle has started!"
+      "title": "Kampf-Match gefunden!",
+      "message": "Ein Gegner wurde gefunden. Ihr Kampf hat begonnen!"
     },
     "battleCompleted": {
-      "title": "Battle Results Announced!",
-      "winMessage": "Congratulations! You won the battle!",
-      "loseMessage": "Good effort! Better luck next time!",
-      "drawMessage": "It's a draw! Great battle!"
+      "title": "Kampfergebnisse verkündet!",
+      "winMessage": "Glückwunsch! Sie haben den Kampf gewonnen!",
+      "loseMessage": "Gute Anstrengung! Mehr Glück beim nächsten Mal!",
+      "drawMessage": "Es ist ein Unentschieden! Großartiger Kampf!"
     }
   },
   "latestBattles": {
-    "title": "Latest Battles",
-    "description": "Vote on your favorite performances",
-    "createBattle": "Create Battle",
-    "loading": "Loading battles...",
+    "title": "Neueste Kämpfe",
+    "description": "Stimmen Sie für Ihre Lieblings-Aufführungen ab",
+    "createBattle": "Kampf erstellen",
+    "loading": "Kämpfe werden geladen...",
     "error": {
-      "title": "Error Loading Battles",
-      "tryAgain": "Try Again"
+      "title": "Fehler beim Laden der Kämpfe",
+      "tryAgain": "Erneut versuchen"
     },
     "noBattles": {
-      "title": "No Battles Yet",
-      "description": "Be the first to create a battle and start the competition!",
-      "createFirst": "Create Your First Battle"
+      "title": "Noch keine Kämpfe",
+      "description": "Seien Sie der Erste, der einen Kampf erstellt und den Wettbewerb startet!",
+      "createFirst": "Erstellen Sie Ihren ersten Kampf"
     },
-    "viewMore": "View More Battles",
+    "viewMore": "Mehr Kämpfe anzeigen",
     "ranking": {
-      "title": "Top Rankings",
-      "viewAll": "View All",
+      "title": "Top-Ranglisten",
+      "viewAll": "Alle anzeigen",
       "noRankings": {
-        "title": "No Rankings Yet",
-        "description": "Rankings will appear as users participate in battles"
+        "title": "Noch keine Ranglisten",
+        "description": "Ranglisten erscheinen, sobald Benutzer an Kämpfen teilnehmen"
       },
-      "seasonEnds": "Season ends in {{days}} days"
+      "seasonEnds": "Saison endet in {{days}} Tagen"
     }
   },
   "archive": {
-    "title": "Archive Feature",
-    "description": "Preserve important battles permanently",
-    "limit": "Up to 3 per month",
+    "title": "Archiv-Funktion",
+    "description": "Bewahren Sie wichtige Kämpfe dauerhaft auf",
+    "limit": "Bis zu 3 pro Monat",
     "status": {
-      "title": "Archive Usage",
-      "usage": "This month's usage",
-      "remaining": "Remaining",
+      "title": "Archiv-Nutzung",
+      "usage": "Nutzung dieses Monats",
+      "remaining": "Verbleibend",
       "limit": "Limit"
     },
     "button": {
-      "archive": "Archive",
-      "archived": "Archived",
-      "processing": "Processing..."
+      "archive": "Archivieren",
+      "archived": "Archiviert",
+      "processing": "Wird verarbeitet..."
     },
     "info": {
-      "title": "About Archive Feature",
-      "important": "Important",
-      "deletionWarning": "Videos are automatically deleted 3 days after battle completion.",
+      "title": "Über die Archiv-Funktion",
+      "important": "Wichtig",
+      "deletionWarning": "Videos werden automatisch 3 Tage nach Kampfabschluss gelöscht.",
       "features": {
-        "title": "Features:",
-        "preserve": "• Permanently preserve important battle videos",
-        "limit": "• Up to 3 archives per month",
-        "history": "• Battle history and rating changes are always retained"
+        "title": "Funktionen:",
+        "preserve": "• Wichtige Kampfvideos dauerhaft bewahren",
+        "limit": "• Bis zu 3 Archive pro Monat",
+        "history": "• Kampfhistorie und Bewertungsänderungen werden immer beibehalten"
       }
     },
     "messages": {
       "success": {
-        "archived": "Battle archived successfully",
-        "unarchived": "Archive removed successfully"
+        "archived": "Kampf erfolgreich archiviert",
+        "unarchived": "Archiv erfolgreich entfernt"
       },
       "error": {
-        "limitReached": "Monthly archive limit reached (3/3)",
-        "notFound": "Battle not found",
-        "alreadyArchived": "Already archived",
-        "failed": "Archive operation failed"
+        "limitReached": "Monatliches Archiv-Limit erreicht (3/3)",
+        "notFound": "Kampf nicht gefunden",
+        "alreadyArchived": "Bereits archiviert",
+        "failed": "Archiv-Operation fehlgeschlagen"
       }
     }
   },
   "battleReplay": {
-    "title": "Battle Replay",
-    "backButton": "Back",
+    "title": "Kampf-Wiederholung",
+    "backButton": "Zurück",
     "notFound": {
-      "title": "Battle Not Found",
-      "description": "The battle replay you are looking for does not exist or has been deleted.",
-      "backButton": "Back",
-      "myBattlesButton": "Go to My Battles"
+      "title": "Kampf nicht gefunden",
+      "description": "Die gesuchte Kampf-Wiederholung existiert nicht oder wurde gelöscht.",
+      "backButton": "Zurück",
+      "myBattlesButton": "Zu meinen Kämpfen"
     },
     "result": {
-      "battleResult": "Battle Result"
+      "battleResult": "Kampfergebnis"
     },
     "playerInfo": {
-      "playerA": "Player A",
-      "playerB": "Player B",
-      "totalVotes": "Total Votes"
+      "playerA": "Spieler A",
+      "playerB": "Spieler B",
+      "totalVotes": "Gesamtstimmen"
     },
     "videoNotAvailable": {
-      "title": "Video Not Saved",
-      "participantMessage": "This video was not archived and cannot be displayed.",
-      "nonParticipantMessage": "You need to be a participant of this battle to view the videos."
+      "title": "Video nicht gespeichert",
+      "participantMessage": "Dieses Video wurde nicht archiviert und kann nicht angezeigt werden.",
+      "nonParticipantMessage": "Sie müssen ein Teilnehmer dieses Kampfes sein, um die Videos zu sehen."
     },
     "videoDeleted": {
-      "title": "Video Deleted",
-      "description": "This account's video has been deleted and cannot be played. Battle history and rating changes are still recorded."
+      "title": "Video gelöscht",
+      "description": "Das Video dieses Kontos wurde gelöscht und kann nicht abgespielt werden. Kampfhistorie und Bewertungsänderungen sind weiterhin aufgezeichnet."
     },
-    "videoNotSupported": "Your browser does not support video playback.",
-    "videoError": "Failed to load video",
-    "finalResults": "Final Results",
-    "archived": "Archived"
+    "videoNotSupported": "Ihr Browser unterstützt die Videowiedergabe nicht.",
+    "videoError": "Fehler beim Laden des Videos",
+    "finalResults": "Endergebnisse",
+    "archived": "Archiviert"
   },
   "pagination": {
-    "previous": "Previous",
-    "next": "Next",
-    "page": "Page",
-    "of": "of",
-    "goToPage": "Go to page:",
-    "showing": "Showing {{start}}-{{end}} of {{total}} results",
-    "noResults": "No results found"
+    "previous": "Vorherige",
+    "next": "Nächste",
+    "page": "Seite",
+    "of": "von",
+    "goToPage": "Zur Seite gehen:",
+    "showing": "Zeige {{start}}-{{end}} von {{total}} Ergebnissen",
+    "noResults": "Keine Ergebnisse gefunden"
   },
   "onboarding": {
     "slide1": {
-      "welcome": "Welcome",
-      "title": "to BeatNexus.",
-      "description": "This is a new legendary stage where beatboxers from around the world clash with their skills and souls."
+      "welcome": "Willkommen",
+      "title": "bei BeatNexus.",
+      "description": "Dies ist eine neue legendäre Bühne, auf der Beatboxer aus aller Welt mit ihren Fähigkeiten und Seelen aufeinanderprallen."
     },
     "slide2": {
-      "title": "The way to battle is\nsurprisingly simple.",
-      "description": "Upload a video, and the system automatically matches you with opponents. Victory is determined by community votes.",
-      "videoAlt": "Your browser does not support video playback."
+      "title": "Der Weg zum Kampf ist\nüberraschend einfach.",
+      "description": "Laden Sie ein Video hoch, und das System matched Sie automatisch mit Gegnern. Der Sieg wird durch Community-Abstimmungen bestimmt.",
+      "videoAlt": "Ihr Browser unterstützt die Videowiedergabe nicht."
     },
     "slide3": {
-      "title": "Multiple paths\nto glory.",
-      "description": "The path to becoming the top player in rankings. And the path to becoming an 'Official Judge' who determines victory with excellent aesthetic sense. Which legend will you carve?"
+      "title": "Mehrere Wege\nzum Ruhm.",
+      "description": "Der Weg, der Top-Spieler in Ranglisten zu werden. Und der Weg, ein 'Offizieller Richter' zu werden, der den Sieg mit exzellentem ästhetischen Sinn bestimmt. Welche Legende werden Sie erschaffen?"
     },
     "slide4": {
-      "title": "Profile Setup",
+      "title": "Profil-Einrichtung",
       "avatar": {
-        "title": "Profile Picture",
-        "description": "Express your personality with your profile picture and bio. You can change these later in settings."
+        "title": "Profilbild",
+        "description": "Drücken Sie Ihre Persönlichkeit mit Ihrem Profilbild und Ihrer Bio aus. Sie können diese später in den Einstellungen ändern."
       },
       "bio": {
         "title": "Bio",
-        "placeholder": "Tell others about yourself, your style, and what makes you unique...",
-        "saveButton": "Save",
-        "saving": "Saving...",
-        "saveSuccess": "Saved",
-        "characterCount": "{{count}}/200 characters"
+        "placeholder": "Erzählen Sie anderen von sich, Ihrem Stil und was Sie einzigartig macht...",
+        "saveButton": "Speichern",
+        "saving": "Wird gespeichert...",
+        "saveSuccess": "Gespeichert",
+        "characterCount": "{{count}}/200 Zeichen"
       }
     },
     "slide5": {
-      "title": "Ready to begin.",
-      "description": "Your first battle starts now.",
-      "clickToStart": "↑ Click to start battle"
+      "title": "Bereit zu beginnen.",
+      "description": "Ihr erster Kampf beginnt jetzt.",
+      "clickToStart": "↑ Klicken zum Kampf starten"
     },
     "avatarSetup": {
-      "title": "Set Your Profile Picture"
+      "title": "Setzen Sie Ihr Profilbild"
     },
-    "skipTour": "Skip",
-    "previous": "Back",
-    "close": "Close",
-    "getStarted": "Get Started"
+    "skipTour": "Überspringen",
+    "previous": "Zurück",
+    "close": "Schließen",
+    "getStarted": "Loslegen"
   },
-  "profile": "View Profile",
-  "editProfile": "Edit Profile",
+  "profile": "Profil anzeigen",
+  "editProfile": "Profil bearbeiten",
   "voteCommentModal": {
-    "title": "Vote for {{player}}",
-    "subtitle": "Vote for {{playerName}}",
-    "description": "You can add a comment or vote directly.",
-    "commentLabel": "Comment (Optional)",
-    "commentPlaceholder": "Share your thoughts about {{player}}...",
-    "commentRequired": "A comment is required for comment voting",
-    "voteButton": "Vote",
-    "voting": "Voting...",
-    "characterCount": "{{count}}/500 characters",
-    "close": "Close",
-    "templateTitle": "Choose a Template",
+    "title": "Für {{player}} abstimmen",
+    "subtitle": "Für {{playerName}} abstimmen",
+    "description": "Sie können einen Kommentar hinzufügen oder direkt abstimmen.",
+    "commentLabel": "Kommentar (Optional)",
+    "commentPlaceholder": "Teilen Sie Ihre Gedanken über {{player}}...",
+    "commentRequired": "Ein Kommentar ist für Kommentar-Abstimmung erforderlich",
+    "voteButton": "Abstimmen",
+    "voting": "Wird abgestimmt...",
+    "characterCount": "{{count}}/500 Zeichen",
+    "close": "Schließen",
+    "templateTitle": "Vorlage wählen",
     "templates": [
-      "OMG!! This is incredible🔥",
-      "Got goosebumps!⚡",
-      "So freaking cool!✨",
-      "This person is a genius🎵",
-      "The technique is absolutely perfect",
-      "Rhythm control is godlike"
+      "OMG!! Das ist unglaublich🔥",
+      "Bekomme Gänsehaut!⚡",
+      "So verdammt cool!✨",
+      "Diese Person ist ein Genie🎵",
+      "Die Technik ist absolut perfekt",
+      "Rhythmus-Kontrolle ist göttlich"
     ],
-    "commentVote": "Vote with Comment",
-    "simpleVote": "Vote Only",
+    "commentVote": "Mit Kommentar abstimmen",
+    "simpleVote": "Nur abstimmen",
     "commentVotePoints": "+300VP",
     "simpleVotePoints": "+100VP"
   },
   "auth": {
-    "phoneNumber": "Phone Number",
-    "phoneRequirement": "We require a valid phone number to keep our voting system honorable!",
-    "phoneVerify": "Verify Phone Number",
-    "phoneVerifyCodePlaceholder": "Enter verification code",
-    "phoneVerifyCodeButton": "Verify",
-    "phoneVerified": "Phone number verified!",
+    "phoneNumber": "Telefonnummer",
+    "phoneRequirement": "Wir benötigen eine gültige Telefonnummer, um unser Abstimmungssystem ehrenhaft zu halten!",
+    "phoneVerify": "Telefonnummer verifizieren",
+    "phoneVerifyCodePlaceholder": "Bestätigungscode eingeben",
+    "phoneVerifyCodeButton": "Verifizieren",
+    "phoneVerified": "Telefonnummer verifiziert!",
     "error": {
-      "invalidPhone": "Phone number is required",
-      "verificationFailed": "Phone verification failed: {{error}}",
-      "phoneAlreadyRegistered": "This phone number is already registered with another account. Please try a different phone number.",
-      "systemError": "A system error occurred. Please try again later.",
-      "invalidOtpCode": "The verification code is incorrect.",
-      "authenticationError": "An authentication error occurred.",
-      "recordError": "Failed to record phone number verification.",
-      "emailNotPreregistered": "This email address is not registered. Please check the email address you were invited with.",
-      "preregistrationCheckFailed": "Failed to verify pre-registration. Please try again later.",
-      "emailRequired": "Email address is required",
-      "resetEmailFailed": "Failed to send reset email",
-      "passwordTooWeak": "Password is too weak",
-      "passwordUpdateFailed": "Failed to update password",
-      "usernameInvalidChars": "Username can only contain letters, numbers, underscores (_), and hyphens (-)",
-      "usernameAlreadyExists": "This username is already taken. Please try a different username.",
-      "usernameInvalidLength": "Username must be between 3 and 30 characters long.",
-      "emailAlreadyExists": "This email address is already registered.",
-      "databaseError": "A database error occurred. Please try again later.",
-      "signupDisabled": "New registrations are currently temporarily disabled.",
-      "invalidCredentials": "Invalid email or password."
+      "invalidPhone": "Telefonnummer ist erforderlich",
+      "verificationFailed": "Telefonverifizierung fehlgeschlagen: {{error}}",
+      "phoneAlreadyRegistered": "Diese Telefonnummer ist bereits bei einem anderen Konto registriert. Bitte versuchen Sie eine andere Telefonnummer.",
+      "systemError": "Ein Systemfehler ist aufgetreten. Bitte versuchen Sie es später erneut.",
+      "invalidOtpCode": "Der Bestätigungscode ist falsch.",
+      "authenticationError": "Ein Authentifizierungsfehler ist aufgetreten.",
+      "recordError": "Fehler beim Aufzeichnen der Telefonverifizierung.",
+      "emailNotPreregistered": "Diese E-Mail-Adresse ist nicht registriert. Bitte überprüfen Sie die E-Mail-Adresse, mit der Sie eingeladen wurden.",
+      "preregistrationCheckFailed": "Fehler bei der Überprüfung der Vorab-Registrierung. Bitte versuchen Sie es später erneut.",
+      "emailRequired": "E-Mail-Adresse ist erforderlich",
+      "resetEmailFailed": "Fehler beim Senden der Reset-E-Mail",
+      "passwordTooWeak": "Passwort ist zu schwach",
+      "passwordUpdateFailed": "Fehler beim Aktualisieren des Passworts",
+      "usernameInvalidChars": "Benutzername kann nur Buchstaben, Zahlen, Unterstriche (_) und Bindestriche (-) enthalten",
+      "usernameAlreadyExists": "Dieser Benutzername ist bereits vergeben. Bitte versuchen Sie einen anderen Benutzernamen.",
+      "usernameInvalidLength": "Benutzername muss zwischen 3 und 30 Zeichen lang sein.",
+      "emailAlreadyExists": "Diese E-Mail-Adresse ist bereits registriert.",
+      "databaseError": "Ein Datenbankfehler ist aufgetreten. Bitte versuchen Sie es später erneut.",
+      "signupDisabled": "Neue Registrierungen sind derzeit vorübergehend deaktiviert.",
+      "invalidCredentials": "Ungültige E-Mail oder Passwort."
     },
-    "signIn": "Sign In",
-    "createAccount": "Create Account",
-    "username": "Username",
-    "usernamePlaceholder": "Choose a username",
-    "email": "Email",
-    "emailPlaceholder": "Enter your email",
-    "password": "Password",
-    "passwordPlaceholder": "Enter your password",
-    "passwordRequirement": "Password must be at least 6 characters long",
-    "usernameRequirement": "Username must be between 3 and 30 characters",
-    "usernameDescription": "3-30 chars, letters/numbers/underscore/hyphen only",
-    "confirmPassword": "Confirm Password",
-    "confirmPasswordPlaceholder": "Re-enter your password",
-    "passwordMismatch": "Passwords do not match",
-    "rememberMe": "Remember me",
-    "sending": "Sending...",
-    "verifying": "Verifying...",
-    "signingIn": "Signing In...",
-    "creatingAccount": "Creating Account...",
-    "confirmEmailTitle": "Confirm Your Email",
-    "confirmEmailDescription": "We've sent a confirmation link to <strong>{{email}}</strong>. Please check your inbox (and spam folder) to complete your registration.",
-    "gotIt": "Got it!",
-    "country": "Country",
-    "forgotPassword": "Forgot Password?",
-    "resetPassword": "Reset Password",
-    "resetPasswordDescription": "Enter your registered email address. We'll send you a password reset link.",
-    "sendResetEmail": "Send Reset Email",
-    "sendingResetEmail": "Sending...",
-    "resetEmailSent": "Email Sent",
-    "resetEmailSentDescription": "We've sent a password reset link to {{email}}. Please check your email.",
-    "backToLogin": "Back to Login",
-    "setNewPassword": "Set New Password",
-    "setNewPasswordDescription": "Enter your new password.",
-    "newPassword": "New Password",
-    "confirmNewPassword": "Confirm New Password",
-    "newPasswordPlaceholder": "Enter new password",
-    "confirmNewPasswordPlaceholder": "Re-enter new password",
-    "updatePassword": "Update Password",
-    "updatingPassword": "Updating...",
-    "passwordResetSuccess": "Password reset successfully",
+    "signIn": "Anmelden",
+    "createAccount": "Konto erstellen",
+    "username": "Benutzername",
+    "usernamePlaceholder": "Benutzername wählen",
+    "email": "E-Mail",
+    "emailPlaceholder": "E-Mail eingeben",
+    "password": "Passwort",
+    "passwordPlaceholder": "Passwort eingeben",
+    "passwordRequirement": "Passwort muss mindestens 6 Zeichen lang sein",
+    "usernameRequirement": "Benutzername muss zwischen 3 und 30 Zeichen lang sein",
+    "usernameDescription": "3-30 Zeichen, nur Buchstaben/Zahlen/Unterstrich/Bindestrich",
+    "confirmPassword": "Passwort bestätigen",
+    "confirmPasswordPlaceholder": "Passwort erneut eingeben",
+    "passwordMismatch": "Passwörter stimmen nicht überein",
+    "rememberMe": "Angemeldet bleiben",
+    "sending": "Wird gesendet...",
+    "verifying": "Wird verifiziert...",
+    "signingIn": "Wird angemeldet...",
+    "creatingAccount": "Konto wird erstellt...",
+    "confirmEmailTitle": "E-Mail bestätigen",
+    "confirmEmailDescription": "Wir haben einen Bestätigungslink an <strong>{{email}}</strong> gesendet. Bitte überprüfen Sie Ihren Posteingang (und Spam-Ordner), um Ihre Registrierung abzuschließen.",
+    "gotIt": "Verstanden!",
+    "country": "Land",
+    "forgotPassword": "Passwort vergessen?",
+    "resetPassword": "Passwort zurücksetzen",
+    "resetPasswordDescription": "Geben Sie Ihre registrierte E-Mail-Adresse ein. Wir senden Ihnen einen Passwort-Reset-Link.",
+    "sendResetEmail": "Reset-E-Mail senden",
+    "sendingResetEmail": "Wird gesendet...",
+    "resetEmailSent": "E-Mail gesendet",
+    "resetEmailSentDescription": "Wir haben einen Passwort-Reset-Link an {{email}} gesendet. Bitte überprüfen Sie Ihre E-Mail.",
+    "backToLogin": "Zurück zur Anmeldung",
+    "setNewPassword": "Neues Passwort setzen",
+    "setNewPasswordDescription": "Geben Sie Ihr neues Passwort ein.",
+    "newPassword": "Neues Passwort",
+    "confirmNewPassword": "Neues Passwort bestätigen",
+    "newPasswordPlaceholder": "Neues Passwort eingeben",
+    "confirmNewPasswordPlaceholder": "Neues Passwort erneut eingeben",
+    "updatePassword": "Passwort aktualisieren",
+    "updatingPassword": "Wird aktualisiert...",
+    "passwordResetSuccess": "Passwort erfolgreich zurückgesetzt",
     "passwordStrength": {
-      "very_weak": "Very Weak",
-      "weak": "Weak", 
-      "fair": "Fair",
-      "good": "Good",
-      "strong": "Strong"
+      "very_weak": "Sehr schwach",
+      "weak": "Schwach", 
+      "fair": "Ausreichend",
+      "good": "Gut",
+      "strong": "Stark"
     }
   },
   "newSeasonModal": {
-    "title": "🎉 New Season Started!",
-    "description": "A new season has begun! Join battles to climb the rankings or vote for your favorite creators to earn points!",
-    "goToBattle": "Join Battle",
-    "goToVote": "Go Vote"
+    "title": "🎉 Neue Saison gestartet!",
+    "description": "Eine neue Saison hat begonnen! Nehmen Sie an Kämpfen teil, um in den Ranglisten aufzusteigen oder stimmen Sie für Ihre Lieblings-Creators ab, um Punkte zu sammeln!",
+    "goToBattle": "Am Kampf teilnehmen",
+    "goToVote": "Abstimmen gehen"
   },
   "premium": {
     "badges": {
       "details": {
-        "description": "Description",
-        "earnedDate": "Earned Date"
+        "description": "Beschreibung",
+        "earnedDate": "Erhaltungsdatum"
       }
     }
   },
   "pushNotificationSetup": {
-    "title": "Push Notifications",
-    "unsupported": "Your browser does not support push notifications",
+    "title": "Push-Benachrichtigungen",
+    "unsupported": "Ihr Browser unterstützt keine Push-Benachrichtigungen",
     "status": {
-      "denied": "Denied",
-      "enabled": "Enabled",
-      "disabled": "Disabled",
-      "notSet": "Not Set"
+      "denied": "Verweigert",
+      "enabled": "Aktiviert",
+      "disabled": "Deaktiviert",
+      "notSet": "Nicht gesetzt"
     },
     "buttons": {
-      "enabling": "Setting up...",
-      "enable": "Enable Notifications",
-      "browserSettings": "Please allow in browser settings",
-      "disabling": "Disabling...",
-      "disable": "Disable Notifications"
+      "enabling": "Wird eingerichtet...",
+      "enable": "Benachrichtigungen aktivieren",
+      "browserSettings": "Bitte in Browser-Einstellungen erlauben",
+      "disabling": "Wird deaktiviert...",
+      "disable": "Benachrichtigungen deaktivieren"
     },
     "help": {
-      "title": "To enable notifications:",
-      "step1": "Click the 🔒 icon on the left side of the browser address bar",
-      "step2": "Change \"Notifications\" to \"Allow\"",
-      "step3": "Reload the page"
+      "title": "Um Benachrichtigungen zu aktivieren:",
+      "step1": "Klicken Sie auf das 🔒 Symbol links in der Browser-Adressleiste",
+      "step2": "Ändern Sie \"Benachrichtigungen\" zu \"Erlauben\"",
+      "step3": "Laden Sie die Seite neu"
     }
   }
 }
