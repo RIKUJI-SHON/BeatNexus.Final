@@ -113,13 +113,21 @@ function normalizePhoneNumber(phoneNumber: string): string {
   // Remove all non-digit characters except +
   let normalized = phoneNumber.replace(/[^\d+]/g, '');
   
-  // If starts with 0, replace with +81
-  if (normalized.startsWith('0')) {
-    normalized = '+81' + normalized.slice(1);
-  }
-  
-  // If no country code and starts with digits, assume Japan
-  if (/^\d/.test(normalized)) {
+  // 日本の携帯電話番号の正規化
+  if (normalized.match(/^0[789][0-9]{8,9}$/)) {
+    // 0X0-XXXX-XXXX -> +81X0-XXXX-XXXX
+    normalized = '+81' + normalized.substring(1);
+  } else if (normalized.match(/^[789][0-9]{8,9}$/)) {
+    // X0-XXXX-XXXX -> +81X0-XXXX-XXXX
+    normalized = '+81' + normalized;
+  } else if (normalized.match(/^0[2569][0-9]{7,8}$/)) {
+    // ラオスの電話番号形式: 020-XXXX-XXXX, 050-XXX-XXXX, 091-XXX-XXXX, 096-XXX-XXXX
+    normalized = '+856' + normalized.substring(1);
+  } else if (normalized.match(/^[2569][0-9]{7,8}$/)) {
+    // ラオスの電話番号（先頭0なし）
+    normalized = '+856' + normalized;
+  } else if (!normalized.startsWith('+')) {
+    // If no country code and starts with digits, assume Japan
     normalized = '+81' + normalized;
   }
   

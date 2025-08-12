@@ -54,8 +54,14 @@ function normalizePhoneNumber(phoneNumber: string): string {
   } else if (normalized.match(/^[789][0-9]{8,9}$/)) {
     // X0-XXXX-XXXX -> +81X0-XXXX-XXXX
     normalized = '+81' + normalized;
+  } else if (normalized.match(/^0[2569][0-9]{7,8}$/)) {
+    // ラオスの電話番号形式: 020-XXXX-XXXX, 050-XXX-XXXX, 091-XXX-XXXX, 096-XXX-XXXX
+    normalized = '+856' + normalized.substring(1);
+  } else if (normalized.match(/^[2569][0-9]{7,8}$/)) {
+    // ラオスの電話番号（先頭0なし）
+    normalized = '+856' + normalized;
   } else if (!normalized.startsWith('+')) {
-    // 国番号がない場合は日本と仮定
+    // 国番号がない場合は日本と仮定（既存の動作を維持）
     normalized = '+81' + normalized;
   }
   
