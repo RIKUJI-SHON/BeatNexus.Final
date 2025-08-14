@@ -93,6 +93,8 @@ const PostPage: React.FC = () => {
   const [acceptedGuidelines, setAcceptedGuidelines] = useState(false);
   const [acceptedFacePolicy, setAcceptedFacePolicy] = useState(false);
   const [acceptedContent, setAcceptedContent] = useState(false);
+  // SNS/YouTube等での利用同意
+  const [acceptedUsageConsent, setAcceptedUsageConsent] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [videoDuration, setVideoDuration] = useState<number | null>(null);
   
@@ -205,7 +207,7 @@ const PostPage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!videoFile || !acceptedGuidelines || !acceptedFacePolicy || !acceptedContent) return;
+    if (!videoFile || !acceptedGuidelines || !acceptedFacePolicy || !acceptedContent || !acceptedUsageConsent) return;
     
     // 1時間制限チェック
     if (!canSubmit) {
@@ -223,7 +225,7 @@ const PostPage: React.FC = () => {
   };
 
   const performSubmission = async () => {
-    if (!videoFile || !acceptedGuidelines || !acceptedFacePolicy || !acceptedContent) return;
+    if (!videoFile || !acceptedGuidelines || !acceptedFacePolicy || !acceptedContent || !acceptedUsageConsent) return;
     
     try {
       setSubmissionStage(t('submissionModal.checking'));
@@ -838,6 +840,19 @@ const PostPage: React.FC = () => {
                             {t('postPage.submissionGuidelines.confirmOwnPerformance')}
                           </span>
                         </label>
+                        {/* 追加: SNS/YouTube等での利用に関する同意 */}
+                        <label className="flex items-start gap-3 cursor-pointer group">
+                          <input
+                            type="checkbox"
+                            checked={acceptedUsageConsent}
+                            onChange={(e) => setAcceptedUsageConsent(e.target.checked)}
+                            className="mt-1 rounded border-slate-600 text-cyan-500 focus:ring-cyan-500/30 bg-slate-700"
+                            required
+                          />
+                          <span className="text-sm text-slate-300 group-hover:text-slate-50 transition-colors">
+                            {t('postPage.submissionGuidelines.allowSNSUsage', '投稿した動画を、当サービスのプロモーション等の目的で、YouTubeやSNSその他メディアで編集・公開・二次利用することに同意します')}
+                          </span>
+                        </label>
                       </div>
                     </div>
                     
@@ -858,7 +873,7 @@ const PostPage: React.FC = () => {
                         size="lg"
                         className="flex-1 bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600 shadow-lg hover:shadow-xl transition-all"
                         isLoading={isSubmissionProcessing}
-                        disabled={!acceptedGuidelines || !acceptedFacePolicy || !acceptedContent || isSubmissionProcessing || !canSubmit}
+                        disabled={!acceptedGuidelines || !acceptedFacePolicy || !acceptedContent || !acceptedUsageConsent || isSubmissionProcessing || !canSubmit}
                         leftIcon={<Mic className="h-5 w-5" />}
                       >
                         {t('postPage.buttons.submitToBattlePool')}
