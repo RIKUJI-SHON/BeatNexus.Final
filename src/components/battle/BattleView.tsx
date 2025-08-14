@@ -321,24 +321,20 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
     const diffTime = end.getTime() - now.getTime();
     
     if (diffTime <= 0) {
-      return t('battleView.votingEnded');
+      return 'VOTING ENDED';
     }
     
     const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
     const diffHours = Math.floor((diffTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
     const diffMinutes = Math.floor((diffTime % (1000 * 60 * 60)) / (1000 * 60));
     
-    // Format as DD:HH:MM for universal understanding
-    const formattedDays = diffDays.toString().padStart(2, '0');
-    const formattedHours = diffHours.toString().padStart(2, '0');
-    const formattedMinutes = diffMinutes.toString().padStart(2, '0');
-    
     if (diffDays > 0) {
-      return `${formattedDays}:${formattedHours}:${formattedMinutes}`;
+      const totalHours = diffDays * 24 + diffHours;
+      return `${totalHours} HOURS LEFT`;
     } else if (diffHours > 0) {
-      return `${formattedHours}:${formattedMinutes}`;
+      return `${diffHours} HOURS LEFT`;
     } else {
-      return `${formattedMinutes}m`;
+      return `${diffMinutes} MINUTES LEFT`;
     }
   };
   

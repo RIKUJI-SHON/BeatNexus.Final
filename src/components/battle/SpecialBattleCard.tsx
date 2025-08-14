@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Battle } from '../../types';
 import { BattleCommentsModal } from '../ui/BattleCommentsModal';
-import { Clock, Crown, MessageSquare } from 'lucide-react';
+import { Clock, Crown, MessageSquare, ThumbsUp } from 'lucide-react';
 import { VSIcon } from '../ui/VSIcon';
 import { RatingChangeDisplay } from '../ui/RatingChangeDisplay';
 import { format } from 'date-fns';
@@ -35,7 +35,7 @@ export const SpecialBattleCard: React.FC<SpecialBattleCardProps> = ({ battle }) 
   });
   const navigate = useNavigate();
 
-  const updateTimeRemaining = useCallback(() => {
+  const updateTimeRemaining = () => {
     if (battle.is_archived) {
       const currentLocale = i18n.language === 'ja' ? ja : enUS;
       setTimeRemaining(t('battleCard.archivedOn', { date: format(new Date(battle.end_voting_at), 'yyyy/MM/dd', { locale: currentLocale }) }));
@@ -46,7 +46,7 @@ export const SpecialBattleCard: React.FC<SpecialBattleCardProps> = ({ battle }) 
     const total = new Date(battle.end_voting_at).getTime() - new Date().getTime();
     
     if (total <= 0) {
-      setTimeRemaining(t('battleCard.votingEnded'));
+      setTimeRemaining('VOTING ENDED');
       setIsExpired(true);
       return;
     }
@@ -56,25 +56,21 @@ export const SpecialBattleCard: React.FC<SpecialBattleCardProps> = ({ battle }) 
     const minutes = Math.floor((total % (1000 * 60 * 60)) / (1000 * 60));
     const seconds = Math.floor((total % (1000 * 60)) / 1000);
     
-    // Format as DD:HH:MM for universal understanding
-    const formattedDays = days.toString().padStart(2, '0');
-    const formattedHours = hours.toString().padStart(2, '0');
-    const formattedMinutes = minutes.toString().padStart(2, '0');
-    
     if (days > 0) {
-      setTimeRemaining(`${formattedDays}:${formattedHours}:${formattedMinutes}`);
+      const totalHours = days * 24 + hours;
+      setTimeRemaining(`${totalHours} HOURS LEFT`);
     } else if (hours > 0) {
-      setTimeRemaining(`${formattedHours}:${formattedMinutes}`);
+      setTimeRemaining(`${hours} HOURS LEFT`);
     } else if (minutes > 0) {
-      setTimeRemaining(`${formattedMinutes}m`);
+      setTimeRemaining(`${minutes} MINUTES LEFT`);
     } else {
-      setTimeRemaining(`${seconds}s`);
+      setTimeRemaining(`${seconds} SECONDS LEFT`);
     }
     setIsExpired(false);
-  }, [battle.is_archived, battle.end_voting_at, i18n.language, t]);
+  };
 
   // Load player ratings
-  const loadPlayerRatings = useCallback(async () => {
+  const loadPlayerRatings = async () => {
     try {
       // Player Aのレート取得
       const { data: playerAData, error: errorA } = await supabase
@@ -110,14 +106,14 @@ export const SpecialBattleCard: React.FC<SpecialBattleCardProps> = ({ battle }) 
         playerB: { rating: 1200, loading: false }
       });
     }
-  }, [battle.player1_user_id, battle.player2_user_id]);
+  };
 
   useEffect(() => {
     updateTimeRemaining();
     loadPlayerRatings(); // レート情報を読み込み
     const interval = setInterval(updateTimeRemaining, 60000);
     return () => clearInterval(interval);
-  }, [updateTimeRemaining, loadPlayerRatings]);
+  }, [battle.end_voting_at, battle.is_archived, i18n.language]);
 
   const totalVotes = (battle.votes_a || 0) + (battle.votes_b || 0);
   const percentageA = totalVotes > 0 ? ((battle.votes_a || 0) / totalVotes) * 100 : 50;
@@ -149,6 +145,7 @@ export const SpecialBattleCard: React.FC<SpecialBattleCardProps> = ({ battle }) 
     color, 
     isWinner, 
     defaultNameKey, 
+    userId,
     currentRating,
     ratingLoading
   }: {
@@ -159,6 +156,7 @@ export const SpecialBattleCard: React.FC<SpecialBattleCardProps> = ({ battle }) 
     color: string;
     isWinner: boolean;
     defaultNameKey: string;
+    userId: string;
     currentRating: number;
     ratingLoading: boolean;
   }) => (
@@ -231,6 +229,7 @@ export const SpecialBattleCard: React.FC<SpecialBattleCardProps> = ({ battle }) 
                   color={colorA}
                   isWinner={battle.winner_id === battle.player1_user_id}
                   defaultNameKey="battleCard.contestantA"
+                  userId={battle.player1_user_id}
                   currentRating={playerRatings.playerA.rating}
                   ratingLoading={playerRatings.playerA.loading}
                 />
@@ -256,6 +255,7 @@ export const SpecialBattleCard: React.FC<SpecialBattleCardProps> = ({ battle }) 
                   color={colorB}
                   isWinner={battle.winner_id === battle.player2_user_id}
                   defaultNameKey="battleCard.contestantB"
+                  userId={battle.player2_user_id}
                   currentRating={playerRatings.playerB.rating}
                   ratingLoading={playerRatings.playerB.loading}
                 />
