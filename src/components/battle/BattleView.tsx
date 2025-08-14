@@ -328,12 +328,17 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
     const diffHours = Math.floor((diffTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
     const diffMinutes = Math.floor((diffTime % (1000 * 60 * 60)) / (1000 * 60));
     
+    // Format as DD:HH:MM for universal understanding
+    const formattedDays = diffDays.toString().padStart(2, '0');
+    const formattedHours = diffHours.toString().padStart(2, '0');
+    const formattedMinutes = diffMinutes.toString().padStart(2, '0');
+    
     if (diffDays > 0) {
-      return `${diffDays}${t('battleView.timeUnits.days')} ${diffHours}${t('battleView.timeUnits.hours')}`;
+      return `${formattedDays}:${formattedHours}:${formattedMinutes}`;
     } else if (diffHours > 0) {
-      return `${diffHours}${t('battleView.timeUnits.hours')} ${diffMinutes}${t('battleView.timeUnits.minutes')}`;
+      return `${formattedHours}:${formattedMinutes}`;
     } else {
-      return `${diffMinutes}${t('battleView.timeUnits.minutes')}`;
+      return `${formattedMinutes}m`;
     }
   };
   

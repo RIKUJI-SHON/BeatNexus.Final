@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Battle } from '../../types';
 import { VoteButton } from '../ui/VoteButton';
 import { BattleCommentsModal } from '../ui/BattleCommentsModal';
-import { Clock, Crown, MessageSquare, ThumbsUp } from 'lucide-react';
+import { Clock, Crown, MessageSquare } from 'lucide-react';
 import { VSIcon } from '../ui/VSIcon';
 import { RatingChangeDisplay } from '../ui/RatingChangeDisplay';
 import { format } from 'date-fns';
@@ -35,7 +35,7 @@ export const SimpleBattleCard: React.FC<SimpleBattleCardProps> = ({ battle }) =>
   });
   const navigate = useNavigate();
 
-  const updateTimeRemaining = () => {
+  const updateTimeRemaining = useCallback(() => {
     if (battle.is_archived) {
       const currentLocale = i18n.language === 'ja' ? ja : enUS;
       setTimeRemaining(t('battleCard.archivedOn', { date: format(new Date(battle.end_voting_at), 'yyyy/MM/dd', { locale: currentLocale }) }));
@@ -55,18 +55,23 @@ export const SimpleBattleCard: React.FC<SimpleBattleCardProps> = ({ battle }) =>
     const hours = Math.floor((total % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
     const minutes = Math.floor((total % (1000 * 60 * 60)) / (1000 * 60));
     
+    // Format as DD:HH:MM for universal understanding
+    const formattedDays = days.toString().padStart(2, '0');
+    const formattedHours = hours.toString().padStart(2, '0');
+    const formattedMinutes = minutes.toString().padStart(2, '0');
+    
     if (days > 0) {
-      setTimeRemaining(t('battleCard.votingEndsIn', { days, hours }));
+      setTimeRemaining(`${formattedDays}:${formattedHours}:${formattedMinutes}`);
     } else if (hours > 0) {
-      setTimeRemaining(t('battleCard.votingEndsInHours', { hours, minutes }));
+      setTimeRemaining(`${formattedHours}:${formattedMinutes}`);
     } else {
-      setTimeRemaining(t('battleCard.votingEndsInMinutes', { minutes }));
+      setTimeRemaining(`${formattedMinutes}m`);
     }
     setIsExpired(false);
-  };
+  }, [battle.is_archived, battle.end_voting_at, i18n.language, t]);
 
   // Load player ratings
-  const loadPlayerRatings = async () => {
+  const loadPlayerRatings = useCallback(async () => {
     try {
       // Player Aのレート取得
       const { data: playerAData, error: errorA } = await supabase
@@ -102,14 +107,14 @@ export const SimpleBattleCard: React.FC<SimpleBattleCardProps> = ({ battle }) =>
         playerB: { rating: 1200, loading: false }
       });
     }
-  };
+  }, [battle.player1_user_id, battle.player2_user_id]);
 
   useEffect(() => {
     updateTimeRemaining();
     loadPlayerRatings(); // レート情報を読み込み
     const interval = setInterval(updateTimeRemaining, 60000);
     return () => clearInterval(interval);
-  }, [battle.end_voting_at, battle.is_archived, i18n.language]);
+  }, [updateTimeRemaining, loadPlayerRatings]);
 
   const totalVotes = (battle.votes_a || 0) + (battle.votes_b || 0);
   const percentageA = totalVotes > 0 ? ((battle.votes_a || 0) / totalVotes) * 100 : 50;
