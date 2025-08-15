@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Battle } from '../../types';
@@ -35,7 +35,7 @@ export const SimpleBattleCard: React.FC<SimpleBattleCardProps> = ({ battle }) =>
   });
   const navigate = useNavigate();
 
-  const updateTimeRemaining = () => {
+  const updateTimeRemaining = useCallback(() => {
     if (battle.is_archived) {
       const currentLocale = i18n.language === 'ja' ? ja : enUS;
       setTimeRemaining(t('battleCard.archivedOn', { date: format(new Date(battle.end_voting_at), 'yyyy/MM/dd', { locale: currentLocale }) }));
@@ -44,73 +44,59 @@ export const SimpleBattleCard: React.FC<SimpleBattleCardProps> = ({ battle }) =>
     }
 
     const total = new Date(battle.end_voting_at).getTime() - new Date().getTime();
-    
     if (total <= 0) {
       setTimeRemaining('VOTING ENDED');
       setIsExpired(true);
       return;
     }
-    
     const days = Math.floor(total / (1000 * 60 * 60 * 24));
     const hours = Math.floor((total % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
     const minutes = Math.floor((total % (1000 * 60 * 60)) / (1000 * 60));
-    
     if (days > 0) {
       const totalHours = days * 24 + hours;
       setTimeRemaining(`${totalHours} HOURS LEFT`);
     } else if (hours > 0) {
       setTimeRemaining(`${hours} HOURS LEFT`);
-    } else {
+    } else if (minutes > 0) {
       setTimeRemaining(`${minutes} MINUTES LEFT`);
     }
     setIsExpired(false);
-  };
+  }, [battle.end_voting_at, battle.is_archived, i18n.language, t]);
 
   // Load player ratings
-  const loadPlayerRatings = async () => {
+  const loadPlayerRatings = useCallback(async () => {
     try {
-      // Player Aのレート取得
       const { data: playerAData, error: errorA } = await supabase
         .from('profiles')
-        .select('rating')
+        .select('season_points')
         .eq('id', battle.player1_user_id)
         .single();
-
-      // Player Bのレート取得
       const { data: playerBData, error: errorB } = await supabase
         .from('profiles')
-        .select('rating')
+        .select('season_points')
         .eq('id', battle.player2_user_id)
         .single();
-
       setPlayerRatings({
-        playerA: { 
-          rating: playerAData?.rating || 1200, 
-          loading: false 
-        },
-        playerB: { 
-          rating: playerBData?.rating || 1200, 
-          loading: false 
-        }
+        playerA: { rating: playerAData?.season_points || 1200, loading: false },
+        playerB: { rating: playerBData?.season_points || 1200, loading: false }
       });
-
-      if (errorA) console.warn('⚠️ Player A rating fetch error:', errorA);
-      if (errorB) console.warn('⚠️ Player B rating fetch error:', errorB);
+      if (errorA) console.warn('⚠️ Player A season_points fetch error:', errorA);
+      if (errorB) console.warn('⚠️ Player B season_points fetch error:', errorB);
     } catch (error) {
-      console.error('❌ Failed to load player ratings:', error);
+      console.error('❌ Failed to load player season points:', error);
       setPlayerRatings({
         playerA: { rating: 1200, loading: false },
         playerB: { rating: 1200, loading: false }
       });
     }
-  };
+  }, [battle.player1_user_id, battle.player2_user_id]);
 
   useEffect(() => {
     updateTimeRemaining();
-    loadPlayerRatings(); // レート情報を読み込み
+    loadPlayerRatings();
     const interval = setInterval(updateTimeRemaining, 60000);
     return () => clearInterval(interval);
-  }, [battle.end_voting_at, battle.is_archived, i18n.language]);
+  }, [updateTimeRemaining, loadPlayerRatings]);
 
   const totalVotes = (battle.votes_a || 0) + (battle.votes_b || 0);
   const percentageA = totalVotes > 0 ? ((battle.votes_a || 0) / totalVotes) * 100 : 50;
@@ -168,7 +154,7 @@ export const SimpleBattleCard: React.FC<SimpleBattleCardProps> = ({ battle }) =>
                   >
                     {battle.contestant_a?.username || t('battleCard.unknownUser')}
                   </h3>
-                  {/* Player A Rating Display */}
+                  {/* Player A Rating Display -> Season Points Display */}
                   <div className="mb-2 flex items-center justify-center">
                     {playerRatings.playerA.loading ? (
                       <div className="text-xs text-gray-400">---</div>
@@ -224,7 +210,7 @@ export const SimpleBattleCard: React.FC<SimpleBattleCardProps> = ({ battle }) =>
                   >
                     {battle.contestant_b?.username || t('battleCard.unknownUser')}
                   </h3>
-                  {/* Player B Rating Display */}
+                  {/* Player B Rating Display -> Season Points Display */}
                   <div className="mb-2 flex items-center justify-center">
                     {playerRatings.playerB.loading ? (
                       <div className="text-xs text-gray-400">---</div>
@@ -288,4 +274,4 @@ export const SimpleBattleCard: React.FC<SimpleBattleCardProps> = ({ battle }) =>
       />
     </>
   );
-}; 
+};

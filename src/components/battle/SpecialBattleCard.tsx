@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Battle } from '../../types';
@@ -35,27 +35,23 @@ export const SpecialBattleCard: React.FC<SpecialBattleCardProps> = ({ battle }) 
   });
   const navigate = useNavigate();
 
-  const updateTimeRemaining = () => {
+  const updateTimeRemaining = useCallback(() => {
     if (battle.is_archived) {
       const currentLocale = i18n.language === 'ja' ? ja : enUS;
       setTimeRemaining(t('battleCard.archivedOn', { date: format(new Date(battle.end_voting_at), 'yyyy/MM/dd', { locale: currentLocale }) }));
       setIsExpired(true);
       return;
     }
-
     const total = new Date(battle.end_voting_at).getTime() - new Date().getTime();
-    
     if (total <= 0) {
       setTimeRemaining('VOTING ENDED');
       setIsExpired(true);
       return;
     }
-    
     const days = Math.floor(total / (1000 * 60 * 60 * 24));
     const hours = Math.floor((total % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
     const minutes = Math.floor((total % (1000 * 60 * 60)) / (1000 * 60));
     const seconds = Math.floor((total % (1000 * 60)) / 1000);
-    
     if (days > 0) {
       const totalHours = days * 24 + hours;
       setTimeRemaining(`${totalHours} HOURS LEFT`);
@@ -67,53 +63,53 @@ export const SpecialBattleCard: React.FC<SpecialBattleCardProps> = ({ battle }) 
       setTimeRemaining(`${seconds} SECONDS LEFT`);
     }
     setIsExpired(false);
-  };
+  }, [battle.end_voting_at, battle.is_archived, i18n.language, t]);
 
-  // Load player ratings
-  const loadPlayerRatings = async () => {
+  // Load player ratings (now season_points)
+  const loadPlayerRatings = useCallback(async () => {
     try {
-      // Player Aのレート取得
+      // Player Aのシーズンポイント取得
       const { data: playerAData, error: errorA } = await supabase
         .from('profiles')
-        .select('rating')
+        .select('season_points')
         .eq('id', battle.player1_user_id)
         .single();
 
-      // Player Bのレート取得
+      // Player Bのシーズンポイント取得
       const { data: playerBData, error: errorB } = await supabase
         .from('profiles')
-        .select('rating')
+        .select('season_points')
         .eq('id', battle.player2_user_id)
         .single();
 
       setPlayerRatings({
         playerA: { 
-          rating: playerAData?.rating || 1200, 
+          rating: playerAData?.season_points || 1200, 
           loading: false 
         },
         playerB: { 
-          rating: playerBData?.rating || 1200, 
+          rating: playerBData?.season_points || 1200, 
           loading: false 
         }
       });
 
-      if (errorA) console.warn('⚠️ Player A rating fetch error:', errorA);
-      if (errorB) console.warn('⚠️ Player B rating fetch error:', errorB);
+      if (errorA) console.warn('⚠️ Player A season_points fetch error:', errorA);
+      if (errorB) console.warn('⚠️ Player B season_points fetch error:', errorB);
     } catch (error) {
-      console.error('❌ Failed to load player ratings:', error);
+      console.error('❌ Failed to load player season points:', error);
       setPlayerRatings({
         playerA: { rating: 1200, loading: false },
         playerB: { rating: 1200, loading: false }
       });
     }
-  };
+  }, [battle.player1_user_id, battle.player2_user_id]);
 
   useEffect(() => {
     updateTimeRemaining();
-    loadPlayerRatings(); // レート情報を読み込み
+    loadPlayerRatings();
     const interval = setInterval(updateTimeRemaining, 60000);
     return () => clearInterval(interval);
-  }, [battle.end_voting_at, battle.is_archived, i18n.language]);
+  }, [updateTimeRemaining, loadPlayerRatings]);
 
   const totalVotes = (battle.votes_a || 0) + (battle.votes_b || 0);
   const percentageA = totalVotes > 0 ? ((battle.votes_a || 0) / totalVotes) * 100 : 50;
@@ -145,7 +141,6 @@ export const SpecialBattleCard: React.FC<SpecialBattleCardProps> = ({ battle }) 
     color, 
     isWinner, 
     defaultNameKey, 
-    userId,
     currentRating,
     ratingLoading
   }: {
@@ -156,7 +151,6 @@ export const SpecialBattleCard: React.FC<SpecialBattleCardProps> = ({ battle }) 
     color: string;
     isWinner: boolean;
     defaultNameKey: string;
-    userId: string;
     currentRating: number;
     ratingLoading: boolean;
   }) => (
@@ -175,7 +169,7 @@ export const SpecialBattleCard: React.FC<SpecialBattleCardProps> = ({ battle }) 
       >
         {player?.username || t('battleCard.unknownUser')}
       </h3>
-      {/* Player Rating Display */}
+      {/* Player Season Points Display */}
       <div className="mb-2 flex items-center justify-center">
         {ratingLoading ? (
           <div className="text-xs text-gray-400">---</div>
@@ -229,7 +223,6 @@ export const SpecialBattleCard: React.FC<SpecialBattleCardProps> = ({ battle }) 
                   color={colorA}
                   isWinner={battle.winner_id === battle.player1_user_id}
                   defaultNameKey="battleCard.contestantA"
-                  userId={battle.player1_user_id}
                   currentRating={playerRatings.playerA.rating}
                   ratingLoading={playerRatings.playerA.loading}
                 />
@@ -255,7 +248,6 @@ export const SpecialBattleCard: React.FC<SpecialBattleCardProps> = ({ battle }) 
                   color={colorB}
                   isWinner={battle.winner_id === battle.player2_user_id}
                   defaultNameKey="battleCard.contestantB"
-                  userId={battle.player2_user_id}
                   currentRating={playerRatings.playerB.rating}
                   ratingLoading={playerRatings.playerB.loading}
                 />
