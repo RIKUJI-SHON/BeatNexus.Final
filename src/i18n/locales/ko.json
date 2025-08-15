@@ -1054,7 +1054,8 @@
 
     "searchPlaceholder": "사용자명으로 검색...",
     "loading": "랭킹 로딩 중...",
-    "eloRating": "Elo 레이팅",
+  "eloRating": "Elo 레이팅",
+  "voteShare": "투표율",
     "table": {
       "rank": "순위",
       "user": "사용자",
@@ -1190,16 +1191,9 @@
           }
         }
       }
-    },
-    "cooldown": {
-      "title": "제출 쿨다운",
-      "message": "다음 제출 가능 시간: {{time}}"
-    },
-    "seasonOff": {
+  },
+  "seasonOff": {
       "title": "시즌 오프 - 제출 제한"
-    },
-    "preview": {
-      "title": "동영상 미리보기"
     },
     "ffmpeg": {
       "loading": "동영상 프로세서 초기화 중",
@@ -1680,12 +1674,7 @@
       "exploreButton": "다른 배틀 둘러보기"
     }
   },
-  "tournament": {
-    "comingSoonPage": {
-      "title": "토너먼트",
-      "subtitle": "곧 출시"
-    }
-  },
+  
   "comingSoon": {
     "title": "곧 출시",
     "subtitle": "멋진 사용법 가이드를 준비하고 있습니다! 따라하기 쉬운 형식으로 BeatNexus의 모든 것을 배워보세요.",
@@ -1706,6 +1695,10 @@
   },
   "tournament": {
     "title": "토너먼트",
+    "comingSoonPage": {
+      "title": "토너먼트",
+      "subtitle": "곧 출시"
+    },
     "subtitle": "시즌 최고의 대결",
     "comingSoon": "🔥 곧 공개 🔥",
     "features": {

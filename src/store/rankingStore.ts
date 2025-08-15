@@ -192,16 +192,58 @@ export const useRankingStore = create<RankingState>((set, get) => ({
     try {
       const { data, error } = await supabase
         .from('season_rankings_view')
-        .select('*')
+        .select(`
+          user_id, username, avatar_url, season_points, rating, rank_name, rank_color, position,
+          weighted_vote_share, sum_margin_ratio, battles_played, last_battle_at
+        `)
         .order('season_points', { ascending: false });
 
       if (error) throw error;
 
-      // データベースのposition（DENSE_RANK）をそのまま使用
-      const seasonRankingsWithPosition = (data || []).map((entry) => ({
-        ...entry,
-        // position フィールドはすでにデータベースで DENSE_RANK() により計算済み
-      }));
+      type SeasonRankingRow = {
+        user_id: string;
+        username: string;
+        avatar_url: string | null;
+        season_points: number;
+        rating: number;
+        rank_name: string;
+        rank_color: string;
+        position: number;
+        weighted_vote_share: number | string | null;
+        sum_margin_ratio: number | string | null;
+        battles_played: number | null;
+        last_battle_at: string | null;
+      };
+
+      // データベースのposition（DENSE_RANK）をそのまま使用 + numeric文字列の数値化
+      const seasonRankingsWithPosition: SeasonRankingEntry[] = ((data || []) as SeasonRankingRow[]).map((entry) => {
+        let weightedShare: number | undefined = undefined;
+        if (entry.weighted_vote_share !== null && entry.weighted_vote_share !== undefined) {
+          const n = Number(entry.weighted_vote_share);
+          if (Number.isFinite(n)) weightedShare = n;
+        }
+
+        let sumMargin: number | undefined = undefined;
+        if (entry.sum_margin_ratio !== null && entry.sum_margin_ratio !== undefined) {
+          const n = Number(entry.sum_margin_ratio);
+          if (Number.isFinite(n)) sumMargin = n;
+        }
+
+        return {
+          user_id: entry.user_id,
+          username: entry.username,
+          avatar_url: entry.avatar_url,
+          season_points: entry.season_points,
+          rating: entry.rating,
+          rank_name: entry.rank_name,
+          rank_color: entry.rank_color,
+          position: entry.position,
+          weighted_vote_share: weightedShare,
+          sum_margin_ratio: sumMargin,
+          battles_played: entry.battles_played ?? undefined,
+          last_battle_at: entry.last_battle_at,
+        };
+      });
 
       set({ seasonRankings: seasonRankingsWithPosition });
     } catch (error) {
@@ -222,7 +264,14 @@ export const useRankingStore = create<RankingState>((set, get) => ({
       if (error) throw error;
 
       // データベースのrank（DENSE_RANK）をpositionにマッピング
-      const mappedData = (data || []).map((entry: any) => ({
+      type SeasonVoterRow = {
+        id: string;
+        username: string;
+        avatar_url: string | null;
+        season_vote_points: number;
+        rank: number;
+      };
+      const mappedData = ((data || []) as SeasonVoterRow[]).map((entry) => ({
         ...entry,
         position: entry.rank // データベースのDENSE_RANK()結果をpositionフィールドに設定
       }));
@@ -244,7 +293,14 @@ export const useRankingStore = create<RankingState>((set, get) => ({
 
       if (error) throw error;
 
-      const historicalRankings = (data || []).map((entry: any) => ({
+      type HistoricalRow = {
+        user_id: string;
+        rank: number;
+        points: number;
+        username: string;
+        avatar_url: string | null;
+      };
+      const historicalRankings = ((data || []) as HistoricalRow[]).map((entry) => ({
         id: `${entry.user_id}-${seasonId}`,
         season_id: seasonId,
         user_id: entry.user_id,

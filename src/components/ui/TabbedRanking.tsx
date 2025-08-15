@@ -113,9 +113,8 @@ export const TabbedRanking: React.FC<TabbedRankingProps> = ({
         >
           {entry.username}
         </div>
-        <div className={`text-sm font-bold ${getRatingColor(entry.rank_color)}`}>
-          {entry.season_points} SP
-        </div>
+  <div className={`text-xs text-gray-400`}>{t('rankingPage.voteShare')}: {typeof entry.weighted_vote_share === 'number' ? Math.round(entry.weighted_vote_share * 1000) / 10 : 0}%</div>
+  <div className={`text-sm font-bold ${getRatingColor(entry.rank_color)}`}>{entry.season_points} SP</div>
       </div>
     </Link>
   );

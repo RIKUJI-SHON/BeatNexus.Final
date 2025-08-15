@@ -1053,7 +1053,8 @@
     "voterDescription": "Aktive Community-Mitglieder-Rangliste basierend auf Abstimmungsteilnahme",
     "searchPlaceholder": "Nach Benutzername suchen...",
     "loading": "Lade Rangliste...",
-    "eloRating": "Elo-Bewertung",
+  "eloRating": "Elo-Bewertung",
+  "voteShare": "Stimmenanteil",
     "table": {
       "rank": "Rang",
       "user": "Benutzer",

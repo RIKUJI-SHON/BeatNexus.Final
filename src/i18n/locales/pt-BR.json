@@ -64,11 +64,11 @@
     "billing": {
       "monthly": "Mensal",
       "yearly": "Anual",
-      "discount": "20% DESC"
+      "discount": "20% OFF"
     },
     "plans": {
       "free": {
-        "name": "Gratuito",
+        "name": "Grátis",
         "description": "Experimente recursos básicos",
         "features": [
           "3 posts por mês",
@@ -79,8 +79,8 @@
         "button": "Começar Grátis"
       },
       "crew": {
-        "name": "Equipe",
-        "description": "Mais posts e vantagens",
+        "name": "Crew",
+        "description": "Mais posts e benefícios",
         "features": [
           "10 posts por mês",
           "Experiência sem anúncios",
@@ -1054,7 +1054,8 @@
 
     "searchPlaceholder": "Buscar por nome de usuário...",
     "loading": "Carregando rankings...",
-    "eloRating": "Rating Elo",
+  "eloRating": "Rating Elo",
+  "voteShare": "Taxa de Votos",
     "table": {
       "rank": "Rank",
       "user": "Usuário",
@@ -1191,15 +1192,8 @@
         }
       }
     },
-    "cooldown": {
-      "title": "Cooldown de Submissão",
-      "message": "Próxima submissão disponível em: {{time}}"
-    },
-    "seasonOff": {
+  "seasonOff": {
       "title": "Temporada Fora - Submissão Restrita"
-    },
-    "preview": {
-      "title": "Pré-visualização do Vídeo"
     },
     "ffmpeg": {
       "loading": "Inicializando Processador de Vídeo",
@@ -1680,12 +1674,7 @@
       "exploreButton": "Explorar Outras Batalhas"
     }
   },
-  "tournament": {
-    "comingSoonPage": {
-      "title": "Torneio",
-      "subtitle": "Em breve"
-    }
-  },
+  
   "comingSoon": {
     "title": "Em Breve",
     "subtitle": "Estamos criando um Guia de Como Usar incrível para você! Aprenda tudo sobre o BeatNexus em um formato fácil de seguir.",
@@ -1706,6 +1695,10 @@
   },
   "tournament": {
     "title": "Torneio",
+    "comingSoonPage": {
+      "title": "Torneio",
+      "subtitle": "Em breve"
+    },
     "subtitle": "O Confronto Sazonal Definitivo",
     "comingSoon": "🔥 Em Breve 🔥",
     "features": {

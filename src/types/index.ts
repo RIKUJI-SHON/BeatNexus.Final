@@ -345,6 +345,11 @@ export interface SeasonRankingEntry {
   rank_name: string;
   rank_color: string;
   position: number;
+  // Tiebreak metrics from season_rankings_view
+  weighted_vote_share?: number; // 0..1（DB numericはJSでは文字列のためstoreで数値化）
+  sum_margin_ratio?: number;    // -1..1 の累積比
+  battles_played?: number;
+  last_battle_at?: string | null;
 }
 
 export interface SeasonVoterRankingEntry {

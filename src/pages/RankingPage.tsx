@@ -268,6 +268,13 @@ const RankingPage: React.FC = () => {
     return typeof entry === 'object' && entry !== null && 'season_points' in entry && typeof (entry as SeasonRankingEntry).season_points === 'number';
   };
 
+  const getWeightedVoteSharePercent = (entry: unknown): number => {
+    if (isSeasonRankingEntry(entry) && typeof entry.weighted_vote_share === 'number') {
+      return Math.round(entry.weighted_vote_share * 1000) / 10;
+    }
+    return 0;
+  };
+
   const getVoteCount = (entry: unknown): number => {
     if (isVoterEntry(entry)) return entry.vote_count;
     if (isSeasonVoterEntry(entry)) return entry.season_vote_points;
@@ -802,6 +809,11 @@ const RankingPage: React.FC = () => {
                             }`}>
                               {entry.username}
                             </div>
+              {activeTab === 'player' && activeRankingType === 'current_season' && (
+                              <div className="text-xs text-gray-400">
+                {t('rankingPage.voteShare')}: {getWeightedVoteSharePercent(entry)}%
+                              </div>
+                            )}
                           </div>
                         </div>
 

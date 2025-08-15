@@ -1053,7 +1053,8 @@
     "voterDescription": "Classements des membres actifs de la communauté basés sur la participation au vote",
     "searchPlaceholder": "Rechercher par nom d'utilisateur...",
     "loading": "Chargement des classements...",
-    "eloRating": "Classement Elo",
+  "eloRating": "Classement Elo",
+  "voteShare": "Taux de votes",
     "table": {
       "rank": "Rang",
       "user": "Utilisateur",
@@ -1189,16 +1190,9 @@
           }
         }
       }
-    },
-    "cooldown": {
-      "title": "Délai de Soumission",
-      "message": "Prochaine soumission disponible dans : {{time}}"
-    },
-    "seasonOff": {
+  },
+  "seasonOff": {
       "title": "Saison Fermée - Soumission Restreinte"
-    },
-    "preview": {
-      "title": "Aperçu Vidéo"
     },
     "ffmpeg": {
       "loading": "Initialisation du Processeur Vidéo",
@@ -1679,12 +1673,7 @@
       "exploreButton": "Explorer d'Autres Battles"
     }
   },
-  "tournament": {
-    "comingSoonPage": {
-      "title": "Tournoi",
-      "subtitle": "Bientôt disponible"
-    }
-  },
+  
   "comingSoon": {
     "title": "Bientôt Disponible",
     "subtitle": "Nous créons un Guide Pratique incroyable pour vous ! Apprenez tout sur BeatNexus dans un format facile à suivre.",
@@ -1705,6 +1694,10 @@
   },
   "tournament": {
     "title": "Tournament",
+    "comingSoonPage": {
+      "title": "Tournoi",
+      "subtitle": "Bientôt disponible"
+    },
     "subtitle": "The Ultimate Seasonal Showdown",
     "comingSoon": "🔥 Coming Soon 🔥",
     "features": {

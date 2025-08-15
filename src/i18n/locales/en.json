@@ -1055,6 +1055,7 @@
     "searchPlaceholder": "Search by username...",
     "loading": "Loading rankings...",
     "eloRating": "Elo Rating",
+  "voteShare": "Vote Share",
     "table": {
       "rank": "Rank",
       "user": "User",
@@ -1190,16 +1191,9 @@
           }
         }
       }
-    },
-    "cooldown": {
-      "title": "Submission Cooldown",
-      "message": "Next submission available in: {{time}}"
-    },
-    "seasonOff": {
+  },
+  "seasonOff": {
       "title": "Season Off - Submission Restricted"
-    },
-    "preview": {
-      "title": "Video Preview"
     },
     "ffmpeg": {
       "loading": "Initializing Video Processor",
@@ -1680,12 +1674,6 @@
       "exploreButton": "Explore Other Battles"
     }
   },
-  "tournament": {
-    "comingSoonPage": {
-      "title": "Tournament",
-      "subtitle": "Coming soon"
-    }
-  },
   "comingSoon": {
     "title": "Coming Soon",
     "subtitle": "We're crafting an amazing How-to Guide for you! Learn everything about BeatNexus in an easy-to-follow format.",
@@ -1706,6 +1694,10 @@
   },
   "tournament": {
     "title": "Tournament",
+    "comingSoonPage": {
+      "title": "Tournament",
+      "subtitle": "Coming soon"
+    },
     "subtitle": "The Ultimate Seasonal Showdown",
     "comingSoon": "🔥 Coming Soon 🔥",
     "features": {
