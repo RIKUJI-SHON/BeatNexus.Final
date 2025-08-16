@@ -4,9 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { Battle } from '../../types';
 import { VoteButton } from '../ui/VoteButton';
 import { BattleCommentsModal } from '../ui/BattleCommentsModal';
-import { Clock, Crown, MessageSquare, ThumbsUp } from 'lucide-react';
+import { Clock, Crown, MessageSquare } from 'lucide-react';
 import { VSIcon } from '../ui/VSIcon';
-import { RatingChangeDisplay } from '../ui/RatingChangeDisplay';
 import { format } from 'date-fns';
 import { ja, enUS } from 'date-fns/locale';
 import { cn } from '../../lib/utils';
@@ -174,10 +173,13 @@ export const SimpleBattleCard: React.FC<SimpleBattleCardProps> = ({ battle }) =>
                     </>
                   )}
                   {battle.is_archived && (
-                    <RatingChangeDisplay 
-                      ratingChange={battle.player1_rating_change}
-                      newRating={battle.player1_final_rating}
-                    />
+                    <div className="mt-1 text-xs font-semibold text-emerald-300">
+                      {(() => {
+                        if (battle.winner_id === battle.player1_user_id) return '+16 SP';
+                        if (battle.winner_id === battle.player2_user_id) return '+4 SP';
+                        return '+8 SP';
+                      })()}
+                    </div>
                   )}
                 </div>
 
@@ -230,10 +232,13 @@ export const SimpleBattleCard: React.FC<SimpleBattleCardProps> = ({ battle }) =>
                     </>
                   )}
                   {battle.is_archived && (
-                    <RatingChangeDisplay 
-                      ratingChange={battle.player2_rating_change}
-                      newRating={battle.player2_final_rating}
-                    />
+                    <div className="mt-1 text-xs font-semibold text-emerald-300">
+                      {(() => {
+                        if (battle.winner_id === battle.player2_user_id) return '+16 SP';
+                        if (battle.winner_id === battle.player1_user_id) return '+4 SP';
+                        return '+8 SP';
+                      })()}
+                    </div>
                   )}
                 </div>
               </div>

@@ -5,7 +5,6 @@ import { Battle } from '../../types';
 import { BattleCommentsModal } from '../ui/BattleCommentsModal';
 import { Clock, Crown, MessageSquare, ThumbsUp } from 'lucide-react';
 import { VSIcon } from '../ui/VSIcon';
-import { RatingChangeDisplay } from '../ui/RatingChangeDisplay';
 import { format } from 'date-fns';
 import { ja, enUS } from 'date-fns/locale';
 import { cn } from '../../lib/utils';
@@ -136,8 +135,6 @@ export const SpecialBattleCard: React.FC<SpecialBattleCardProps> = ({ battle }) 
   const PlayerDisplay = ({ 
     player, 
     votes, 
-    ratingChange, 
-    finalRating, 
     color, 
     isWinner, 
     defaultNameKey, 
@@ -146,8 +143,6 @@ export const SpecialBattleCard: React.FC<SpecialBattleCardProps> = ({ battle }) 
   }: {
     player: Battle['contestant_a'];
     votes: number | undefined;
-    ratingChange: number | null | undefined;
-    finalRating: number | null | undefined;
     color: string;
     isWinner: boolean;
     defaultNameKey: string;
@@ -191,10 +186,13 @@ export const SpecialBattleCard: React.FC<SpecialBattleCardProps> = ({ battle }) 
         </>
       )}
       {battle.is_archived && (
-        <RatingChangeDisplay 
-          ratingChange={ratingChange}
-          newRating={finalRating}
-        />
+        <div className="mt-1 text-xs font-semibold text-emerald-300">
+          {(() => {
+            if (!battle.winner_id) return '+8 SP'; // 引き分け
+            if (isWinner) return '+16 SP'; // 勝者
+            return '+4 SP'; // 敗者
+          })()}
+        </div>
       )}
     </div>
   );
@@ -218,8 +216,6 @@ export const SpecialBattleCard: React.FC<SpecialBattleCardProps> = ({ battle }) 
                 <PlayerDisplay 
                   player={battle.contestant_a}
                   votes={battle.votes_a}
-                  ratingChange={battle.player1_rating_change}
-                  finalRating={battle.player1_final_rating}
                   color={colorA}
                   isWinner={battle.winner_id === battle.player1_user_id}
                   defaultNameKey="battleCard.contestantA"
@@ -243,8 +239,6 @@ export const SpecialBattleCard: React.FC<SpecialBattleCardProps> = ({ battle }) 
                 <PlayerDisplay 
                   player={battle.contestant_b}
                   votes={battle.votes_b}
-                  ratingChange={battle.player2_rating_change}
-                  finalRating={battle.player2_final_rating}
                   color={colorB}
                   isWinner={battle.winner_id === battle.player2_user_id}
                   defaultNameKey="battleCard.contestantB"
