@@ -17,9 +17,9 @@ const PrivacyPolicyPage: React.FC = () => {
 
   const japanesePolicy = `# BeatNexusプライバシーポリシー
 
-**最終更新日: 2025年7月18日**
+**最終更新日: 2025年8月16日**
 
-BeatNexus（以下「本サービス」といいます。）は、ユーザーの皆様の個人情報の保護を最も重要な責務の一つと認識し、このプライバシーポリシー（以下「本ポリシー」といいます。）に基づき、適切に取り扱います。
+BeatNexus（以下「本サービス」といいます。）は、ユーザーの皆様の個人情報の保護を最も重要な責務の一つと認識し、このプライバシーポリシー（以下「本ポリシー」といいます。）に基づき、適切に取り扱います。GDPR、ePrivacy指令、個人情報保護法等の関連法令・ガイドラインを尊重します。
 
 ## 第1条（取得する個人情報）
 当社は、本サービスの提供にあたり、以下の情報を取得します。
@@ -34,11 +34,12 @@ BeatNexus（以下「本サービス」といいます。）は、ユーザー�
 
 ## 第2条（個人情報の利用目的）
 当社は、取得した個人情報を以下の目的で利用します。
-1.  本サービスの提供、運営、維持、改善のため（ログイン認証、バトルやランキングの表示など）
-2.  本人確認、不正利用防止、その他安全性の確保のため
-3.  ユーザーからのお問い合わせに対応するため
-4.  本サービスに関する重要なお知らせやメンテナンス情報などを通知するため
-5.  個人を特定できない形で統計データを作成し、サービス改善の分析に利用するため
+1.  本サービスの提供、運営、維持、改善（ログイン認証、バトル/ランキング表示、機能改善）
+2.  本人確認、不正利用防止、スパム・多重アカウント・不正投票の検知
+3.  お問い合わせ・サポート対応、重大なお知らせ（規約変更、セキュリティ通知等）の送付
+4.  利用状況の分析（匿名化または集計化した統計データ作成）
+5.  広告の表示および最適化（後述「第5条 Cookie・広告等」参照）
+6.  法令遵守、権利保護、紛争対応
 
 ## 第3条（個人情報の第三者提供）
 当社は、以下の場合を除き、ユーザー本人の同意なく個人情報を第三者に提供しません。
@@ -50,26 +51,35 @@ BeatNexus（以下「本サービス」といいます。）は、ユーザー�
 ## 第4条（個人情報の安全管理）
 当社は、取り扱う個人情報の漏えい、滅失またはき損の防止その他の個人情報の安全管理のために、必要かつ適切な措置を講じます。本サービスでは、Supabaseの提供する堅牢なセキュリティ基盤を活用し、データの暗号化、アクセス制御などを実施しています。
 
-## 第5条（Cookieの使用について）
-1.  当社は、サービスの利便性向上や利用状況の分析のため、Cookieを使用しています。
-2.  本サービスでは、Google LLCが提供するアクセス解析ツール「Google Analytics」を利用しています。Google Analyticsは、Cookieを利用してユーザーのトラフィックデータを収集します。このデータは匿名で収集されており、個人を特定するものではありません。詳細については、「Googleのサービスを使用するサイトやアプリから収集した情報のGoogleによる使用」のページをご覧ください。
-3.  ユーザーは、お使いのブラウザの設定により、Cookieを無効にすることができます。
+## 第5条（Cookie・広告・同意管理について）
+1.  当社は、サービス品質向上、セキュリティ確保、利用分析、広告（パーソナライズ/非パーソナライズ）配信のため Cookie や同様の技術（LocalStorage 等）を使用します。
+2.  本サービスは Google が提供する Google AdSense（広告配信）、Google Analytics（利用分析）を利用する場合があります。これらのサービスは Cookie や広告識別子を用いてトラフィックデータ・広告効果データを取得します。
+3.  取得される情報には、IPアドレスの一部、ブラウザ・デバイス情報、閲覧ページ、広告表示/クリック情報等が含まれる場合があります。これらの情報は個人を直接特定するものではありません。
+4.  欧州経済領域(EEA)、英国、スイスのユーザーに対しては、表示される同意管理メッセージ（CMP）で「同意」「同意しない」「設定」等を選択できます。選択肢はいつでも再表示（画面下部の「Cookie設定」リンクまたはブラウザキャッシュ削除）により変更できます。
+5.  同意しない（拒否）を選択した場合、パーソナライズされない広告（コンテキストに基づく広告）のみが表示され、行動履歴に基づくターゲティングは行われません。
+6.  ブラウザ設定で Cookie を無効化することも可能ですが、機能の一部が制限されることがあります。
+7.  Google によるデータの利用について詳しくは「Google のサービスを使用するサイトやアプリから収集した情報の Google による使用」を参照してください。
+8.  広告設定・オプトアウト: ユーザーは https://adssettings.google.com/ または https://myadcenter.google.com/ でパーソナライズ広告設定を変更できます。
+9.  当社は IAB TCF v2.2 に準拠したシグナル（必要に応じ）を送信し、ユーザー選択に基づく Consent Mode を適用します。
 
 ## 第6条（ユーザーの権利）
-ユーザーは、当社が保有する自己の個人情報について、開示、訂正、追加、削除、利用停止を請求することができます。ご希望の場合は、第8条のお問い合わせ窓口までご連絡ください。
+ユーザーは、当社が保有する自己の個人情報について、開示、訂正、追加、削除、利用停止、データポータビリティ、処理の制限、及び同意の撤回を要求できます。法令上許容される範囲で速やかに対応します。ご希望の場合は第9条の窓口までご連絡ください。
 
-## 第7条（プライバシーポリシーの変更）
-当社は、法令の変更やサービスの改善に伴い、本ポリシーを改定することがあります。重要な変更を行う場合には、本サービス上での通知など、分かりやすい方法でお知らせします。
+## 第7条（同意の撤回）
+同意に基づく処理（例：パーソナライズ広告、分析）について、ユーザーはいつでも撤回できます。撤回後、それ以前の処理の適法性に影響はありません。再度同意を与えるまで対象処理は停止または制限されます。
 
-## 第8条（お問い合わせ窓口）
-本ポリシーに関するお問い合わせは、下記の窓口までお願いいたします。
+## 第8条（プライバシーポリシーの変更）
+当社は、法令変更・サービス改善・運用方針変更等に応じて本ポリシーを改訂することがあります。重要な変更は本サービス上での掲示やメール通知等、合理的な方法で周知します。
+
+## 第9条（お問い合わせ窓口）
+本ポリシーおよび個人情報の取扱い、同意ステータスに関するお問い合わせは下記へご連絡ください。
 - メールアドレス: beatnexus.app@gmail.com
 
 以上`;
 
   const englishPolicy = `# BeatNexus Privacy Policy
 
-**Last Updated: July 18, 2025**
+**Last Updated: Aug 16, 2025**
 
 BeatNexus (the "Service") recognizes the protection of your personal information as one of its most important responsibilities. We handle your information appropriately based on this Privacy Policy (the "Policy").
 
@@ -102,19 +112,27 @@ We will not provide personal information to third parties without your consent, 
 ## Article 4 (Security Measures)
 We take necessary and appropriate measures to prevent the leakage, loss, or damage of personal information and to otherwise manage its security. The Service utilizes the robust security infrastructure provided by Supabase, including data encryption and access control.
 
-## Article 5 (Use of Cookies)
-1.  We use cookies to improve the usability of the Service and to analyze usage patterns.
-2.  The Service uses Google Analytics, an access analysis tool provided by Google LLC. Google Analytics uses cookies to collect user traffic data. This data is collected anonymously and does not personally identify you. For more details, please see the "How Google uses information from sites or apps that use our services" page.
-3.  You can disable cookies through your browser settings.
+## Article 5 (Cookies, Advertising & Consent Management)
+1. We use cookies and similar technologies (including local storage) for usability, security, analytics, and advertising (personalized & non-personalized) purposes.
+2. The Service may use Google AdSense (advertising) and Google Analytics (analytics). These services may collect partial IP address, device/browser information, pages viewed, ad impression/click metrics.
+3. For users in the EEA, UK and Switzerland, a consent banner (CMP) provides choices: Accept, Reject, or Manage options. You may revisit settings at any time (link in footer or by clearing cookies).
+4. If you reject, only non-personalized (contextual) ads are served and targeting based on behavior is disabled.
+5. You can disable cookies in your browser; some features may be limited.
+6. See "How Google uses information from sites or apps that use our services" for details on Google's data usage.
+7. Ad personalization settings & opt-out: https://adssettings.google.com/ or https://myadcenter.google.com/
+8. We may transmit IAB TCF v2.2 signals and apply Google's Consent Mode in line with your choices.
 
 ## Article 6 (Your Rights)
-You have the right to request the disclosure, correction, addition, deletion, or suspension of use of your personal information held by us. To make a request, please contact us at the email address provided in Article 8.
+You may request access, rectification, addition, deletion, restriction, data portability, objection, and withdrawal of consent. We will respond within a reasonable period as permitted by applicable law. Contact: Article 9.
 
-## Article 7 (Changes to this Policy)
-We may revise this Policy in response to changes in laws or improvements to the Service. If we make significant changes, we will notify you in an easy-to-understand manner, such as through a notice on the Service.
+## Article 7 (Withdrawal of Consent)
+You may withdraw consent (e.g. for personalized ads, analytics) at any time. Prior processing remains lawful. Processing pauses or is limited until renewed consent is given.
 
-## Article 8 (Contact Information)
-For inquiries regarding this Policy, please contact us at the following:
+## Article 8 (Changes to this Policy)
+We may update this Policy to reflect legal, service, or operational changes. Material changes will be announced via on-site notice or other reasonable means.
+
+## Article 9 (Contact Information)
+For inquiries regarding this Policy, personal data, or consent status:
 - Email: beatnexus.app@gmail.com
 
 End`;

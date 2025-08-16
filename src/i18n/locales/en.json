@@ -31,6 +31,24 @@
     "termsOfService": "Terms of Service",
     "privacyPolicy": "Privacy Policy"
   },
+  "contactPage": {
+    "title": "Contact",
+    "metaDescription": "Contact BeatNexus support and compliance team",
+    "intro": "For feedback, bug reports, rights infringement notices, or privacy/data requests, use the email below.",
+    "emailSection": {
+      "title": "Email",
+      "desc": "We usually respond within 1–3 business days."
+    },
+    "rightsSection": {
+      "title": "Rights / Urgent Issues",
+      "desc": "For copyright, trademark, privacy infringements or illegal/inappropriate content, include the target URL, screenshot if possible and a clear reason. Add [URGENT] to the subject if time‑sensitive."
+    },
+    "privacySection": {
+      "title": "Privacy / Data Requests",
+      "desc": "For access, correction, deletion or withdrawal requests, please write from your registered email for verification."
+    },
+    "back": "Back"
+  },
   "hoverCard": {
     "profile": "Profile",
     "myBattles": "My Battles",

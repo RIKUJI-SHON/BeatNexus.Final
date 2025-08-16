@@ -61,6 +61,8 @@ import TournamentPage from './pages/TournamentPage';
 import FAQPage from './pages/FAQPage';
 import TermsPage from './pages/TermsPage';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
+import ContactPage from './pages/ContactPage';
+import UserGuidelinesPage from './pages/UserGuidelinesPage';
 import NotificationTestPage from './pages/NotificationTestPage';
 import CommunityDetailPage from './pages/CommunityDetailPage';
 import BattleResultTestPage from './pages/BattleResultTestPage';
@@ -104,6 +106,8 @@ function RouterContent() {
             <Route path="/faq" element={<FAQPage />} />
             <Route path="/terms" element={<TermsPage />} />
             <Route path="/privacy" element={<PrivacyPolicyPage />} />
+            <Route path="/contact" element={<ContactPage />} />
+            <Route path="/guidelines" element={<UserGuidelinesPage />} />
             <Route path="/notifications/test" element={<NotificationTestPage />} />
             <Route path="/result-test" element={<BattleResultTestPage />} />
             <Route path="/reset-password" element={<ResetPasswordPage />} />
