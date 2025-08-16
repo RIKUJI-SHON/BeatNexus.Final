@@ -11,6 +11,8 @@ import { useTranslation } from 'react-i18next';
 import { VSIcon } from '../ui/VSIcon';
 import { VotingTips } from '../ui/VotingTips';
 import { trackBeatNexusEvents } from '../../utils/analytics';
+import { ShareModal } from '../ui/ShareModal';
+import { buildBattleShareText } from '../../utils/share';
 
 import { supabase } from '../../lib/supabase';
 import { getDefaultAvatarUrl } from '../../utils';
@@ -347,11 +349,28 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
   const playerColorA = '#3B82F6'; // Blue for Player A
   const playerColorB = '#EF4444'; // Red for Player B
 
-  // 新 shareModal トリガー (実装差替え済み) - 互換維持のため空処理 or 今後拡張
+  // Share Modal 状態
+  const [shareOpen, setShareOpen] = useState(false);
   const handleShareBattle = () => {
-    // 既存呼び出し箇所からの参照壊さないためのダミー
-    // 実際の共有は ShareBattleButton / ShareModal を利用
+    setShareOpen(true);
   };
+
+  // 共有テキスト事前生成 (動的: 言語 / 参加者)
+  const isParticipant = user?.id && (String(user.id) === String(player1Id) || String(user.id) === String(player2Id));
+  const player1Name = battle.contestant_a?.username || 'Player 1';
+  const player2Name = battle.contestant_b?.username || 'Player 2';
+  const opponentUsername = isParticipant
+    ? (String(user?.id) === String(player1Id) ? player2Name : player1Name)
+    : undefined;
+  const isJa = (navigator?.language || 'en').startsWith('ja');
+  const shareText = buildBattleShareText({
+    isParticipant: !!isParticipant,
+    isJa,
+    opponentUsername,
+    player1Name,
+    player2Name
+  });
+  const battleUrlSlug = `${typeof window !== 'undefined' ? window.location.origin : ''}/battle/${battle.contestant_a?.username && battle.contestant_b?.username ? `${battle.contestant_a.username}-vs-${battle.contestant_b.username}-${battle.id}` : battle.id}`;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-950 to-gray-900 relative overflow-hidden">
@@ -1004,6 +1023,13 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
               )}
           </div>
         </div>
+        <ShareModal
+          isOpen={shareOpen}
+          onClose={() => setShareOpen(false)}
+          baseUrl={battleUrlSlug}
+          text={shareText}
+          hashtags={["BeatNexus", "ビートボックス", "Beatbox"]}
+        />
       </div>
 
       {/* Vote Method Selection Modal */}
