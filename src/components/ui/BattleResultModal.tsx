@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Modal } from './Modal';
 import { BattleResult } from '../../store/battleResultStore';
-import { Share2 } from 'lucide-react';
+import { ShareModal } from './ShareModal';
 import { generateBattleUrl } from '../../utils/battleUrl';
 import { useAuthStore } from '../../store/authStore';
 
@@ -129,31 +129,7 @@ export const BattleResultModal: React.FC<BattleResultModalProps> = ({
               {/* Share & Archive Buttons (Win) */}
               {result.isWin && (
                 <div className="flex justify-center gap-3 mb-4">
-                  <button
-                    className="button"
-                    onClick={() => {
-                      const text = t('battle.result.shareText', {
-                        rating: result.newRating,
-                        opponent: result.opponentUsername
-                      });
-                      const tags = "#BeatNexus #ビートボックス #Beatbox";
-                      const taggedBase = `${text}\n\n${tags}`;
-
-                      const MAX_TEXT_LEN = 280 - 24; // Reserve for URL
-                      let taggedText = taggedBase;
-                      if (taggedText.length > MAX_TEXT_LEN) {
-                        const excess = taggedText.length - MAX_TEXT_LEN;
-                        const newText = text.slice(0, Math.max(0, text.length - excess - 1)).trimEnd() + '…';
-                        taggedText = `${newText}\n\n${tags}`;
-                      }
-
-                      const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(taggedText)}&url=${encodeURIComponent(window.location.origin)}`;
-                      window.open(url, '_blank');
-                    }}
-                  >
-                    <Share2 className="icon" />
-                    {t('battle.result.share')}
-                  </button>
+                  <ShareResultButton opponent={result.opponentUsername} rating={result.newRating} />
 
                   <button
                     className="button bg-gradient-to-r from-purple-500 to-cyan-500 hover:from-purple-600 hover:to-cyan-600"
@@ -263,4 +239,25 @@ export const BattleResultModal: React.FC<BattleResultModalProps> = ({
       `}</style>
     </>
   );
-}; 
+};
+
+const ShareResultButton: React.FC<{ opponent: string; rating: number; }> = ({ opponent, rating }) => {
+  const { t } = useTranslation();
+  const [open, setOpen] = useState(false);
+  const text = t('battle.result.shareText', { rating, opponent });
+  const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
+  return (
+    <>
+      <button className="button" onClick={() => setOpen(true)}>
+        {t('battle.result.share')}
+      </button>
+      <ShareModal
+        isOpen={open}
+        onClose={() => setOpen(false)}
+        baseUrl={baseUrl}
+        text={text}
+        hashtags={["BeatNexus", "ビートボックス", "Beatbox"]}
+      />
+    </>
+  );
+};

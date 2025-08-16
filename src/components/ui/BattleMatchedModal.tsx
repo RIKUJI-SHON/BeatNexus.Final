@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Modal } from './Modal';
 import { Avatar } from './Avatar';
-import { Share2 } from 'lucide-react';
-import i18n from '../../i18n';
+import { ShareModal } from './ShareModal';
+import { buildBattleShareText } from '../../utils/share';
 import { generateBattleUrl } from '../../utils/battleUrl';
 import { useAuthStore } from '../../store/authStore';
 
@@ -151,45 +151,7 @@ export const BattleMatchedModal: React.FC<BattleMatchedModalProps> = ({
               </div>
 
               {/* Share Button */}
-              <div className="flex justify-center">
-                <button
-                  className="battle-share-button"
-                  onClick={() => {
-                    // --- Generate share text identical to BattleView participant templates ---
-                    const opponentUsername = matchData.opponentUsername || 'Opponent';
-                    const isJa = i18n.language.startsWith('ja');
-
-                    const shareText = isJa
-                      ? `BeatNexusでバトル中です！🔥\n対戦相手は ${opponentUsername} さん！\n\n最高のパフォーマンスをしたので、ぜひ見て応援（投票）お願いします！💪\n\n投票はこちらから👇`
-                      : `I'm in a battle on BeatNexus! 🥊\nFacing off against the incredible ${opponentUsername}.\n\nGave it my all on this one. Check it out and drop a vote if you're feelin' my performance! 🙏\n\nWatch & Vote here 👇`;
-
-                    const currentUsername = user?.user_metadata?.username || 'Player1';
-                    const url = `${window.location.origin}/battle/${generateBattleUrl(
-                      currentUsername,
-                      opponentUsername,
-                      matchData.battleId
-                    )}`;
-                    const tags = "#BeatNexus #ビートボックス #Beatbox";
-                    const taggedTextBase = `${shareText}\n\n${tags}`;
-
-                    // X(Twitter) counts any URL as 23 characters. Reserve that + 1 space.
-                    const MAX_TEXT_LEN = 280 - 24; // 23 for URL + 1 space
-
-                    let taggedText = taggedTextBase;
-                    if (taggedText.length > MAX_TEXT_LEN) {
-                      const excess = taggedText.length - MAX_TEXT_LEN;
-                      const newShare = shareText.slice(0, Math.max(0, shareText.length - excess - 1)).trimEnd() + '…';
-                      taggedText = `${newShare}\n\n${tags}`;
-                    }
-
-                    const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(taggedText)}&url=${encodeURIComponent(url)}`;
-                    window.open(twitterUrl, '_blank');
-                  }}
-                >
-                  <Share2 className="icon" />
-                  {t('battle.matched.share')}
-                </button>
-              </div>
+              <BattleMatchedShareButton matchData={matchData} userUsername={user?.user_metadata?.username} />
             </div>
           </div>
         </div>
@@ -264,4 +226,35 @@ export const BattleMatchedModal: React.FC<BattleMatchedModalProps> = ({
       `}</style>
     </>
   );
-}; 
+};
+
+// 個別のシェアボタン（モーダル起動）
+const BattleMatchedShareButton: React.FC<{ matchData: BattleMatchedData; userUsername?: string; }> = ({ matchData, userUsername }) => {
+  const { t, i18n } = useTranslation();
+  const [open, setOpen] = useState(false);
+  const isJa = i18n.language.startsWith('ja');
+  const currentUsername = userUsername || 'Player1';
+  const battleUrl = generateBattleUrl(currentUsername, matchData.opponentUsername, matchData.battleId);
+  const baseUrl = `${typeof window !== 'undefined' ? window.location.origin : ''}/battle/${battleUrl}`;
+  const shareText = buildBattleShareText({
+    isParticipant: true,
+    isJa,
+    opponentUsername: matchData.opponentUsername,
+    player1Name: currentUsername,
+    player2Name: matchData.opponentUsername
+  });
+  return (
+    <div className="flex justify-center">
+      <button className="battle-share-button" onClick={() => setOpen(true)}>
+        {t('battle.matched.share')}
+      </button>
+      <ShareModal
+        isOpen={open}
+        onClose={() => setOpen(false)}
+        baseUrl={baseUrl}
+        text={shareText}
+        hashtags={["BeatNexus", "ビートボックス", "Beatbox"]}
+      />
+    </div>
+  );
+};

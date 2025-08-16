@@ -1,0 +1,46 @@
+# Share Feature Phase 1 & 2 Implementation Log (2025-08-16)
+
+## Scope
+- Phase 1: Web Share API + X(Twitter) + Copy Link 基盤化
+- Phase 2: 主要SNS (LINE / WhatsApp / Telegram / Reddit / LinkedIn) 追加 + タイムスタンプ共有 (t= 秒) 入力機能
+
+## Added
+- src/utils/share.ts: 共有URL/テキスト生成ユーティリティ (buildSharePayload, buildPlatformUrl, tryNativeShare, buildBattleShareText 等)
+- src/components/ui/ShareModal.tsx: 共通シェアモーダル (プラットフォーム選択・リンクコピー・timestamp指定・ネイティブ共有)
+
+## Modified
+- ShareBattleButton.tsx: 旧X直リンク -> ShareModal起動形式へ
+- BattleView.tsx: handleShareBattle 旧ロジック撤去 (ダミー化)
+- BattleMatchedModal.tsx: 直X共有 → BattleMatchedShareButton + ShareModal
+- BattleResultModal.tsx: 勝利時シェアボタン → ShareResultButton + ShareModal
+
+## Removed / Refactored
+- 重複していた共有テキスト生成ロジックを share.ts に統合
+- 各所の X 固定 intent URL 組み立てコードを削除
+
+## Timestamp Strategy
+- クエリパラメータ t=seconds を付与 (appendTimestamp)
+- 現状 UI では手入力 (今後: 動画再生位置取得連携予定)
+
+## Hashtags
+- 共通: BeatNexus / ビートボックス / Beatbox (X 等で #付与)
+
+## Accessibility & UX
+- モーダル: 背景透過ブラー, ESC/外側クリックは Modal コンポーネント仕様準拠
+- System Share ボタン: navigator.share 成功失敗で分岐。失敗時 Copy fallback
+
+## Next Steps (Future Phases)
+- 動画再生位置からの自動 timestamp 取得ボタン
+- 動的 OGP (Satori/Edge) + 短縮URL (slug テーブル) 解析計測
+- Bluesky / Telegram Deep Link 微調整 / Discord Embed Bot 連携
+- シェアクリック計測 (analytics endpoint)
+
+## QA Checklist
+- 各プラットフォーム URL intent 生成 (手動検証 OK)
+- X 文字数トリミング: 280 - 24 reserved ロジック維持
+- 未使用インポート除去済み
+
+## Risks
+- Timestamp クエリを既存ルーティングが未処理 (現状無害) → 将来 t= に応じてシーク要検討
+
+END

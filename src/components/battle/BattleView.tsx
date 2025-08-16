@@ -13,7 +13,6 @@ import { VotingTips } from '../ui/VotingTips';
 import { trackBeatNexusEvents } from '../../utils/analytics';
 
 import { supabase } from '../../lib/supabase';
-import { generateBattleUrl } from '../../utils/battleUrl';
 import { getDefaultAvatarUrl } from '../../utils';
 import { isIOSDevice, getOptimalPreloadSetting } from '../../utils/videoSupport';
 import { OptimizedVideoPlayer } from '../ui/OptimizedVideoPlayer';
@@ -26,7 +25,7 @@ interface BattleViewProps {
 }
 
 export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = false }) => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [hasVoted, setHasVoted] = useState<'A' | 'B' | null>(null);
   const [votesA, setVotesA] = useState(battle.votes_a);
@@ -348,60 +347,10 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
   const playerColorA = '#3B82F6'; // Blue for Player A
   const playerColorB = '#EF4444'; // Red for Player B
 
+  // 新 shareModal トリガー (実装差替え済み) - 互換維持のため空処理 or 今後拡張
   const handleShareBattle = () => {
-    const player1Name = battle.contestant_a?.username || 'Player 1';
-    const player2Name = battle.contestant_b?.username || 'Player 2';
-
-    const isParticipant = user?.id === battle.player1_user_id || user?.id === battle.player2_user_id;
-
-    const isJa = i18n.language.startsWith('ja');
-
-    let shareText = '';
-
-    if (isParticipant) {
-      // Participant templates (fixed)
-      const opponentUsername = user?.id === battle.player1_user_id ? player2Name : player1Name;
-      shareText = isJa
-        ? `BeatNexusでバトル中です！🔥\n対戦相手は ${opponentUsername} さん！\n\n最高のパフォーマンスをしたので、ぜひ見て応援（投票）お願いします！💪\n\n投票はこちらから👇`
-        : `I'm in a battle on BeatNexus! 🥊\nFacing off against the incredible ${opponentUsername}.\n\nGave it my all on this one. Check it out and drop a vote if you're feelin' my performance! 🙏\n\nWatch & Vote here 👇`;
-    } else {
-      // Spectator templates (two variants each lang)
-      if (isJa) {
-        const templates = [
-          `【🔥BATTLE ALERT🔥】\n${player1Name} 🆚 ${player2Name}\n\nBeatNexusで超ハイレベルなビートボックスバトルが勃発！\n勝敗はあなたの投票で決まる！今すぐジャッジに参加しよう！\n\n🎤 観戦＆投票はこちら👇`,
-          `君の一票が勝敗を分ける。\n${player1Name} vs ${player2Name}、究極のビートボックス対決！🔥\n\nどっちのフロウが、スキルが、より心を揺さぶる？\nあなたの耳でジャッジしてください！\n\n🎧 投票ページへ👇`
-        ];
-        shareText = templates[Math.floor(Math.random() * templates.length)];
-      } else {
-        const templates = [
-          `🔥 EPIC BATTLE ALERT 🔥\n${player1Name} 🆚 ${player2Name} are throwing down on BeatNexus!\n\nWho takes the win? YOU decide! This is a must-watch for any beatbox fan.\n\n🎤 Cast your vote now! 👇`,
-          `Your vote is the final say. 🎧\n${player1Name} vs ${player2Name} in an insane clash on BeatNexus.\n\nWho's got the better flow, tech, and musicality?\nBe the judge and make your voice heard!\n\nJudge the battle now 👇`
-        ];
-        shareText = templates[Math.floor(Math.random() * templates.length)];
-      }
-    }
-
-    const battleUrl = generateBattleUrl(
-      battle.contestant_a?.username,
-      battle.contestant_b?.username,
-      battle.id
-    );
-    const url = `${window.location.origin}/battle/${battleUrl}`;
-    const tags = "#BeatNexus #ビートボックス #Beatbox";
-    const taggedTextBase = `${shareText}\n\n${tags}`;
-
-    // X(Twitter) counts any URL as 23 characters. Reserve that + 1 space.
-    const MAX_TEXT_LEN = 280 - 24; // 23 for URL + 1 space
-
-    let taggedText = taggedTextBase;
-    if (taggedText.length > MAX_TEXT_LEN) {
-      const excess = taggedText.length - MAX_TEXT_LEN;
-      const newShare = shareText.slice(0, Math.max(0, shareText.length - excess - 1)).trimEnd() + '…';
-      taggedText = `${newShare}\n\n${tags}`;
-    }
-
-    const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(taggedText)}&url=${encodeURIComponent(url)}`;
-    window.open(twitterUrl, '_blank');
+    // 既存呼び出し箇所からの参照壊さないためのダミー
+    // 実際の共有は ShareBattleButton / ShareModal を利用
   };
 
   return (
