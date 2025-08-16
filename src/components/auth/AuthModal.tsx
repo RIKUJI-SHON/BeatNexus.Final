@@ -73,6 +73,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     { code: 'HK', name: 'Hong Kong', dial: '+852', flag: '🇭🇰' },
     { code: 'RO', name: 'Romania', dial: '+40', flag: '🇷🇴' },
     { code: 'LA', name: 'Laos', dial: '+856', flag: '🇱🇦' },
+    { code: 'SG', name: 'Singapore', dial: '+65', flag: '🇸🇬' },
     // ... add more as needed
   ];
   
