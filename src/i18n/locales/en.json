@@ -74,7 +74,13 @@
     "compressing": "Compressing video...",
     "uploading": "Uploading video...",
     "creating": "Creating submission...",
-    "matching": "Finding opponent..."
+    "matching": "Finding opponent...",
+    "warnings": {
+      "largeFileIos": "⚠️ Large file size. This may cause issues on iOS devices..."
+    },
+    "lightCompression": "Applying light compression for iOS optimization...",
+    "genericError": "Submission failed",
+    "largeFileNotice": "This is a large file, compression may take a while. Please keep the browser open."
   },
   "subscription": {
     "title": "Choose Your Plan",

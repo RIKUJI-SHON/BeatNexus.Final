@@ -279,7 +279,7 @@ const PostPage: React.FC = () => {
           // iOS向け最終チェック（50MB以下を推奨）
           if (compressedSizeMB > 50) {
             console.warn(`⚠️ File size (${compressedSizeMB.toFixed(1)}MB) may cause issues on iOS devices`);
-            setSubmissionStage('⚠️ 大きなファイルサイズです。iOS端末で問題が発生する可能性があります...');
+            setSubmissionStage(t('submissionModal.warnings.largeFileIos'));
           }
           
           // 圧縮後のファイルサイズチェック
@@ -305,7 +305,7 @@ const PostPage: React.FC = () => {
         console.log(`📦 File size (${(videoFile.size / 1024 / 1024).toFixed(1)}MB) is below threshold, applying light compression for iOS optimization...`);
         
         try {
-          setSubmissionStage('iOS最適化のため軽い圧縮を実行中...');
+          setSubmissionStage(t('submissionModal.lightCompression'));
           setSubmissionProgress(25);
           setIsCompressing(true);
           
@@ -489,7 +489,7 @@ const PostPage: React.FC = () => {
       
     } catch (err) {
       console.error('Submission error:', err);
-      setSubmissionError(err instanceof Error ? err.message : '投稿に失敗しました');
+  setSubmissionError(err instanceof Error ? err.message : t('submissionModal.genericError'));
       setIsSubmissionProcessing(false);
     }
   };
@@ -1109,6 +1109,7 @@ const PostPage: React.FC = () => {
         videoFile={videoFile}
         videoPreviewUrl={videoPreviewUrl}
         stage={getModalStage()} // 詳細ステージを使用
+        stageKey={isCompressing ? (progress < 50 ? 'compressing' : 'lightCompression') : submissionStage}
         progress={getModalProgress()} // 統合された進捗値を使用
         isProcessing={isSubmissionProcessing}
         error={submissionError}

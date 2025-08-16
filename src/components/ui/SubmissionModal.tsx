@@ -7,7 +7,8 @@ interface SubmissionModalProps {
   onClose: () => void;
   videoFile: File | null;
   videoPreviewUrl: string | null;
-  stage: string;
+  stage: string; // 表示用翻訳済みステージ名
+  stageKey?: string; // 内部判定用ステージキー (compressing, uploading など)
   progress: number;
   isProcessing: boolean;
   error?: string | null;
@@ -20,6 +21,7 @@ const SubmissionModal: React.FC<SubmissionModalProps> = ({
   videoFile,
   videoPreviewUrl,
   stage,
+  stageKey,
   progress,
   isProcessing,
   error,
@@ -33,8 +35,8 @@ const SubmissionModal: React.FC<SubmissionModalProps> = ({
   // 推定残り時間の計算（段階別）
   useEffect(() => {
     if (isProcessing && progress > 0) {
-      // 圧縮段階かどうかを判定
-      const isCompressionStage = stage.includes('圧縮') || stage.includes('メモリ') || stage.includes('FFmpeg');
+      // 圧縮段階かどうかを判定 (翻訳非依存)
+      const isCompressionStage = (stageKey === 'compressing') || (stageKey === 'lightCompression');
       
       if (!startTime) {
         setStartTime(Date.now());
@@ -42,14 +44,14 @@ const SubmissionModal: React.FC<SubmissionModalProps> = ({
         return;
       }
 
-      const elapsed = (Date.now() - startTime) / 1000; // 秒
+  const elapsed = (Date.now() - startTime) / 1000; // seconds elapsed
       
       // 圧縮段階から投稿段階に移った場合、時間見積もりをリセット
       if (compressionPhase && !isCompressionStage && progress > 50) {
         setStartTime(Date.now());
         setCompressionPhase(false);
-        // 投稿段階は短時間で完了すると見積もり
-        setEstimatedTimeRemaining('約1分');
+        // Upload stage is typically short; approximate 1 minute using i18n minutes helper
+        setEstimatedTimeRemaining(t('submissionModal.estimatedTime.minutes', { minutes: 1, seconds: 0 }));
         return;
       }
       
@@ -68,13 +70,18 @@ const SubmissionModal: React.FC<SubmissionModalProps> = ({
 
       if (remaining > 0) {
         if (remaining < 60) {
-          setEstimatedTimeRemaining(`約${Math.max(Math.round(remaining), 10)}秒`);
+          setEstimatedTimeRemaining(
+            t('submissionModal.estimatedTime.seconds', { seconds: Math.max(Math.round(remaining), 10) })
+          );
         } else {
           const minutes = Math.floor(remaining / 60);
-          setEstimatedTimeRemaining(`約${minutes}分`);
+            const secs = Math.round(remaining - minutes * 60);
+          setEstimatedTimeRemaining(
+            t('submissionModal.estimatedTime.minutes', { minutes, seconds: secs })
+          );
         }
       } else {
-        setEstimatedTimeRemaining('まもなく完了');
+        setEstimatedTimeRemaining(t('submissionModal.estimatedTime.almostDone'));
       }
     } else {
       // 処理が完了または開始前
@@ -82,7 +89,7 @@ const SubmissionModal: React.FC<SubmissionModalProps> = ({
       setEstimatedTimeRemaining('');
       setCompressionPhase(true);
     }
-  }, [isProcessing, progress, stage, startTime, compressionPhase]);
+  }, [isProcessing, progress, stage, stageKey, startTime, compressionPhase, t]);
 
   // ブラウザ離脱防止
   useEffect(() => {
@@ -188,18 +195,16 @@ const SubmissionModal: React.FC<SubmissionModalProps> = ({
               {estimatedTimeRemaining && (
                 <div className="flex items-center gap-2 text-sm text-slate-400">
                   <Clock className="h-4 w-4" />
-                  <span>推定残り時間: {estimatedTimeRemaining}</span>
+                  <span>{t('submissionModal.estimatedRemaining')}: {estimatedTimeRemaining}</span>
                 </div>
               )}
               
               {/* 大容量ファイル用の案内 */}
-              {videoFile && videoFile.size > 800 * 1024 * 1024 && stage.includes('圧縮') && (
+      {videoFile && videoFile.size > 800 * 1024 * 1024 && (stageKey === 'compressing' || stageKey === 'lightCompression') && (
                 <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-3 backdrop-blur-sm">
                   <div className="flex items-start gap-2">
                     <Clock className="h-4 w-4 text-blue-400 mt-0.5 flex-shrink-0" />
-                    <div className="text-sm text-blue-200">
-                      大容量ファイルのため圧縮に時間がかかります。ブラウザを閉じずにお待ちください。
-                    </div>
+        <div className="text-sm text-blue-200">{t('submissionModal.largeFileNotice')}</div>
                   </div>
                 </div>
               )}
