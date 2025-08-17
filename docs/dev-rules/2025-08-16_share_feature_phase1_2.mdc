@@ -13,6 +13,7 @@
 - BattleView.tsx: handleShareBattle 旧ロジック撤去 (ダミー化)
 - BattleMatchedModal.tsx: 直X共有 → BattleMatchedShareButton + ShareModal
 - BattleResultModal.tsx: 勝利時シェアボタン → ShareResultButton + ShareModal
+- BattleView.tsx: 共有URL生成を `generateBattleUrl` 利用に変更（日本語ユーザー名を sanitizeUsername で英数字正規化しフレンドリーURL統一）
 
 ## Removed / Refactored
 - 重複していた共有テキスト生成ロジックを share.ts に統合

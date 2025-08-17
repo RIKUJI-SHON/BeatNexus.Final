@@ -13,6 +13,7 @@ import { VotingTips } from '../ui/VotingTips';
 import { trackBeatNexusEvents } from '../../utils/analytics';
 import { ShareModal } from '../ui/ShareModal';
 import { buildBattleShareText } from '../../utils/share';
+import { generateBattleUrl } from '../../utils/battleUrl';
 
 import { supabase } from '../../lib/supabase';
 import { getDefaultAvatarUrl } from '../../utils';
@@ -370,7 +371,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
     player1Name,
     player2Name
   });
-  const battleUrlSlug = `${typeof window !== 'undefined' ? window.location.origin : ''}/battle/${battle.contestant_a?.username && battle.contestant_b?.username ? `${battle.contestant_a.username}-vs-${battle.contestant_b.username}-${battle.id}` : battle.id}`;
+  const battleUrlSlug = `${typeof window !== 'undefined' ? window.location.origin : ''}/battle/${generateBattleUrl(player1Name, player2Name, battle.id)}`;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-950 to-gray-900 relative overflow-hidden">
