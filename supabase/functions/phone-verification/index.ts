@@ -42,36 +42,18 @@ function corsResponse(body?: unknown, status = 200) {
   );
 }
 
-// 📞 電話番号正規化関数
-function normalizePhoneNumber(phoneNumber: string): string {
-  // 数字と+以外を除去
-  let normalized = phoneNumber.replace(/[^\d+]/g, '');
-  
-  // 日本の携帯電話番号の正規化
-  if (normalized.match(/^0[789][0-9]{8,9}$/)) {
-    // 0X0-XXXX-XXXX -> +81X0-XXXX-XXXX
-    normalized = '+81' + normalized.substring(1);
-  } else if (normalized.match(/^[789][0-9]{8,9}$/)) {
-    // X0-XXXX-XXXX -> +81X0-XXXX-XXXX
-    normalized = '+81' + normalized;
-  } else if (normalized.match(/^0[2569][0-9]{7,8}$/)) {
-    // ラオスの電話番号形式: 020-XXXX-XXXX, 050-XXX-XXXX, 091-XXX-XXXX, 096-XXX-XXXX
-    normalized = '+856' + normalized.substring(1);
-  } else if (normalized.match(/^[2569][0-9]{7,8}$/)) {
-    // ラオスの電話番号（先頭0なし）
-    normalized = '+856' + normalized;
-  } else if (!normalized.startsWith('+')) {
-    // 国番号がない場合は日本と仮定（既存の動作を維持）
-    normalized = '+81' + normalized;
+// 📞 電話番号バリデーション (E.164形式) – 自動国推測を行わず、フロントで生成された値を検証のみ
+function validatePhoneNumber(phoneNumber: string): string {
+  const cleaned = phoneNumber.replace(/[\s-]/g, '');
+  if (!/^\+[1-9]\d{5,14}$/.test(cleaned)) { // +と6〜15桁
+    throw new Error('invalid_format');
   }
-  
-  return normalized;
+  return cleaned;
 }
 
-// 📱 SMS OTP送信関数
+// 📱 SMS OTP送信関数（構文破損修復）
 async function sendVerificationCode(phoneNumber: string): Promise<{ success: boolean; error?: string }> {
   try {
-    // 🔐 環境変数チェック
     if (!TWILIO_ACCOUNT_SID || !TWILIO_AUTH_TOKEN || !TWILIO_VERIFY_SERVICE_SID) {
       console.error('Missing Twilio environment variables:', {
         TWILIO_ACCOUNT_SID: !!TWILIO_ACCOUNT_SID,
@@ -83,15 +65,11 @@ async function sendVerificationCode(phoneNumber: string): Promise<{ success: boo
 
     const url = `https://verify.twilio.com/v2/Services/${TWILIO_VERIFY_SERVICE_SID}/Verifications`;
     const auth = btoa(`${TWILIO_ACCOUNT_SID}:${TWILIO_AUTH_TOKEN}`);
-    
     const body = new URLSearchParams({ To: phoneNumber, Channel: 'sms' });
 
     console.log('📤 Sending SMS to Twilio API...');
-    
-    // ⏰ タイムアウト付きfetch
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10秒タイムアウト
-
+    const timeoutId = setTimeout(() => controller.abort(), 10000);
     const response = await fetch(url, {
       method: 'POST',
       headers: {
@@ -101,24 +79,22 @@ async function sendVerificationCode(phoneNumber: string): Promise<{ success: boo
       body: body.toString(),
       signal: controller.signal
     });
-
     clearTimeout(timeoutId);
-    console.log('📨 Twilio API response status:', response.status);
 
+    console.log('📨 Twilio API response status:', response.status);
     const responseData = await response.json();
     console.log('📋 Twilio API response data:', responseData);
-    
     if (!response.ok) {
       return { success: false, error: `Twilio API error: ${responseData.message || 'Unknown error'}` };
     }
     return { success: true };
   } catch (error) {
-    if (error.name === 'AbortError') {
+    if ((error as Error).name === 'AbortError') {
       console.error('SMS sending timeout');
       return { success: false, error: 'SMS sending timeout - please try again' };
     }
     console.error('SMS sending error:', error);
-    return { success: false, error: `Network error: ${error.message}` };
+    return { success: false, error: `Network error: ${(error as Error).message}` };
   }
 }
 
@@ -181,9 +157,15 @@ serve(async (req) => {
     const { action, phoneNumber, code } = await req.json();
     console.log('📱 Phone verification request:', { action, phoneNumber: phoneNumber ? '***masked***' : null, code: code ? '***masked***' : null });
 
-    // 電話番号の正規化
-    const normalizedPhone = phoneNumber ? normalizePhoneNumber(phoneNumber) : null;
-    console.log('📞 Normalized phone:', normalizedPhone ? '***masked***' : null);
+    // 電話番号の検証（フロントでE.164生成済み想定）
+    let normalizedPhone: string | null = null;
+    try {
+      normalizedPhone = phoneNumber ? validatePhoneNumber(phoneNumber) : null;
+    } catch (validationErr) {
+      console.warn('⚠️ Phone validation failed:', validationErr instanceof Error ? validationErr.message : validationErr);
+      return corsResponse({ error: 'invalid_phone_format', message: '電話番号形式が不正です。+国番号を含むE.164形式で入力してください。' }, 400);
+    }
+    console.log('📞 Validated phone (masked):', normalizedPhone ? normalizedPhone.substring(0, 5) + '***' : null);
 
     if (action === 'send_code') {
       if (!phoneNumber) return corsResponse({ error: 'Phone number is required' }, 400);
@@ -193,7 +175,7 @@ serve(async (req) => {
       
       try {
         const { data: availabilityCheck, error: availabilityError } = await supabaseAdmin
-          .rpc('check_phone_availability', { phone_input: phoneNumber });
+          .rpc('check_phone_availability', { phone_input: normalizedPhone });
           
         if (availabilityError) {
           console.error('Phone availability check error:', availabilityError);
@@ -221,7 +203,7 @@ serve(async (req) => {
       console.log('🔄 Starting SMS sending process...');
       console.log('📞 Target phone (masked):', normalizedPhone!.substring(0, 5) + '***');
       
-      const result = await sendVerificationCode(normalizedPhone!);
+  const result = await sendVerificationCode(normalizedPhone!);
       console.log('📊 SMS sending result:', result);
       
       if (result.success) {
@@ -239,7 +221,7 @@ serve(async (req) => {
     if (action === 'verify_code') {
       if (!phoneNumber || !code) return corsResponse({ error: 'Phone number and code are required' }, 400);
       
-      const result = await verifyCode(normalizedPhone!, code);
+  const result = await verifyCode(normalizedPhone!, code);
       console.log('🔔 Verification result:', result);
       
       if (result.success) {

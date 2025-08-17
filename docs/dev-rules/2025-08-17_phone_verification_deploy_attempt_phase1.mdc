@@ -1,0 +1,143 @@
+# phone-verification Edge Function Phase1 デプロイ試行ログ (開発環境)
+
+## 日時
+2025-08-17
+
+## 目的
+E.164 Validation Phase1 版 phone-verification 関数を開発環境 (project_id: wdttluticnlqzmqmfvgt) にデプロイ。
+
+## 手順サマリ
+1. 既存関数一覧取得 → phone-verification (version 20) が既存。
+2. 新版ソースを `source/index.ts` 形式でデプロイ試行 → internal error。
+3. Entrypoint path 不一致エラー発生 → 単一 `index.ts` 構成で再試行。
+4. fetch failed エラー発生。
+5. edge-function ログ取得 → 空 (直近ログなし)。
+
+## 観測されたエラー
+- Error: Function deploy failed due to an internal error
+- Error: Entrypoint path does not exist - /tmp/.../source/index.ts
+- TypeError: fetch failed
+- get_logs(edge-function) 結果: 空配列
+
+## 推定原因仮説
+- MCP デプロイAPI で `source/` ディレクトリ構成が期待されるが files 配列渡し形式との不整合。
+- 既存関数が import_map を利用しているため、 import_map 欠落での内部失敗。
+- ネットワーク一時障害 (fetch failed) 。
+
+## 次回試行案
+A. 既存構成踏襲 (source/index.ts + source/deno.json) で再試行しエントリポイント解決を確認。
+B. 失敗継続なら一旦旧ソース取得→差分最小パッチ適用方式(編集)に切り替え。
+C. import_map 必須なら現行の `source/deno.json` を併せて送信。
+D. Twilio 依存外し検証用に最小 no-op 版を先にデプロイし pipeline 正常性確認。
+
+## 保留
+ユーザー指示待ち（再試行戦略選択）。
+
+## 参考
+既存 version 20 は旧 normalizePhoneNumber 実装を保持。
+
+---
+ログ終わり。
+
+## 追加試行 (午後)
+
+### 試行6: explicit entrypoint_path なしで再度 source/index.ts + deno.json 提供 (phone-verification 置換)
+- 結果: Entrypoint path does not exist - /tmp/user_fn_wdttluticnlqzmqmfvgt_a4d99b6f-8075-4619-8dc4-a5625740bba7_21/source/index.ts
+- 気付き: レスポンスで version 21 が生成されず (エラー終了)
+
+### 試行7: 新規 slug phone-verification-v2 (同構成) デプロイ
+- 結果: Entrypoint path does not exist - /tmp/.../source/index.ts （同型エラー）
+
+### 試行8: ルート直下 index.ts 単一ファイル (phone-verification-v3)
+- 結果: Failed to deploy Edge Function （詳細不明、内部エラー）
+
+### 試行9: explicit entrypoint_path=source/index.ts を指定し最小テストコードで phone-verification 再デプロイ
+- 結果: 成功 (version 21 発行)。ただし返却された entrypoint_path が file:///tmp/.../source/source/index.ts と二重 source になっている点を確認。
+- 推測: デプロイ API 内部で source/ が二重付与されるバグ or files 配列パス処理仕様。
+
+### 試行10: version 22 として E.164 実装本体を explicit entrypoint_path で再デプロイ
+- 結果: Function deploy failed due to an internal error （内部エラー復帰）。
+
+### 試行11: incremental Step B (env 読取) を source/index.ts で差し替え
+- 結果: internal error
+
+### 試行12: incremental Step B-root (env 読取) を root index.ts + entrypoint_path=index.ts
+- 結果: internal error
+
+### 試行13: incremental Step A-root (再度最小) root index.ts
+- 結果: internal error （以前成功した最小構成が現在は失敗 → 状態変化）
+
+### 試行14: 新規 slug pv-nest-test を entrypoint_path=source/source/index.ts かつ files に source/source/ 配下でデプロイ
+- 結果: 成功 (version 1) entrypoint_path が更に source/source/source/index.ts と三重化
+
+### 試行15: 新規 slug pv-single-source-test を entrypoint_path=source/index.ts + files=source/index.ts
+- 結果: fetch failed
+
+### 試行16: 新規 slug pv-root-test を entrypoint_path=index.ts + files=index.ts
+- 結果: 成功 (version 1) ただし返却 entrypoint_path は file:///tmp/.../source/index.ts （内部で source/ 付与）
+
+## パターン比較まとめ
+| パターン | files パス | 明示 entrypoint_path | 結果 | 備考 |
+|----------|-----------|---------------------|------|------|
+| 旧成功 (v21) | source/index.ts | source/index.ts | 成功 | 返却で source/source/ 二重化 |
+| 試行11 | source/index.ts | source/index.ts | 失敗 internal | 同一形式で失敗再現 → 外部要因か一時的状態 |
+| pv-single-source-test | source/index.ts | source/index.ts | fetch failed | 単純 probe でも失敗持続 |
+| pv-root-test | index.ts | index.ts | 成功 | 返却で source/ 付与される挙動 |
+| pv-nest-test | source/source/index.ts | source/source/index.ts | 成功 | 返却で source/source/source/ 三重化 |
+| root 再試行 (試行13) | index.ts | index.ts | 失敗 internal | 同 root でも以前成功→失敗と成功が揺れる |
+
+## 暫定仮説更新
+1. デプロイ API が内部で常に一段 source/ を prepand しているため、与える entrypoint_path によって多重 source/ が蓄積しうる。過剰な多重化が後続内部処理でエラーを誘発するタイミングがある可能性。
+2. 同一 slug 再デプロイ時、以前のレイアウト (source/source) がキャッシュされ、新しい files パスとの不整合で internal error になっている可能性。
+3. fetch failed はネットワーク/内部ゲートウェイエラーで一貫性に欠ける。
+
+## 次ステップ案 (原因特定継続)
+- S1: 新規 slug を毎回使い、安定成功パターン (pv-root-test 形式) に対し段階的にコードを追加し Twilio/Supabase import 追加ポイントで失敗するか検証。
+- S2: 追加ごとに 500ms ほどインターバルを置き連続デプロイ衝突を避ける。
+- S3: エラー発生後 同一 slug ではなく別 slug で同コードを再試行し deterministic か確認。
+- S4: 成功した最終 slug を正式 phone-verification-v2 として指し替え、フロントで endpoint を切替 (段階移行)。
+
+## 段階的再現テスト (S1〜S4 新規 slug)
+
+| Step | slug | entrypoint_path 指定 | files 構成 | 目的 | 結果 |
+|------|------|----------------------|------------|------|------|
+| S1 | pv-e164-s1 | index.ts | index.ts | 最小 baseline | 成功 |
+| S2 | pv-e164-s2 | index.ts | index.ts | env 参照追加 | 成功 |
+| S3 | pv-e164-s3 | source/index.ts | source/index.ts | supabase-js import | 成功 (返却は source/source/index.ts) |
+| S4 | pv-e164-s4 | source/index.ts | source/index.ts | Twilio fetch 追加 | 成功 |
+
+### 所見
+1. Twilio fetch を含めても新規 slug では internal error 発生せず → コード内容そのものより既存 slug 再利用時のレイアウト履歴/キャッシュが主因。
+2. source/index.ts 指定時に返却 entrypoint_path が再度 source/source/ に変換される挙動は継続。
+3. 既存 phone-verification slug に対し複数回 layout 変更 (root ↔ source) を行った履歴が internal error を誘発している可能性が高い。
+
+### 次アクション案 (確度高)
+- New canonical slug: phone-verification-v2 を S4 完成コード(E.164仕様)ベースでデプロイ → 動作確認後フロントの呼び出しパスを切替。
+- 旧 phone-verification は暫定稼働 (legacy) とし安定後 retire (または 410/redirect)。
+- ドキュメント: E.164 切替手順と slug 更新を追加記録。
+
+
+
+## 新たな考察
+1. 最小コード (単純 JSON 応答) では explicit entrypoint_path 指定により成功 (version 21)。
+2. 実装本体差し替えで内部エラー → コード量/依存増がトリガ？ (Twilio fetch, Supabase client import 等)。
+3. entrypoint_path が file:///tmp/.../source/source/index.ts を指す挙動から、files の name に与えるパス先頭に source/ を含めると内部でさらに source/ を付加する可能性。
+
+## 次の打ち手提案
+- Option 1: files パスを source/ ではなく index.ts, deno.json (root) に変更し、entrypoint_path を index.ts にして再試行。
+- Option 2: コードを段階的に拡張 (empty -> import createClient -> Twilio 部分追加 -> RPC 呼び出し) し、どこで internal error になるか二分探索。
+- Option 3: Twilio 呼び出し部をモック化し先に Supabase RPC まで動作確認後 Twilio 追加。
+- Option 4: 既存 version 21 （最小コード）に対し incremental patch 方式で少量ずつ append し再デプロイ (差分ごと検証)。
+- Option 5: Supabase CLI (外部) 利用も視野（MCP 経由以外）※ここでは未実行。
+
+## アクション希望
+どのオプションで段階的再構築を進めるか指示をお願いします。推奨は Option 2 + 4 の組合せで内部エラー箇所特定。
+
+## 2025-08-17 追加: phone-verification-v2 作成とフロント切替
+- 新ディレクトリ: supabase/functions/phone-verification-v2
+- ファイル: index.ts, deno.json 追加
+- 方針: 旧 slug を残しつつフロントエンドのみ v2 に向ける (段階的移行 / ロールバック容易)
+- 次手順: Supabase Edge Function へ phone-verification-v2 をデプロイ → SG/JPで疎通テスト → 成功後旧 slug 廃止計画策定
+- config.toml 追加し verify_jwt=false (サインアップ前アクセス許可) 設定
+- AuthModal.tsx に v2→401時 legacy フォールバック実装 (send_code / verify_code 両方)
+

@@ -354,7 +354,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     setSendingOtp(true);
     setError(null);
     try {
-      const res = await fetch(`${supabaseUrl}/functions/v1/phone-verification`, {
+      const endpointBase = `${supabaseUrl}/functions/v1`;
+      let res = await fetch(`${endpointBase}/phone-verification-v2`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -362,6 +363,18 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         },
         body: JSON.stringify({ action: 'send_code', phoneNumber: formattedPhone })
       });
+      if (res.status === 401) {
+        // v2 が verify_jwt 強制で未認証ブロック → レガシーへフォールバック
+        console.warn('phone-verification-v2 unauthorized; falling back to legacy slug');
+        res = await fetch(`${endpointBase}/phone-verification`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': anonKey,
+          },
+          body: JSON.stringify({ action: 'send_code', phoneNumber: formattedPhone })
+        });
+      }
       const data = await res.json();
       if (data.success) {
         setOtpSent(true);
@@ -383,7 +396,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       let formattedPhone = phoneNumber.trim().replace(/-/g, '').replace(/\s+/g, '');
       formattedPhone = `${selectedCountry.dial}${formattedPhone.replace(/^0+/, '')}`;
 
-      const res = await fetch(`${supabaseUrl}/functions/v1/phone-verification`, {
+      const endpointBase = `${supabaseUrl}/functions/v1`;
+      let res = await fetch(`${endpointBase}/phone-verification-v2`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -391,11 +405,21 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         },
         body: JSON.stringify({ action: 'verify_code', phoneNumber: formattedPhone, code: otpCode })
       });
+      if (res.status === 401) {
+        console.warn('phone-verification-v2 unauthorized (verify); falling back to legacy slug');
+        res = await fetch(`${endpointBase}/phone-verification`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': anonKey,
+          },
+          body: JSON.stringify({ action: 'verify_code', phoneNumber: formattedPhone, code: otpCode })
+        });
+      }
       const data = await res.json();
       if (data.success) {
         setPhoneVerified(true);
       } else {
-        // エラーハンドリング
         if (data.error === 'Invalid verification code') {
           setError(t('auth.error.invalidOtpCode'));
         } else {
