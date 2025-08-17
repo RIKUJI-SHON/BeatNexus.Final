@@ -766,7 +766,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                             setPhoneInputWarning(null);
                           }
                         }}
-                        placeholder="000-1234-5678"
+                        placeholder="00 1234 5678"
                         className="flex-1 px-4 py-3 bg-gray-800/50 border border-gray-600 rounded-r-lg text-white placeholder-gray-400 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition-colors"
                         required
                       />
