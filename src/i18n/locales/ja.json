@@ -1788,6 +1788,11 @@
   "auth": {
     "phoneNumber": "電話番号",
     "phoneRequirement": "投票システムの健全性を保つため電話番号認証が必要です！",
+    "phoneWarning": {
+      "genericTrunkZero": "先頭の0を削除してください。国際形式では国番号を付けて0を省きます。",
+      "jpTrunkZero": "日本の携帯番号は最初の0を除き +81 を付けます (例 080→+8180)。先頭の0は入力不要です。",
+      "laTrunkZero": "ラオス番号は +856 の後に 20 で始まる番号を0を除いて入力してください。"
+    },
     "phoneVerify": "電話番号を認証する",
     "phoneVerifyCodePlaceholder": "認証コードを入力",
     "phoneVerifyCodeButton": "認証",

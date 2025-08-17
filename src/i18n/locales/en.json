@@ -2029,6 +2029,11 @@
   "auth": {
     "phoneNumber": "Phone Number",
     "phoneRequirement": "We require a valid phone number to keep our voting system honorable!",
+    "phoneWarning": {
+      "genericTrunkZero": "Remove the leading 0 – international format uses the country code instead.",
+      "jpTrunkZero": "Remove the first 0. Japanese mobile numbers become +81 and then the number without the leading 0.",
+      "laTrunkZero": "For Laos numbers, use +856 then 20… (omit the domestic leading 0)."
+    },
     "phoneVerify": "Verify Phone Number",
     "phoneVerifyCodePlaceholder": "Enter verification code",
     "phoneVerifyCodeButton": "Verify",

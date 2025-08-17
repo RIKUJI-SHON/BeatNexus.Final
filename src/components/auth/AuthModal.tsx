@@ -43,6 +43,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   const [loading, setLoading] = useState(false);
   const [showConfirmationEmailModal, setShowConfirmationEmailModal] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState<{ code: string; dial: string }>({ code: 'JP', dial: '+81' });
+  const [phoneInputWarning, setPhoneInputWarning] = useState<string | null>(null);
   
   // パスワードリセット用の状態
   const [resetEmail, setResetEmail] = useState('');
@@ -749,12 +750,30 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                         type="tel"
                         id="phone"
                         value={phoneNumber}
-                        onChange={(e) => setPhoneNumber(e.target.value)}
+                        onChange={(e) => {
+                          const v = e.target.value;
+                          setPhoneNumber(v);
+                          // 先頭0ガード: 国番号選択制 + E.164 前提。ユーザーが 0 から入力した場合に警告を表示。
+                          if (v.startsWith('0')) {
+                            if (selectedCountry.code === 'LA') {
+                              setPhoneInputWarning(t('auth.phoneWarning.laTrunkZero'));
+                            } else if (selectedCountry.code === 'JP') {
+                              setPhoneInputWarning(t('auth.phoneWarning.jpTrunkZero'));
+                            } else {
+                              setPhoneInputWarning(t('auth.phoneWarning.genericTrunkZero'));
+                            }
+                          } else {
+                            setPhoneInputWarning(null);
+                          }
+                        }}
                         placeholder="000-1234-5678"
                         className="flex-1 px-4 py-3 bg-gray-800/50 border border-gray-600 rounded-r-lg text-white placeholder-gray-400 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition-colors"
                         required
                       />
                     </div>
+                    {phoneInputWarning && (
+                      <p className="text-xs text-amber-400 mt-1">{phoneInputWarning}</p>
+                    )}
                   </div>
                   <p className="text-gray-300 text-sm text-center">
                     {t('auth.phoneRequirement')}
@@ -764,7 +783,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     <button
                       type="button"
                       onClick={handleSendOtp}
-                      disabled={sendingOtp}
+                      disabled={sendingOtp || !!phoneInputWarning}
                       className="w-full mt-3 transition-all bg-cyan-500 text-white px-6 py-3 rounded-lg border-cyan-600 border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px] active:border-b-[2px] active:brightness-90 active:translate-y-[2px] disabled:opacity-60 disabled:hover:translate-y-0 font-semibold"
                     >
                       {sendingOtp ? t('auth.sending') : t('auth.phoneVerify')}
