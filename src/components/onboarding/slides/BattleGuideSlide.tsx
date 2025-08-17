@@ -2,7 +2,12 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 const BattleGuideSlide: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  // 日本語以外の言語設定の場合は英語版動画を使用
+  const isJapanese = i18n.language.startsWith('ja');
+  const videoSrc = isJapanese
+    ? '/images/onboarding/① 動画を投稿.mp4'
+    : '/images/onboarding/English ver.mp4';
 
   return (
     <div className="onboarding-card md:w-96 md:h-[500px] w-[340px] h-[440px]">
@@ -29,7 +34,7 @@ const BattleGuideSlide: React.FC = () => {
             className="w-full max-w-[280px] h-40 object-cover rounded-lg shadow-lg"
             poster="/images/onboarding/Slide2.png"
           >
-            <source src="/images/onboarding/① 動画を投稿.mp4" type="video/mp4" />
+            <source src={videoSrc} type="video/mp4" />
             {t('onboarding.slide2.videoAlt')}
           </video>
         </div>

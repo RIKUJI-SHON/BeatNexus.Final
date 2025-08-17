@@ -1,0 +1,23 @@
+# オンボーディング Get Started スライド Vote ボタンサイズ統一ログ
+
+## 日付
+2025-08-17
+
+## 目的
+Vote ボタンを Start battle ボタンと同一サイズに統一し視覚的一貫性を確保。
+
+## 変更ファイル
+- `src/components/onboarding/slides/GetStartedSlide.tsx`
+
+## 変更内容
+- Vote ボタンの padding: `p-7` → `p-6`
+- Vote ボタン内画像サイズ: `w-14 h-14` → `w-12 h-12`
+- これにより Start battle ボタンと完全一致 (`bg-black p-6 rounded-full shadow-lg ...`)。
+
+## 動作確認
+- 両ボタンサイズが一致。
+- レイアウト崩れなし。
+- 型エラーなし。
+
+## 完了ステータス
+Done

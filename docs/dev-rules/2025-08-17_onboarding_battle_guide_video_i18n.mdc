@@ -1,0 +1,37 @@
+# オンボーディング Battle ガイド動画 多言語対応実装ログ
+
+## 日付
+2025-08-17
+
+## 目的
+ガイドモーダル(バトルガイドスライド)で再生する動画が日本語版のみだったため、ユーザーの言語設定が日本語以外の際に英語版動画を表示する。
+
+## 変更内容
+- `src/components/onboarding/slides/BattleGuideSlide.tsx`
+  - `useTranslation` から `i18n` を取得。
+  - `i18n.language.startsWith('ja')` で日本語判定し、日本語以外の場合は `/images/onboarding/English ver.mp4` を使用。
+  - `<source>` の `src` を条件分岐した `videoSrc` 変数に置き換え。
+
+## 実装詳細
+```tsx
+const isJapanese = i18n.language.startsWith('ja');
+const videoSrc = isJapanese
+  ? '/images/onboarding/① 動画を投稿.mp4'
+  : '/images/onboarding/English ver.mp4';
+```
+
+## 動作確認
+- 言語設定: `ja` → 日本語動画 `/images/onboarding/① 動画を投稿.mp4` 再生。
+- 言語設定: `en` (およびその他) → 英語動画 `/images/onboarding/English ver.mp4` 再生。
+- 型エラーなし (`get_errors` で確認)。
+
+## 影響範囲
+- オンボーディングモーダル内 Battle ガイドスライドのみ。
+- 既存の他スライド・機能へ副作用なし。
+
+## 今後の改善案
+- 他スライドの動画/画像にも多言語差し替えが必要か点検。
+- 動画ファイル名にスペース/全角記号が含まれるため、必要に応じて英数字スラッグへの統一を検討。
+
+## 完了ステータス
+Done

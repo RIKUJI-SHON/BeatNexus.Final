@@ -1,0 +1,41 @@
+# オンボーディング Get Started スライド 2カラムボタン実装ログ
+
+## 日付
+2025-08-17
+
+## 目的
+GetStarted スライドに「バトル開始」ボタンに加えて「投票」(最多得票アクティブバトルへ遷移) ボタンを追加し、2カラム配置に変更。既存テキスト「↑ Click to start battle」を「Start battle」に短縮。
+
+## 変更ファイル
+- `src/components/onboarding/slides/GetStartedSlide.tsx`
+
+## 変更内容
+1. `useBattleStore` を導入し `activeBattles` を取得。
+2. 最も総得票数 (votes_a + votes_b) の大きいアクティブバトルを選択し、その詳細ページ `/battle/{id}` に遷移する `handleGoToTopVotedBattle` を追加。存在しない場合はフォールバック `/battles`。
+3. レイアウトをグリッド2カラム (Start battle / Vote) に変更。
+4. 既存の説明テキスト `t('onboarding.slide5.clickToStart')` を削除し、直下ラベルを "Start battle" に簡略化。右カラムボタンラベルを "Vote" 追加。
+5. 投票ボタンは指定画像 `/images/onboarding/ChatGPT Image 2025年7月4日 21_57_02.png` を使用。
+
+## 実装詳細抜粋
+```tsx
+const top = [...activeBattles]
+  .map(b => ({ ...b, totalVotes: (b.votes_a || 0) + (b.votes_b || 0) }))
+  .sort((a, b) => b.totalVotes - a.totalVotes)[0];
+if (top) navigate(`/battle/${top.id}`); else navigate('/battles');
+```
+
+## 動作確認項目
+- [x] Start battle クリックで `/post` 遷移。
+- [x] Vote ボタンで最多得票アクティブバトルへ遷移 (データがある場合)。
+- [x] アクティブバトルが空の場合 `/battles` に遷移。
+- [x] 型エラーなし。
+
+## 影響範囲
+オンボーディングモーダル GetStarted スライドのみ。他コンポーネントへの副作用なし。
+
+## 留意点
+- i18n 文言直接文字列 ("Start battle", "Vote") を使用しているため、必要なら後で翻訳キー化。
+- 画像ファイル名にスペースと日本語が含まれるためパス解決は問題ないが、CDN最適化時にスラッグ化検討。
+
+## 完了ステータス
+Done
