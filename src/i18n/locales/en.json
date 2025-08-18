@@ -96,7 +96,7 @@
         "description": "Experience basic features",
         "features": [
           "3 posts per month",
-          "With ads",
+          "Ads included",
           "0 Boost tokens per month",
           "Basic profile"
         ],
@@ -1977,11 +1977,12 @@
       "title": "Profile Setup",
       "avatar": {
         "title": "Profile Picture",
-        "description": "Express your personality with your profile picture and bio. You can change these later in settings."
+        "description": "Express your personality with your profile picture and bio. You can change these later in settings.",
+        "changeHint": "Click / tap the image to change your profile picture"
       },
       "bio": {
         "title": "Bio",
-        "placeholder": "Tell others about yourself, your style, and what makes you unique...",
+  "placeholder": "Add your Instagram / X (Twitter) handles (e.g. @name). We may mention you when featuring your battles. Separate multiple with spaces...",
         "saveButton": "Save",
         "saving": "Saving...",
         "saveSuccess": "Saved",

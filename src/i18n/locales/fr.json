@@ -68,41 +68,41 @@
     },
     "plans": {
       "free": {
-        "name": "Gratuit",
+        "name": "Free",
         "description": "Découvrez les fonctionnalités de base",
         "features": [
-          "3 posts par mois",
-          "Avec publicités",
+          "3 publications par mois",
+          "Annonces incluses",
           "0 jetons Boost par mois",
-          "Profil de base"
+          "Profil basique"
         ],
-        "button": "Commencer Gratuitement"
+        "button": "Commencer gratuitement"
       },
       "crew": {
         "name": "Équipe",
-        "description": "Plus de posts et d'avantages",
+        "description": "Plus de publications et d'avantages",
         "features": [
-          "10 posts par mois",
+          "10 publications par mois",
           "Expérience sans publicité",
           "5 jetons Boost par mois",
           "Couleurs de profil personnalisées",
           "Support prioritaire"
         ],
         "button": "Commencer",
-        "popular": "Plan Populaire"
+        "popular": "Plan populaire"
       },
       "pro": {
         "name": "Pro",
         "description": "Expérience créateur complète",
         "features": [
-          "Posts illimités",
+          "Publications illimitées",
           "Expérience sans publicité",
           "15 jetons Boost par mois",
-          "Badges et thèmes de profil",
+          "Badges & thèmes de profil",
           "Appariement prioritaire",
           "Statistiques détaillées"
         ],
-        "button": "Améliorer"
+        "button": "Passer au Pro"
       }
     },
     "features": {
@@ -1951,15 +1951,16 @@
       "title": "Profile Setup",
       "avatar": {
         "title": "Profile Picture",
-        "description": "Express your personality with your profile picture and bio. You can change these later in settings."
+        "description": "Exprime ta personnalité avec ta photo et ta bio. Tu pourras les modifier plus tard dans les paramètres.",
+        "changeHint": "Clique / touche l'image pour changer ta photo de profil"
       },
       "bio": {
         "title": "Bio",
-        "placeholder": "Tell others about yourself, your style, and what makes you unique...",
-        "saveButton": "Save",
-        "saving": "Saving...",
-        "saveSuccess": "Saved",
-        "characterCount": "{{count}}/200 characters"
+  "placeholder": "Ajoute tes handles Instagram / X (Twitter) (ex: @pseudo). Nous pourrons te mentionner lors de mises en avant. Sépare plusieurs par des espaces...",
+        "saveButton": "Enregistrer",
+        "saving": "Enregistrement...",
+        "saveSuccess": "Enregistré",
+        "characterCount": "{{count}}/200 caractères"
       }
     },
     "slide5": {

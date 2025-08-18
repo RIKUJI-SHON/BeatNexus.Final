@@ -1,0 +1,28 @@
+# プロフィール自己紹介プレースホルダー & アバター変更ヒント追加実装ログ
+
+## 概要
+オンボーディング「プロフィール設定」スライドで:
+- 自己紹介プレースホルダーへSNSアカウント記載推奨文を追記
+- アバター画像下に変更可能であることを示すヒント文を追加
+
+## 変更内容
+1. `src/i18n/locales/ja.json`
+   - `onboarding.slide4.bio.placeholder` を SNS アカウント記載推奨文入りに変更
+   - `onboarding.slide4.avatar.changeHint` キーを新規追加
+2. `src/components/onboarding/slides/ProfileSetupSlide.tsx`
+   - AvatarUpload コンポーネント直下にヒントテキスト `<p>` を追加
+   - ラッパー `div` を縦レイアウト対応 (`flex-col items-center`) に変更
+3. ビルド実行でエラーなしを確認 (`pnpm build`).
+
+## 確認項目
+- [x] プレースホルダー文言が更新されている
+- [x] アバター下ヒント表示
+- [x] 他言語ファイル未更新によるランタイムクラッシュなし（未参照キーのため問題なし）
+- [x] ビルド成功
+
+## 今後の改善候補
+- 他言語ロケールにも `avatar.changeHint` を追加
+- Bio 文字数説明にSNS記載例ツールチップを追加検討
+
+## 備考
+DB変更なしのためマイグレーション不要。

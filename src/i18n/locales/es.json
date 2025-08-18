@@ -68,11 +68,11 @@
     },
     "plans": {
       "free": {
-        "name": "Gratuito",
+        "name": "Free",
         "description": "Experimenta las funciones básicas",
         "features": [
           "3 publicaciones por mes",
-          "Con anuncios",
+          "Incluye anuncios",
           "0 tokens Boost por mes",
           "Perfil básico"
         ],
@@ -1951,11 +1951,12 @@
       "title": "Configuración del Perfil",
       "avatar": {
         "title": "Foto de Perfil",
-        "description": "Expresa tu personalidad con tu foto de perfil y biografía. Puedes cambiar estos más tarde en configuración."
+        "description": "Expresa tu personalidad con tu foto de perfil y biografía. Puedes cambiar estos más tarde en configuración.",
+        "changeHint": "Haz clic / toca la imagen para cambiar tu foto de perfil"
       },
       "bio": {
         "title": "Biografía",
-        "placeholder": "Cuéntales a otros sobre ti, tu estilo, y qué te hace único...",
+  "placeholder": "Añade tus usuarios de Instagram / X (Twitter) (ej: @nombre). Podemos mencionarte al destacar tus batallas. Separa varios con espacios...",
         "saveButton": "Guardar",
         "saving": "Guardando...",
         "saveSuccess": "Guardado",

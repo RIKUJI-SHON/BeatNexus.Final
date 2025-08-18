@@ -12,45 +12,45 @@
     "createPost": "Post erstellen",
     "logout": "Abmelden",
     "howToGuide": "Anleitung",
-    "locale": "de-DE",
-    "back": "Zurück",
-    "next": "Weiter",
-    "cancel": "Abbrechen",
-    "create": "Erstellen",
-    "creating": "Erstelle...",
-    "joining": "Trete bei...",
-    "join": "Beitreten",
-    "owner": "Besitzer",
-    "members": "Mitglieder",
-    "avgRating": "Ø Bewertung",
-    "loading": "Lädt...",
-    "description": "Beschreibung",
-    "password": "Passwort",
-    "enterPassword": "Passwort eingeben",
-    "noDescription": "Keine Beschreibung verfügbar",
-    "termsOfService": "Nutzungsbedingungen",
-    "privacyPolicy": "Datenschutzrichtlinie"
-  },
-  "hoverCard": {
-    "profile": "Profil",
-    "myBattles": "Meine Battles",
-    "settings": "Einstellungen",
-    "logout": "Abmelden"
-  },
-  "submissionModal": {
-    "title": "Video wird eingereicht",
-    "videoPreview": "Video-Vorschau",
-    "processing": "Verarbeitung...",
-    "progress": "Fortschritt",
-    "estimatedRemaining": "Geschätzte verbleibende Zeit",
-    "estimatedTime": {
-      "seconds": "Etwa {{seconds}} Sekunden",
-      "minutes": "Etwa {{minutes}}m {{seconds}}s",
-      "almostDone": "Fast fertig"
+    "plans": {
+      "free": {
+        "name": "Free",
+        "description": "Grundfunktionen erleben",
+        "features": [
+          "3 Beiträge pro Monat",
+          "Mit Werbung",
+          "0 Boost-Tokens pro Monat",
+          "Basisprofil"
+        ],
+        "button": "Kostenlos starten"
+      },
+      "crew": {
+        "name": "Crew",
+        "description": "Mehr Beiträge und Vorteile",
+        "features": [
+          "10 Beiträge pro Monat",
+          "Werbefreies Erlebnis",
+          "5 Boost-Tokens pro Monat",
+          "Benutzerdefinierte Profilfarben",
+          "Prioritäts-Support"
+        ],
+        "button": "Loslegen",
+        "popular": "Beliebter Plan"
+      },
+      "pro": {
+        "name": "Pro",
+        "description": "Komplettes Creator-Erlebnis",
+        "features": [
+          "Unbegrenzte Beiträge",
+          "Werbefreies Erlebnis",
+          "15 Boost-Tokens pro Monat",
+          "Profil-Badges & Themes",
+          "Priorisiertes Matching",
+          "Detaillierte Statistiken"
+        ],
+        "button": "Upgrade"
+      }
     },
-    "error": "Ein Fehler ist aufgetreten",
-    "completed": "Einreichung abgeschlossen",
-    "cancel": "Abbrechen",
     "close": "Schließen",
     "checking": "Video wird überprüft...",
     "compressing": "Video wird komprimiert...",
@@ -68,23 +68,23 @@
     },
     "plans": {
       "free": {
-        "name": "Kostenlos",
+        "name": "Free",
         "description": "Grundfunktionen erleben",
         "features": [
-          "3 Posts pro Monat",
+          "3 Beiträge pro Monat",
           "Mit Werbung",
-          "0 Boost-Token pro Monat",
-          "Basis-Profil"
+          "0 Boost-Tokens pro Monat",
+          "Basisprofil"
         ],
         "button": "Kostenlos starten"
       },
       "crew": {
         "name": "Crew",
-        "description": "Mehr Posts und Vorteile",
+        "description": "Mehr Beiträge und Vorteile",
         "features": [
-          "10 Posts pro Monat",
+          "10 Beiträge pro Monat",
           "Werbefreies Erlebnis",
-          "5 Boost-Token pro Monat",
+          "5 Boost-Tokens pro Monat",
           "Benutzerdefinierte Profilfarben",
           "Prioritäts-Support"
         ],
@@ -93,16 +93,16 @@
       },
       "pro": {
         "name": "Pro",
-        "description": "Vollständiges Creator-Erlebnis",
+        "description": "Komplettes Creator-Erlebnis",
         "features": [
-          "Unbegrenzte Posts",
+          "Unbegrenzte Beiträge",
           "Werbefreies Erlebnis",
-          "15 Boost-Token pro Monat",
-          "Profil-Abzeichen & Themes",
-          "Prioritäts-Matching",
+          "15 Boost-Tokens pro Monat",
+          "Profil-Badges & Themes",
+          "Priorisiertes Matching",
           "Detaillierte Statistiken"
         ],
-        "button": "Upgraden"
+        "button": "Upgrade"
       }
     },
     "features": {
@@ -1939,11 +1939,12 @@
       "title": "Profil-Einrichtung",
       "avatar": {
         "title": "Profilbild",
-        "description": "Drücken Sie Ihre Persönlichkeit mit Ihrem Profilbild und Ihrer Bio aus. Sie können diese später in den Einstellungen ändern."
+        "description": "Drücken Sie Ihre Persönlichkeit mit Ihrem Profilbild und Ihrer Bio aus. Sie können diese später in den Einstellungen ändern.",
+        "changeHint": "Klicken / tippen Sie auf das Bild, um Ihr Profilbild zu ändern"
       },
       "bio": {
         "title": "Bio",
-        "placeholder": "Erzählen Sie anderen von sich, Ihrem Stil und was Sie einzigartig macht...",
+  "placeholder": "Fügen Sie Ihre Instagram / X (Twitter) Handles hinzu (z.B. @name). Wir können Sie erwähnen, wenn wir Ihre Battles featuren. Mehrere mit Leerzeichen trennen...",
         "saveButton": "Speichern",
         "saving": "Wird gespeichert...",
         "saveSuccess": "Gespeichert",

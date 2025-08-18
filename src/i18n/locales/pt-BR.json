@@ -10,45 +10,45 @@
     "home": "Início",
     "ranking": "Ranking",
     "createPost": "Criar Post",
-    "logout": "Sair",
-    "howToGuide": "Guia de Como Usar",
-    "locale": "pt-BR",
-    "back": "Voltar",
-    "next": "Próximo",
-    "cancel": "Cancelar",
-    "create": "Criar",
-    "creating": "Criando...",
-    "joining": "Entrando...",
-    "join": "Entrar",
-    "owner": "Proprietário",
-    "members": "Membros",
-    "avgRating": "Avaliação Média",
-    "loading": "Carregando...",
-    "description": "Descrição",
-    "password": "Senha",
-    "enterPassword": "Digite a senha",
-    "noDescription": "Nenhuma descrição disponível",
-    "termsOfService": "Termos de Serviço",
-    "privacyPolicy": "Política de Privacidade"
-  },
-  "hoverCard": {
-    "profile": "Perfil",
-    "myBattles": "Minhas Batalhas",
-    "settings": "Configurações",
-    "logout": "Sair"
-  },
-  "submissionModal": {
-    "title": "Enviando Vídeo",
-    "videoPreview": "Pré-visualização do Vídeo",
-    "processing": "Processando...",
-    "progress": "Progresso",
-    "estimatedRemaining": "Tempo estimado restante",
-    "estimatedTime": {
-      "seconds": "Cerca de {{seconds}} segundos",
-      "minutes": "Cerca de {{minutes}}m {{seconds}}s",
-      "almostDone": "Quase pronto"
+    "plans": {
+      "free": {
+        "name": "Free",
+        "description": "Experimente recursos básicos",
+        "features": [
+          "3 posts por mês",
+          "Com anúncios",
+          "0 tokens Boost por mês",
+          "Perfil básico"
+        ],
+        "button": "Começar grátis"
+      },
+      "crew": {
+        "name": "Crew",
+        "description": "Mais posts e benefícios",
+        "features": [
+          "10 posts por mês",
+          "Experiência sem anúncios",
+          "5 tokens Boost por mês",
+          "Cores personalizadas do perfil",
+          "Suporte prioritário"
+        ],
+        "button": "Começar",
+        "popular": "Plano popular"
+      },
+      "pro": {
+        "name": "Pro",
+        "description": "Experiência completa para criadores",
+        "features": [
+          "Posts ilimitados",
+          "Experiência sem anúncios",
+          "15 tokens Boost por mês",
+          "Badges e temas de perfil",
+          "Matching prioritário",
+          "Estatísticas detalhadas"
+        ],
+        "button": "Upgrade"
+      }
     },
-    "error": "Ocorreu um erro",
     "completed": "Envio concluído",
     "cancel": "Cancelar",
     "close": "Fechar",
@@ -68,15 +68,15 @@
     },
     "plans": {
       "free": {
-        "name": "Grátis",
+        "name": "Free",
         "description": "Experimente recursos básicos",
         "features": [
           "3 posts por mês",
           "Com anúncios",
-          "0 tokens de Impulso por mês",
+          "0 tokens Boost por mês",
           "Perfil básico"
         ],
-        "button": "Começar Grátis"
+        "button": "Começar grátis"
       },
       "crew": {
         "name": "Crew",
@@ -84,25 +84,25 @@
         "features": [
           "10 posts por mês",
           "Experiência sem anúncios",
-          "5 tokens de Impulso por mês",
+          "5 tokens Boost por mês",
           "Cores personalizadas do perfil",
           "Suporte prioritário"
         ],
         "button": "Começar",
-        "popular": "Plano Popular"
+        "popular": "Plano popular"
       },
       "pro": {
         "name": "Pro",
-        "description": "Experiência completa de criador",
+        "description": "Experiência completa para criadores",
         "features": [
           "Posts ilimitados",
           "Experiência sem anúncios",
-          "15 tokens de Impulso por mês",
-          "Emblemas e temas do perfil",
-          "Emparelhamento prioritário",
+          "15 tokens Boost por mês",
+          "Badges e temas de perfil",
+          "Matching prioritário",
           "Estatísticas detalhadas"
         ],
-        "button": "Atualizar"
+        "button": "Upgrade"
       }
     },
     "features": {
@@ -1952,11 +1952,12 @@
       "title": "Configuração do Perfil",
       "avatar": {
         "title": "Foto do Perfil",
-        "description": "Expresse sua personalidade com sua foto de perfil e bio. Você pode alterá-las depois nas configurações."
+        "description": "Expresse sua personalidade com sua foto de perfil e bio. Você pode alterá-las depois nas configurações.",
+        "changeHint": "Clique / toque na imagem para alterar sua foto de perfil"
       },
       "bio": {
         "title": "Bio",
-        "placeholder": "Conte aos outros sobre você, seu estilo e o que te torna único...",
+  "placeholder": "Adicione seus handles do Instagram / X (Twitter) (ex: @nome). Podemos mencioná-lo ao destacar suas batalhas. Separe vários com espaços...",
         "saveButton": "Salvar",
         "saving": "Salvando...",
         "saveSuccess": "Salvo",

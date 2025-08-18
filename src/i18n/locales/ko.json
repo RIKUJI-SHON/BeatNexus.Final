@@ -68,7 +68,7 @@
     },
     "plans": {
       "free": {
-        "name": "무료",
+        "name": "Free",
         "description": "기본 기능 체험",
         "features": [
           "월 3회 게시",
@@ -1952,11 +1952,12 @@
       "title": "프로필 설정",
       "avatar": {
         "title": "프로필 사진",
-        "description": "프로필 사진과 소개로 개성을 표현하세요. 설정에서 언제든 변경할 수 있습니다."
+        "description": "프로필 사진과 소개로 개성을 표현하세요. 설정에서 언제든 변경할 수 있습니다.",
+        "changeHint": "이미지를 클릭/탭하여 프로필 사진을 변경할 수 있습니다"
       },
       "bio": {
         "title": "소개",
-        "placeholder": "당신과 당신의 스타일, 그리고 당신만의 매력을 소개해 주세요...",
+  "placeholder": "Instagram / X (Twitter) 핸들(@name 등)을 입력하세요. 배틀을 소개할 때 멘션할 수 있습니다. 여러 개는 공백으로 구분...",
         "saveButton": "저장",
         "saving": "저장 중...",
         "saveSuccess": "저장됨",

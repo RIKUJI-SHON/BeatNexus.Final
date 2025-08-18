@@ -89,7 +89,7 @@ export default function ProfileSetupSlide() {
         </div>
 
         {/* 中央：プロフィール写真 */}
-        <div className="flex justify-center mb-8">
+        <div className="flex flex-col items-center mb-8">
           <AvatarUpload
             currentAvatarUrl={avatarUrl || undefined}
             onAvatarUpdate={handleAvatarUpdate}
@@ -98,6 +98,7 @@ export default function ProfileSetupSlide() {
             className="w-24 h-24"
             compact={true}
           />
+          <p className="mt-2 text-[11px] text-gray-400">{t('onboarding.slide4.avatar.changeHint')}</p>
         </div>
         
         {saveSuccess && (

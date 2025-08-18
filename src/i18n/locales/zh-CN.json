@@ -68,13 +68,13 @@
     },
     "plans": {
       "free": {
-        "name": "免费版",
+        "name": "Free",
         "description": "体验基础功能",
         "features": [
-          "每月发布 3 次",
+          "每月 3 次发布",
           "含广告",
-          "每月 0 个 Boost 代币",
-          "基础资料"
+          "每月 0 个 Boost 令牌",
+          "基础档案"
         ],
         "button": "免费开始"
       },
@@ -1951,11 +1951,12 @@
       "title": "个人资料设置",
       "avatar": {
         "title": "头像",
-        "description": "用头像和个人简介展现你的个性。你可以稍后在设置中更改这些。"
+        "description": "用头像和个人简介展现你的个性。你可以稍后在设置中更改这些。",
+        "changeHint": "点击 / 轻触图片即可更换头像"
       },
       "bio": {
         "title": "个人简介",
-        "placeholder": "告诉大家关于你自己、你的风格以及你的独特之处...",
+  "placeholder": "添加你的 Instagram / X (Twitter) 账号（例如 @name）。当我们推荐你的对战时可能会@你。多个账号用空格分隔...",
         "saveButton": "保存",
         "saving": "保存中...",
         "saveSuccess": "已保存",
