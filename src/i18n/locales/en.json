@@ -293,7 +293,9 @@
     "timeLeft": {
       "minutes": "{{count}}m {{seconds}}s left",
       "seconds": "{{count}}s left"
-    }
+  },
+  "voted": "VOTED",
+  "votedAria": "You have already voted on this battle"
   },
   "battleFilters": {
     "searchPlaceholder": "Search by username...",

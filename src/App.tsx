@@ -68,6 +68,7 @@ import CommunityDetailPage from './pages/CommunityDetailPage';
 import BattleResultTestPage from './pages/BattleResultTestPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
 import AuthConfirmPage from './pages/AuthConfirmPage';
+import BattleCardVotedPreviewPage from './pages/BattleCardVotedPreviewPage';
 
 // CSS for animations
 import './tailwind.extensions.css';
@@ -112,6 +113,7 @@ function RouterContent() {
             <Route path="/result-test" element={<BattleResultTestPage />} />
             <Route path="/reset-password" element={<ResetPasswordPage />} />
             <Route path="/auth/confirm" element={<AuthConfirmPage />} />
+            <Route path="/dev/battle-card-voted-preview" element={<BattleCardVotedPreviewPage />} />
           </Routes>
         </main>
         <Footer />

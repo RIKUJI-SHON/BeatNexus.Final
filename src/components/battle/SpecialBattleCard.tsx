@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Battle } from '../../types';
 import { BattleCommentsModal } from '../ui/BattleCommentsModal';
-import { Clock, Crown, MessageSquare, ThumbsUp } from 'lucide-react';
+import { Clock, Crown, MessageSquare, Check } from 'lucide-react';
 import { VSIcon } from '../ui/VSIcon';
 import { format } from 'date-fns';
 import { ja, enUS } from 'date-fns/locale';
@@ -201,7 +201,7 @@ export const SpecialBattleCard: React.FC<SpecialBattleCardProps> = ({ battle }) 
     <>
       <div onClick={handleCardClick} className="group cursor-pointer">
         <div className="battle-card mb-6">
-          <div className="battle-card__content text-white">
+          <div className="battle-card__content text-white relative">
             <div className="relative p-6">
               <div className="flex justify-center items-start mb-6">
                 <div className={cn('flex items-center gap-2 px-3 py-1 rounded-full backdrop-blur-sm', 
@@ -225,8 +225,8 @@ export const SpecialBattleCard: React.FC<SpecialBattleCardProps> = ({ battle }) 
                 
                 {/* VS Icon with Total Votes */}
                 <div className="flex flex-col items-center gap-3">
-                <VSIcon className="w-16 h-16 md:w-20 md:h-20" />
-                  
+                  <VSIcon className="w-16 h-16 md:w-20 md:h-20" />
+
                   {/* Total Votes Display - Special Battle Style */}
                   <div className="bg-cyan-500/10 backdrop-blur-sm border border-cyan-500/30 rounded-xl px-3 py-2 shadow-lg">
                     <div className="text-center">
@@ -234,6 +234,17 @@ export const SpecialBattleCard: React.FC<SpecialBattleCardProps> = ({ battle }) 
                       <div className="text-xs font-medium text-cyan-400/80 uppercase tracking-wide">VOTES</div>
                     </div>
                   </div>
+
+                  {/* Voted Badge (moved below votes) */}
+                  {battle.current_user_voted && (
+                    <div
+                      className="mt-1 flex items-center gap-1 bg-cyan-500/15 text-cyan-300 text-[10px] font-semibold px-2 py-0.5 rounded-md border border-cyan-400/30 shadow-sm backdrop-blur-sm pointer-events-none select-none"
+                      aria-label={t('battleCard.votedAria')}
+                    >
+                      <Check className="w-3 h-3" aria-hidden="true" />
+                      {t('battleCard.voted')}
+                    </div>
+                  )}
                 </div>
 
                 <PlayerDisplay 

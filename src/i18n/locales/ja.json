@@ -311,7 +311,9 @@
     "timeLeft": {
       "minutes": "残り{{count}}分{{seconds}}秒",
       "seconds": "残り{{count}}秒"
-    }
+  },
+  "voted": "投票済",
+  "votedAria": "あなたはこのバトルに投票済み"
   },
   "battleFilters": {
     "searchPlaceholder": "ユーザー名で検索...",

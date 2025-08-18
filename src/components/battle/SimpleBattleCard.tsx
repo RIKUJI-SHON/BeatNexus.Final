@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Battle } from '../../types';
 import { VoteButton } from '../ui/VoteButton';
 import { BattleCommentsModal } from '../ui/BattleCommentsModal';
-import { Clock, Crown, MessageSquare } from 'lucide-react';
+import { Clock, Crown, MessageSquare, Check } from 'lucide-react';
 import { VSIcon } from '../ui/VSIcon';
 import { format } from 'date-fns';
 import { ja, enUS } from 'date-fns/locale';
@@ -186,7 +186,7 @@ export const SimpleBattleCard: React.FC<SimpleBattleCardProps> = ({ battle }) =>
                 {/* VS Icon with Total Votes */}
                 <div className="flex flex-col items-center gap-3">
                   <VSIcon className="w-16 h-16 md:w-20 md:h-20 transition-transform duration-300 group-hover:scale-110" />
-                  
+
                   {/* Total Votes Display */}
                   <div className="bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-sm border border-gray-600/50 group-hover:border-gray-500/70 rounded-xl px-3 py-2 shadow-lg group-hover:shadow-xl transition-all duration-300">
                     <div className="text-center">
@@ -194,6 +194,17 @@ export const SimpleBattleCard: React.FC<SimpleBattleCardProps> = ({ battle }) =>
                       <div className="text-xs font-medium text-gray-400 group-hover:text-gray-300 uppercase tracking-wide transition-colors duration-300">VOTES</div>
                     </div>
                   </div>
+
+                  {/* Voted Badge (moved below votes) */}
+                  {battle.current_user_voted && (
+                    <div
+                      className="mt-1 flex items-center gap-1 bg-emerald-500/15 text-emerald-300 text-[10px] font-semibold px-2 py-0.5 rounded-md border border-emerald-400/30 shadow-sm backdrop-blur-sm pointer-events-none select-none"
+                      aria-label={t('battleCard.votedAria')}
+                    >
+                      <Check className="w-3 h-3" aria-hidden="true" />
+                      {t('battleCard.voted')}
+                    </div>
+                  )}
                 </div>
 
                 {/* Player B */}

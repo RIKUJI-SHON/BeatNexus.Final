@@ -48,6 +48,8 @@ export interface Battle {
   player2_rating_change?: number | null;
   player1_final_rating?: number | null;
   player2_final_rating?: number | null;
+  // 現ユーザーがこのバトルに投票済みかどうか（サーバー算出列 / optional 後方互換）
+  current_user_voted?: boolean;
 }
 
 export interface ArchivedBattle {
