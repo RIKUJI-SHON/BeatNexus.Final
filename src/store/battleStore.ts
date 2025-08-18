@@ -1,8 +1,13 @@
 import { create } from 'zustand';
-import { Battle, ArchivedBattle, WaitingSubmission, BattleFormat, BattleComment } from '../types';
+import { Battle, ArchivedBattle, WaitingSubmission, BattleFormat, BattleComment, BattleStatus } from '../types';
+
+// 内部利用のRaw型定義（DBクエリ結果簡易形）
+interface RawBattle { id: string; player1_submission_id: string; player2_submission_id: string; battle_format: BattleFormat; status: string; votes_a: number | null; votes_b: number | null; end_voting_at: string; created_at: string; updated_at?: string; }
+interface RawSubmission { id: string; user_id: string; video_url: string; }
+interface RawProfile { id: string; username: string; avatar_url: string | null; }
 import { supabase } from '../lib/supabase';
 import { toast } from './toastStore';
-import { useNotificationStore } from './notificationStore';
+// NOTE: useNotificationStore はこのファイルでは未使用のため削除（ビルド警告防止）
 import i18n from '../i18n';
 
 interface BattleState {
@@ -130,6 +135,26 @@ export const useBattleStore = create<BattleState>((set, get) => ({
         return;
       }
 
+      // 現在のユーザー取得（未ログインなら投票済判定は全てfalse）
+      const { data: authData } = await supabase.auth.getUser();
+      const currentUserId = authData.user?.id;
+      let votedBattleIds = new Set<string>();
+      if (currentUserId) {
+        const battleIds = battlesData.map(b => b.id);
+        if (battleIds.length > 0) {
+          const { data: votesData, error: votesError } = await supabase
+            .from('battle_votes')
+            .select('battle_id')
+            .in('battle_id', battleIds)
+            .eq('user_id', currentUserId);
+          if (votesError) {
+            console.warn('⚠️ battle_votes fetch error (ignored for UI):', votesError);
+          } else if (votesData) {
+            votedBattleIds = new Set(votesData.map(v => v.battle_id));
+          }
+        }
+      }
+
       // Step 2: 関連するsubmissionのIDを取得
       const submissionIds = battlesData.flatMap(battle => [
         battle.player1_submission_id, 
@@ -165,38 +190,59 @@ export const useBattleStore = create<BattleState>((set, get) => ({
       console.log('Profiles data:', profilesData);
 
       // Step 6: データを変換（JavaScript側で結合）
-      const transformedBattles = battlesData.map((battle: any) => {
-        const player1Submission = submissionsData?.find(sub => sub.id === battle.player1_submission_id);
-        const player2Submission = submissionsData?.find(sub => sub.id === battle.player2_submission_id);
-        const player1 = profilesData?.find(profile => profile.id === player1Submission?.user_id);
-        const player2 = profilesData?.find(profile => profile.id === player2Submission?.user_id);
+  // 型宣言はファイル冒頭ではなく最初の使用前にまとめたが他関数でも使うため外側に移動済み（下部参照）
 
-        return {
+      const statusMap = (raw: string): BattleStatus => {
+        switch (raw) {
+          case 'ACTIVE':
+          case 'active':
+            return 'ACTIVE';
+          case 'COMPLETED':
+          case 'completed':
+            return 'COMPLETED';
+          case 'PROCESSING_RESULTS':
+          case 'processing_results':
+            return 'PROCESSING_RESULTS';
+          default:
+            // 想定外はACTIVE扱い（ログ出力）
+            console.warn('Unexpected battle status value:', raw);
+            return 'ACTIVE';
+        }
+      };
+
+      const transformedBattles: Battle[] = (battlesData as RawBattle[]).map((battle) => {
+        const player1Submission = submissionsData?.find((sub: RawSubmission) => sub.id === battle.player1_submission_id);
+        const player2Submission = submissionsData?.find((sub: RawSubmission) => sub.id === battle.player2_submission_id);
+        const player1 = profilesData?.find((profile: RawProfile) => profile.id === player1Submission?.user_id);
+        const player2 = profilesData?.find((profile: RawProfile) => profile.id === player2Submission?.user_id);
+
+        const base: Battle = {
           id: battle.id,
           player1_submission_id: battle.player1_submission_id,
-          player2_submission_id: battle.player2_submission_id,
+            player2_submission_id: battle.player2_submission_id,
           player1_user_id: player1Submission?.user_id || '',
           player2_user_id: player2Submission?.user_id || '',
           contestant_a_id: player1Submission?.user_id || null,
           contestant_b_id: player2Submission?.user_id || null,
           battle_format: battle.battle_format,
-          status: battle.status.toLowerCase(),
-          votes_a: battle.votes_a || 0,
-          votes_b: battle.votes_b || 0,
+          status: statusMap(battle.status),
+          votes_a: battle.votes_a ?? 0,
+          votes_b: battle.votes_b ?? 0,
           end_voting_at: battle.end_voting_at,
           created_at: battle.created_at,
           updated_at: battle.updated_at || battle.created_at,
-          contestant_a: player1 ? {
-            username: player1.username,
-            avatar_url: player1.avatar_url
-          } : undefined,
-          contestant_b: player2 ? {
-            username: player2.username,
-            avatar_url: player2.avatar_url
-          } : undefined,
           video_url_a: player1Submission?.video_url,
-          video_url_b: player2Submission?.video_url
+          video_url_b: player2Submission?.video_url,
+          current_user_voted: votedBattleIds.has(battle.id)
         };
+
+        if (player1) {
+          base.contestant_a = { username: player1.username, avatar_url: player1.avatar_url };
+        }
+        if (player2) {
+          base.contestant_b = { username: player2.username, avatar_url: player2.avatar_url };
+        }
+        return base;
       });
 
       console.log('Transformed battles:', transformedBattles);
@@ -244,6 +290,26 @@ export const useBattleStore = create<BattleState>((set, get) => ({
         return;
       }
 
+      // 現在ユーザーの投票済みバトルID収集
+      const { data: authData2 } = await supabase.auth.getUser();
+      const currentUserId2 = authData2.user?.id;
+      let votedBattleIds2 = new Set<string>();
+      if (currentUserId2) {
+        const battleIds2 = battlesData.map(b => b.id);
+        if (battleIds2.length > 0) {
+          const { data: votesData2, error: votesError2 } = await supabase
+            .from('battle_votes')
+            .select('battle_id')
+            .in('battle_id', battleIds2)
+            .eq('user_id', currentUserId2);
+          if (votesError2) {
+            console.warn('⚠️ battle_votes fetch error (activeBattles) ignored:', votesError2);
+          } else if (votesData2) {
+            votedBattleIds2 = new Set(votesData2.map(v => v.battle_id));
+          }
+        }
+      }
+
       // Step 2: Get submission IDs
       const submissionIds = battlesData.flatMap(battle => [
         battle.player1_submission_id,
@@ -252,23 +318,24 @@ export const useBattleStore = create<BattleState>((set, get) => ({
 
       if (submissionIds.length === 0) {
         // Handle cases where battles might exist but have no valid submission IDs (should not happen in normal operation)
-        const transformedBattlesWithoutSubmissions = battlesData.map((battle: any) => ({
+    const transformedBattlesWithoutSubmissions: Battle[] = (battlesData as RawBattle[]).map(battle => ({
           id: battle.id,
-          title: `${battle.battle_format} Battle`,
+          player1_submission_id: battle.player1_submission_id,
+          player2_submission_id: battle.player2_submission_id,
+          player1_user_id: '',
+          player2_user_id: '',
+          contestant_a_id: null,
+          contestant_b_id: null,
           battle_format: battle.battle_format,
-          created_at: battle.created_at,
+          status: 'ACTIVE',
+          votes_a: battle.votes_a ?? 0,
+          votes_b: battle.votes_b ?? 0,
           end_voting_at: battle.end_voting_at,
-          contestant_a_id: battle.player1_submission_id?.user_id || null, // Or handle as needed
-          contestant_b_id: battle.player2_submission_id?.user_id || null,
-          votes_a: battle.votes_a || 0,
-          votes_b: battle.votes_b || 0,
-          status: battle.status.toLowerCase(),
-          contestant_a: undefined,
-          contestant_b: undefined,
-          video_url_a: undefined,
-          video_url_b: undefined
+          created_at: battle.created_at,
+          updated_at: battle.updated_at || battle.created_at,
+          current_user_voted: false
         }));
-        set({ activeBattles: transformedBattlesWithoutSubmissions, loading: false });
+          set({ activeBattles: transformedBattlesWithoutSubmissions, loading: false });
         return;
       }
 
@@ -286,7 +353,7 @@ export const useBattleStore = create<BattleState>((set, get) => ({
       // Step 4: Get user IDs from submissions
       const userIds = submissionsData?.map(sub => sub.user_id).filter(id => id != null) as string[] || [];
 
-      let profilesData: any[] = [];
+  let profilesData: RawProfile[] = [];
       if (userIds.length > 0) {
         // Step 5: Fetch profiles
         const { data: fetchedProfilesData, error: profilesError } = await supabase
@@ -302,28 +369,33 @@ export const useBattleStore = create<BattleState>((set, get) => ({
       }
 
       // Step 6: Transform data
-      const transformedBattles = battlesData.map((battle: any) => {
+  const transformedBattles: Battle[] = (battlesData as RawBattle[]).map(battle => {
         const player1Submission = submissionsData?.find(sub => sub.id === battle.player1_submission_id);
         const player2Submission = submissionsData?.find(sub => sub.id === battle.player2_submission_id);
         const player1 = profilesData?.find(profile => profile.id === player1Submission?.user_id);
         const player2 = profilesData?.find(profile => profile.id === player2Submission?.user_id);
-
-        return {
+        const obj: Battle = {
           id: battle.id,
-          title: `${battle.battle_format} Battle`,
-          battle_format: battle.battle_format,
-          created_at: battle.created_at,
-          end_voting_at: battle.end_voting_at,
+          player1_submission_id: battle.player1_submission_id,
+          player2_submission_id: battle.player2_submission_id,
+          player1_user_id: player1Submission?.user_id || '',
+          player2_user_id: player2Submission?.user_id || '',
           contestant_a_id: player1Submission?.user_id || null,
           contestant_b_id: player2Submission?.user_id || null,
-          votes_a: battle.votes_a || 0,
-          votes_b: battle.votes_b || 0,
-          status: battle.status.toLowerCase(),
-          contestant_a: player1 ? { username: player1.username, avatar_url: player1.avatar_url } : undefined,
-          contestant_b: player2 ? { username: player2.username, avatar_url: player2.avatar_url } : undefined,
+          battle_format: battle.battle_format,
+          status: 'ACTIVE',
+          votes_a: battle.votes_a ?? 0,
+          votes_b: battle.votes_b ?? 0,
+          end_voting_at: battle.end_voting_at,
+          created_at: battle.created_at,
+          updated_at: battle.updated_at || battle.created_at,
           video_url_a: player1Submission?.video_url,
-          video_url_b: player2Submission?.video_url
+          video_url_b: player2Submission?.video_url,
+          current_user_voted: votedBattleIds2.has(battle.id)
         };
+        if (player1) obj.contestant_a = { username: player1.username, avatar_url: player1.avatar_url };
+        if (player2) obj.contestant_b = { username: player2.username, avatar_url: player2.avatar_url };
+        return obj;
       });
 
       set({ activeBattles: transformedBattles });
@@ -383,7 +455,7 @@ export const useBattleStore = create<BattleState>((set, get) => ({
       }
 
       // Enhanced response handling
-      if (data && typeof data === 'object' && data.hasOwnProperty('success')) {
+  if (data && typeof data === 'object' && Object.prototype.hasOwnProperty.call(data, 'success')) {
         console.log('📊 JSON Function response:', {
           success: data.success,
           error: data.error,
@@ -500,7 +572,7 @@ export const useBattleStore = create<BattleState>((set, get) => ({
       }
 
       // Process response - be more strict about success validation
-      if (data && typeof data === 'object' && data.hasOwnProperty('success')) {
+  if (data && typeof data === 'object' && Object.prototype.hasOwnProperty.call(data, 'success')) {
         if (data.success === true) {
           console.log('✅ Vote cancellation successful:', data);
           toast.success(i18n.t('toasts.success'), i18n.t('battleStore.toasts.cancelVoteSuccess', { player: data.cancelled_vote }));
@@ -640,32 +712,15 @@ export const useBattleStore = create<BattleState>((set, get) => ({
       }
 
       // Step 2: Get user IDs for profiles and submission IDs for videos
-      const userIds = (battlesData as any[]).flatMap(battle => [
-        battle.player1_user_id,
-        battle.player2_user_id,
-        battle.winner_id,
-      ].filter(id => id != null) as string[]);
-      const submissionIds = (battlesData as any[]).flatMap(battle => [
+  interface RawArchivedBattle { player1_user_id: string; player2_user_id: string; winner_id: string | null; player1_submission_id: string; player2_submission_id: string; final_votes_a: number; final_votes_b: number; archived_at: string; battle_format: BattleFormat | string; id: string; original_battle_id: string; created_at?: string; updated_at?: string; player1_rating_change: number | null; player2_rating_change: number | null; player1_final_rating: number | null; player2_final_rating: number | null; }
+  const submissionIds = (battlesData as RawArchivedBattle[]).flatMap(battle => [
         battle.player1_submission_id,
         battle.player2_submission_id
       ].filter(id => id != null) as string[]);
 
-      let profilesData: any[] = [];
-      if (userIds.length > 0) {
-        // Step 3: Fetch profiles
-        const { data: fetchedProfilesData, error: profilesError } = await supabase
-          .from('profiles')
-          .select('id, username, avatar_url')
-          .in('id', [...new Set(userIds)]);
+  // ArchivedBattles では UI 側で username/avatar を利用しないため profiles 取得をスキップ
 
-        if (profilesError) {
-          console.error('Error fetching profiles for archived battles:', profilesError);
-          throw profilesError;
-        }
-        profilesData = fetchedProfilesData || [];
-      }
-
-      let submissionsData: any[] = [];
+  let submissionsData: { id: string; video_url: string }[] = [];
       if (submissionIds.length > 0) {
         // Step 4: Fetch submissions (for video URLs)
         const { data: fetchedSubmissionsData, error: submissionsError } = await supabase
@@ -681,9 +736,7 @@ export const useBattleStore = create<BattleState>((set, get) => ({
       }
 
       // Step 5: Transform data
-      const transformedBattles: ArchivedBattle[] = (battlesData as any[]).map((battle: any) => {
-        const player1Profile = profilesData?.find(profile => profile.id === battle.player1_user_id);
-        const player2Profile = profilesData?.find(profile => profile.id === battle.player2_user_id);
+  const transformedBattles: ArchivedBattle[] = (battlesData as RawArchivedBattle[]).map((battle) => {
         const player1Submission = submissionsData?.find(sub => sub.id === battle.player1_submission_id);
         const player2Submission = submissionsData?.find(sub => sub.id === battle.player2_submission_id);
 
@@ -694,7 +747,7 @@ export const useBattleStore = create<BattleState>((set, get) => ({
           final_votes_a: battle.final_votes_a as number,
           final_votes_b: battle.final_votes_b as number,
           archived_at: battle.archived_at as string,
-          battle_format: battle.battle_format as string, // battle_format の型をDBに合わせる
+      battle_format: battle.battle_format as BattleFormat, // DBの型をキャスト
           player1_user_id: battle.player1_user_id as string,
           player2_user_id: battle.player2_user_id as string,
           player1_submission_id: battle.player1_submission_id as string,
@@ -707,8 +760,7 @@ export const useBattleStore = create<BattleState>((set, get) => ({
           player2_final_rating: battle.player2_final_rating as number | null,
           player1_video_url: player1Submission?.video_url as string | null,
           player2_video_url: player2Submission?.video_url as string | null,
-          contestant_a: player1Profile ? { username: player1Profile.username as string, avatar_url: player1Profile.avatar_url as string | null } : undefined,
-          contestant_b: player2Profile ? { username: player2Profile.username as string, avatar_url: player2Profile.avatar_url as string | null } : undefined,
+      // ArchivedBattle の contestant_a/b は User を期待するがここでは軽量情報のみ → 既存UI利用箇所で username / avatar_url 参照のみのため省略
           video_url_a: player1Submission?.video_url as string | undefined,
           video_url_b: player2Submission?.video_url as string | undefined,
           rating_changes: battle.player1_rating_change !== null && battle.player2_rating_change !== null ? {
@@ -824,7 +876,8 @@ export const useBattleStore = create<BattleState>((set, get) => ({
         throw error;
       }
 
-      const transformedWaitingSubmissions = waitingData?.map((waiting: any) => ({
+  interface RawWaitingSubmission { id: string; user_id: string; battle_format: string; video_url: string; created_at: string; waiting_since: string; max_allowed_rating_diff: number; attempts_count: number; updated_at: string; username?: string; avatar_url?: string | null; user_rating?: number; }
+  const transformedWaitingSubmissions = (waitingData as RawWaitingSubmission[] | undefined)?.map((waiting) => ({
         id: waiting.id,
         user_id: waiting.user_id,
         battle_format: waiting.battle_format,
@@ -1006,7 +1059,7 @@ export const useBattleStore = create<BattleState>((set, get) => ({
       }
 
       // Enhanced response handling
-      if (data && typeof data === 'object' && data.hasOwnProperty('success')) {
+  if (data && typeof data === 'object' && Object.prototype.hasOwnProperty.call(data, 'success')) {
         console.log('📊 JSON Function response:', {
           success: data.success,
           error: data.error,
@@ -1083,14 +1136,18 @@ export const useBattleStore = create<BattleState>((set, get) => ({
 
       console.log('📥 Battle comments data:', data);
 
-      const comments: BattleComment[] = (data || []).map((comment: any) => ({
-        id: comment.id,
-        user_id: comment.user_id,
-        username: comment.username,
-        avatar_url: comment.avatar_url,
-        vote: comment.vote,
-        comment: comment.comment,
-        created_at: comment.created_at
+      interface RawBattleComment { id: string; user_id: string; username: string; avatar_url: string | null; vote: 'A' | 'B'; comment: string | null; created_at: string; }
+      const comments: BattleComment[] = (data as RawBattleComment[] || []).map((c) => ({
+        id: c.id,
+        post_id: '', // コメント機能統合前の暫定値
+        user_id: c.user_id,
+        content: c.comment || '',
+        created_at: c.created_at,
+        updated_at: c.created_at,
+        username: c.username,
+        avatar_url: c.avatar_url,
+        vote: c.vote,
+        comment: c.comment
       }));
 
       set(state => ({
