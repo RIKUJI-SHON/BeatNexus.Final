@@ -72,8 +72,9 @@ export interface ArchivedBattle {
   player2_final_rating: number | null;
   player1_video_url: string | null;
   player2_video_url: string | null;
-  contestant_a?: User;
-  contestant_b?: User;
+  // Archived 用は軽量情報（Battle と同様の形）を保持：UI が必要とするのは username / avatar のみ
+  contestant_a?: { username: string; avatar_url: string | null };
+  contestant_b?: { username: string; avatar_url: string | null };
   player1_submission?: Submission;
   player2_submission?: Submission;
 }
@@ -232,7 +233,8 @@ export interface DatabaseFunctionResponse {
   success: boolean;
   error?: string;
   error_detail?: string;
-  [key: string]: any;
+  // 追加の任意フィールド（型未確定）
+  [key: string]: unknown;
 }
 
 export interface UserRankInfo {

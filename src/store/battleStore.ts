@@ -718,7 +718,26 @@ export const useBattleStore = create<BattleState>((set, get) => ({
         battle.player2_submission_id
       ].filter(id => id != null) as string[]);
 
-  // ArchivedBattles では UI 側で username/avatar を利用しないため profiles 取得をスキップ
+      // プロフィール取得（アーカイブ表示で名前 / アバターが必要）
+      const profileIds = new Set<string>();
+      (battlesData as RawArchivedBattle[]).forEach(b => {
+        if (b.player1_user_id) profileIds.add(b.player1_user_id);
+        if (b.player2_user_id) profileIds.add(b.player2_user_id);
+        if (b.winner_id) profileIds.add(b.winner_id);
+      });
+
+  const profileMap = new Map<string, { username: string; avatar_url: string | null }>();
+      if (profileIds.size > 0) {
+        const { data: archivedProfiles, error: archivedProfilesError } = await supabase
+          .from('profiles')
+          .select('id, username, avatar_url')
+          .in('id', Array.from(profileIds));
+        if (archivedProfilesError) {
+          console.warn('⚠️ profiles fetch error for archived battles (fallback to unknown):', archivedProfilesError);
+        } else if (archivedProfiles) {
+          archivedProfiles.forEach(p => profileMap.set(p.id, { username: p.username, avatar_url: p.avatar_url }));
+        }
+      }
 
   let submissionsData: { id: string; video_url: string }[] = [];
       if (submissionIds.length > 0) {
@@ -760,7 +779,8 @@ export const useBattleStore = create<BattleState>((set, get) => ({
           player2_final_rating: battle.player2_final_rating as number | null,
           player1_video_url: player1Submission?.video_url as string | null,
           player2_video_url: player2Submission?.video_url as string | null,
-      // ArchivedBattle の contestant_a/b は User を期待するがここでは軽量情報のみ → 既存UI利用箇所で username / avatar_url 参照のみのため省略
+          contestant_a: profileMap.get(battle.player1_user_id),
+          contestant_b: profileMap.get(battle.player2_user_id),
           video_url_a: player1Submission?.video_url as string | undefined,
           video_url_b: player2Submission?.video_url as string | undefined,
           rating_changes: battle.player1_rating_change !== null && battle.player2_rating_change !== null ? {
