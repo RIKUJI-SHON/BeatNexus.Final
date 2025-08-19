@@ -1,6 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Bell, X, Check, Swords, Clock, CheckCircle, Trophy, Award, Handshake, RefreshCw } from 'lucide-react';
+import { Bell, X, Swords, Clock, CheckCircle, Trophy, Award, Handshake, RefreshCw } from 'lucide-react';
 import { useNotificationStore, type Notification } from '../../store/notificationStore';
+import { supabase } from '../../lib/supabase';
+import { ArticleModal } from './ArticleModal';
+import type { NewsItem } from '../../types/news';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
@@ -8,6 +11,7 @@ export const NotificationDropdown: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
+  const [newsModalItem, setNewsModalItem] = useState<NewsItem | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   
   const {
@@ -32,10 +36,40 @@ export const NotificationDropdown: React.FC = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleNotificationClick = (notification: Notification) => {
+  const handleNotificationClick = async (notification: Notification) => {
     // 未読の場合は削除する（既読にする代わりに削除）
     if (!notification.isRead) {
       markAsRead(notification.id);
+    }
+
+    // ニュース記事通知の場合
+    if (notification.type === 'news_article' && notification.relatedSiteNewsId) {
+      const { data, error } = await supabase
+        .from('site_news')
+        .select('*')
+        .eq('id', notification.relatedSiteNewsId)
+        .single();
+      if (!error && data) {
+        setNewsModalItem({
+          id: data.id,
+            title: data.title,
+            body: data.body,
+            image_url: data.image_url ?? undefined,
+            content_type: data.content_type,
+            article_content: data.article_content,
+            meta_description: data.meta_description ?? undefined,
+            tags: data.tags ?? undefined,
+            is_featured: data.is_featured,
+            is_published: data.is_published,
+            display_order: data.display_order,
+            published_at: data.published_at,
+            created_at: data.created_at,
+            updated_at: data.updated_at,
+            language: data.language
+        });
+      }
+      setIsOpen(false);
+      return;
     }
 
     // バトル関連の通知の場合はバトルページに移動
@@ -115,7 +149,7 @@ export const NotificationDropdown: React.FC = () => {
       </button>
 
       {/* ドロップダウンメニュー */}
-      {isOpen && (
+  {isOpen && (
         <div className="fixed right-4 top-16 w-80 bg-gray-900 border border-gray-700 rounded-lg shadow-xl z-50 max-h-96 overflow-hidden">
           {/* ヘッダー */}
           <div className="flex items-center justify-between p-4 border-b border-gray-700">
@@ -211,6 +245,13 @@ export const NotificationDropdown: React.FC = () => {
             </div>
           )}
         </div>
+      )}
+      {newsModalItem && (
+        <ArticleModal
+          news={newsModalItem}
+          isOpen={!!newsModalItem}
+          onClose={() => setNewsModalItem(null)}
+        />
       )}
     </div>
   );

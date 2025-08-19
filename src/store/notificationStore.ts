@@ -235,10 +235,11 @@ export interface Notification {
   id: string;
   title: string;
   message: string;
-  type: 'info' | 'success' | 'warning' | 'battle_matched' | 'battle_win' | 'battle_lose' | 'battle_draw' | 'season_start';
+  type: 'info' | 'success' | 'warning' | 'battle_matched' | 'battle_win' | 'battle_lose' | 'battle_draw' | 'season_start' | 'news_article';
   isRead: boolean;
   relatedBattleId?: string;
   relatedSeasonId?: string; // 新シーズン用
+  relatedSiteNewsId?: string; // 追加: site_news 記事参照
   createdAt: Date;
   updatedAt: Date;
 }
@@ -402,6 +403,7 @@ export const useNotificationStore = create<NotificationState>()(
             isRead: item.is_read,
             relatedBattleId: item.related_battle_id,
             relatedSeasonId: item.related_season_id,
+            relatedSiteNewsId: item.related_site_news_id,
             createdAt: new Date(item.created_at),
             updatedAt: new Date(item.updated_at),
           }));

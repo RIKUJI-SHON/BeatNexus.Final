@@ -1,11 +1,26 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { X, Calendar, Tag } from 'lucide-react';
 import { format } from 'date-fns';
 import { ja } from 'date-fns/locale';
 import type { ArticleModalProps } from '../../types/news';
 
 export const ArticleModal: React.FC<ArticleModalProps> = ({ news, isOpen, onClose }) => {
-  if (!isOpen) return null;
+  // フォーカス管理 & 背景スクロールロック (Hook は常にトップで呼ぶ)
+  const firstFocusableRef = useRef<HTMLButtonElement | null>(null);
+  useEffect(() => {
+    if (!isOpen) return; // 閉じているときは何もしない
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    // 初期フォーカス
+    const t = setTimeout(() => firstFocusableRef.current?.focus(), 0);
+    return () => {
+      clearTimeout(t);
+      document.body.style.overflow = originalOverflow;
+    };
+  }, [isOpen]);
+
+  if (!isOpen) return null; // Portal 構築前にクイックリターン
 
   // Markdown の簡易レンダリング（後でreact-markdownに置き換え可能）
   const renderMarkdown = (content: string) => {
@@ -67,9 +82,18 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({ news, isOpen, onClos
       });
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/50 backdrop-blur-sm">
-      <div className="relative w-full max-w-4xl h-[95vh] sm:h-[90vh] bg-gray-900 rounded-lg sm:rounded-xl border border-gray-700 shadow-2xl flex flex-col overflow-hidden">
+  const modalContent = (
+    // オーバーレイ: 縦方向スクロール許可 + 上下余白で「上に張り付く」印象を軽減
+    <div
+      className="fixed inset-0 z-[11000] bg-black/65 backdrop-blur-sm overflow-y-auto"
+      role="dialog"
+      aria-modal="true"
+      aria-label={news.title}
+    >
+      {/* ラッパー: 画面高を確保しつつ中央寄せ。高さ < 画面 の場合は中央、超える場合は自然に上からスクロール */}
+      <div className="min-h-screen flex flex-col justify-center px-2 sm:px-4 py-10 sm:py-14 pt-[calc(env(safe-area-inset-top)+2rem)] pb-[calc(env(safe-area-inset-bottom)+2rem)]">
+        {/* カード本体 */}
+        <div className="relative w-full max-w-4xl mx-auto bg-gray-900 rounded-lg sm:rounded-xl border border-gray-700 shadow-2xl flex flex-col overflow-hidden max-h-[92vh] sm:max-h-[88vh]">
         {/* ヘッダー */}
         <div className="flex-shrink-0 bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 p-4 sm:p-6">
           <div className="flex items-start justify-between">
@@ -115,8 +139,8 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({ news, isOpen, onClos
           </div>
         </div>
 
-        {/* ボディ - スクロール可能 */}
-        <div className="flex-1 overflow-y-auto overscroll-contain" style={{ WebkitOverflowScrolling: 'touch' }}>
+  {/* ボディ - カード内スクロール */}
+  <div className="flex-1 overflow-y-auto overscroll-contain" style={{ WebkitOverflowScrolling: 'touch' }}>
           {/* メイン画像 */}
           {news.image_url && (
             <div className="w-full h-64 relative flex-shrink-0">
@@ -160,18 +184,26 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({ news, isOpen, onClos
 
         {/* フッター */}
         <div className="flex-shrink-0 bg-gray-900/95 backdrop-blur-sm border-t border-gray-700 p-3 sm:p-4">
-          <div className="flex justify-end">
-            <button
-              onClick={onClose}
-              className="px-4 sm:px-6 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors text-sm sm:text-base"
-            >
-              閉じる
-            </button>
+            <div className="flex justify-end">
+              <button
+                ref={firstFocusableRef}
+                onClick={onClose}
+                className="px-4 sm:px-6 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors text-sm sm:text-base"
+              >
+                閉じる
+              </button>
+            </div>
           </div>
         </div>
       </div>
     </div>
   );
+
+  // Header 配下の stacking context / overflow から切り離し
+  if (typeof document !== 'undefined') {
+    return createPortal(modalContent, document.body);
+  }
+  return modalContent;
 };
 
 export default ArticleModal;
