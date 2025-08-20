@@ -501,6 +501,7 @@
   },
   "home": {
     "landingPage": {
+  "tagline": "Plateforme de battles de beatbox en ligne",
       "cta": {
         "joinBeta": "Rejoindre Maintenant",
         "watchBattles": "Regarder les Battles"

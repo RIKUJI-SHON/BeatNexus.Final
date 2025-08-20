@@ -15,7 +15,7 @@ import { useRequireAuth } from '../hooks/useRequireAuth';
 import { AuthModal } from '../components/auth/AuthModal';
 import { getRankFromRating } from '../utils/rankUtils';
 import { toast } from '../store/toastStore';
-import beatnexusWordmark from '../assets/images/BEATNEXUS-WORDMARK.png';
+const beatnexusWordmark = '/images/BEATNEXUS-WORDMARK.png';
 import heroBackground from '../assets/images/hero-background.png';
 
 const CommunityPage: React.FC = () => {

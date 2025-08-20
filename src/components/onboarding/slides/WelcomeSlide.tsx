@@ -20,7 +20,7 @@ const WelcomeSlide: React.FC = () => {
           <img 
             src="/images/BEATNEXUS-WORDMARK.png" 
             alt="BeatNexus Logo"
-            className="h-16 object-contain"
+            className="h-48 md:h-52 object-contain drop-shadow-2xl transition-all duration-300"
           />
         </div>
 

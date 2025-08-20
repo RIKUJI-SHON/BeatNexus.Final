@@ -31,7 +31,7 @@ const BattleGuideSlide: React.FC = () => {
             loop
             muted
             playsInline
-            className="w-full max-w-[280px] h-40 object-cover rounded-lg shadow-lg"
+            className="w-full max-w-[320px] h-48 object-cover rounded-xl shadow-xl transition-all duration-300"
             poster="/images/onboarding/Slide2.png"
           >
             <source src={videoSrc} type="video/mp4" />

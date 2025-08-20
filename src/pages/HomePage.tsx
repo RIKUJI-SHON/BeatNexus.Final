@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Mic, Users, LineChart as ChartLine, ArrowRight, Play, Star, Video, Zap, Crown, Target, Upload, Vote } from 'lucide-react';
-import beatnexusWordmark from '../assets/images/BEATNEXUS-WORDMARK.png';
-import heroBackground from '../assets/images/hero-background.png';
+import { useNavigate } from 'react-router-dom';
+import { Mic, Crown, Target, Upload, Vote } from 'lucide-react';
+// Wordmark image served from public/images
+const beatnexusWordmark = '/images/BEATNEXUS-WORDMARK.png';
 import step1Upload from '../assets/images/steps/step1-upload.png';
 import step2Matching from '../assets/images/steps/step2-matching.png';
 import step3Voting from '../assets/images/steps/step3-voting.png';
@@ -73,14 +73,9 @@ const HomePage: React.FC = () => {
     <div className="min-h-screen bg-gray-950">
       {/* Hero Section - 改良版 */}
       <section className="relative py-16 md:py-24 flex items-center justify-center overflow-hidden">
-        {/* Background Image */}
+        {/* 背景画像削除: グラデーションのみ残す */}
         <div className="absolute inset-0">
-          {/* 背景画像 - src/assets/images/フォルダに配置した画像を使用 */}
-          <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: `url(${heroBackground})` }}>
-            {/* フォールバック: オンライン画像（開発用） */}
-            <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?q=80&w=1920&auto=format&fit=crop')] bg-cover bg-center bg-no-repeat [background-image:var(--fallback-bg)]"></div>
-            
-            {/* グラデーションオーバーレイで可読性を確保 */}
+          <div className="absolute inset-0">
             <div className="absolute inset-0 bg-gradient-to-br from-gray-900/90 via-gray-900/85 to-gray-950/90"></div>
             <div className="absolute inset-0 bg-gradient-to-t from-gray-950/60 via-transparent to-gray-900/40"></div>
           </div>

@@ -32,7 +32,7 @@ import { toast } from '../store/toastStore';
 import { getRankFromRating } from '../utils/rankUtils';
 import { formatDistanceToNow } from 'date-fns';
 import { ja, enUS } from 'date-fns/locale';
-import beatnexusWordmark from '../assets/images/BEATNEXUS-WORDMARK.png';
+const beatnexusWordmark = '/images/BEATNEXUS-WORDMARK.png';
 import heroBackground from '../assets/images/hero-background.png';
 
 type TabType = 'ranking' | 'chat' | 'members';

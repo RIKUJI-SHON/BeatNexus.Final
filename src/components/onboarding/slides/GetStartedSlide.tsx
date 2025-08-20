@@ -62,7 +62,7 @@ const GetStartedSlide: React.FC = () => {
                 <img 
                   src="/images/VS.png" 
                   alt="Battle Start"
-                  className="w-12 h-12 object-contain filter brightness-110"
+                  className="w-14 h-14 md:w-16 md:h-16 object-contain filter brightness-110 drop-shadow-lg transition-all duration-300"
                 />
               </button>
               <p className="text-gray-300 text-sm mt-3">Start battle</p>
@@ -76,7 +76,7 @@ const GetStartedSlide: React.FC = () => {
                 <img
                   src="/images/onboarding/ChatGPT Image 2025年7月4日 21_57_02.png"
                   alt="Go to Top Voted Battle"
-                  className="w-12 h-12 object-contain filter brightness-110"
+                  className="w-14 h-14 md:w-16 md:h-16 object-contain filter brightness-110 drop-shadow-lg transition-all duration-300"
                 />
               </button>
               <p className="text-gray-300 text-sm mt-3">Vote</p>

@@ -11,8 +11,6 @@ import { ArticleModal } from '../ui/ArticleModal';
 import { useNews } from '../../hooks/useNews';
 import { useOnboardingStore } from '../../store/onboardingStore';
 import type { NewsItem } from '../../types/news';
-import heroBackground from '../../assets/images/hero-background.png';
-import beatnexusWordmark from '../../assets/images/BEATNEXUS-WORDMARK.png';
 
 interface NewsCarouselProps {
   className?: string;
@@ -99,52 +97,51 @@ const NewsCarousel: React.FC<NewsCarouselProps> = ({ className = '' }) => {
 
   const renderPanel = (panel: typeof howToGuidePanel | NewsItem) => {
     if ('isGuide' in panel) {
-      // How-to Guideパネル
+      // How-to Guideパネル (背景画像削除: グラデーション + エフェクトのみ)
       return (
         <div
           key={panel.id}
           className="relative h-64 sm:h-72 md:h-80 lg:h-96 rounded-2xl overflow-hidden cursor-pointer group"
           onClick={() => handlePanelClick(panel)}
         >
-          {/* Background Image */}
+          {/* 背景: LPと同じ画像 + グラデーションオーバーレイ */}
           <div className="absolute inset-0">
-            <div 
-              className="absolute inset-0 bg-cover bg-center bg-no-repeat" 
-              style={{ backgroundImage: `url(${heroBackground})` }}
-            >
-              {/* グラデーションオーバーレイ */}
-              <div className="absolute inset-0 bg-gradient-to-br from-gray-900/90 via-gray-900/85 to-gray-950/90"></div>
-              <div className="absolute inset-0 bg-gradient-to-t from-gray-950/60 via-transparent to-gray-900/40"></div>
-            </div>
+            <img
+              src="/images/backgroud.png"
+              alt="background"
+              className="w-full h-full object-cover scale-105 opacity-45"
+              loading="lazy"
+              decoding="async"
+            />
+            <div className="absolute inset-0 bg-gradient-to-br from-gray-900/90 via-gray-900/85 to-gray-950/90" />
+            <div className="absolute inset-0 bg-gradient-to-t from-gray-950/60 via-transparent to-gray-900/40" />
           </div>
 
-          {/* Background Effects */}
-          <div className="absolute inset-0">
-            <div className="absolute top-4 left-4 w-32 h-32 bg-cyan-500/10 rounded-full blur-2xl"></div>
-            <div className="absolute bottom-4 right-4 w-36 h-36 bg-purple-500/10 rounded-full blur-2xl"></div>
-          </div>
+            {/* Background Effects */}
+            <div className="absolute inset-0">
+              <div className="absolute top-4 left-4 w-32 h-32 bg-cyan-500/10 rounded-full blur-2xl" />
+              <div className="absolute bottom-4 right-4 w-36 h-36 bg-purple-500/10 rounded-full blur-2xl" />
+            </div>
 
-          {/* Content */}
-          <div className="relative z-10 h-full flex flex-col items-center justify-between text-center px-6 py-8">
-            {/* スペーサー */}
-            <div></div>
-            
-            {/* BEATNEXUS Wordmark - より大きく */}
-            <div className="group-hover:scale-105 transition-transform duration-300">
-              <img 
-                src={beatnexusWordmark} 
-                alt="BEATNEXUS"
-                className="mx-auto max-w-48 sm:max-w-56 md:max-w-64 lg:max-w-72 h-auto drop-shadow-xl"
-              />
+            {/* Content */}
+            <div className="relative z-10 h-full flex flex-col items-center justify-between text-center px-6 py-8">
+              <div />
+              <div className="group-hover:scale-105 transition-transform duration-300 relative">
+                {/* Top layer onboarding image replacing wordmark */}
+                <img
+                  src="/images/onboarding/Slide1.png"
+                  alt="How to Guide"
+                  className="mx-auto w-64 sm:w-72 md:w-80 lg:w-[30rem] h-auto drop-shadow-2xl rounded-2xl transition-all duration-300"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+              <div className="text-sm text-gray-400">
+                <span className="text-cyan-400 font-semibold group-hover:text-cyan-300 transition-colors">
+                  {t('battlesPage.welcome.guide.newHere')} {t('battlesPage.welcome.guide.checkGuide')}
+                </span>
+              </div>
             </div>
-            
-            {/* Guide Text - 下部に一行で配置 */}
-            <div className="text-sm text-gray-400">
-              <span className="text-cyan-400 font-semibold group-hover:text-cyan-300 transition-colors">
-                {t('battlesPage.welcome.guide.newHere')} {t('battlesPage.welcome.guide.checkGuide')}
-              </span>
-            </div>
-          </div>
         </div>
       );
     } else {

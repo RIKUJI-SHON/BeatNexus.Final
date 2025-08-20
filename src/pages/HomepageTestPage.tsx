@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Users, LineChart as ChartLine, ArrowRight, Play, Star, Video, Zap, Crown, Trophy, Target, Upload, Vote, MessageCircle, BarChart3, Shield } from 'lucide-react';
-import beatnexusWordmark from '../assets/images/BEATNEXUS-WORDMARK.png';
-import heroBackground from '../assets/images/hero-background.png';
+// Wordmark: moved to public images for direct reference
+const beatnexusWordmark = '/images/BEATNEXUS-WORDMARK.png';
 import step1Upload from '../assets/images/steps/step1-upload.png';
 import step2Matching from '../assets/images/steps/step2-matching.png';
 import step3Voting from '../assets/images/steps/step3-voting.png';
@@ -203,17 +203,20 @@ const HomepageTestPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-black text-white">
       {/* BeatNexus ワードマークセクション */}
-      <section className="relative py-20 bg-gradient-to-b from-black to-gray-900/50">
-        {/* Background Image */}
-        <div className="absolute inset-0">
-          <img 
-            src={heroBackground} 
-            alt="" 
-            className="w-full h-full object-cover opacity-30"
+      <section className="relative py-20 bg-black/90">
+        {/* 背景画像: ぼかし付き */}
+        <div className="absolute inset-0 overflow-hidden">
+          <img
+            src="/images/backgroud.png"
+            alt="background"
+            className="w-full h-full object-cover scale-105 opacity-40"
+            loading="lazy"
+            decoding="async"
           />
+          {/* カラーブレンドレイヤー */}
+          <div className="absolute inset-0 bg-gradient-to-br from-purple-900/40 via-black/60 to-cyan-900/40 mix-blend-multiply"></div>
+          <div className="absolute inset-0 bg-black/40"></div>
         </div>
-        {/* Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-900/30 via-black/50 to-cyan-900/30"></div>
         
         <div className="relative z-10 text-center max-w-4xl mx-auto px-4">
           <div className="animate-fade-in group mb-12">
@@ -222,6 +225,13 @@ const HomepageTestPage: React.FC = () => {
               alt="BeatNexus" 
               className="relative mx-auto max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg h-auto drop-shadow-2xl group-hover:scale-105 transition-all duration-500 filter group-hover:brightness-110"
             />
+          </div>
+
+          {/* 一行タグライン: ロゴ直下（重複削除済） */}
+          <div className="mb-8 animate-fade-in-delay-1">
+            <p className="text-lg md:text-xl font-medium text-gray-300 leading-snug">
+              {t('home.landingPage.tagline')}
+            </p>
           </div>
 
           {/* CTAボタン */}
@@ -252,14 +262,8 @@ const HomepageTestPage: React.FC = () => {
 
       {/* 1. ファーストビュー：瞬時に訪問者の心を掴む */}
       <section className="relative py-20 flex items-center justify-center overflow-hidden">
-        {/* Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-black to-cyan-900/20">
-          <img 
-            src={heroBackground} 
-            alt="" 
-            className="w-full h-full object-cover opacity-30 mix-blend-overlay"
-          />
-        </div>
+        {/* 背景画像削除: グラデーションのみ */}
+        <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-black to-cyan-900/20"></div>
         
         {/* Hero Content */}
         <div className="relative z-10 text-center max-w-4xl mx-auto px-4">

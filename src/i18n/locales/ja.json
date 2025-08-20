@@ -505,6 +505,7 @@
   },
   "home": {
     "landingPage": {
+  "tagline": "オンラインビートボックスバトルプラットフォーム",
       "cta": {
         "joinBeta": "今すぐ参加",
         "watchBattles": "バトルを観戦する"

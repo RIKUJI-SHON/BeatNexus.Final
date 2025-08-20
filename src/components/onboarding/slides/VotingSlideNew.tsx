@@ -20,12 +20,12 @@ const VotingSlideNew: React.FC = () => {
         </div>
 
         {/* 中央画像（左右並び） */}
-        <div className="flex justify-center gap-4 mb-6">
+  <div className="flex justify-center gap-5 mb-6">
           <div className="flex-1 text-center">
             <img 
               src="/images/Tournaments.png" 
               alt="Tournaments"
-              className="w-full h-20 object-contain rounded-lg"
+              className="w-full h-24 object-contain rounded-xl drop-shadow-lg transition-all duration-300"
               data-testid="tournaments-image"
             />
           </div>
@@ -33,7 +33,7 @@ const VotingSlideNew: React.FC = () => {
             <img 
               src="/images/onboarding/judge.png" 
               alt="Official Judge"
-              className="w-full h-20 object-contain rounded-lg"
+              className="w-full h-24 object-contain rounded-xl drop-shadow-lg transition-all duration-300"
               data-testid="judge-image"
             />
           </div>
