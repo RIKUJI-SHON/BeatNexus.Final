@@ -3,9 +3,11 @@ import { Link } from 'react-router-dom';
 import { Instagram, Twitter, Youtube, Facebook, Mail } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useOnboardingStore } from '../../store/onboardingStore';
+import { useConsentStore } from '../../store/consentStore';
 
 export const Footer: React.FC = () => {
   const { t } = useTranslation();
+  const { openManager } = useConsentStore();
   const { setOnboardingModalOpen } = useOnboardingStore();
   return (
     <footer className="bg-gray-900 text-white pt-12 pb-8">
@@ -110,13 +112,16 @@ export const Footer: React.FC = () => {
           <p className="text-gray-500 text-sm">
             © {new Date().getFullYear()} BeatNexus. {t('footer.allRightsReserved')}
           </p>
-          <div className="flex space-x-6 mt-4 md:mt-0">
+          <div className="flex space-x-6 mt-4 md:mt-0 items-center">
             <Link to="/terms" className="text-gray-500 hover:text-white text-sm">
               {t('footer.termsOfService')}
             </Link>
             <Link to="/privacy" className="text-gray-500 hover:text-white text-sm">
               {t('footer.privacyPolicy')}
             </Link>
+            <button onClick={() => openManager()} className="text-gray-500 hover:text-white text-sm underline underline-offset-2">
+              {t('footer.cookieSettings', 'Cookie設定')}
+            </button>
             <Link to="/guidelines" className="text-gray-500 hover:text-white text-sm">
               Guidelines
             </Link>

@@ -17,7 +17,7 @@ const PrivacyPolicyPage: React.FC = () => {
 
   const japanesePolicy = `# BeatNexusプライバシーポリシー
 
-**最終更新日: 2025年8月16日**
+**最終更新日: 2025年8月20日**
 
 BeatNexus（以下「本サービス」といいます。）は、ユーザーの皆様の個人情報の保護を最も重要な責務の一つと認識し、このプライバシーポリシー（以下「本ポリシー」といいます。）に基づき、適切に取り扱います。GDPR、ePrivacy指令、個人情報保護法等の関連法令・ガイドラインを尊重します。
 
@@ -28,9 +28,9 @@ BeatNexus（以下「本サービス」といいます。）は、ユーザー�
     *   電話番号（アカウント登録時の本人認証のため）
     *   プロフィール情報（ユーザー名、アバター画像、自己紹介文など）
 2.  **サービスの利用に伴い自動的に取得する情報**:
-    *   Cookie（クッキー）およびそれに類する技術情報
-    *   サービスの利用履歴（閲覧ページ、操作ログなど）
-    *   デバイス情報（OS、ブラウザ種別、IPアドレスなど）
+  *   Cookie（クッキー）およびそれに類する技術情報
+  *   サービスの利用履歴（閲覧ページ、操作ログ、コンテンツ表示回数（インプレッション）、クリック/投票/投稿等のイベント）
+  *   デバイス情報（OS、ブラウザ種別、IPアドレス（IP匿名化設定を行う場合あり）等）
 
 ## 第2条（個人情報の利用目的）
 当社は、取得した個人情報を以下の目的で利用します。
@@ -38,7 +38,7 @@ BeatNexus（以下「本サービス」といいます。）は、ユーザー�
 2.  本人確認、不正利用防止、スパム・多重アカウント・不正投票の検知
 3.  お問い合わせ・サポート対応、重大なお知らせ（規約変更、セキュリティ通知等）の送付
 4.  利用状況の分析（匿名化または集計化した統計データ作成）
-5.  広告の表示および最適化（後述「第5条 Cookie・広告等」参照）
+5.  広告の表示および最適化（後述「第5条 Cookie・広告等」参照。現時点でパーソナライズ広告は未導入）
 6.  法令遵守、権利保護、紛争対応
 
 ## 第3条（個人情報の第三者提供）
@@ -52,15 +52,15 @@ BeatNexus（以下「本サービス」といいます。）は、ユーザー�
 当社は、取り扱う個人情報の漏えい、滅失またはき損の防止その他の個人情報の安全管理のために、必要かつ適切な措置を講じます。本サービスでは、Supabaseの提供する堅牢なセキュリティ基盤を活用し、データの暗号化、アクセス制御などを実施しています。
 
 ## 第5条（Cookie・広告・同意管理について）
-1.  当社は、サービス品質向上、セキュリティ確保、利用分析、広告（パーソナライズ/非パーソナライズ）配信のため Cookie や同様の技術（LocalStorage 等）を使用します。
-2.  本サービスは Google が提供する Google AdSense（広告配信）、Google Analytics（利用分析）を利用する場合があります。これらのサービスは Cookie や広告識別子を用いてトラフィックデータ・広告効果データを取得します。
+1.  当社は、サービス品質向上、セキュリティ確保、利用分析のため Cookie や同様の技術（LocalStorage 等）を使用します。現時点でパーソナライズ広告 Cookie は使用していません（導入時は再同意を取得します）。
+2.  本サービスは Google が提供する Google Analytics（利用分析）を利用します（広告/AdSenseは未導入）。Analytics は Cookie を用いてページビュー、イベント（例: ページ閲覧、バトル閲覧、投票、クリック、投稿、検索、ランキング閲覧）等の利用状況を計測し、IP匿名化(anonymize_ip) を適用します。
 3.  取得される情報には、IPアドレスの一部、ブラウザ・デバイス情報、閲覧ページ、広告表示/クリック情報等が含まれる場合があります。これらの情報は個人を直接特定するものではありません。
 4.  欧州経済領域(EEA)、英国、スイスのユーザーに対しては、表示される同意管理メッセージ（CMP）で「同意」「同意しない」「設定」等を選択できます。選択肢はいつでも再表示（画面下部の「Cookie設定」リンクまたはブラウザキャッシュ削除）により変更できます。
-5.  同意しない（拒否）を選択した場合、パーソナライズされない広告（コンテキストに基づく広告）のみが表示され、行動履歴に基づくターゲティングは行われません。
+5.  同意しない（拒否）を選択した場合、解析用Cookieは設定されません。
 6.  ブラウザ設定で Cookie を無効化することも可能ですが、機能の一部が制限されることがあります。
 7.  Google によるデータの利用について詳しくは「Google のサービスを使用するサイトやアプリから収集した情報の Google による使用」を参照してください。
 8.  広告設定・オプトアウト: ユーザーは https://adssettings.google.com/ または https://myadcenter.google.com/ でパーソナライズ広告設定を変更できます。
-9.  当社は IAB TCF v2.2 に準拠したシグナル（必要に応じ）を送信し、ユーザー選択に基づく Consent Mode を適用します。
+9.  将来広告/パーソナライズ Cookie を導入する場合は、IAB TCF v2.2 に準拠したシグナル送信と再同意取得を行います。
 
 ## 第6条（ユーザーの権利）
 ユーザーは、当社が保有する自己の個人情報について、開示、訂正、追加、削除、利用停止、データポータビリティ、処理の制限、及び同意の撤回を要求できます。法令上許容される範囲で速やかに対応します。ご希望の場合は第9条の窓口までご連絡ください。
@@ -79,7 +79,7 @@ BeatNexus（以下「本サービス」といいます。）は、ユーザー�
 
   const englishPolicy = `# BeatNexus Privacy Policy
 
-**Last Updated: Aug 16, 2025**
+**Last Updated: Aug 20, 2025**
 
 BeatNexus (the "Service") recognizes the protection of your personal information as one of its most important responsibilities. We handle your information appropriately based on this Privacy Policy (the "Policy").
 
@@ -90,9 +90,9 @@ We collect the following information in providing the Service:
     *   Phone Number (for identity verification during account registration)
     *   Profile Information (username, avatar image, bio, etc.)
 2.  **Information Collected Automatically**:
-    *   Cookies and similar technologies
-    *   Service usage history (pages viewed, actions taken, etc.)
-    *   Device information (OS, browser type, IP address, etc.)
+  *   Cookies and similar technologies
+  *   Service usage history (pages viewed, impressions, interaction events such as clicks, votes, submissions, searches, ranking views)
+  *   Device information (OS, browser type, partially anonymized IP address (with anonymize_ip), etc.)
 
 ## Article 2 (Purpose of Use)
 We use the collected personal information for the following purposes:
@@ -113,14 +113,13 @@ We will not provide personal information to third parties without your consent, 
 We take necessary and appropriate measures to prevent the leakage, loss, or damage of personal information and to otherwise manage its security. The Service utilizes the robust security infrastructure provided by Supabase, including data encryption and access control.
 
 ## Article 5 (Cookies, Advertising & Consent Management)
-1. We use cookies and similar technologies (including local storage) for usability, security, analytics, and advertising (personalized & non-personalized) purposes.
-2. The Service may use Google AdSense (advertising) and Google Analytics (analytics). These services may collect partial IP address, device/browser information, pages viewed, ad impression/click metrics.
-3. For users in the EEA, UK and Switzerland, a consent banner (CMP) provides choices: Accept, Reject, or Manage options. You may revisit settings at any time (link in footer or by clearing cookies).
-4. If you reject, only non-personalized (contextual) ads are served and targeting based on behavior is disabled.
+1. We use cookies and similar technologies (including local storage) for usability, security and analytics. No personalized advertising cookies are currently deployed (we will re-seek consent if introduced).
+2. We use Google Analytics for usage analytics only (no AdSense yet). Analytics collects page views and defined events (e.g. battle views, votes, clicks, submissions, searches, ranking views) with IP anonymization.
+3. A consent banner allows Accept / Reject / Customize. You can revisit settings (footer “Cookie Settings” link or clearing cookies/local storage).
+4. If you reject, analytics cookies are not set.
 5. You can disable cookies in your browser; some features may be limited.
 6. See "How Google uses information from sites or apps that use our services" for details on Google's data usage.
-7. Ad personalization settings & opt-out: https://adssettings.google.com/ or https://myadcenter.google.com/
-8. We may transmit IAB TCF v2.2 signals and apply Google's Consent Mode in line with your choices.
+7. We will implement IAB TCF v2.2 signals if/when advertising features are introduced (fresh consent will be requested).
 
 ## Article 6 (Your Rights)
 You may request access, rectification, addition, deletion, restriction, data portability, objection, and withdrawal of consent. We will respond within a reasonable period as permitted by applicable law. Contact: Article 9.

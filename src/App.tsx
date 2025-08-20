@@ -22,7 +22,9 @@ import { useLanguageInitialization } from './hooks/useLanguageInitialization';
 import { useOnboardingInitialization } from './hooks/useOnboardingInitialization';
 
 // Google Analytics
-import { initializeGA, trackError } from './utils/analytics';
+import { trackError } from './utils/analytics';
+import CookieConsentBanner from './components/privacy/CookieConsentBanner';
+import AnalyticsConsentGate from './components/privacy/AnalyticsConsentGate';
 import { useAnalytics, usePerformanceTracking } from './hooks/useAnalytics';
 
 // Error Boundary
@@ -155,8 +157,7 @@ function AppContent() {
   useOnboardingInitialization();
 
   useEffect(() => {
-    // Google Analytics初期化
-    initializeGA();
+    // GA 初期化は consent gate に委譲
     
     // バトルのリアルタイム更新は廃止しました（UX改善のため）
     
@@ -185,7 +186,9 @@ function AppContent() {
 
   return (
     <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-      <RouterContent />
+  <RouterContent />
+  <AnalyticsConsentGate />
+  <CookieConsentBanner />
       
       {/* Toast Notifications */}
       <ToastContainer toasts={toasts} onRemove={removeToast} />

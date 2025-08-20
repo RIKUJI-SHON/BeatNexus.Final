@@ -1,0 +1,46 @@
+---
+title: Cookie 同意管理 (解析のみ) 実装ログ
+date: 2025-08-20
+feature: cookie_consent_minimal
+---
+
+## 目的
+クリック/インプレッション等の利用状況計測をプライバシーポリシーへ明示しつつ、解析Cookieの事前同意管理を導入。将来の広告/パーソナライズ拡張に備えた抽象化。
+
+## 実装概要
+- zustand + persist で `consentStore` 追加。カテゴリ: essential / analytics / ads(未使用)。
+- 初回表示バナー `CookieConsentBanner` (Accept/Reject/Customize)。
+- GA 初期化を `AnalyticsConsentGate` で analytics 同意後にのみ実行。
+- Footer に "Cookie設定" ボタンで再設定可能。
+- ポリシー文面更新（イベント列挙・広告未導入明示・再同意方針）。
+- リポジトリ用ポリシーミラーファイル ja/en 追加。
+
+## データモデル/永続化
+localStorage key: beatnexus-consent
+```
+{
+  version: 1,
+  preferences: { essential: true, analytics: <bool>, ads: <bool(false)> },
+  lastUpdated: ISOString
+}
+```
+
+## 将来拡張ポイント
+- ads 同意付与時に Google Consent Mode / TCF シグナル実装。
+- Cookie カテゴリ追加 (performance, personalization 等)。
+- 国判定 (GeoIP) により EU 圏のみ強制表示。
+
+## リスク/留意
+- 現状 UI は簡易。ブランドスタイルへの最適化はデザイン承認後。
+- 既存 GA イベント送信呼び出しは consent 前に track 関数が noop となるため問題なし。
+
+## テスト観点
+1. 初回アクセス: バナー表示 / GA スクリプト未初期化。
+2. Accept All: GA 初期化ログ表示、再ロード後バナー非表示。
+3. Reject All: GA 未初期化維持。
+4. Customize 解析 ON 保存: 初期化。
+5. Footer Cookie設定 ボタンで再表示。
+
+## 未対応 (意図的)
+- 広告 / Consent Mode 詳細設定 (未導入機能のため)。
+- i18n キー完全分離 (最小実装として埋め込み fallback)。
