@@ -48,7 +48,8 @@ export const UserInfoCard: React.FC = () => {
         .from('season_voter_rankings_view')
         .select('rank')
         .eq('id', user.id)
-        .single();
+        .limit(1)
+        .maybeSingle();
 
       if (error && error.code !== 'PGRST116') {
         console.error('Error fetching voter rank:', error);
@@ -70,7 +71,8 @@ export const UserInfoCard: React.FC = () => {
         .from('season_rankings_view')
         .select('position, season_points')
         .eq('user_id', user.id)
-        .single();
+        .limit(1)
+        .maybeSingle();
 
       if (error && error.code !== 'PGRST116') {
         console.error('Error fetching user rank:', error);
@@ -96,7 +98,8 @@ export const UserInfoCard: React.FC = () => {
         .from('seasons')
         .select('id, name, status')
         .eq('status', 'active')
-        .single();
+        .limit(1)
+        .maybeSingle();
 
       if (error && error.code !== 'PGRST116') {
         console.error('Error fetching active season:', error);
@@ -133,68 +136,21 @@ export const UserInfoCard: React.FC = () => {
   };
 
   // ユーザー統計データを取得
-  const fetchUserStats = async (): Promise<void> => {
+  const initUserStats = (): void => {
     if (!user) return;
-
+    // 現在 UI で使用しているのは join_date と current_season_points のみ。
+    // エラー原因となっていた不要な votes / battles 取得は削除。
     setIsLoading(true);
-    try {
-      // 投稿数を取得
-      const { data: submissions, error: submissionsError } = await supabase
-        .from('submissions')
-        .select('id')
-        .eq('user_id', user.id);
-
-      if (submissionsError) {
-        console.error('Error fetching submissions:', submissionsError);
-        return;
-      }
-
-      // 受け取った投票数を取得
-      const { data: votes, error: votesError } = await supabase
-        .from('votes')
-        .select('id')
-        .in('submission_id', 
-          await supabase
-            .from('submissions')
-            .select('id')
-            .eq('user_id', user.id)
-            .then(res => res.data?.map(s => s.id) || [])
-        );
-
-      if (votesError) {
-        console.error('Error fetching votes:', votesError);
-      }
-
-      // バトル結果を取得
-      const { data: battles, error: battlesError } = await supabase
-        .from('battles')
-        .select('winner_id, loser_id, submissions!inner(user_id)')
-        .or(`winner_id.eq.${user.id},loser_id.eq.${user.id}`)
-        .eq('status', 'completed');
-
-      if (battlesError) {
-        console.error('Error fetching battles:', battlesError);
-      }
-
-      // 統計を計算
-      const wins = battles?.filter(b => b.winner_id === user.id).length || 0;
-      const losses = battles?.filter(b => b.loser_id === user.id).length || 0;
-
-      setUserStats({
-        total_submissions: submissions?.length || 0,
-        total_votes_received: votes?.length || 0,
-        wins,
-        losses,
-        current_season_points: 0, // fetchUserRankで設定される
-        rank: 0, // ランキングは別途計算が必要
-        join_date: user.created_at || new Date().toISOString()
-      });
-
-    } catch (error) {
-      console.error('Error in fetchUserStats:', error);
-    } finally {
-      setIsLoading(false);
-    }
+    setUserStats({
+      total_submissions: 0,
+      total_votes_received: 0,
+      wins: 0,
+      losses: 0,
+      current_season_points: 0, // 後で fetchUserRank が上書き
+      rank: 0,
+      join_date: user.created_at || new Date().toISOString()
+    });
+    setIsLoading(false);
   };
 
   useEffect(() => {
@@ -202,9 +158,8 @@ export const UserInfoCard: React.FC = () => {
       fetchActiveSeason();
       fetchVoterRank(); // 投票者ランキングを取得
       fetchUserProfile().then(() => {
-        fetchUserStats().then(() => {
-          fetchUserRank(); // ユーザー統計の後にランキングデータを取得
-        });
+        initUserStats();
+        fetchUserRank(); // シーズンポイント反映
       });
     }
   }, [user]); // eslint-disable-line react-hooks/exhaustive-deps
