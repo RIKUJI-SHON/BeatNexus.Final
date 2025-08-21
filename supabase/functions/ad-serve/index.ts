@@ -43,25 +43,9 @@ serve(async (req) => {
     console.log('Placement lookup result:', { placementData, placementError })
 
     if (placementError || !placementData) {
-      console.log('Placement not found, returning test ad')
-      // フォールバック: テスト広告を返す
-      const fallbackAd = {
-        ok: true,
-        data: {
-          placement_key: placement,
-          creative: {
-            creative_id: "fallback-test-123",
-            headline: "フォールバック広告",
-            body: "配置設定が見つからないため、テスト広告を表示しています",
-            cta_text: "詳しく見る",
-            target_url: "https://example.com/fallback",
-            file_url: "https://via.placeholder.com/300x200/ff6600/ffffff?text=Fallback+Ad"
-          },
-          token: null
-        }
-      }
+      console.log('Placement not found, returning no fill')
       return new Response(
-        JSON.stringify(fallbackAd),
+        JSON.stringify({ ok: false, code: 'AD_NO_FILL', message: 'Placement not found', placement_key: placement }),
         { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
@@ -82,25 +66,9 @@ serve(async (req) => {
     console.log('Assignment lookup result:', { assignments, assignmentError })
 
     if (assignmentError || !assignments || assignments.length === 0) {
-      console.log('No assignments found, returning test ad')
-      // フォールバック: テスト広告を返す
-      const fallbackAd = {
-        ok: true,
-        data: {
-          placement_key: placement,
-          creative: {
-            creative_id: "fallback-no-assignment-123",
-            headline: "デフォルト広告",
-            body: "この配置に広告が設定されていません",
-            cta_text: "詳しく見る",
-            target_url: "https://example.com/no-assignment",
-            file_url: "https://via.placeholder.com/300x200/999999/ffffff?text=No+Assignment"
-          },
-          token: null
-        }
-      }
+      console.log('No assignments found, returning no fill')
       return new Response(
-        JSON.stringify(fallbackAd),
+        JSON.stringify({ ok: false, code: 'AD_NO_FILL', message: 'No assignments found', placement_key: placement }),
         { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
@@ -121,25 +89,9 @@ serve(async (req) => {
     console.log('Ad lookup result:', { adData, adError })
 
     if (adError || !adData) {
-      console.log('Ad not found or expired, returning test ad')
-      // フォールバック: テスト広告を返す
-      const fallbackAd = {
-        ok: true,
-        data: {
-          placement_key: placement,
-          creative: {
-            creative_id: "fallback-expired-123",
-            headline: "期限切れ広告",
-            body: "設定された広告が期限切れです",
-            cta_text: "詳しく見る",
-            target_url: "https://example.com/expired",
-            file_url: "https://via.placeholder.com/300x200/cc6600/ffffff?text=Expired+Ad"
-          },
-          token: null
-        }
-      }
+      console.log('Ad not found or expired, returning no fill')
       return new Response(
-        JSON.stringify(fallbackAd),
+        JSON.stringify({ ok: false, code: 'AD_NO_FILL', message: 'Ad not found or expired', placement_key: placement }),
         { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }

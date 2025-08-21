@@ -14,11 +14,10 @@ interface AdSlotProps {
   userId?: string;
   className?: string;
   render?: (p: { creative: ReturnType<typeof useAdServe>['creative']; click: () => void }) => React.ReactNode;
-  fallback?: React.ReactNode; // No Fill
   preloadMargin?: string; // まだ未使用 (先読み用 rootMargin 拡張余地)
 }
 
-export const AdSlot: React.FC<AdSlotProps> = ({ placementKey, variant='infeed', userId, className, render, fallback, preloadMargin='0px' }) => {
+export const AdSlot: React.FC<AdSlotProps> = ({ placementKey, variant='infeed', userId, className, render, preloadMargin='0px' }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [defer, setDefer] = React.useState(true);
   // IntersectionObserver で指定 margin 内に来たらフェッチ開始
@@ -51,9 +50,9 @@ export const AdSlot: React.FC<AdSlotProps> = ({ placementKey, variant='infeed', 
 
   // 状態分岐
   if (serve.loading) return <div ref={containerRef} className={className} aria-busy="true" />;
-  if (serve.noFill) return <div ref={containerRef} className={className}>{fallback || null}</div>;
-  if (serve.error) return <div ref={containerRef} className={className} data-error={serve.error} />;
-  if (!serve.creative) return <div ref={containerRef} className={className} />;
+  if (serve.noFill) return null; // 広告データが存在しない場合は何も表示しない
+  if (serve.error) return null; // エラーの場合も何も表示しない
+  if (!serve.creative) return null; // クリエイティブがない場合も何も表示しない
 
   const c = serve.creative;
   const handleClick = () => click.trackClick({ target_url: c.target_url });
