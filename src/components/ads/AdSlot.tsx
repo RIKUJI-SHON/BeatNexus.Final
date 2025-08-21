@@ -19,7 +19,13 @@ interface AdSlotProps {
 
 export const AdSlot: React.FC<AdSlotProps> = ({ placementKey, variant='infeed', userId, className, render, preloadMargin='0px' }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [defer, setDefer] = React.useState(true);
+  const [defer, setDefer] = React.useState(false); // デバッグのため一時的にfalseに変更
+  
+  // デバッグログ追加
+  React.useEffect(() => {
+    console.log('🎯 AdSlot mounted:', { placementKey, variant, userId, defer });
+  }, [placementKey, variant, userId, defer]);
+  
   // IntersectionObserver で指定 margin 内に来たらフェッチ開始
   React.useEffect(() => {
     if (!containerRef.current) return;
@@ -28,16 +34,30 @@ export const AdSlot: React.FC<AdSlotProps> = ({ placementKey, variant='infeed', 
     const observer = new IntersectionObserver((entries) => {
       const entry = entries[0];
       if (entry && entry.isIntersecting) {
+        console.log('👁️ AdSlot visible, starting fetch for:', placementKey);
         setDefer(false);
         observer.disconnect();
       }
     }, { root: null, rootMargin: preloadMargin, threshold: 0 });
     observer.observe(el);
     return () => observer.disconnect();
-  }, [defer, preloadMargin]);
+  }, [defer, preloadMargin, placementKey]);
 
   const serve = useAdServe(placementKey, { userId, defer });
   const click = useAdClickTracker({ creativeId: serve.creative?.id || null, placementId: placementKey, token: serve.token, userId });
+
+  // デバッグログ追加
+  React.useEffect(() => {
+    console.log('📊 AdSlot serve state:', { 
+      placementKey, 
+      loading: serve.loading, 
+      noFill: serve.noFill, 
+      error: serve.error, 
+      hasCreative: !!serve.creative,
+      creative: serve.creative,
+      token: serve.token
+    });
+  }, [placementKey, serve.loading, serve.noFill, serve.error, serve.creative, serve.token]);
 
   useAdImpressionObserver({
     enabled: !!serve.creative && !serve.noFill,
@@ -49,11 +69,24 @@ export const AdSlot: React.FC<AdSlotProps> = ({ placementKey, variant='infeed', 
   });
 
   // 状態分岐
-  if (serve.loading) return <div ref={containerRef} className={className} aria-busy="true" />;
-  if (serve.noFill) return null; // 広告データが存在しない場合は何も表示しない
-  if (serve.error) return null; // エラーの場合も何も表示しない
-  if (!serve.creative) return null; // クリエイティブがない場合も何も表示しない
+  if (serve.loading) {
+    console.log('⏳ AdSlot loading:', placementKey);
+    return <div ref={containerRef} className={className} aria-busy="true" />;
+  }
+  if (serve.noFill) {
+    console.log('🚫 AdSlot noFill:', placementKey);
+    return null; // 広告データが存在しない場合は何も表示しない
+  }
+  if (serve.error) {
+    console.log('❌ AdSlot error:', placementKey, serve.error);
+    return null; // エラーの場合も何も表示しない
+  }
+  if (!serve.creative) {
+    console.log('💥 AdSlot no creative:', placementKey);
+    return null; // クリエイティブがない場合も何も表示しない
+  }
 
+  console.log('✅ AdSlot rendering creative:', placementKey, serve.creative);
   const c = serve.creative;
   const handleClick = () => click.trackClick({ target_url: c.target_url });
 
