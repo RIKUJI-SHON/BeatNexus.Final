@@ -16,6 +16,7 @@ import { Season, HistoricalSeasonRanking } from '../types';
 import { useAuthStore } from '../store/authStore';
 import BattlesPage from './BattlesPage';
 import { useTranslation } from 'react-i18next';
+import { AdSlot } from '../components/ads/AdSlot';
 
 interface VoterRankingEntry {
   rank: number;
@@ -260,6 +261,17 @@ const HomepageTestPage: React.FC = () => {
         </div>
       </section>
 
+      {/* home.wordmark.section.after.banner - ワードマークセクション後のバナー広告 */}
+      <section className="py-8 bg-gradient-to-b from-black to-gray-900">
+        <div className="max-w-6xl mx-auto px-4 flex justify-center">
+          <AdSlot
+            placementKey="home.wordmark.section.after.banner"
+            variant="banner"
+            className="w-full max-w-4xl"
+          />
+        </div>
+      </section>
+
       {/* 1. ファーストビュー：瞬時に訪問者の心を掴む */}
       <section className="relative py-20 flex items-center justify-center overflow-hidden">
         {/* 背景画像削除: グラデーションのみ */}
@@ -481,6 +493,17 @@ const HomepageTestPage: React.FC = () => {
         </div>
       </section>
 
+      {/* home.features.section.after.inline - 主要機能詳細セクション後のインライン広告 */}
+      <section className="py-12 bg-gradient-to-b from-gray-900 to-gray-850">
+        <div className="max-w-4xl mx-auto px-4 flex justify-center">
+          <AdSlot
+            placementKey="home.features.section.after.inline"
+            variant="inline"
+            className="w-full max-w-2xl"
+          />
+        </div>
+      </section>
+
       {/* 5. 社会的証明：信頼と熱狂を「証明」する */}
       <section className="py-20 bg-gradient-to-b from-gray-900 to-black">
         <div className="max-w-6xl mx-auto px-4">
@@ -587,6 +610,17 @@ const HomepageTestPage: React.FC = () => {
               </div>
             )}
           </div>
+        </div>
+      </section>
+
+      {/* home.stats.section.after.infeed - 統計・ランキングセクション後のインフィード広告 */}
+      <section className="py-12 bg-gradient-to-b from-black to-gray-850">
+        <div className="max-w-4xl mx-auto px-4 flex justify-center">
+          <AdSlot
+            placementKey="home.stats.section.after.infeed"
+            variant="infeed"
+            className="w-full max-w-3xl"
+          />
         </div>
       </section>
 

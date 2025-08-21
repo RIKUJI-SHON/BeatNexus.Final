@@ -162,7 +162,7 @@ const NewsCarousel: React.FC<NewsCarouselProps> = ({ className = '' }) => {
           className="relative h-64 sm:h-72 md:h-80 lg:h-96 rounded-2xl overflow-hidden"
         >
           <AdSlot
-            placementKey="home.carousel.slide-3"
+            placementKey="home.hero.section.after.carousel"
             variant="carousel"
             className="h-full w-full"
             fallback={

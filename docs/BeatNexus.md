@@ -38,7 +38,7 @@ src/
 │   ├── auth/           # 認証関連
 │   ├── battle/         # バトル関連（BattleCard, ArchivedBattleCard, NewsCarousel等）
 │   ├── community/      # コミュニティ関連（完全実装済み）
-│   ├── home/           # ホーム画面専用
+│   ├── home/           # ホーム画面専用（注意：現在未使用）
 │   ├── layout/         # ヘッダー、フッター、背景
 │   ├── onboarding/     # オンボーディング関連（モーダル、スライド）
 │   └── ui/             # 汎用UI要素（ArticleModal, TopThreePodium等）
@@ -47,6 +47,9 @@ src/
 │   └── locales/        # 翻訳ファイル（en.json, ja.json）
 ├── lib/                # 外部ライブラリ設定（supabase.ts）
 ├── pages/              # ページコンポーネント
+│   ├── HomePage.tsx    # 旧ホームページ（/old-homepage で利用可能）
+│   ├── HomepageTestPage.tsx # **現在使用中のホームページ**（/ ルート）
+│   └── ...             # その他のページ
 ├── store/              # Zustand状態管理（battleStore, communityStore, rankingStore等）
 ├── types/              # TypeScript型定義（news.ts等）
 └── utils/              # ユーティリティ関数（urlValidation.ts, securityTests.ts等）
@@ -86,6 +89,31 @@ docs/
 - **BattleCard**: 投票数に基づいて自動的にSimpleBattleCardまたはSpecialBattleCardを選択
 - **閾値**: 総投票数5以上でSpecialBattleCardに昇格
 - **統一インターフェース**: 全ページで`<BattleCard>`を使用、内部で自動判定
+
+## 🏠 ホームページシステム
+### 2つのホームページ
+1. **HomepageTestPage** ✅ **現在使用中**
+   - **ルート**: `/` （メインエントリーポイント）
+   - **構成**: ランディングページ形式、長いスクロール構造
+   - **セクション**: ワードマーク → ヒーロー → 課題提起 → How It Works → 社会的証明 → ビジョン → FAQ → クロージング
+   - **特徴**: 事前登録制向けの詳細説明、完全なマーケティングページ
+
+2. **HomePage** ✅ **旧バージョン**
+   - **ルート**: `/old-homepage`
+   - **構成**: シンプルなホーム画面、コンポーネント化されたセクション
+   - **セクション**: HeroBanner → FeatureSection → LatestBattles → CTASection
+   - **特徴**: 既存ユーザー向け、よりシンプルな構造
+
+### ルーティング設定
+```tsx
+<Route path="/" element={<HomepageTestPage />} />
+<Route path="/old-homepage" element={<HomePage />} />
+```
+
+### 広告配置場所（現在のホームページ用）
+- `home.wordmark.section.after.banner`: ワードマークセクション後（ヒーローセクション前）の横長バナー
+- `home.features.section.after.inline`: 主要機能詳細セクション後（社会的証明セクション前）のインライン広告
+- `home.stats.section.after.infeed`: 統計・ランキングセクション後（ビジョンセクション前）のインフィード広告
 
 ## 🗂️ データベースマイグレーション
 ### 基本ルール

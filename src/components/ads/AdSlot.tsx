@@ -69,10 +69,35 @@ export const AdSlot: React.FC<AdSlotProps> = ({ placementKey, variant='infeed', 
   }
 
   const c = serve.creative;
-  const handleClick = () => click.trackClick({ target_url: c.target_url });
+  
+  // 安全なURL遷移機能
+  const handleUrlNavigation = (url: string) => {
+    try {
+      // セキュリティ: HTTPSまたはHTTPのみ許可
+      const urlObj = new URL(url);
+      if (!['http:', 'https:'].includes(urlObj.protocol)) {
+        console.warn('[AdSlot] 不正なURLプロトコル:', url);
+        return;
+      }
+      
+      // 新しいタブで外部リンクを開く
+      window.open(url, '_blank', 'noopener,noreferrer');
+    } catch (error) {
+      console.warn('[AdSlot] 無効なURL:', url, error);
+    }
+  };
+
+  // クリック処理: トラッキング + URL遷移
+  const handleClick = () => {
+    click.trackClick({ target_url: c.target_url });
+    if (c.target_url) {
+      handleUrlNavigation(c.target_url);
+    }
+  };
 
   // 配置キーからバリアントを自動判定
-  const getVariantFromPlacement = (key: string): 'infeed' | 'banner' | 'inline' => {
+  const getVariantFromPlacement = (key: string): 'infeed' | 'banner' | 'inline' | 'carousel' => {
+    if (key.includes('carousel')) return 'carousel';
     if (key.includes('banner')) return 'banner';
     if (key.includes('inline') || key.includes('mid')) return 'inline';
     return 'infeed';
@@ -102,14 +127,26 @@ const AdCard: React.FC<AdCardProps> = ({ creative, onClick, variant = 'infeed' }
   // 旧 variant クラス組合せ関数は simple 系統へ統一したため未使用
 
   if (variant === 'carousel') {
-    // カルーセル広告: 画像をカルーセル全体に表示
+    // カルーセル広告: 画像をカルーセル全体に表示、全体がクリック可能
     return (
-      <div className="bnx-ad-card bnx-ad-card--carousel group relative h-full w-full" role="article" aria-label="広告">
+      <div 
+        className="bnx-ad-card bnx-ad-card--carousel group relative h-full w-full cursor-pointer" 
+        role="article" 
+        aria-label="広告"
+        onClick={onClick}
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            onClick();
+          }
+        }}
+      >
         {creative.file_url ? (
           <div className="h-full w-full relative overflow-hidden rounded-2xl">
             <img
               src={creative.file_url}
-              alt="広告"
+              alt={creative.headline || '広告'}
               className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
               loading="lazy"
               decoding="async"
@@ -117,6 +154,25 @@ const AdCard: React.FC<AdCardProps> = ({ creative, onClick, variant = 'infeed' }
             {/* 広告であることを示すタグ */}
             <div className="absolute top-3 left-3 z-10">
               <span className="bnx-ad-badge bg-black/80 text-white text-xs px-2 py-1 rounded backdrop-blur-sm">広告</span>
+            </div>
+            {/* カルーセル広告のオーバーレイ情報 */}
+            {(creative.headline || creative.body) && (
+              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4 text-white">
+                {creative.headline && (
+                  <h3 className="font-semibold text-lg mb-1 line-clamp-1">{creative.headline}</h3>
+                )}
+                {creative.body && (
+                  <p className="text-sm opacity-90 line-clamp-2">{creative.body}</p>
+                )}
+              </div>
+            )}
+            {/* ホバー時のクリック指示 */}
+            <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+              <div className="bg-white/20 backdrop-blur-sm rounded-full p-3">
+                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+              </div>
             </div>
           </div>
         ) : (

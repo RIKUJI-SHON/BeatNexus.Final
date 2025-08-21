@@ -14,7 +14,7 @@ const AdPreviewPage: React.FC = () => {
     { key: 'ranking.top.banner', variant: 'banner', description: 'Ranking トップポディウム直下 Banner', height: '90px' },
     
     // Carousel型（新規追加）
-    { key: 'home.carousel.slide-3', variant: 'carousel', description: 'Home カルーセル 3枚目固定', height: '240px' },
+    { key: 'home.hero.section.after.carousel', variant: 'carousel', description: 'Home ヒーローセクション後カルーセル', height: '240px' },
     
     // InFeed型
     { key: 'battles.list.after-3.infeed', variant: 'infeed', description: 'Battles 一覧 3件後 InFeed', height: '220px' },
