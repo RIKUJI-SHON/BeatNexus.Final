@@ -16,6 +16,8 @@ import { useRequireAuth } from '../hooks/useRequireAuth';
 import { AuthModal } from '../components/auth/AuthModal';
 import { useTranslation, Trans } from 'react-i18next';
 import { useCanonicalUrl, useDynamicMeta } from '../hooks/useSEO';
+import { AdSlot } from '../components/ads/AdSlot';
+import { HouseAd } from '../components/ads/HouseAd';
 
 const HomePage: React.FC = () => {
   const { user } = useAuthStore();
@@ -326,7 +328,7 @@ const HomePage: React.FC = () => {
         </div>
       </section>
 
-      {/* Features Section - 実際の機能を強調 */}
+  {/* Features Section - 実際の機能を強調 */}
       <section className="py-32 bg-gray-950 relative overflow-hidden">
         {/* Background Effects */}
         <div className="absolute inset-0">
@@ -390,10 +392,44 @@ const HomePage: React.FC = () => {
               </div>
             </Card>
           </div>
+
+          {/* home.features.mid.inline - ランキングカード下部中央にインライン広告 */}
+          <div className="mt-16">
+            <AdSlot
+              placementKey="home.features.mid.inline"
+              variant="inline"
+              className="w-full flex justify-center"
+              fallback={<HouseAd className="w-full max-w-xl" />}
+              render={({ creative, click }) => (
+                <div className="bnx-ad-inline max-w-xl w-full mx-auto bg-gray-800/60 border border-gray-700/60 rounded-xl p-6 flex flex-col gap-3 items-start text-left">
+                  <div className="text-xs font-semibold tracking-wide text-purple-300">AD</div>
+                  {creative?.headline && <h4 className="text-white font-bold text-lg leading-snug">{creative.headline}</h4>}
+                  {creative?.body && <p className="text-gray-300 text-sm leading-relaxed line-clamp-3">{creative.body}</p>}
+                  {creative?.cta_text && creative?.target_url && (
+                    <button
+                      onClick={click}
+                      className="inline-flex items-center px-4 py-2 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 text-white text-sm font-semibold hover:brightness-110 transition self-start"
+                    >
+                      {creative.cta_text}
+                    </button>
+                  )}
+                </div>
+              )}
+            />
+          </div>
         </div>
       </section>
 
       {/* Latest Battles Section */}
+      {/* home.latest.before-list.infeed - LatestBattles 表示直前 */}
+      <div className="container-ultra-wide pt-12">
+        <AdSlot
+          placementKey="home.latest.before-list.infeed"
+          variant="infeed"
+          className="mb-8"
+          fallback={null}
+        />
+      </div>
       <LatestBattles />
 
       {/* CTA Section */}

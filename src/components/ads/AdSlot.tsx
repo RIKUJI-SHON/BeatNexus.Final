@@ -1,0 +1,176 @@
+// AdSlot.tsx
+// 役割: 指定 placementKey の広告を取得し、可視化されるDOMを提供。
+// 最小 InFeed 用。後で variant に応じたレイアウト分岐を追加できるよう拡張ポイントを作る。
+
+import React, { useRef } from 'react';
+import { useAdServe } from '../../hooks/useAdServe';
+import { useAdImpressionObserver } from '../../hooks/useAdImpressionObserver';
+import { useAdClickTracker } from '../../hooks/useAdClickTracker';
+
+interface AdSlotProps {
+  placementKey: string;
+  // variant は今後のレイアウト分岐用 (現段階未使用)
+  variant?: 'infeed' | 'banner' | 'inline' | 'carousel';
+  userId?: string;
+  className?: string;
+  render?: (p: { creative: ReturnType<typeof useAdServe>['creative']; click: () => void }) => React.ReactNode;
+  fallback?: React.ReactNode; // No Fill
+  preloadMargin?: string; // まだ未使用 (先読み用 rootMargin 拡張余地)
+}
+
+export const AdSlot: React.FC<AdSlotProps> = ({ placementKey, variant='infeed', userId, className, render, fallback, preloadMargin='0px' }) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [defer, setDefer] = React.useState(true);
+  // IntersectionObserver で指定 margin 内に来たらフェッチ開始
+  React.useEffect(() => {
+    if (!containerRef.current) return;
+    if (!defer) return;
+    const el = containerRef.current;
+    const observer = new IntersectionObserver((entries) => {
+      const entry = entries[0];
+      if (entry && entry.isIntersecting) {
+        setDefer(false);
+        observer.disconnect();
+      }
+    }, { root: null, rootMargin: preloadMargin, threshold: 0 });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [defer, preloadMargin]);
+
+  const serve = useAdServe(placementKey, { userId, defer });
+  const click = useAdClickTracker({ creativeId: serve.creative?.id || null, placementId: placementKey, token: serve.token, userId });
+
+  useAdImpressionObserver({
+    enabled: !!serve.creative && !serve.noFill,
+    ref: containerRef,
+    creativeId: serve.creative?.id || null,
+    placementId: placementKey,
+    token: serve.token,
+    userId,
+  });
+
+  // 状態分岐
+  if (serve.loading) return <div ref={containerRef} className={className} aria-busy="true" />;
+  if (serve.noFill) return <div ref={containerRef} className={className}>{fallback || null}</div>;
+  if (serve.error) return <div ref={containerRef} className={className} data-error={serve.error} />;
+  if (!serve.creative) return <div ref={containerRef} className={className} />;
+
+  const c = serve.creative;
+  const handleClick = () => click.trackClick({ target_url: c.target_url });
+
+  // 配置キーからバリアントを自動判定
+  const getVariantFromPlacement = (key: string): 'infeed' | 'banner' | 'inline' => {
+    if (key.includes('banner')) return 'banner';
+    if (key.includes('inline') || key.includes('mid')) return 'inline';
+    return 'infeed';
+  };
+
+  const resolvedVariant = variant || getVariantFromPlacement(placementKey);
+
+  return (
+    <div ref={containerRef} className={className} data-ad-placement={placementKey} data-ad-creative={c.id}>
+      {render ? (
+        render({ creative: c, click: handleClick })
+      ) : (
+  <AdCard creative={c} onClick={handleClick} variant={resolvedVariant} />
+      )}
+    </div>
+  );
+};
+
+// 広告カードコンポーネント（バトルカードと統一されたデザイン）
+interface AdCardProps {
+  creative: NonNullable<ReturnType<typeof useAdServe>['creative']>;
+  onClick: () => void;
+  variant?: 'infeed' | 'banner' | 'inline' | 'carousel';
+}
+
+const AdCard: React.FC<AdCardProps> = ({ creative, onClick, variant = 'infeed' }) => {
+  // 旧 variant クラス組合せ関数は simple 系統へ統一したため未使用
+
+  if (variant === 'banner' || variant === 'inline' || variant === 'carousel') {
+    // banner/inline/carousel も simple スタイル系に統一 (横長/コンパクト差のみクラスで制御予定)
+    const compact = variant === 'inline';
+    const isCarousel = variant === 'carousel';
+    return (
+      <div className={"bnx-ad-card bnx-ad-card--simple group" + (compact ? " bnx-ad-card--compact" : isCarousel ? " bnx-ad-card--carousel" : " bnx-ad-card--wide")} role="article" aria-label={creative.headline || 'ad'}>
+        <div className="bnx-ad-simple-grid" style={compact ? {gridTemplateColumns:'120px 1fr', minHeight:140} : isCarousel ? {gridTemplateColumns:'1fr', minHeight:'100%'} : {gridTemplateColumns:'200px 1fr', minHeight:180}}>
+          {creative.file_url && (
+            <div className="bnx-ad-simple-media-wrapper">
+              <img
+                src={creative.file_url}
+                alt={creative.headline || 'ad'}
+                className="bnx-ad-simple-img"
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+          )}
+          <div className="bnx-ad-simple-body">
+            <div className="bnx-ad-simple-head">
+              <span className="bnx-ad-badge">広告 / AD</span>
+              {creative.headline && (
+                <h4 className="bnx-ad-simple-title line-clamp-2">{creative.headline}</h4>
+              )}
+              {creative.body && (
+                <p className="bnx-ad-simple-text line-clamp-2">{creative.body}</p>
+              )}
+            </div>
+            {creative.cta_text && creative.target_url && (
+              <button
+                className="bnx-ad-simple-cta"
+                onClick={onClick}
+                aria-label={creative.cta_text}
+              >
+                {creative.cta_text}
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // InFeed variant (battle list 挿入用) – バトルカード寄せデザイン
+  // 指定プレースメントでは画像をより強調 (幅/高さ拡張)
+  // InFeed はすべて統一: 固定画像カラム (160px) + 短文時拡張 (200px) を汎用ロジック化
+  const shortCopy = (!creative.body || creative.body.length < 60);
+
+  return (
+    <div className={"bnx-ad-card bnx-ad-card--simple group" + (shortCopy ? " bnx-ad-card--simple-size-lg" : " bnx-ad-card--simple-size-md")} role="article" aria-label={creative.headline || 'ad'}>
+      <div className="bnx-ad-simple-grid" data-size={shortCopy ? 'lg':'md'}>
+        {creative.file_url && (
+          <div className="bnx-ad-simple-media-wrapper">
+            <img
+              src={creative.file_url}
+              alt={creative.headline || 'ad'}
+              className="bnx-ad-simple-img"
+              loading="lazy"
+              decoding="async"
+            />
+          </div>
+        )}
+        <div className="bnx-ad-simple-body">
+          <div className="bnx-ad-simple-head">
+            <span className="bnx-ad-badge">広告 / AD</span>
+            {creative.headline && (
+              <h4 className="bnx-ad-simple-title line-clamp-2">{creative.headline}</h4>
+            )}
+            {creative.body && (
+              <p className="bnx-ad-simple-text line-clamp-3">{creative.body}</p>
+            )}
+          </div>
+          {creative.cta_text && creative.target_url && (
+            <button
+              className="bnx-ad-simple-cta"
+              onClick={onClick}
+              aria-label={creative.cta_text}
+            >
+              {creative.cta_text}
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};

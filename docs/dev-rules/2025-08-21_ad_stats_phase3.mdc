@@ -1,0 +1,43 @@
+# 2025-08-21 フェーズ3 集計層実装ログ
+
+## 目的
+広告イベント `ad_events` から 24h / 7d 単位での基本 KPI (impressions / clicks / CTR) を取得する RPC を整備し、管理・分析 UI で利用可能な集計基盤を最小構築する。
+
+## 追加ファイル / マイグレーション
+- `supabase/migrations/20250821110000_create_fn_ad_stats.sql` :
+  - `refresh_mv_ad_stats_daily()` (初期: CONCURRENTLY 実装) 
+  - `get_ad_stats(...)` 日次行取得 + フィルタ (placement/campaign/flight/creative)
+- `supabase/migrations/20250821110500_fix_refresh_mv_ad_stats_daily.sql` : CONCURRENTLY→通常 REFRESH へ修正 (ユニークインデックス未定義のため)
+
+## 実装詳細
+### refresh_mv_ad_stats_daily()
+- SECURITY DEFINER
+- 単純 REFRESH 後 行数返却
+- 将来: UNIQUE(day, creative_id, placement_id, flight_id) 追加で CONCURRENTLY 再有効化検討
+
+### get_ad_stats(period,...)
+- period: '24h' | '7d' (デフォルト 7d 路線)
+- 期間フィルタ: 24h→ current_date - 1 day, 7d→ current_date - 6 days
+- CTR 計算: impressions>0 の場合のみ (丸め 4 桁)
+- フィルタ: placement_key (join), campaign_id (exists サブクエリ), flight_id, creative_id
+- ソート: day desc
+
+## テスト
+```
+select * from refresh_mv_ad_stats_daily(); -- rows=0 (初期データ不足)
+select * from get_ad_stats('24h'); -- 空結果想定
+```
+
+## 既知課題 / 次アクション
+- データ量 0 のため CTR 実測未検証 → 最低限 1 impres / 1 click データ投入テスト予定
+- ユニークインデックス未作成: CONCURRENT REFRESH 非対応 (負荷上昇時対応)
+- Open Issue 候補: O-06 「集計ビュー UNIQUE インデックス & CONCURRENT REFRESH 化」
+
+## 推奨フォローアップ
+1. サンプルイベント (複数日分) 生成スクリプト追加
+2. 7d 集計の閾値 (30日ビュー内ウィンドウ) 維持確認クエリ
+3. Edge Function or cron で定期 refresh (5-15分) 設計
+
+## 完了判定
+- P3-2 (リフレッシュ RPC) 実装: ✅
+- P3-3 (取得 RPC) 実装: ✅ (テストデータ後 2次確認必要)

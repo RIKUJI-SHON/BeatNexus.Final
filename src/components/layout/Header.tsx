@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu, X, Bell, ShoppingCart, Plus, User, Crown, Settings, LogOut, Check, Swords, Clock, CheckCircle, Trophy, Award, Handshake, RefreshCw } from 'lucide-react';
+import { Menu, X, Bell, ShoppingCart, Plus, User, Crown, Settings, LogOut, Check, Swords, Clock, CheckCircle, Trophy, Award, Handshake, RefreshCw, Palette } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { HoverCard } from '../ui/HoverCard';
 import { NotificationDropdown } from '../ui/NotificationDropdown';
@@ -517,6 +517,17 @@ export const Header: React.FC = () => {
                           <Settings className="h-5 w-5" />
                           {t('hoverCard.settings')}
                         </Link>
+                        {/* 開発/デザイン確認用リンク */}
+                        {import.meta.env.DEV && (
+                          <Link 
+                            to="/ad-preview"
+                            className="flex items-center gap-3 px-3 py-2 text-yellow-300 hover:text-yellow-100 hover:bg-yellow-800/20 rounded-lg transition-colors"
+                            onClick={() => setIsProfileDropdownOpen(false)}
+                          >
+                            <Palette className="h-5 w-5" />
+                            広告プレビュー
+                          </Link>
+                        )}
                         <button 
                           className="w-full flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-gray-800 rounded-lg transition-colors"
                           onClick={async () => {

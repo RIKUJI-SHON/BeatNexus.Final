@@ -8,6 +8,8 @@ import { useTranslation } from 'react-i18next';
 import { trackBeatNexusEvents } from '../utils/analytics';
 import { getDefaultAvatarUrl } from '../utils';
 import { VoterRankingEntry, SeasonRankingEntry, SeasonVoterRankingEntry, RankingType, VoterRankingType } from '../types';
+import { AdSlot } from '../components/ads/AdSlot';
+import { HouseAd } from '../components/ads/HouseAd';
 
 type TabType = 'player' | 'voter';
 
@@ -712,6 +714,44 @@ const RankingPage: React.FC = () => {
             />
           )}
 
+          {/* ranking.top.banner */}
+          <div className="my-6">
+            <AdSlot
+              placementKey="ranking.top.banner"
+              variant="banner"
+              className="w-full flex justify-center"
+              fallback={<HouseAd className="w-full max-w-3xl" />}
+              render={({ creative, click }) => (
+                <div className="bnx-ad-banner w-full max-w-3xl mx-auto bg-gray-800/60 border border-gray-700/60 rounded-xl p-4 flex flex-col md:flex-row gap-4 items-center shadow-sm">
+                  {creative?.file_url && (
+                    <img
+                      src={creative.file_url}
+                      alt={creative.headline || 'ad'}
+                      className="w-40 h-24 object-cover rounded-lg flex-shrink-0"
+                    />
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <div className="text-xs font-semibold text-cyan-400 mb-1">AD</div>
+                    {creative?.headline && (
+                      <h4 className="text-white font-bold text-sm md:text-base line-clamp-2">{creative.headline}</h4>
+                    )}
+                    {creative?.body && (
+                      <p className="text-gray-300 text-xs md:text-sm line-clamp-2 mt-1">{creative.body}</p>
+                    )}
+                  </div>
+                  {creative?.cta_text && creative?.target_url && (
+                    <button
+                      onClick={click}
+                      className="mt-2 md:mt-0 md:self-stretch inline-flex items-center justify-center px-4 py-2 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-sm font-semibold hover:brightness-110 transition"
+                    >
+                      {creative?.cta_text}
+                    </button>
+                  )}
+                </div>
+              )}
+            />
+          </div>
+
           {/* ランキングリスト */}
           {currentLoading ? (
             <div className="text-center py-12">
@@ -751,89 +791,101 @@ const RankingPage: React.FC = () => {
                 ) : (
                   <>
                     {listEntries
-                      .map((entry) => {
+                      .flatMap((entry, idx) => {
                       // 溢れたTOP3エントリかどうかをチェック
                       const isOverflowTopThree = overflowEntries.includes(entry);
                       const isTopThree = getPosition(entry) <= 3;
-                      
-                      return (
-                    <Link 
-                      key={getUserId(entry)} 
-                      to={`/profile/${getUserId(entry)}`}
-                      className={`block px-4 py-4 transition-colors group ${
-                        activeTab === 'player' 
-                          ? 'hover:bg-cyan-500/5' 
-                          : 'hover:bg-purple-500/5'
-                      } ${
-                        isTopThree 
-                          ? activeTab === 'player' 
-                            ? isOverflowTopThree
-                              ? 'bg-gradient-to-r from-cyan-500/8 to-blue-500/8 border-l-2 border-cyan-400/40' // 溢れたTOP3エントリは少し強調
-                              : 'bg-gradient-to-r from-cyan-500/5 to-blue-500/5'
-                            : isOverflowTopThree
-                              ? 'bg-gradient-to-r from-purple-500/8 to-pink-500/8 border-l-2 border-purple-400/40'
-                              : 'bg-gradient-to-r from-purple-500/5 to-pink-500/5'
-                          : ''
-                      }`}
-                    >
-                      <div className="grid grid-cols-10 gap-4 items-center">
-                        {/* ランク */}
-                        <div className="col-span-2 text-center">
-                          {getPositionDisplay(getPosition(entry))}
-                        </div>
-                        
-                        {/* ユーザー情報 */}
-                        <div className="col-span-6 flex items-center gap-3 min-w-0 py-1">
-                          <div className={`relative w-10 h-10 rounded-full p-0.5 transition-all duration-300 flex-shrink-0 ${
+                      const row = (
+                        <Link 
+                          key={getUserId(entry)} 
+                          to={`/profile/${getUserId(entry)}`}
+                          className={`block px-4 py-4 transition-colors group ${
                             activeTab === 'player' 
-                              ? 'bg-gradient-to-r from-cyan-500/50 to-blue-500/50 group-hover:from-cyan-400 group-hover:to-blue-400' 
-                              : 'bg-gradient-to-r from-purple-500/50 to-pink-500/50 group-hover:from-purple-400 group-hover:to-pink-400'
-                          }`}>
-                            <img
-                              src={entry.avatar_url || getDefaultAvatarUrl()}
-                              alt={entry.username}
-                              className="w-full h-full rounded-full object-cover"
-                              onError={(e) => {
-                                const target = e.target as HTMLImageElement;
-                                if (target.src !== getDefaultAvatarUrl()) {
-                                  target.src = getDefaultAvatarUrl();
+                              ? 'hover:bg-cyan-500/5' 
+                              : 'hover:bg-purple-500/5'
+                          } ${
+                            isTopThree 
+                              ? activeTab === 'player' 
+                                ? isOverflowTopThree
+                                  ? 'bg-gradient-to-r from-cyan-500/8 to-blue-500/8 border-l-2 border-cyan-400/40'
+                                  : 'bg-gradient-to-r from-cyan-500/5 to-blue-500/5'
+                                : isOverflowTopThree
+                                  ? 'bg-gradient-to-r from-purple-500/8 to-pink-500/8 border-l-2 border-purple-400/40'
+                                  : 'bg-gradient-to-r from-purple-500/5 to-pink-500/5'
+                              : ''
+                          }`}
+                        >
+                          <div className="grid grid-cols-10 gap-4 items-center">
+                            {/* ランク */}
+                            <div className="col-span-2 text-center">
+                              {getPositionDisplay(getPosition(entry))}
+                            </div>
+                            {/* ユーザー情報 */}
+                            <div className="col-span-6 flex items-center gap-3 min-w-0 py-1">
+                              <div className={`relative w-10 h-10 rounded-full p-0.5 transition-all duration-300 flex-shrink-0 ${
+                                activeTab === 'player' 
+                                  ? 'bg-gradient-to-r from-cyan-500/50 to-blue-500/50 group-hover:from-cyan-400 group-hover:to-blue-400' 
+                                  : 'bg-gradient-to-r from-purple-500/50 to-pink-500/50 group-hover:from-purple-400 group-hover:to-pink-400'
+                              }`}>
+                                <img
+                                  src={entry.avatar_url || getDefaultAvatarUrl()}
+                                  alt={entry.username}
+                                  className="w-full h-full rounded-full object-cover"
+                                  onError={(e) => {
+                                    const target = e.target as HTMLImageElement;
+                                    if (target.src !== getDefaultAvatarUrl()) {
+                                      target.src = getDefaultAvatarUrl();
+                                    }
+                                  }}
+                                />
+                              </div>
+                              <div className="min-w-0 flex-1">
+                                <div className={`font-medium text-white text-sm truncate transition-colors ${
+                                  activeTab === 'player' 
+                                    ? 'group-hover:text-cyan-400' 
+                                    : 'group-hover:text-purple-400'
+                                }`}>
+                                  {entry.username}
+                                </div>
+                                {activeTab === 'player' && activeRankingType === 'current_season' && (
+                                  <div className="text-xs text-gray-400">
+                                    {t('rankingPage.voteShare')}: {getWeightedVoteSharePercent(entry)}%
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                            {/* レーティング/シーズンポイント/投票数 */}
+                            <div className="col-span-2 text-center">
+                              <span className={`font-bold text-sm ${
+                                activeTab === 'player' 
+                                  ? getRatingColor(getRatingOrSeasonPoints(entry))
+                                  : getVoteCountColor(getVoteCount(entry))
+                              }`}>
+                                {activeTab === 'player' 
+                                  ? getRatingOrSeasonPoints(entry)
+                                  : `${getVoteCount(entry) * 100} VP`
                                 }
-                              }}
+                              </span>
+                            </div>
+                          </div>
+                        </Link>
+                      );
+                      // after 5th entry (index 4) に infeed 広告
+                      if (idx === 4) {
+                        return [
+                          row,
+                          <div key="ranking.after-5.ad" className="px-4 py-4">
+                            <AdSlot
+                              placementKey="ranking.list.after-5.infeed"
+                              variant="infeed"
+                              className="bnx-ad-infeed w-full bnx-ad--ranking-context"
+                              fallback={null}
                             />
                           </div>
-                          <div className="min-w-0 flex-1">
-                            <div className={`font-medium text-white text-sm truncate transition-colors ${
-                              activeTab === 'player' 
-                                ? 'group-hover:text-cyan-400' 
-                                : 'group-hover:text-purple-400'
-                            }`}>
-                              {entry.username}
-                            </div>
-              {activeTab === 'player' && activeRankingType === 'current_season' && (
-                              <div className="text-xs text-gray-400">
-                {t('rankingPage.voteShare')}: {getWeightedVoteSharePercent(entry)}%
-                              </div>
-                            )}
-                          </div>
-                        </div>
-
-                        {/* レーティング/シーズンポイント/投票数 */}
-                        <div className="col-span-2 text-center">
-                          <span className={`font-bold text-sm ${
-                            activeTab === 'player' 
-                              ? getRatingColor(getRatingOrSeasonPoints(entry))
-                              : getVoteCountColor(getVoteCount(entry))
-                          }`}>
-                            {activeTab === 'player' 
-                              ? getRatingOrSeasonPoints(entry)
-                              : `${getVoteCount(entry) * 100} VP`
-                            }
-                          </span>
-                        </div>
-                      </div>
-                    </Link>
-                  );
-                })}
+                        ];
+                      }
+                      return [row];
+                    })}
                 </>
                 )}
               </div>

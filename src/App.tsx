@@ -67,6 +67,7 @@ import ContactPage from './pages/ContactPage';
 import UserGuidelinesPage from './pages/UserGuidelinesPage';
 import NotificationTestPage from './pages/NotificationTestPage';
 import CommunityDetailPage from './pages/CommunityDetailPage';
+import AdPreviewPage from './pages/AdPreviewPage';
 import BattleResultTestPage from './pages/BattleResultTestPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
 import AuthConfirmPage from './pages/AuthConfirmPage';
@@ -105,6 +106,7 @@ function RouterContent() {
             <Route path="/community/:id" element={<CommunityDetailPage />} />
             <Route path="/subscription" element={<SubscriptionPage />} />
             <Route path="/settings" element={<SettingsPage />} />
+            <Route path="/ad-preview" element={<AdPreviewPage />} />
             <Route path="/tournament" element={<TournamentPage />} />
             <Route path="/faq" element={<FAQPage />} />
             <Route path="/terms" element={<TermsPage />} />

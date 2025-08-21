@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Plus, Trophy, Crown, ArrowRight, Play, Mic, Users, Archive, Medal, Star } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Trophy, Mic, Archive } from 'lucide-react';
 import { BattleCard } from '../components/battle/BattleCard';
+import { AdSlot } from '../components/ads/AdSlot';
+import { injectAdSlots, isAdSlotPlaceholder, generateBattleAdRules } from '../utils/injectAdSlots';
 import { ArchivedBattleCard } from '../components/battle/ArchivedBattleCard';
 import { BattleFilters } from '../components/battle/BattleFilters';
 import { Pagination } from '../components/ui/Pagination';
-import { Badge } from '../components/ui/Badge';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { useRequireAuth } from '../hooks/useRequireAuth';
@@ -13,10 +14,7 @@ import { AuthModal } from '../components/auth/AuthModal';
 import { useRankingStore } from '../store/rankingStore';
 import { useBattleStore } from '../store/battleStore';
 import { useAuthStore } from '../store/authStore';
-import { RankingEntry } from '../types';
 import { useTranslation } from 'react-i18next';
-import { getRankColorClasses } from '../utils/rankUtils';
-import { useOnboardingStore } from '../store/onboardingStore';
 import { UserInfoCard } from '../components/ui/UserInfoCard';
 import { TabbedRanking } from '../components/ui/TabbedRanking';
 
@@ -30,37 +28,33 @@ const BattlesPage: React.FC = () => {
   const [showMyBattlesOnly, setShowMyBattlesOnly] = useState(false);
 
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const { setOnboardingModalOpen } = useOnboardingStore();
+  // const { setOnboardingModalOpen } = useOnboardingStore(); // 未使用のため一旦コメントアウト（再利用時に復活）
   
   // ページネーション関連の状態
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 10; // 1ページあたりの表示件数
   
-  const { battles, archivedBattles, archivedBattlesCount, communityMembersCount, totalVotesCount, totalSubmissionsCount, loading, archiveLoading, error, fetchBattles, fetchArchivedBattles, fetchArchivedBattlesCount, fetchCommunityMembersCount, fetchTotalVotesCount, fetchTotalSubmissionsCount } = useBattleStore();
-  const { rankings, loading: rankingsLoading, fetchRankings } = useRankingStore();
+  const { battles, archivedBattles, loading, archiveLoading, error, fetchBattles, fetchArchivedBattles } = useBattleStore();
+  const { fetchRankings } = useRankingStore();
   const { user } = useAuthStore();
   
   // TabbedRanking handles its own limit
 
   useEffect(() => {
     const initializeData = async () => {
-    try {
-        await fetchBattles();
-        await fetchRankings();
-        await fetchArchivedBattles();
-        await fetchArchivedBattlesCount();
-        await fetchCommunityMembersCount();
-        await fetchTotalVotesCount();
-        await fetchTotalSubmissionsCount();
-        
+      try {
+        await Promise.all([
+          fetchBattles(),
+          fetchRankings(),
+          fetchArchivedBattles(),
+        ]);
         // リアルタイム機能は廃止しました（UX改善のため）
-    } catch (error) {
-      console.error('Error in useEffect:', error);
-    }
+      } catch (error) {
+        console.error('Error in initializeData:', error);
+      }
     };
-    
     initializeData();
-  }, []); // 空の依存配列でマウント時のみ実行
+  }, [fetchBattles, fetchRankings, fetchArchivedBattles]);
 
   const requireAuth = useRequireAuth({
     showAuthModal: true,
@@ -86,11 +80,9 @@ const BattlesPage: React.FC = () => {
 
       // MY BATTLES フィルター
       if (showMyBattlesOnly && user) {
-        battleList = battleList.filter(battle => {
-          // battleStoreで設定されるcontestant_a_id/contestant_b_idを使用
-          const battleWithIds = battle as any;
-          return battleWithIds.contestant_a_id === user.id || battleWithIds.contestant_b_id === user.id;
-        });
+        battleList = battleList.filter(battle =>
+          battle.contestant_a_id === user.id || battle.contestant_b_id === user.id
+        );
       }
 
       // 検索フィルター
@@ -184,7 +176,19 @@ const BattlesPage: React.FC = () => {
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const endIndex = startIndex + ITEMS_PER_PAGE;
   
-  const paginatedActiveBattles = sortBy === 'completed' ? [] : filteredBattles.slice(startIndex, endIndex);
+  const paginatedActiveBattles = useMemo(
+    () => (sortBy === 'completed' ? [] : filteredBattles.slice(startIndex, endIndex)),
+    [filteredBattles, startIndex, endIndex, sortBy]
+  );
+  // ページ内リストへ広告プレースホルダ挿入 (3件ごと) - 配置キー仕様書 27.1
+  const battlesWithAds = useMemo(() => {
+    if (sortBy === 'completed') return [];
+    
+    // 3件ごとに広告を挿入するルールを動的生成 (実際の件数まで)
+    const adRules = generateBattleAdRules(paginatedActiveBattles.length);
+    
+    return injectAdSlots(paginatedActiveBattles, adRules);
+  }, [paginatedActiveBattles, sortBy]);
   const paginatedArchivedBattles = filteredArchivedBattles.slice(startIndex, endIndex);
 
   // フィルターが変更されたときにページを1に戻す
@@ -230,40 +234,54 @@ const BattlesPage: React.FC = () => {
             <div className="space-y-6 mt-8" role="region" aria-label="Battle results">
               {sortBy !== 'completed' ? (
                 loading ? (
-                  <Card className="bg-gray-900 border border-gray-800 p-8 text-center" role="status" aria-live="polite">
-                    <div 
-                      className="animate-spin w-12 h-12 border-4 border-cyan-500 border-t-transparent rounded-full mx-auto mb-4"
-                      aria-hidden="true"
-                    ></div>
-                    <p className="text-gray-400">{t('battlesPage.status.loadingBattles')}</p>
-                  </Card>
+                  <div role="status" aria-live="polite">
+                    <Card className="bg-gray-900 border border-gray-800 p-8 text-center">
+                      <div
+                        className="animate-spin w-12 h-12 border-4 border-cyan-500 border-t-transparent rounded-full mx-auto mb-4"
+                        aria-hidden="true"
+                      ></div>
+                      <p className="text-gray-400">{t('battlesPage.status.loadingBattles')}</p>
+                    </Card>
+                  </div>
                 ) : error ? (
-                  <Card className="bg-gray-900 border border-red-500/20 p-8 text-center" role="alert">
-                    <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-red-500/20 flex items-center justify-center" aria-hidden="true">
-                      <Trophy className="h-10 w-10 text-red-500" />
-                    </div>
-                    <h2 className="text-xl font-semibold text-white mb-4">{t('battlesPage.status.errorLoadingBattles')}</h2>
-                    <p className="text-gray-400 mb-6">{error}</p>
-                    <Button
-                      variant="primary"
-                      onClick={() => fetchBattles()}
-                      className="bg-red-500 hover:bg-red-600 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-gray-900"
-                      aria-describedby="error-description"
-                    >
-                      {t('battlesPage.status.tryAgainButton')}
-                    </Button>
-                    <div id="error-description" className="sr-only">
-                      Click to retry loading battles after an error occurred
-                    </div>
-                  </Card>
+                  <div role="alert">
+                    <Card className="bg-gray-900 border border-red-500/20 p-8 text-center">
+                      <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-red-500/20 flex items-center justify-center" aria-hidden="true">
+                        <Trophy className="h-10 w-10 text-red-500" />
+                      </div>
+                      <h2 className="text-xl font-semibold text-white mb-4">{t('battlesPage.status.errorLoadingBattles')}</h2>
+                      <p className="text-gray-400 mb-6">{error}</p>
+                      <Button
+                        variant="primary"
+                        onClick={() => fetchBattles()}
+                        className="bg-red-500 hover:bg-red-600 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-gray-900"
+                        aria-describedby="error-description"
+                      >
+                        {t('battlesPage.status.tryAgainButton')}
+                      </Button>
+                      <div id="error-description" className="sr-only">
+                        Click to retry loading battles after an error occurred
+                      </div>
+                    </Card>
+                  </div>
                 ) : paginatedActiveBattles.length > 0 ? (
                   <>
-                    <div role="list" aria-label="Active battles">
-                      {paginatedActiveBattles.map(battle => (
-                        <div key={battle.id} role="listitem">
-                          <BattleCard battle={battle} />
-                        </div>
-                      ))}
+                    <div role="list" aria-label="Active battles and ads">
+                      {battlesWithAds.map((item, idx) => {
+                        if (isAdSlotPlaceholder(item)) {
+                          return (
+                            <div key={`ad-${item.__adPlacement}-${idx}`} role="listitem">
+                              <AdSlot placementKey={item.__adPlacement} preloadMargin="300px" className="my-4" />
+                            </div>
+                          );
+                        }
+                        const battle = item as typeof paginatedActiveBattles[number];
+                        return (
+                          <div key={battle.id} role="listitem">
+                            <BattleCard battle={battle} />
+                          </div>
+                        );
+                      })}
                     </div>
                     
                     {/* アクティブバトル用のページネーション */}

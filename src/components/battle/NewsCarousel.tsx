@@ -7,6 +7,7 @@ import {
   CarouselItem,
   CarouselApi 
 } from '../ui/carousel';
+import { AdSlot } from '../ads/AdSlot';
 import { ArticleModal } from '../ui/ArticleModal';
 import { useNews } from '../../hooks/useNews';
 import { useOnboardingStore } from '../../store/onboardingStore';
@@ -32,8 +33,14 @@ const NewsCarousel: React.FC<NewsCarouselProps> = ({ className = '' }) => {
     isGuide: true
   };
 
-  // 全パネル（ガイド + ニュース）
-  const allPanels = [howToGuidePanel, ...news];
+  // 広告パネル
+  const adPanel = {
+    id: 'ad-carousel',
+    isAd: true
+  };
+
+  // 全パネル（ガイド + 広告 + ニュース）
+  const allPanels = [howToGuidePanel, adPanel, ...news];
 
   // 現在のスライドインデックスを監視と手動操作検出
   useEffect(() => {
@@ -73,7 +80,7 @@ const NewsCarousel: React.FC<NewsCarouselProps> = ({ className = '' }) => {
     const autoSlideTimer = setInterval(() => {
       const nextIndex = (current + 1) % allPanels.length;
       api.scrollTo(nextIndex);
-    }, 8000); // 8秒間隔でゆっくりスライド
+    }, 3000); // 3秒間隔に短縮（4秒から改善）
 
     return () => clearInterval(autoSlideTimer);
   }, [api, current, allPanels.length, isAutoPlaying]);
@@ -85,17 +92,20 @@ const NewsCarousel: React.FC<NewsCarouselProps> = ({ className = '' }) => {
     setTimeout(() => setIsAutoPlaying(true), 3000);
   };
 
-  const handlePanelClick = (panel: typeof howToGuidePanel | NewsItem) => {
+  const handlePanelClick = (panel: typeof howToGuidePanel | typeof adPanel | NewsItem) => {
     if ('isGuide' in panel) {
       // How-to Guideパネルの場合
       setOnboardingModalOpen(true);
+    } else if ('isAd' in panel) {
+      // 広告パネルの場合は何もしない（AdSlotが自動処理）
+      return;
     } else {
       // ニュースパネルの場合 - 全て記事モーダルを開く
       setSelectedArticle(panel);
     }
   };
 
-  const renderPanel = (panel: typeof howToGuidePanel | NewsItem) => {
+  const renderPanel = (panel: typeof howToGuidePanel | typeof adPanel | NewsItem) => {
     if ('isGuide' in panel) {
       // How-to Guideパネル (背景画像削除: グラデーション + エフェクトのみ)
       return (
@@ -142,6 +152,25 @@ const NewsCarousel: React.FC<NewsCarouselProps> = ({ className = '' }) => {
                 </span>
               </div>
             </div>
+        </div>
+      );
+    } else if ('isAd' in panel) {
+      // 広告パネル
+      return (
+        <div
+          key={panel.id}
+          className="relative h-64 sm:h-72 md:h-80 lg:h-96 rounded-2xl overflow-hidden"
+        >
+          <AdSlot
+            placementKey="home.carousel.slide-3"
+            variant="carousel"
+            className="h-full w-full"
+            fallback={
+              <div className="h-full w-full bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center">
+                <span className="text-gray-400 text-sm">広告を読み込み中...</span>
+              </div>
+            }
+          />
         </div>
       );
     } else {
