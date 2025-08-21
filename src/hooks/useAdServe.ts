@@ -16,7 +16,7 @@ export interface AdCreativePayload {
   target_url: string | null;
 }
 
-interface ServeOk { ok: true; data: { placement_key: string; creative: { creative_id: string; headline: string|null; body: string|null; cta_text: string|null; target_url: string|null; file_url: string|null }; token: string; cached?: boolean } }
+interface ServeOk { ok: true; data: { key: string; creative: { creative_id: string; headline: string|null; body: string|null; cta_text: string|null; target_url: string|null; file_url: string|null }; token: string; cached?: boolean } }
 interface ServeErr { ok: false; code: string; message?: string; placement_key?: string }
 type ServeResponse = ServeOk | ServeErr;
 
