@@ -88,13 +88,37 @@ interface AdCardProps {
 const AdCard: React.FC<AdCardProps> = ({ creative, onClick, variant = 'infeed' }) => {
   // 旧 variant クラス組合せ関数は simple 系統へ統一したため未使用
 
-  if (variant === 'banner' || variant === 'inline' || variant === 'carousel') {
-    // banner/inline/carousel も simple スタイル系に統一 (横長/コンパクト差のみクラスで制御予定)
-    const compact = variant === 'inline';
-    const isCarousel = variant === 'carousel';
+  if (variant === 'carousel') {
+    // カルーセル広告: 画像をカルーセル全体に表示
     return (
-      <div className={"bnx-ad-card bnx-ad-card--simple group" + (compact ? " bnx-ad-card--compact" : isCarousel ? " bnx-ad-card--carousel" : " bnx-ad-card--wide")} role="article" aria-label={creative.headline || 'ad'}>
-        <div className="bnx-ad-simple-grid" style={compact ? {gridTemplateColumns:'120px 1fr', minHeight:140} : isCarousel ? {gridTemplateColumns:'1fr', minHeight:'100%'} : {gridTemplateColumns:'200px 1fr', minHeight:180}}>
+      <div className="bnx-ad-card bnx-ad-card--carousel group relative h-full w-full" role="article" aria-label="広告">
+        {creative.file_url ? (
+          <div className="h-full w-full relative overflow-hidden rounded-2xl">
+            <img
+              src={creative.file_url}
+              alt="広告"
+              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+              loading="lazy"
+              decoding="async"
+            />
+            {/* 広告であることを示すタグ */}
+            <div className="absolute top-3 left-3 z-10">
+              <span className="bnx-ad-badge bg-black/80 text-white text-xs px-2 py-1 rounded backdrop-blur-sm">広告</span>
+            </div>
+          </div>
+        ) : (
+          <div className="h-full w-full bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center rounded-2xl">
+            <span className="text-gray-400 text-sm">広告を読み込み中...</span>
+          </div>
+        )}
+      </div>
+    );
+  } else if (variant === 'banner' || variant === 'inline') {
+    // banner/inline も simple スタイル系に統一 (横長/コンパクト差のみクラスで制御予定)
+    const compact = variant === 'inline';
+    return (
+      <div className={"bnx-ad-card bnx-ad-card--simple group" + (compact ? " bnx-ad-card--compact" : " bnx-ad-card--wide")} role="article" aria-label={creative.headline || 'ad'}>
+        <div className="bnx-ad-simple-grid" style={compact ? {gridTemplateColumns:'120px 1fr', minHeight:140} : {gridTemplateColumns:'200px 1fr', minHeight:180}}>
           {creative.file_url && (
             <div className="bnx-ad-simple-media-wrapper">
               <img

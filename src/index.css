@@ -1309,56 +1309,31 @@ video {
 .bnx-ad--ranking-context .bnx-ad-simple-cta { background: linear-gradient(90deg,#6366f1,#8b5cf6); box-shadow:0 4px 14px -4px rgba(99,102,241,.4); }
 .bnx-ad--ranking-context .bnx-ad-simple-cta:hover { background: linear-gradient(90deg,#4f46e5,#6366f1); }
 
-/* カルーセル用の広告スタイル */
+/* カルーセル用の広告スタイル - 画像のみ表示、サイズ最適化 */
 .bnx-ad-card--carousel {
   height: 100%;
+  width: 100%;
   border-radius: 1rem;
   overflow: hidden;
   border: 1px solid rgba(255,255,255,0.08);
   background: linear-gradient(180deg, #111827, #1f2937 60%, #111827);
-}
-
-.bnx-ad-card--carousel .bnx-ad-simple-grid {
-  height: 100%;
+  position: relative;
   display: flex;
-  flex-direction: column;
-  grid-template-columns: 1fr !important;
-  min-height: 100% !important;
-}
-
-.bnx-ad-card--carousel .bnx-ad-simple-media-wrapper {
-  flex: 1;
-  height: auto !important;
-  min-height: 60%;
-}
-
-.bnx-ad-card--carousel .bnx-ad-simple-content {
-  padding: 1.5rem;
-  display: flex;
-  flex-direction: column;
+  align-items: center;
   justify-content: center;
-  text-align: center;
 }
 
-.bnx-ad-card--carousel .bnx-ad-simple-title {
-  font-size: 1.25rem;
-  font-weight: 700;
-  margin-bottom: 0.75rem;
-  line-height: 1.3;
-}
-
-.bnx-ad-card--carousel .bnx-ad-simple-body {
-  font-size: 0.875rem;
-  line-height: 1.5;
-  margin-bottom: 1rem;
-  color: rgba(255,255,255,0.8);
-}
-
-.bnx-ad-card--carousel .bnx-ad-simple-cta {
-  align-self: center;
-  padding: 0.75rem 1.5rem;
-  font-size: 0.875rem;
-  font-weight: 600;
+/* 広告バッジスタイル */
+.bnx-ad-badge {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 .bnx-ad-simple-cta:hover { background: linear-gradient(90deg,#5b21b6,#6d28d9); transform: translateY(-2px); }
 .bnx-ad-simple-cta:active { transform: translateY(0); }

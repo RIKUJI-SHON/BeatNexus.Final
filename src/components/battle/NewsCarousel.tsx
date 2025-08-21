@@ -80,7 +80,7 @@ const NewsCarousel: React.FC<NewsCarouselProps> = ({ className = '' }) => {
     const autoSlideTimer = setInterval(() => {
       const nextIndex = (current + 1) % allPanels.length;
       api.scrollTo(nextIndex);
-    }, 3000); // 3秒間隔に短縮（4秒から改善）
+    }, 4000); // 4秒間隔でスライド
 
     return () => clearInterval(autoSlideTimer);
   }, [api, current, allPanels.length, isAutoPlaying]);
@@ -166,8 +166,11 @@ const NewsCarousel: React.FC<NewsCarouselProps> = ({ className = '' }) => {
             variant="carousel"
             className="h-full w-full"
             fallback={
-              <div className="h-full w-full bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center">
-                <span className="text-gray-400 text-sm">広告を読み込み中...</span>
+              <div className="h-full w-full bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center rounded-2xl border border-gray-700/50">
+                <div className="text-center">
+                  <div className="text-gray-400 text-sm mb-2">広告を読み込み中...</div>
+                  <div className="w-8 h-8 border-2 border-gray-600 border-t-cyan-400 rounded-full animate-spin mx-auto"></div>
+                </div>
               </div>
             }
           />
