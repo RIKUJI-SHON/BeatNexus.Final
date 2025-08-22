@@ -288,9 +288,10 @@ interface AdSlotProps {
   - ホバー時にスケールエフェクト付きクリック指示表示
 - **モバイル版仕様**:
   - 画像のみ表示（PC版同様）
-  - `aspect-[4/3]`の固定アスペクト比コンテナ
+  - カルーセル全体の高さ（h-full）を活用
+  - 内側に`aspect-square`コンテナで正方形画像完全対応
   - `object-contain`で画像全体を完全表示
-  - 正方形画像も切れることなく表示
+  - パディング（p-4）で適切な余白確保
   - 背景色（bg-gray-900）でコンテナを適切に埋める
 - **推奨画像サイズ**: 
   - PC版: 1200x400px（横長推奨）
@@ -335,12 +336,14 @@ interface AdSlotProps {
 </div>
 
 // モバイル版実装（768px未満）
-<div className="md:hidden w-full aspect-[4/3] flex items-center justify-center bg-gray-900">
-  <img
-    src={creative.file_url}
-    alt={creative.headline || 'Ad'}
-    className="max-w-full max-h-full object-contain transition-transform duration-300 group-hover:scale-105"
-  />
+<div className="md:hidden w-full h-full flex items-center justify-center bg-gray-900 p-4">
+  <div className="max-w-full max-h-full aspect-square flex items-center justify-center">
+    <img
+      src={creative.file_url}
+      alt={creative.headline || 'Ad'}
+      className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-105"
+    />
+  </div>
 </div>
 ```
 
@@ -354,7 +357,7 @@ interface AdSlotProps {
 | デバイス | 表示方式 | 特徴 | 適用CSS |
 |----------|----------|------|---------|
 | PC版 | 全面表示 | コンテナ高さに合わせて画像をフィット | `object-cover` |
-| モバイル版 | 完全表示 | 画像全体を4:3比率内で完全表示 | `object-contain` |
+| モバイル版 | 完全表示 | 正方形コンテナ内で画像全体を完全表示 | `aspect-square` + `object-contain` |
 
 ### 5.4 NoFill処理
 
@@ -379,7 +382,7 @@ if (serve.noFill && fallback) {
 | キー | 説明 | 位置 | バリアント |
 |------|------|------|------------|
 | `home.wordmark.section.after.banner` | ワードマークセクション後（ヒーローセクション前） | 最上部 | banner |
-| `home.hero.section.after.carousel` | ヒーローセクション後のレスポンシブカルーセル広告<br/>PC：画像全面表示 / モバイル：4:3比率で画像完全表示 | 上部 | carousel |
+| `home.hero.section.after.carousel` | ヒーローセクション後のレスポンシブカルーセル広告<br/>PC：画像全面表示 / モバイル：正方形コンテナで画像完全表示 | 上部 | carousel |
 | `home.features.section.after.inline` | 主要機能詳細セクション後（社会的証明セクション前） | 中部 | inline |
 | `home.stats.section.after.infeed` | 統計・ランキングセクション後（ビジョンセクション前） | 下部 | infeed |
 
@@ -509,8 +512,8 @@ ORDER BY sa.contract_end_date ASC;
 - **モバイル版表示**:
   - `object-contain`で画像完全表示
   - 正方形画像（400x400px以上）も完全対応
-  - 4:3アスペクト比コンテナで表示
-  - 画像が切れることなく全体表示保証
+  - カルーセル全体の高さを活用した正方形コンテナで表示
+  - パディングによる余白確保で画像が切れることなく全体表示保証
 
 #### コンテンツ基準
 - **タイトル**: 15-30文字、キャッチーで具体的

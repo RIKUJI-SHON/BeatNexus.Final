@@ -155,15 +155,17 @@ const AdCard: React.FC<AdCardProps> = ({ creative, onClick, variant = 'infeed' }
               />
             </div>
             
-            {/* モバイル版: アスペクト比を保持した表示でカルーセル内に完全収納 */}
-            <div className="md:hidden w-full aspect-[4/3] flex items-center justify-center bg-gray-900">
-              <img
-                src={creative.file_url}
-                alt={creative.headline || 'Ad'}
-                className="max-w-full max-h-full object-contain transition-transform duration-300 group-hover:scale-105"
-                loading="lazy"
-                decoding="async"
-              />
+            {/* モバイル版: 固定サイズの正方形コンテナで画像表示 */}
+            <div className="md:hidden h-full w-full flex items-center justify-center bg-gray-900">
+              <div className="w-64 h-64 flex items-center justify-center bg-gray-800 rounded-lg">
+                <img
+                  src={creative.file_url}
+                  alt={creative.headline || 'Ad'}
+                  className="max-w-full max-h-full object-contain transition-transform duration-300 group-hover:scale-105"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
             </div>
             
             {/* 広告であることを示すタグ */}
