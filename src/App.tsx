@@ -27,6 +27,9 @@ import CookieConsentBanner from './components/privacy/CookieConsentBanner';
 import AnalyticsConsentGate from './components/privacy/AnalyticsConsentGate';
 import { useAnalytics, usePerformanceTracking } from './hooks/useAnalytics';
 
+// Scroll to top
+import { useScrollToTop } from './hooks/useScrollToTop';
+
 // Error Boundary
 import { ErrorBoundary } from './components/ErrorBoundary';
 
@@ -84,6 +87,9 @@ function RouterContent() {
   // Google Analytics初期化とページトラッキング（Router内で実行）
   useAnalytics();
   usePerformanceTracking();
+
+  // ページ遷移時にスクロール位置をトップにリセット
+  useScrollToTop();
 
   return (
     <>
