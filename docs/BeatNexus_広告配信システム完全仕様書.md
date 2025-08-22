@@ -280,8 +280,22 @@ interface AdSlotProps {
 />
 ```
 - **用途**: メインコンテンツ後のスライド表示
-- **特徴**: 複数広告の自動切り替え、ナビゲーション付き
-- **推奨サイズ**: 1200x400px
+- **特徴**: レスポンシブ対応の画像のみ表示、クリック機能付き
+- **PC版仕様**:
+  - 画像のみ表示（タイトル・説明文なし）
+  - `object-cover`で画像を全面表示
+  - コンテナの高さ（h-64〜lg:h-96）に合わせてフィット
+  - ホバー時にスケールエフェクト付きクリック指示表示
+- **モバイル版仕様**:
+  - 画像のみ表示（PC版同様）
+  - `aspect-[4/3]`の固定アスペクト比コンテナ
+  - `object-contain`で画像全体を完全表示
+  - 正方形画像も切れることなく表示
+  - 背景色（bg-gray-900）でコンテナを適切に埋める
+- **推奨画像サイズ**: 
+  - PC版: 1200x400px（横長推奨）
+  - モバイル版: 正方形〜4:3比率（400x400px〜800x600px）
+- **技術実装**: レスポンシブブレークポイント768px（md）で表示切り替え
 
 #### InFeed型
 ```tsx
@@ -307,7 +321,42 @@ interface AdSlotProps {
 - **特徴**: テキスト主体、画像はオプション
 - **推奨サイズ**: 300x200px
 
-### 5.3 NoFill処理
+### 5.3 レスポンシブ実装詳細
+
+#### Carousel型のレスポンシブ設計
+```typescript
+// PC版実装（768px以上）
+<div className="hidden md:block h-full w-full">
+  <img
+    src={creative.file_url}
+    alt={creative.headline || 'Ad'}
+    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+  />
+</div>
+
+// モバイル版実装（768px未満）
+<div className="md:hidden w-full aspect-[4/3] flex items-center justify-center bg-gray-900">
+  <img
+    src={creative.file_url}
+    alt={creative.headline || 'Ad'}
+    className="max-w-full max-h-full object-contain transition-transform duration-300 group-hover:scale-105"
+  />
+</div>
+```
+
+#### ブレークポイント仕様
+- **境界値**: 768px（Tailwind CSSの`md`ブレークポイント）
+- **PC版**: `md:block` / `hidden md:flex`
+- **モバイル版**: `md:hidden`
+- **切り替え**: CSSメディアクエリによる自動切り替え
+
+#### 画像表示方式の違い
+| デバイス | 表示方式 | 特徴 | 適用CSS |
+|----------|----------|------|---------|
+| PC版 | 全面表示 | コンテナ高さに合わせて画像をフィット | `object-cover` |
+| モバイル版 | 完全表示 | 画像全体を4:3比率内で完全表示 | `object-contain` |
+
+### 5.4 NoFill処理
 
 ```typescript
 // AdSlotコンポーネント内のNoFill処理
@@ -330,7 +379,7 @@ if (serve.noFill && fallback) {
 | キー | 説明 | 位置 | バリアント |
 |------|------|------|------------|
 | `home.wordmark.section.after.banner` | ワードマークセクション後（ヒーローセクション前） | 最上部 | banner |
-| `home.hero.section.after.carousel` | ヒーローセクション後のカルーセル広告 | 上部 | carousel |
+| `home.hero.section.after.carousel` | ヒーローセクション後のレスポンシブカルーセル広告<br/>PC：画像全面表示 / モバイル：4:3比率で画像完全表示 | 上部 | carousel |
 | `home.features.section.after.inline` | 主要機能詳細セクション後（社会的証明セクション前） | 中部 | inline |
 | `home.stats.section.after.infeed` | 統計・ランキングセクション後（ビジョンセクション前） | 下部 | infeed |
 
@@ -444,6 +493,24 @@ ORDER BY sa.contract_end_date ASC;
 - **サイズ**: 最大1MB、推奨200KB以下
 - **解像度**: 最低400x300px、Retina対応推奨
 - **アスペクト比**: 配置場所に応じて調整
+  - **Banner・Inline型**: 16:9〜3:2推奨
+  - **InFeed型**: 4:3〜1:1推奨
+  - **Carousel型**:
+    - PC版: 16:9〜3:1（横長画像推奨）
+    - モバイル版: 1:1〜4:3（正方形・縦長画像対応）
+
+#### バリアント別画像ガイドライン
+
+##### Carousel型の特別仕様
+- **PC版表示**: 
+  - `object-cover`で画像全面表示
+  - 横長画像（1200x400px以上）を推奨
+  - コンテナ高さに合わせて自動調整
+- **モバイル版表示**:
+  - `object-contain`で画像完全表示
+  - 正方形画像（400x400px以上）も完全対応
+  - 4:3アスペクト比コンテナで表示
+  - 画像が切れることなく全体表示保証
 
 #### コンテンツ基準
 - **タイトル**: 15-30文字、キャッチーで具体的
@@ -610,6 +677,7 @@ ORDER BY apa.is_pinned DESC, apa.priority ASC;
 - `docs/広告管理ガイドライン.md`: 運用担当者向けガイド
 - `.cursor/docs/dev-rules/2025-08-21_シンプル広告システム実装.md`: 実装ログ
 - `.cursor/docs/dev-rules/2025-08-21_ホームページ広告配置移行.md`: 配置移行ログ
+- `.cursor/docs/dev-rules/2025-08-23_カルーセル広告画像のみ表示機能.md`: カルーセル広告レスポンシブ対応実装ログ
 
 ### 11.3 連絡先
 
@@ -620,5 +688,5 @@ ORDER BY apa.is_pinned DESC, apa.priority ASC;
 ---
 
 **文書作成**: GitHub Copilot  
-**最終更新**: 2025年8月21日  
+**最終更新**: 2025年8月23日  
 **レビュー**: 運営チーム承認待ち

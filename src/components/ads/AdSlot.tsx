@@ -130,9 +130,9 @@ const AdCard: React.FC<AdCardProps> = ({ creative, onClick, variant = 'infeed' }
     // カルーセル広告: 画像をカルーセル全体に表示、全体がクリック可能
     return (
       <div 
-        className="bnx-ad-card bnx-ad-card--carousel group relative h-full w-full cursor-pointer" 
+        className="bnx-ad-card bnx-ad-card--carousel group relative w-full cursor-pointer" 
         role="article" 
-        aria-label="広告"
+        aria-label="Ad"
         onClick={onClick}
         tabIndex={0}
         onKeyDown={(e) => {
@@ -143,31 +143,35 @@ const AdCard: React.FC<AdCardProps> = ({ creative, onClick, variant = 'infeed' }
         }}
       >
         {creative.file_url ? (
-          <div className="h-full w-full relative overflow-hidden rounded-2xl">
-            <img
-              src={creative.file_url}
-              alt={creative.headline || '広告'}
-              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-              loading="lazy"
-              decoding="async"
-            />
+          <div className="w-full relative overflow-hidden rounded-2xl">
+            {/* PC版: 通常のカルーセル高さで画像のみ表示 */}
+            <div className="hidden md:block h-full w-full">
+              <img
+                src={creative.file_url}
+                alt={creative.headline || 'Ad'}
+                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+            
+            {/* モバイル版: アスペクト比を保持した表示でカルーセル内に完全収納 */}
+            <div className="md:hidden w-full aspect-[4/3] flex items-center justify-center bg-gray-900">
+              <img
+                src={creative.file_url}
+                alt={creative.headline || 'Ad'}
+                className="max-w-full max-h-full object-contain transition-transform duration-300 group-hover:scale-105"
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+            
             {/* 広告であることを示すタグ */}
             <div className="absolute top-3 left-3 z-10">
-              <span className="bnx-ad-badge bg-black/80 text-white text-xs px-2 py-1 rounded backdrop-blur-sm">広告</span>
+              <span className="bnx-ad-badge bg-black/80 text-white text-xs px-2 py-1 rounded backdrop-blur-sm">Ad</span>
             </div>
-            {/* カルーセル広告のオーバーレイ情報 - PCのみ表示 */}
-            {(creative.headline || creative.body) && (
-              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4 text-white hidden md:block">
-                {creative.headline && (
-                  <h3 className="font-semibold text-lg mb-1 line-clamp-1">{creative.headline}</h3>
-                )}
-                {creative.body && (
-                  <p className="text-sm opacity-90 line-clamp-2">{creative.body}</p>
-                )}
-              </div>
-            )}
-            {/* ホバー時のクリック指示 - PCのみ */}
-            <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center hidden md:flex">
+            {/* ホバー時のクリック指示 */}
+            <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
               <div className="bg-white/20 backdrop-blur-sm rounded-full p-3">
                 <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -176,8 +180,8 @@ const AdCard: React.FC<AdCardProps> = ({ creative, onClick, variant = 'infeed' }
             </div>
           </div>
         ) : (
-          <div className="h-full w-full bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center rounded-2xl">
-            <span className="text-gray-400 text-sm">広告を読み込み中...</span>
+          <div className="w-full aspect-[4/3] md:h-full bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center rounded-2xl">
+            <span className="text-gray-400 text-sm">Loading ad...</span>
           </div>
         )}
       </div>
@@ -196,7 +200,7 @@ const AdCard: React.FC<AdCardProps> = ({ creative, onClick, variant = 'infeed' }
               className="bnx-ad-mobile-square w-48 aspect-square relative overflow-hidden rounded-2xl cursor-pointer group"
               onClick={onClick}
               role="article"
-              aria-label="広告"
+              aria-label="Ad"
               tabIndex={0}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
@@ -207,14 +211,14 @@ const AdCard: React.FC<AdCardProps> = ({ creative, onClick, variant = 'infeed' }
             >
               <img
                 src={creative.file_url}
-                alt={creative.headline || '広告'}
+                alt={creative.headline || 'Ad'}
                 className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                 loading="lazy"
                 decoding="async"
               />
               {/* 広告バッジ */}
               <div className="absolute top-3 left-3 z-10">
-                <span className="bnx-ad-badge bg-black/80 text-white text-xs px-2 py-1 rounded backdrop-blur-sm">広告</span>
+                <span className="bnx-ad-badge bg-black/80 text-white text-xs px-2 py-1 rounded backdrop-blur-sm">Ad</span>
               </div>
             </div>
           ) : null}
@@ -236,7 +240,7 @@ const AdCard: React.FC<AdCardProps> = ({ creative, onClick, variant = 'infeed' }
             )}
             <div className="bnx-ad-simple-body">
               <div className="bnx-ad-simple-head">
-                <span className="bnx-ad-badge">広告 / AD</span>
+                <span className="bnx-ad-badge">Ad</span>
                 {creative.headline && (
                   <h4 className="bnx-ad-simple-title line-clamp-2">{creative.headline}</h4>
                 )}
@@ -274,7 +278,7 @@ const AdCard: React.FC<AdCardProps> = ({ creative, onClick, variant = 'infeed' }
             className="bnx-ad-mobile-square w-48 aspect-square relative overflow-hidden rounded-2xl cursor-pointer group"
             onClick={onClick}
             role="article"
-            aria-label="広告"
+            aria-label="Ad"
             tabIndex={0}
             onKeyDown={(e) => {
               if (e.key === 'Enter' || e.key === ' ') {
@@ -285,14 +289,14 @@ const AdCard: React.FC<AdCardProps> = ({ creative, onClick, variant = 'infeed' }
           >
             <img
               src={creative.file_url}
-              alt={creative.headline || '広告'}
+              alt={creative.headline || 'Ad'}
               className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
               loading="lazy"
               decoding="async"
             />
             {/* 広告バッジ */}
             <div className="absolute top-3 left-3 z-10">
-              <span className="bnx-ad-badge bg-black/80 text-white text-xs px-2 py-1 rounded backdrop-blur-sm">広告</span>
+              <span className="bnx-ad-badge bg-black/80 text-white text-xs px-2 py-1 rounded backdrop-blur-sm">Ad</span>
             </div>
           </div>
         ) : null}
@@ -314,7 +318,7 @@ const AdCard: React.FC<AdCardProps> = ({ creative, onClick, variant = 'infeed' }
           )}
           <div className="bnx-ad-simple-body">
             <div className="bnx-ad-simple-head">
-              <span className="bnx-ad-badge">広告 / AD</span>
+              <span className="bnx-ad-badge">Ad</span>
               {creative.headline && (
                 <h4 className="bnx-ad-simple-title line-clamp-2">{creative.headline}</h4>
               )}
