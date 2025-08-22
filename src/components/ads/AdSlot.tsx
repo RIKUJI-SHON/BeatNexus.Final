@@ -155,9 +155,9 @@ const AdCard: React.FC<AdCardProps> = ({ creative, onClick, variant = 'infeed' }
             <div className="absolute top-3 left-3 z-10">
               <span className="bnx-ad-badge bg-black/80 text-white text-xs px-2 py-1 rounded backdrop-blur-sm">広告</span>
             </div>
-            {/* カルーセル広告のオーバーレイ情報 */}
+            {/* カルーセル広告のオーバーレイ情報 - PCのみ表示 */}
             {(creative.headline || creative.body) && (
-              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4 text-white">
+              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4 text-white hidden md:block">
                 {creative.headline && (
                   <h3 className="font-semibold text-lg mb-1 line-clamp-1">{creative.headline}</h3>
                 )}
@@ -166,8 +166,8 @@ const AdCard: React.FC<AdCardProps> = ({ creative, onClick, variant = 'infeed' }
                 )}
               </div>
             )}
-            {/* ホバー時のクリック指示 */}
-            <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+            {/* ホバー時のクリック指示 - PCのみ */}
+            <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center hidden md:flex">
               <div className="bg-white/20 backdrop-blur-sm rounded-full p-3">
                 <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -185,9 +185,122 @@ const AdCard: React.FC<AdCardProps> = ({ creative, onClick, variant = 'infeed' }
   } else if (variant === 'banner' || variant === 'inline') {
     // banner/inline も simple スタイル系に統一 (横長/コンパクト差のみクラスで制御予定)
     const compact = variant === 'inline';
+    
+    // モバイルでは画像のみ表示（正方形・小さめサイズ）
     return (
-      <div className={"bnx-ad-card bnx-ad-card--simple group" + (compact ? " bnx-ad-card--compact" : " bnx-ad-card--wide")} role="article" aria-label={creative.headline || 'ad'}>
-        <div className="bnx-ad-simple-grid" style={compact ? {gridTemplateColumns:'120px 1fr', minHeight:140} : {gridTemplateColumns:'200px 1fr', minHeight:180}}>
+      <>
+        {/* モバイル版: 画像のみ正方形表示 */}
+        <div className="md:hidden w-full flex justify-center">
+          {creative.file_url ? (
+            <div 
+              className="bnx-ad-mobile-square w-48 aspect-square relative overflow-hidden rounded-2xl cursor-pointer group"
+              onClick={onClick}
+              role="article"
+              aria-label="広告"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  onClick();
+                }
+              }}
+            >
+              <img
+                src={creative.file_url}
+                alt={creative.headline || '広告'}
+                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                loading="lazy"
+                decoding="async"
+              />
+              {/* 広告バッジ */}
+              <div className="absolute top-3 left-3 z-10">
+                <span className="bnx-ad-badge bg-black/80 text-white text-xs px-2 py-1 rounded backdrop-blur-sm">広告</span>
+              </div>
+            </div>
+          ) : null}
+        </div>
+        
+        {/* PC版: 従来のレイアウト */}
+        <div className={"hidden md:block bnx-ad-card bnx-ad-card--simple group" + (compact ? " bnx-ad-card--compact" : " bnx-ad-card--wide")} role="article" aria-label={creative.headline || 'ad'}>
+          <div className="bnx-ad-simple-grid" style={compact ? {gridTemplateColumns:'120px 1fr', minHeight:140} : {gridTemplateColumns:'200px 1fr', minHeight:180}}>
+            {creative.file_url && (
+              <div className="bnx-ad-simple-media-wrapper">
+                <img
+                  src={creative.file_url}
+                  alt={creative.headline || 'ad'}
+                  className="bnx-ad-simple-img"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+            )}
+            <div className="bnx-ad-simple-body">
+              <div className="bnx-ad-simple-head">
+                <span className="bnx-ad-badge">広告 / AD</span>
+                {creative.headline && (
+                  <h4 className="bnx-ad-simple-title line-clamp-2">{creative.headline}</h4>
+                )}
+                {creative.body && (
+                  <p className="bnx-ad-simple-text line-clamp-2">{creative.body}</p>
+                )}
+              </div>
+              {creative.cta_text && creative.target_url && (
+                <button
+                  className="bnx-ad-simple-cta"
+                  onClick={onClick}
+                  aria-label={creative.cta_text}
+                >
+                  {creative.cta_text}
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  // InFeed variant (battle list 挿入用) – バトルカード寄せデザイン
+  // 指定プレースメントでは画像をより強調 (幅/高さ拡張)
+  // InFeed はすべて統一: 固定画像カラム (160px) + 短文時拡張 (200px) を汎用ロジック化
+  const shortCopy = (!creative.body || creative.body.length < 60);
+
+  return (
+    <>
+      {/* モバイル版: 画像のみ正方形表示 */}
+      <div className="md:hidden w-full flex justify-center">
+        {creative.file_url ? (
+          <div 
+            className="bnx-ad-mobile-square w-48 aspect-square relative overflow-hidden rounded-2xl cursor-pointer group"
+            onClick={onClick}
+            role="article"
+            aria-label="広告"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                onClick();
+              }
+            }}
+          >
+            <img
+              src={creative.file_url}
+              alt={creative.headline || '広告'}
+              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+              loading="lazy"
+              decoding="async"
+            />
+            {/* 広告バッジ */}
+            <div className="absolute top-3 left-3 z-10">
+              <span className="bnx-ad-badge bg-black/80 text-white text-xs px-2 py-1 rounded backdrop-blur-sm">広告</span>
+            </div>
+          </div>
+        ) : null}
+      </div>
+      
+      {/* PC版: 従来のレイアウト */}
+      <div className={"hidden md:block bnx-ad-card bnx-ad-card--simple group" + (shortCopy ? " bnx-ad-card--simple-size-lg" : " bnx-ad-card--simple-size-md")} role="article" aria-label={creative.headline || 'ad'}>
+        <div className="bnx-ad-simple-grid" data-size={shortCopy ? 'lg':'md'}>
           {creative.file_url && (
             <div className="bnx-ad-simple-media-wrapper">
               <img
@@ -206,7 +319,7 @@ const AdCard: React.FC<AdCardProps> = ({ creative, onClick, variant = 'infeed' }
                 <h4 className="bnx-ad-simple-title line-clamp-2">{creative.headline}</h4>
               )}
               {creative.body && (
-                <p className="bnx-ad-simple-text line-clamp-2">{creative.body}</p>
+                <p className="bnx-ad-simple-text line-clamp-3">{creative.body}</p>
               )}
             </div>
             {creative.cta_text && creative.target_url && (
@@ -221,49 +334,6 @@ const AdCard: React.FC<AdCardProps> = ({ creative, onClick, variant = 'infeed' }
           </div>
         </div>
       </div>
-    );
-  }
-
-  // InFeed variant (battle list 挿入用) – バトルカード寄せデザイン
-  // 指定プレースメントでは画像をより強調 (幅/高さ拡張)
-  // InFeed はすべて統一: 固定画像カラム (160px) + 短文時拡張 (200px) を汎用ロジック化
-  const shortCopy = (!creative.body || creative.body.length < 60);
-
-  return (
-    <div className={"bnx-ad-card bnx-ad-card--simple group" + (shortCopy ? " bnx-ad-card--simple-size-lg" : " bnx-ad-card--simple-size-md")} role="article" aria-label={creative.headline || 'ad'}>
-      <div className="bnx-ad-simple-grid" data-size={shortCopy ? 'lg':'md'}>
-        {creative.file_url && (
-          <div className="bnx-ad-simple-media-wrapper">
-            <img
-              src={creative.file_url}
-              alt={creative.headline || 'ad'}
-              className="bnx-ad-simple-img"
-              loading="lazy"
-              decoding="async"
-            />
-          </div>
-        )}
-        <div className="bnx-ad-simple-body">
-          <div className="bnx-ad-simple-head">
-            <span className="bnx-ad-badge">広告 / AD</span>
-            {creative.headline && (
-              <h4 className="bnx-ad-simple-title line-clamp-2">{creative.headline}</h4>
-            )}
-            {creative.body && (
-              <p className="bnx-ad-simple-text line-clamp-3">{creative.body}</p>
-            )}
-          </div>
-          {creative.cta_text && creative.target_url && (
-            <button
-              className="bnx-ad-simple-cta"
-              onClick={onClick}
-              aria-label={creative.cta_text}
-            >
-              {creative.cta_text}
-            </button>
-          )}
-        </div>
-      </div>
-    </div>
+    </>
   );
 };

@@ -1318,6 +1318,28 @@ video {
   border: 1px solid rgba(255,255,255,0.08);
   background: linear-gradient(180deg, #111827, #1f2937 60%, #111827);
   position: relative;
+}
+
+/* モバイル版広告用正方形スタイル */
+.bnx-ad-mobile-square {
+  border: 1px solid rgba(255,255,255,0.08);
+  background: linear-gradient(180deg, #111827, #1f2937 60%, #111827);
+  transition: all 0.3s ease;
+  box-shadow: 
+    0 4px 20px rgba(0, 0, 0, 0.3),
+    0 0 10px rgba(255, 255, 255, 0.05);
+}
+
+.bnx-ad-mobile-square:hover {
+  border-color: rgba(147, 51, 234, 0.3);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 0 20px rgba(147, 51, 234, 0.15),
+    0 0 40px rgba(168, 85, 247, 0.1);
+  transform: translateY(-2px);
+}
+
+.bnx-ad-carousel-fallback {
   display: flex;
   align-items: center;
   justify-content: center;
