@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Trophy, Search, Users, Calendar, ChevronDown } from 'lucide-react';
+import { Trophy, Search, Users, Calendar, ChevronDown, X, Star } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Card } from '../components/ui/Card';
 import { TopThreePodium } from '../components/ui/TopThreePodium';
@@ -62,6 +62,12 @@ const RankingPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>('player');
   const [searchQuery, setSearchQuery] = useState('');
   const [showSeasonDropdown, setShowSeasonDropdown] = useState(false);
+
+  // 翻訳の安全なフォールバック
+  const tt = (key: string, fallback: string) => {
+    const translated = t(key as unknown as TemplateStringsArray & string);
+    return translated === key ? fallback : translated;
+  };
 
   useEffect(() => {
     // 初期データ取得（シーズン情報を最初に取得してから他のデータを取得）
@@ -298,6 +304,28 @@ const RankingPage: React.FC = () => {
     return '';
   };
 
+  // 型安全にユーザー名を取得
+  const getUsername = (entry: unknown): string => {
+    if (typeof entry === 'object' && entry !== null && 'username' in entry) {
+      const val = (entry as { username?: unknown }).username;
+      return typeof val === 'string' ? val : '';
+    }
+    return '';
+  };
+
+  // 検索/件数用の補助値（20位までの対象総数とフィルタ後件数）
+  const totalTop20Count = currentData.filter(entry => getPosition(entry) <= 20).length;
+  const filteredCount = (() => {
+    try {
+      return currentData
+        .filter(entry => entry.username.toLowerCase().includes(searchQuery.toLowerCase()))
+        .filter(entry => getPosition(entry) <= 20).length;
+    } catch {
+      return 0;
+    }
+  })();
+
+
   // フィルター済みデータ（20位まで）
   const filteredData = currentData
     .filter(entry => entry.username.toLowerCase().includes(searchQuery.toLowerCase()))
@@ -449,7 +477,12 @@ const RankingPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-950 py-6 sm:py-10">
-      <div className="container mx-auto px-4 max-w-4xl">
+      <div className="container mx-auto px-4 max-w-4xl relative">
+        {/* 背景デコレーション */}
+        <div className="pointer-events-none absolute -top-24 -left-20 h-72 w-72 rounded-full blur-3xl opacity-25 hidden sm:block 
+          bg-gradient-to-br from-cyan-500/30 to-blue-500/30"></div>
+        <div className="pointer-events-none absolute top-1/3 -right-24 h-72 w-72 rounded-full blur-3xl opacity-25 hidden sm:block 
+          bg-gradient-to-br from-purple-500/30 to-pink-500/30"></div>
         {/* Header */}
         <div className="text-center mb-12 sm:mb-16">
           <div className="relative">
@@ -630,7 +663,7 @@ const RankingPage: React.FC = () => {
         </div>
 
         {/* Search and Season Selector */}
-        <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mb-6">
+        <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mb-3 sm:mb-4">
           {/* 検索欄 */}
           <div className="relative w-full sm:w-80">
             <input
@@ -643,8 +676,19 @@ const RankingPage: React.FC = () => {
                   ? 'focus:border-cyan-500/50 focus:bg-gray-800' 
                   : 'focus:border-purple-500/50 focus:bg-gray-800'
               }`}
+              aria-label={t('rankingPage.searchPlaceholder')}
             />
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery('')}
+                className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded hover:bg-gray-700/50 text-gray-300"
+                aria-label={tt('common.clear', 'Clear search')}
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )}
           </div>
 
           {/* Season/All-time Selector */}
@@ -692,25 +736,42 @@ const RankingPage: React.FC = () => {
           </div>
         </div>
 
+        {/* 件数チップ（検索結果 / 対象） */}
+        <div className="flex justify-center mb-6">
+          <span className={`inline-flex items-center gap-2 text-xs px-3 py-1 rounded-full border bg-gray-800/60 text-gray-200 ${
+            activeTab === 'player' ? 'border-cyan-500/30' : 'border-purple-500/30'
+          }`}>
+            {tt('rankingPage.results', 'Results')}: {filteredCount} / {totalTop20Count}
+          </span>
+        </div>
+
         {/* Content Area */}
         <div className="space-y-6">
 
           {/* 🏆 Top 3 Podium Section */}
           {!currentLoading && topThreeForDisplay.length > 0 && (
-            <TopThreePodium
-              topThree={topThreeForDisplay as unknown as Array<{
-                username: string;
-                avatar_url?: string | null;
-                [key: string]: unknown;
-              } & Record<string, unknown>>}
-              activeTab={activeTab}
-              getRatingOrSeasonPoints={getRatingOrSeasonPoints}
-              getVoteCount={getVoteCount}
-              getRatingColor={getRatingColor}
-              getVoteCountColor={getVoteCountColor}
-              getPosition={getPosition}
-              getUserId={getUserId}
-            />
+            <div className={`rounded-2xl p-[1px] shadow-lg ${
+              activeTab === 'player'
+                ? 'bg-gradient-to-r from-cyan-500/40 via-blue-500/20 to-indigo-500/40'
+                : 'bg-gradient-to-r from-purple-500/40 via-pink-500/20 to-rose-500/40'
+            }`}>
+              <div className="rounded-2xl bg-gray-900/70">
+                <TopThreePodium
+                  topThree={topThreeForDisplay as unknown as Array<{
+                    username: string;
+                    avatar_url?: string | null;
+                    [key: string]: unknown;
+                  } & Record<string, unknown>>}
+                  activeTab={activeTab}
+                  getRatingOrSeasonPoints={getRatingOrSeasonPoints}
+                  getVoteCount={getVoteCount}
+                  getRatingColor={getRatingColor}
+                  getVoteCountColor={getVoteCountColor}
+                  getPosition={getPosition}
+                  getUserId={getUserId}
+                />
+              </div>
+            </div>
           )}
 
           {/* ranking.top.banner */}
@@ -735,19 +796,28 @@ const RankingPage: React.FC = () => {
               activeTab === 'player' ? 'border-cyan-500/20' : 'border-purple-500/20'
             }`}>
               {/* ヘッダー */}
-              <div className={`px-4 py-3 border-b ${
+              <div className={`px-4 py-3 border-b sticky top-0 z-10 backdrop-blur supports-[backdrop-filter]:bg-gray-900/70 ${
                 activeTab === 'player' 
                   ? 'bg-gradient-to-r from-cyan-500/10 to-blue-500/10 border-cyan-500/20' 
                   : 'bg-gradient-to-r from-purple-500/10 to-pink-500/10 border-purple-500/20'
               }`}>
-                <div className="grid grid-cols-10 gap-4 text-xs font-medium text-gray-300 uppercase tracking-wider">
-                  <div className="col-span-2 text-center">Rank</div>
-                  <div className="col-span-6">{activeTab === 'player' ? 'Player' : 'Voter'}</div>
-                  <div className="col-span-2 text-center">
-                    {activeTab === 'player' 
-                      ? (activeRankingType === 'current_season' ? t('rankingPage.table.seasonPoints') : t('rankingPage.table.rating'))
-                      : t('rankingPage.table.voteCount')
-                    }
+                <div className="grid grid-cols-10 gap-4 text-xs font-semibold text-gray-200 uppercase tracking-wider">
+                  <div className="col-span-2 text-center flex items-center justify-center gap-1">
+                    <Trophy className="h-4 w-4 opacity-80" />
+                    <span>Rank</span>
+                  </div>
+                  <div className="col-span-6 flex items-center gap-2">
+                    <Users className="h-4 w-4 opacity-80" />
+                    <span>{activeTab === 'player' ? 'Player' : 'Voter'}</span>
+                  </div>
+                  <div className="col-span-2 text-center flex items-center justify-center gap-1">
+                    <Star className="h-4 w-4 opacity-80" />
+                    <span>
+                      {activeTab === 'player' 
+                        ? (activeRankingType === 'current_season' ? t('rankingPage.table.seasonPoints') : t('rankingPage.table.rating'))
+                        : t('rankingPage.table.voteCount')
+                      }
+                    </span>
                   </div>
                 </div>
               </div>
@@ -757,6 +827,15 @@ const RankingPage: React.FC = () => {
                 {filteredData.length === 0 ? (
                   <div className="text-center py-8 text-gray-400">
                     <p>{t('rankingPage.noData')}</p>
+                    {searchQuery && (
+                      <button
+                        type="button"
+                        onClick={() => setSearchQuery('')}
+                        className="mt-3 inline-flex items-center gap-2 text-xs px-3 py-1 rounded-md border border-gray-600 text-gray-200 hover:bg-gray-700/50"
+                      >
+                        <X className="h-3 w-3" /> {tt('common.clear', 'Clear search')}
+                      </button>
+                    )}
                   </div>
                 ) : (
                   <>
@@ -769,73 +848,78 @@ const RankingPage: React.FC = () => {
                         <Link 
                           key={getUserId(entry)} 
                           to={`/profile/${getUserId(entry)}`}
-                          className={`block px-4 py-4 transition-colors group ${
-                            activeTab === 'player' 
-                              ? 'hover:bg-cyan-500/5' 
-                              : 'hover:bg-purple-500/5'
+                          aria-label={`Open profile of ${getUsername(entry)}`}
+                          className={`block rounded-xl p-[1px] transition-all duration-300 group focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-0 ${
+                            activeTab === 'player'
+                              ? 'bg-gradient-to-r from-cyan-500/20 via-blue-500/10 to-indigo-500/20 hover:from-cyan-500/30 hover:to-indigo-500/30 focus-visible:ring-cyan-400/50'
+                              : 'bg-gradient-to-r from-purple-500/20 via-pink-500/10 to-rose-500/20 hover:from-purple-500/30 hover:to-rose-500/30 focus-visible:ring-purple-400/50'
                           } ${
                             isTopThree 
                               ? activeTab === 'player' 
                                 ? isOverflowTopThree
-                                  ? 'bg-gradient-to-r from-cyan-500/8 to-blue-500/8 border-l-2 border-cyan-400/40'
-                                  : 'bg-gradient-to-r from-cyan-500/5 to-blue-500/5'
+                                  ? 'border-l-2 border-cyan-400/40'
+                                  : ''
                                 : isOverflowTopThree
-                                  ? 'bg-gradient-to-r from-purple-500/8 to-pink-500/8 border-l-2 border-purple-400/40'
-                                  : 'bg-gradient-to-r from-purple-500/5 to-pink-500/5'
+                                  ? 'border-l-2 border-purple-400/40'
+                                  : ''
                               : ''
                           }`}
                         >
-                          <div className="grid grid-cols-10 gap-4 items-center">
+                          <div className="rounded-[11px] bg-gray-900/70 px-4 py-4">
+                            <div className="grid grid-cols-10 gap-4 items-center">
                             {/* ランク */}
-                            <div className="col-span-2 text-center">
-                              {getPositionDisplay(getPosition(entry))}
-                            </div>
+                              <div className="col-span-2 text-center">
+                                {getPositionDisplay(getPosition(entry))}
+                              </div>
                             {/* ユーザー情報 */}
-                            <div className="col-span-6 flex items-center gap-3 min-w-0 py-1">
-                              <div className={`relative w-10 h-10 rounded-full p-0.5 transition-all duration-300 flex-shrink-0 ${
-                                activeTab === 'player' 
-                                  ? 'bg-gradient-to-r from-cyan-500/50 to-blue-500/50 group-hover:from-cyan-400 group-hover:to-blue-400' 
-                                  : 'bg-gradient-to-r from-purple-500/50 to-pink-500/50 group-hover:from-purple-400 group-hover:to-pink-400'
-                              }`}>
-                                <img
-                                  src={entry.avatar_url || getDefaultAvatarUrl()}
-                                  alt={entry.username}
-                                  className="w-full h-full rounded-full object-cover"
-                                  onError={(e) => {
-                                    const target = e.target as HTMLImageElement;
-                                    if (target.src !== getDefaultAvatarUrl()) {
-                                      target.src = getDefaultAvatarUrl();
-                                    }
-                                  }}
-                                />
-                              </div>
-                              <div className="min-w-0 flex-1">
-                                <div className={`font-medium text-white text-sm truncate transition-colors ${
+                              <div className="col-span-6 flex items-center gap-3 min-w-0 py-1">
+                                <div className={`relative w-11 h-11 rounded-full p-0.5 transition-all duration-300 flex-shrink-0 ${
                                   activeTab === 'player' 
-                                    ? 'group-hover:text-cyan-400' 
-                                    : 'group-hover:text-purple-400'
+                                    ? 'bg-gradient-to-r from-cyan-500/50 to-blue-500/50 group-hover:from-cyan-400 group-hover:to-blue-400' 
+                                    : 'bg-gradient-to-r from-purple-500/50 to-pink-500/50 group-hover:from-purple-400 group-hover:to-pink-400'
                                 }`}>
-                                  {entry.username}
+                                  <img
+                                    src={entry.avatar_url || getDefaultAvatarUrl()}
+                                    alt={entry.username}
+                                    className="w-full h-full rounded-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+                                    onError={(e) => {
+                                      const target = e.target as HTMLImageElement;
+                                      if (target.src !== getDefaultAvatarUrl()) {
+                                        target.src = getDefaultAvatarUrl();
+                                      }
+                                    }}
+                                  />
                                 </div>
-                                {activeTab === 'player' && activeRankingType === 'current_season' && (
-                                  <div className="text-xs text-gray-400">
-                                    {t('rankingPage.voteShare')}: {getWeightedVoteSharePercent(entry)}%
+                                <div className="min-w-0 flex-1">
+                                  <div className={`font-semibold text-white text-sm truncate transition-colors ${
+                                    activeTab === 'player' 
+                                      ? 'group-hover:text-cyan-300' 
+                                      : 'group-hover:text-pink-300'
+                                  }`}>
+                                    {entry.username}
                                   </div>
-                                )}
+                                  {activeTab === 'player' && activeRankingType === 'current_season' && (
+                                    <div className="mt-1 text-[11px] text-gray-300">
+                                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gray-800/70 border border-gray-700/60">
+                                        {t('rankingPage.voteShare')}: {getWeightedVoteSharePercent(entry)}%
+                                      </span>
+                                    </div>
+                                  )}
+                                </div>
                               </div>
-                            </div>
                             {/* レーティング/シーズンポイント/投票数 */}
-                            <div className="col-span-2 text-center">
-                              <span className={`font-bold text-sm ${
-                                activeTab === 'player' 
-                                  ? getRatingColor(getRatingOrSeasonPoints(entry))
-                                  : getVoteCountColor(getVoteCount(entry))
-                              }`}>
-                                {activeTab === 'player' 
-                                  ? getRatingOrSeasonPoints(entry)
-                                  : `${getVoteCount(entry) * 100} VP`
-                                }
-                              </span>
+                              <div className="col-span-2 text-center">
+                                <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold border ${
+                                  activeTab === 'player' 
+                                    ? `${getRatingColor(getRatingOrSeasonPoints(entry))} border-cyan-500/30 bg-cyan-400/10`
+                                    : `${getVoteCountColor(getVoteCount(entry))} border-purple-500/30 bg-purple-400/10`
+                                }`}>
+                                  {activeTab === 'player' 
+                                    ? getRatingOrSeasonPoints(entry)
+                                    : `${getVoteCount(entry) * 100} VP`
+                                  }
+                                </span>
+                              </div>
                             </div>
                           </div>
                         </Link>
