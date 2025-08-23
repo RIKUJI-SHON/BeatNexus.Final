@@ -28,18 +28,19 @@
 BeatNexusプラットフォーム上で効率的かつシンプルな広告配信を実現するシステム。「企業データ + 広告素材 + 配置設定」の3要素に絞り込み、運営者が直感的に管理できる設計。
 
 ### 1.2 主要機能
-- **広告主管理**: 企業情報の登録・管理
+- **広告主管理**: 企業情報の登録・管理（重み付き配信制御含む）
 - **広告素材管理**: タイトル、説明文、画像、リンクの一元管理
-- **配置管理**: サイト内の特定位置への広告配置設定
-- **優先度制御**: pinned（固定）と priority（数値）による配信制御
+- **重み付き配信制御**: 広告主単位での配信比率制御（weightカラム）
 - **契約期間管理**: 開始日・終了日による自動配信制御
+- **直接選択配信**: placement assignmentを廃止した簡素化システム
 - **NoFill対応**: 配信対象がない場合の適切な処理
 
 ### 1.3 設計原則
-- **シンプル性**: 複雑なターゲティングや配信ルールを排除
-- **運用効率**: 直感的なUIで「どこに何を出すか」を明確化
+- **シンプル性**: 複雑なplacement assignmentを排除し、直接重み付き選択を採用
+- **運用効率**: 重み付けによる直感的な配信比率制御
 - **拡張性**: 将来的な機能追加に対応可能な設計
 - **パフォーマンス**: 高速な広告配信とレスポンシブな表示
+- **確実性**: 重み=0の広告主は絶対に配信されない保証
 
 ---
 
@@ -68,10 +69,18 @@ BeatNexusプラットフォーム上で効率的かつシンプルな広告配�
 ### 2.2 データフロー
 
 1. **フロントエンド** → AdSlotコンポーネントが配置場所キーを指定
-2. **Edge Function** → 配置場所に基づいて適切な広告を選択
-3. **データベース** → 契約期間・優先度・固定設定を考慮して配信
+2. **Edge Function** → 全ての有効な広告から重み付き直接選択
+3. **データベース** → `weighted_random_ad()`関数で契約期間・重み・有効性を考慮
 4. **レスポンス** → 広告クリエイティブまたはNoFillを返却
 5. **表示** → AdSlotが適切な形式で広告を描画
+
+### 2.2.1 簡素化されたアーキテクチャ
+
+**旧システム（複雑）**:
+placement → placement_assignment → advertiser selection → ad selection
+
+**新システム（簡素化）**:
+placement → `weighted_random_ad()` → direct ad selection
 
 ### 2.3 技術スタック
 
@@ -96,6 +105,7 @@ CREATE TABLE advertisers (
   name text UNIQUE NOT NULL,           -- 企業名
   website_url text,                    -- 公式サイトURL
   contact_email text,                  -- 連絡先メールアドレス
+  weight integer DEFAULT 0,            -- 配信重み（0=配信停止、1-100=配信比率）
   is_active boolean DEFAULT true,      -- アクティブフラグ
   created_at timestamptz DEFAULT now(),
   updated_at timestamptz DEFAULT now()
@@ -133,12 +143,16 @@ CREATE TABLE ad_placements (
 
 #### 3.1.4 ad_placement_assignments（配置割り当て）
 ```sql
+-- 注意: このテーブルは後方互換性のために残されていますが、
+-- 新しいシステムでは使用されません。
+-- 配信は weighted_random_ad() 関数による直接選択で行われます。
+
 CREATE TABLE ad_placement_assignments (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   placement_id uuid REFERENCES ad_placements(id) ON DELETE CASCADE,
   simple_ad_id uuid REFERENCES simple_ads(id) ON DELETE CASCADE,
-  priority integer DEFAULT 100,        -- 優先度（小さいほど優先）
-  is_pinned boolean DEFAULT false,     -- 固定表示フラグ
+  priority integer DEFAULT 100,        -- 【非推奨】優先度（使用されません）
+  is_pinned boolean DEFAULT false,     -- 【非推奨】固定表示フラグ（使用されません）
   created_at timestamptz DEFAULT now(),
   
   -- 同一配置場所・広告の重複防止
@@ -146,16 +160,71 @@ CREATE TABLE ad_placement_assignments (
 );
 ```
 
-### 3.2 インデックス設計
+### 3.2 重み付き広告選択関数
+
+```sql
+-- 全ての有効な広告から直接重み付きで選択する関数
+CREATE OR REPLACE FUNCTION weighted_random_ad()
+RETURNS TABLE (
+  ad_id UUID,
+  title TEXT,
+  description TEXT,
+  image_url TEXT,
+  click_url TEXT,
+  advertiser_id UUID,
+  advertiser_name TEXT,
+  advertiser_weight INTEGER
+) AS $$
+BEGIN
+  RETURN QUERY
+  WITH weighted_ads AS (
+    SELECT 
+      sa.id,
+      sa.title,
+      sa.description,
+      sa.image_url,
+      sa.click_url,
+      a.id as advertiser_id,
+      a.name as advertiser_name,
+      a.weight as advertiser_weight,
+      -- 重みを使って重複行を生成し、その中からランダムに1つ選ぶ
+      generate_series(1, a.weight) as weight_multiplier
+    FROM simple_ads sa
+    JOIN advertisers a ON sa.advertiser_id = a.id
+    WHERE sa.is_active = true 
+      AND a.is_active = true 
+      AND a.weight > 0  -- 重みが0の広告主は除外
+      AND sa.contract_start_date <= CURRENT_DATE
+      AND sa.contract_end_date >= CURRENT_DATE
+  )
+  SELECT 
+    wa.id,
+    wa.title,
+    wa.description,
+    wa.image_url,
+    wa.click_url,
+    wa.advertiser_id,
+    wa.advertiser_name,
+    wa.advertiser_weight
+  FROM weighted_ads wa
+  ORDER BY random()
+  LIMIT 1;
+END;
+$$ LANGUAGE plpgsql;
+```
+
+### 3.3 インデックス設計
 
 ```sql
 -- 配信性能向上のためのインデックス
 CREATE INDEX idx_ad_placements_key ON ad_placements(key) WHERE is_active = true;
 CREATE INDEX idx_simple_ads_contract_dates ON simple_ads(contract_start_date, contract_end_date) WHERE is_active = true;
+CREATE INDEX idx_advertisers_weight ON advertisers(weight) WHERE is_active = true AND weight > 0;
+-- 【非推奨】placement assignment関連（使用されません）
 CREATE INDEX idx_placement_assignments_priority ON ad_placement_assignments(placement_id, is_pinned DESC, priority ASC);
 ```
 
-### 3.3 Row Level Security (RLS)
+### 3.4 Row Level Security (RLS)
 
 ```sql
 -- 広告データのセキュリティポリシー
@@ -218,14 +287,29 @@ POST https://{project-id}.supabase.co/functions/v1/ad-serve
 
 ### 4.2 配信ロジック
 
-1. **配置場所検証**: 指定されたplacementキーの存在確認
-2. **広告選択**: 以下の順序で優先度付け
-   - `is_pinned = true`（固定広告）が最優先
-   - `priority ASC`（数値の小さい順）
-   - 同一優先度の場合はランダム選択
-3. **契約期間フィルタ**: 現在日時が契約期間内の広告のみ
-4. **アクティブフィルタ**: `is_active = true`の広告のみ
-5. **結果生成**: 条件に合致する広告またはNoFillを返却
+1. **配置場所検証**: 指定されたplacementキーの存在確認（参考情報として受け取り）
+2. **重み付き広告選択**: `weighted_random_ad()`関数による以下の処理
+   - 有効な広告の抽出（`is_active = true`）
+   - 契約期間内フィルタ（`contract_start_date <= 現在日 <= contract_end_date`）
+   - 重みゼロ除外（`advertiser.weight > 0`）
+   - 重み比例による確率的選択
+3. **結果生成**: 条件に合致する広告またはNoFillを返却
+
+#### 4.2.1 重み付けアルゴリズム
+
+```
+例：3つの広告主の場合
+- 広告主A: weight=30 → 30回の選択機会
+- 広告主B: weight=20 → 20回の選択機会  
+- 広告主C: weight=5  → 5回の選択機会
+- 広告主D: weight=0  → 選択されない（除外）
+
+総選択機会: 55回
+実際の配信比率:
+- 広告主A: 30/55 = 54.5%
+- 広告主B: 20/55 = 36.4%
+- 広告主C: 5/55 = 9.1%
+```
 
 ---
 
@@ -438,36 +522,48 @@ INSERT INTO simple_ads (
 );
 ```
 
-#### ステップ3: 配置設定
+#### ステップ3: 重み設定
 ```sql
-INSERT INTO ad_placement_assignments (placement_id, simple_ad_id, priority, is_pinned)
-SELECT 
-  (SELECT id FROM ad_placements WHERE key = '配置場所キー'),
-  '広告UUID',
-  100,
-  false;
+-- 配信比率を重みで制御（placement assignmentは不要）
+UPDATE advertisers 
+SET weight = 30  -- 30% of total weight
+WHERE name = '広告主名';
 ```
+
+#### ステップ4: 配信開始
+重み設定完了後、即座に配信開始。全ての配置場所で自動的に重み比例で配信されます。
 
 ### 7.2 日常運用
 
 #### 配信状況確認
 ```sql
--- アクティブな広告一覧
+-- アクティブな広告一覧（簡素化版）
 SELECT 
-  ap.key,
   sa.title,
   adv.name,
+  adv.weight,
   sa.contract_end_date,
-  apa.priority,
-  apa.is_pinned
-FROM ad_placement_assignments apa
-JOIN ad_placements ap ON apa.placement_id = ap.id
-JOIN simple_ads sa ON apa.simple_ad_id = sa.id
+  ROUND((adv.weight * 100.0 / (SELECT SUM(weight) FROM advertisers WHERE is_active = true AND weight > 0)), 2) as expected_percentage
+FROM simple_ads sa
 JOIN advertisers adv ON sa.advertiser_id = adv.id
 WHERE sa.is_active = true
 AND sa.contract_start_date <= CURRENT_DATE
 AND sa.contract_end_date >= CURRENT_DATE
-ORDER BY ap.key, apa.is_pinned DESC, apa.priority ASC;
+AND adv.is_active = true
+AND adv.weight > 0
+ORDER BY adv.weight DESC;
+```
+
+#### 重み配分の確認
+```sql
+-- 現在の重み配分
+SELECT 
+  name,
+  weight,
+  ROUND((weight * 100.0 / (SELECT SUM(weight) FROM advertisers WHERE is_active = true AND weight > 0)), 2) as percentage
+FROM advertisers 
+WHERE is_active = true AND weight > 0
+ORDER BY weight DESC;
 ```
 
 #### 期限切れ広告の確認
@@ -681,6 +777,7 @@ ORDER BY apa.is_pinned DESC, apa.priority ASC;
 - `.cursor/docs/dev-rules/2025-08-21_シンプル広告システム実装.md`: 実装ログ
 - `.cursor/docs/dev-rules/2025-08-21_ホームページ広告配置移行.md`: 配置移行ログ
 - `.cursor/docs/dev-rules/2025-08-23_カルーセル広告画像のみ表示機能.md`: カルーセル広告レスポンシブ対応実装ログ
+- `.cursor/docs/dev-rules/ad-system-simplification-log.md`: **重み付き広告システム簡素化実装ログ**
 
 ### 11.3 連絡先
 
@@ -691,5 +788,5 @@ ORDER BY apa.is_pinned DESC, apa.priority ASC;
 ---
 
 **文書作成**: GitHub Copilot  
-**最終更新**: 2025年8月23日  
+**最終更新**: 2025年8月23日（重み付き広告システム簡素化対応）  
 **レビュー**: 運営チーム承認待ち

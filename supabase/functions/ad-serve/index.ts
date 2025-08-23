@@ -1,5 +1,5 @@
-// Deprecated: ad-serve removed in Phase0 minimal click-only mode.
-// シンプルな広告配信API - 複雑なフライト・ターゲティングロジックを排除
+import "jsr:@supabase/functions-js/edge-runtime.d.ts"
+// 簡略化されたWeight-based広告配信システム - placement assignmentを無視
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
@@ -8,13 +8,43 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
+/**
+ * 簡略化されたWeight-based広告選択
+ * placement assignmentを無視して、全ての有効な広告から直接選択
+ */
+async function selectAdDirectly(supabase: any) {
+  console.log('Selecting ad directly from all active ads by weight...')
+  
+  const { data, error } = await supabase.rpc('weighted_random_ad')
+  
+  if (error) {
+    console.error('Error selecting ad by weight:', error)
+    return null
+  }
+  
+  if (!data || data.length === 0) {
+    console.log('No ads selected')
+    return null
+  }
+  
+  const selectedAd = data[0]
+  console.log('Selected ad:', {
+    ad_id: selectedAd.ad_id,
+    title: selectedAd.title,
+    advertiser_name: selectedAd.advertiser_name,
+    advertiser_weight: selectedAd.advertiser_weight
+  })
+  
+  return selectedAd
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
   }
 
   try {
-    console.log('Starting ad-serve function...')
+    console.log('Starting simplified weight-based ad-serve function...')
     
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
@@ -31,89 +61,54 @@ serve(async (req) => {
       )
     }
 
-    console.log('Looking up placement in database...')
-    // 1. placement_idを取得
-    const { data: placementData, error: placementError } = await supabase
-      .from('ad_placements')
-      .select('id')
-      .eq('key', placement)
-      .eq('is_active', true)
-      .single()
-
-    console.log('Placement lookup result:', { placementData, placementError })
-
-    if (placementError || !placementData) {
-      console.log('Placement not found, returning no fill')
+    // placementは受け取るが、実際の選択には影響しない（全広告から選択）
+    console.log('Selecting ad directly from all active ads...')
+    
+    // 全ての有効な広告から直接選択
+    const selectedAd = await selectAdDirectly(supabase)
+    
+    if (!selectedAd) {
+      console.log('No ad selected, returning no fill')
       return new Response(
-        JSON.stringify({ ok: false, code: 'AD_NO_FILL', message: 'Placement not found', placement_key: placement }),
+        JSON.stringify({ 
+          ok: false, 
+          code: 'AD_NO_FILL', 
+          message: 'No ad available', 
+          placement_key: placement 
+        }),
         { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
 
-    const placementId = placementData.id
-    console.log('Placement ID:', placementId)
-
-    console.log('Looking up ad assignments...')
-    // 2. 現在有効な広告を取得
-    const { data: assignments, error: assignmentError } = await supabase
-      .from('ad_placement_assignments')
-      .select('simple_ad_id, priority, is_pinned')
-      .eq('placement_id', placementId)
-      .order('is_pinned', { ascending: false })
-      .order('priority', { ascending: true })
-      .limit(1)
-
-    console.log('Assignment lookup result:', { assignments, assignmentError })
-
-    if (assignmentError || !assignments || assignments.length === 0) {
-      console.log('No assignments found, returning no fill')
-      return new Response(
-        JSON.stringify({ ok: false, code: 'AD_NO_FILL', message: 'No assignments found', placement_key: placement }),
-        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      )
-    }
-
-    const assignment = assignments[0]
-    console.log('Selected assignment:', assignment)
-
-    // 3. 広告の詳細を取得
-    const { data: adData, error: adError } = await supabase
-      .from('simple_ads')
-      .select('*')
-      .eq('id', assignment.simple_ad_id)
-      .eq('is_active', true)
-      .lte('contract_start_date', new Date().toISOString().split('T')[0])
-      .gte('contract_end_date', new Date().toISOString().split('T')[0])
-      .single()
-
-    console.log('Ad lookup result:', { adData, adError })
-
-    if (adError || !adData) {
-      console.log('Ad not found or expired, returning no fill')
-      return new Response(
-        JSON.stringify({ ok: false, code: 'AD_NO_FILL', message: 'Ad not found or expired', placement_key: placement }),
-        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      )
-    }
-
-    // 4. データベースから取得した実際の広告を返す
+    // 広告レスポンスを構築
     const response = {
       ok: true,
       data: {
         placement_key: placement,
         creative: {
-          creative_id: adData.id,
-          headline: adData.title,
-          body: adData.description,
+          creative_id: selectedAd.ad_id,
+          headline: selectedAd.title,
+          body: selectedAd.description,
           cta_text: "詳しく見る",
-          target_url: adData.click_url,
-          file_url: adData.image_url
+          target_url: selectedAd.click_url,
+          file_url: selectedAd.image_url
         },
-        token: null // 計測停止中なのでnull
+        token: null, // 計測停止中なのでnull
+        debug: {
+          advertiser_id: selectedAd.advertiser_id,
+          advertiser_name: selectedAd.advertiser_name,
+          advertiser_weight: selectedAd.advertiser_weight,
+          selection_method: 'direct_weight_based'
+        }
       }
     }
 
-    console.log('Sending database ad response:', response)
+    console.log('Sending simplified weight-based ad response:', {
+      creative_id: selectedAd.ad_id,
+      advertiser_name: selectedAd.advertiser_name,
+      advertiser_weight: selectedAd.advertiser_weight,
+      placement: placement
+    })
     
     return new Response(
       JSON.stringify(response),
@@ -124,10 +119,14 @@ serve(async (req) => {
     )
 
   } catch (error) {
-    console.error('Ad serve error:', error)
+    console.error('Simplified weight-based ad serve error:', error)
     
     return new Response(
-      JSON.stringify({ ok: false, code: 'AD_SERVER_ERROR', error: error.message }),
+      JSON.stringify({ 
+        ok: false, 
+        code: 'AD_SERVER_ERROR', 
+        error: error.message 
+      }),
       { 
         status: 500, 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
