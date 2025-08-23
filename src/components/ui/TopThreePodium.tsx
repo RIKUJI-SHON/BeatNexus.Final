@@ -50,8 +50,8 @@ export const TopThreePodium: React.FC<TopThreePodiumProps> = ({
   const isPlayerTab = activeTab === 'player';
 
   return (
-    <div className="mb-6 min-h-[140px] sm:min-h-[170px] flex items-start justify-center">
-      <div className="flex items-start justify-center gap-5 sm:gap-8 py-2 sm:py-3">
+    <div className="mb-8 min-h-[200px] sm:min-h-[240px] flex items-start justify-center">
+      <div className="flex items-start justify-center gap-6 sm:gap-8 py-4 sm:py-6">
         {podiumOrder.map((entry) => {
           if (!entry) return null;
           const position = getPosition(entry);
@@ -63,22 +63,22 @@ export const TopThreePodium: React.FC<TopThreePodiumProps> = ({
             <Link
               key={`simple-podium-${userId}`}
               to={`/profile/${userId}`}
-              className="group w-24 sm:w-28 flex flex-col items-center text-center select-none"
+              className="group w-20 sm:w-24 flex flex-col items-center text-center select-none"
             >
               {/* バッジ */}
               <img
                 src={rankImageMap[position]}
                 alt={`${position}位`}
-                className="w-8 h-8 sm:w-10 sm:h-10 mb-2 sm:mb-3 drop-shadow-[0_4px_10px_rgba(0,0,0,0.45)]"
+                className="w-10 h-10 sm:w-12 sm:h-12 mb-3 sm:mb-4 drop-shadow-[0_4px_10px_rgba(0,0,0,0.45)]"
               />
 
               {/* アバター（シンプルなグラデリング） */}
-        <div className={`p-[2px] rounded-full bg-gradient-to-br ${ringClass(position)} shadow-md`}
+              <div className={`p-[2px] rounded-full bg-gradient-to-br ${ringClass(position)} shadow-md`}
               >
                 <img
                   src={avatarUrl || getDefaultAvatarUrl()}
                   alt={username}
-          className="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover bg-black/20"
+                  className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover bg-black/20"
                   onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
                     const target = e.target as HTMLImageElement;
                     if (target.src !== getDefaultAvatarUrl()) target.src = getDefaultAvatarUrl();
@@ -87,12 +87,12 @@ export const TopThreePodium: React.FC<TopThreePodiumProps> = ({
               </div>
 
               {/* ユーザー名 */}
-              <div className="mt-2 w-full px-1 text-white font-semibold text-xs sm:text-sm truncate" title={username}>
+              <div className="mt-3 w-full px-1 text-white font-semibold text-xs sm:text-sm truncate" title={username}>
                 {username}
               </div>
 
               {/* スコア */}
-              <div className="mt-1">
+              <div className="mt-2">
                 <span
                   className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold border ${
                     isPlayerTab

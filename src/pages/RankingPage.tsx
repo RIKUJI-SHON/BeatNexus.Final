@@ -750,12 +750,13 @@ const RankingPage: React.FC = () => {
 
           {/* 🏆 Top 3 Podium Section */}
           {!currentLoading && topThreeForDisplay.length > 0 && (
-            <div className={`rounded-2xl p-[1px] shadow-lg ${
-              activeTab === 'player'
-                ? 'bg-gradient-to-r from-cyan-500/40 via-blue-500/20 to-indigo-500/40'
-                : 'bg-gradient-to-r from-purple-500/40 via-pink-500/20 to-rose-500/40'
-            }`}>
-              <div className="rounded-2xl bg-gray-900/70">
+            <div className="flex justify-center">
+              <div className={`w-full max-w-md sm:max-w-lg rounded-2xl p-[1px] shadow-lg ${
+                activeTab === 'player'
+                  ? 'bg-gradient-to-r from-cyan-500/40 via-blue-500/20 to-indigo-500/40'
+                  : 'bg-gradient-to-r from-purple-500/40 via-pink-500/20 to-rose-500/40'
+              }`}>
+                <div className="rounded-2xl bg-gray-900/70">
                 <TopThreePodium
                   topThree={topThreeForDisplay as unknown as Array<{
                     username: string;
@@ -770,6 +771,7 @@ const RankingPage: React.FC = () => {
                   getPosition={getPosition}
                   getUserId={getUserId}
                 />
+              </div>
               </div>
             </div>
           )}
