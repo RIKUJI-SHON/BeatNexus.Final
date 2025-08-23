@@ -88,9 +88,9 @@ export const generateSubmissionMessage = (
   
   if (reason === 'ENDING_SOON') {
     if (language === 'en') {
-      return 'Video submissions are disabled 1 day before the season ends.';
+      return 'Video submissions are disabled 3 days before the season ends.';
     } else {
-      return 'シーズン終了の1日前のため、新しい動画の投稿はできません。';
+      return 'シーズン終了の3日前のため、新しい動画の投稿はできません。';
     }
   }
   
