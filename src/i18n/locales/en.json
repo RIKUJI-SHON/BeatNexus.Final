@@ -313,6 +313,7 @@
     "noRankings": "No Rankings",
     "buttons": {
       "profile": "Profile",
+      "ranking": "Ranking",
       "battleStart": "Battle Start",
       "tournament": "Tournament"
     }

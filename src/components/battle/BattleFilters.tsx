@@ -55,12 +55,8 @@ export const BattleFilters: React.FC<BattleFiltersProps> = ({
     }
   ];
 
-  const handleProfileClick = () => {
-    if (user) {
-      navigate(`/profile/${user.id}`);
-    } else {
-      navigate('/auth');
-    }
+  const handleRankingClick = () => {
+    navigate('/ranking');
   };
 
   const handleBattleStartClick = () => {
@@ -85,20 +81,20 @@ export const BattleFilters: React.FC<BattleFiltersProps> = ({
         <div className="space-y-3">
           {/* アクションボタン群 */}
           <div className="flex items-center justify-center gap-3 sm:gap-6 max-w-4xl mx-auto px-4">
-            {/* プロフィールボタン */}
+            {/* ランキングボタン */}
             <button
-              onClick={handleProfileClick}
+              onClick={handleRankingClick}
               className="group flex flex-col items-center justify-end p-3 sm:p-6 h-28 sm:h-40 transition-all duration-300 hover:scale-105"
             >
               <div className="w-12 sm:w-20 h-12 sm:h-20 flex items-center justify-center mb-1 sm:mb-2 group-hover:scale-110 transition-transform duration-300">
                 <img 
-                  src="/images/Profile.png" 
-                  alt="Profile"
+                  src="/images/Ranking_icon.png" 
+                  alt="Ranking"
                   className="h-8 sm:h-12 w-8 sm:w-12 object-contain filter brightness-110 group-hover:brightness-150 group-hover:drop-shadow-lg transition-all duration-300"
                 />
               </div>
               <span className="text-xs sm:text-base font-medium text-gray-300 group-hover:text-white group-hover:drop-shadow-lg transition-colors text-center whitespace-nowrap">
-                {t('battleFilters.buttons.profile')}
+                {t('battleFilters.buttons.ranking')}
               </span>
             </button>
 
