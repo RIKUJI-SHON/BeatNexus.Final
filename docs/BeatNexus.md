@@ -883,12 +883,26 @@ mcp_supabase_get_logs(project_id, service)
 | その他ファイル | camelCase.ts | `battleStore.ts` |
 
 ## 🚀 開発フロー
+
+## 🔴 **重要: マイグレーション管理の徹底**
+### **DB変更時の必須手順**
+- **DB関係の修正を行う際は、必ずマイグレーションファイルを作成してアーカイブすること**
+- **MCP SERVERを使ってSupabaseマイグレーションを実行する際も、必ずマイグレーションファイルを先に作成してからMCPで実行すること**
+- **マイグレーションの内容を変更・修正した場合も、作成したマイグレーションファイルにその変更を反映させること**
+- **マイグレーションファイルは `supabase/migrations/` ディレクトリに保存すること**
+- **本番環境への適用を考慮し、開発環境での十分なテスト後に本番適用すること**
+
+### **Supabase環境情報**
+- **開発環境プロジェクトID**: `wdttluticnlqzmqmfvgt`
+- **本番環境プロジェクトID**: `qgqcjtjxaoplhxurbpis`
+
 ### 新機能追加時
-1. **DB変更**: MCP toolsでマイグレーション適用
-2. **型定義**: `src/types/`更新
-3. **ストア**: 必要に応じてZustandストア更新
-4. **コンポーネント**: UI実装（国際化必須）
-5. **翻訳**: `en.json`と`ja.json`更新
+1. **🚨 マイグレーションファイル作成**: `supabase/migrations/YYYYMMDDHHMMSS_description.sql`に変更内容を記録
+2. **DB変更**: MCP toolsでマイグレーション適用（開発環境 → 本番環境の順）
+3. **型定義**: `src/types/`更新
+4. **ストア**: 必要に応じてZustandストア更新
+5. **コンポーネント**: UI実装（国際化必須）
+6. **翻訳**: `en.json`と`ja.json`更新
 
 ### デバッグ時
 - **ログ確認**: `mcp_supabase_get_logs(project_id, service)`
