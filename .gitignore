@@ -21,6 +21,8 @@ lerna-debug.log*
 /dist-ssr
 /out
 /.next/
+.env
+.env.development
 .env.local
 .env.*.local
 
@@ -50,3 +52,4 @@ lerna-debug.log*
 # Cursor IDE specific files
 .cursor/
 .vercel
+.env.development
