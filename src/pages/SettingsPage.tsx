@@ -7,6 +7,7 @@ import { Modal } from '../components/ui/Modal';
 import { Input } from '../components/ui/Input';
 import { Button } from '../components/ui/Button';
 import { PushNotificationSetup } from '../components/ui/PushNotificationSetup';
+import StripeConnectDashboard from '../components/settings/StripeConnectDashboard';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { trackBeatNexusEvents } from '../utils/analytics';
@@ -458,6 +459,16 @@ const SettingsPage: React.FC = () => {
                   {t('settingsPage.changePassword.button')}
                 </Button>
               </div>
+              
+              {/* Stripe Connect Setup */}
+              <div>
+                <h3 className="text-lg font-medium text-gray-100">SuperTip設定</h3>
+                <p className="text-sm text-gray-400 mb-4">
+                  他のユーザーからSuperTipを受け取るための設定を行います
+                </p>
+                <StripeConnectDashboard />
+              </div>
+              
               <div>
                 <h3 className="text-lg font-medium text-red-500">{t('settingsPage.deleteAccount.title')}</h3>
                 <p className="text-sm text-gray-400 mb-2">{t('settingsPage.deleteAccount.description')}</p>

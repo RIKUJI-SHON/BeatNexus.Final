@@ -75,6 +75,9 @@ import BattleResultTestPage from './pages/BattleResultTestPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
 import AuthConfirmPage from './pages/AuthConfirmPage';
 import BattleCardVotedPreviewPage from './pages/BattleCardVotedPreviewPage';
+import StorefrontPage from './pages/StorefrontPage';
+import PurchaseSuccessPage from './pages/PurchaseSuccessPage';
+import StripeTestPage from './pages/StripeTestPage';
 
 // CSS for animations
 import './tailwind.extensions.css';
@@ -112,6 +115,8 @@ function RouterContent() {
             <Route path="/community/:id" element={<CommunityDetailPage />} />
             <Route path="/subscription" element={<SubscriptionPage />} />
             <Route path="/settings" element={<SettingsPage />} />
+            <Route path="/storefront" element={<StorefrontPage />} />
+            <Route path="/purchase-success" element={<PurchaseSuccessPage />} />
             <Route path="/ad-preview" element={<AdPreviewPage />} />
             <Route path="/tournament" element={<TournamentPage />} />
             <Route path="/faq" element={<FAQPage />} />
@@ -120,6 +125,7 @@ function RouterContent() {
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/guidelines" element={<UserGuidelinesPage />} />
             <Route path="/notifications/test" element={<NotificationTestPage />} />
+            <Route path="/stripe-test" element={<StripeTestPage />} />
             <Route path="/result-test" element={<BattleResultTestPage />} />
             <Route path="/reset-password" element={<ResetPasswordPage />} />
             <Route path="/auth/confirm" element={<AuthConfirmPage />} />

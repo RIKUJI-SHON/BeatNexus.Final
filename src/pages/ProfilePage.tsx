@@ -9,7 +9,8 @@ import {
   Archive,
   Save,
   X,
-  Medal
+  Medal,
+  CreditCard
 } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
@@ -28,6 +29,7 @@ import { trackBeatNexusEvents } from '../utils/analytics';
 import { getDefaultAvatarUrl } from '../utils';
 import { Battle } from '../types';
 import CollectionPage from '../components/rewards/CollectionPage';
+import { PaymentSettings } from '../components/payment/PaymentSettings';
 
 interface UserProfile {
   id: string;
@@ -50,7 +52,7 @@ const ProfilePage: React.FC = () => {
 
   const [battleLoading, setBattleLoading] = useState(true);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
-  const [activeTab, setActiveTab] = useState<'current' | 'history' | 'collection'>('current');
+  const [activeTab, setActiveTab] = useState<'current' | 'history' | 'collection' | 'payment'>('current');
   const [isEditing, setIsEditing] = useState(false);
   const [editUsername, setEditUsername] = useState('');
   const [editBio, setEditBio] = useState('');
@@ -59,6 +61,15 @@ const ProfilePage: React.FC = () => {
   
   const displayedUserId = routeUserId || authUser?.id;
   const isOwnProfile = !routeUserId || (authUser?.id === routeUserId);
+
+  // URLパラメータでタブを設定
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const tabParam = urlParams.get('tab');
+    if (tabParam === 'payment' && isOwnProfile) {
+      setActiveTab('payment');
+    }
+  }, [isOwnProfile]);
 
   useEffect(() => {
     if (displayedUserId) {
@@ -436,7 +447,8 @@ const ProfilePage: React.FC = () => {
               {[
                 { key: 'current', label: t('profilePage.tabs.currentBattles'), icon: Play },
                 { key: 'history', label: t('profilePage.tabs.battleHistory'), icon: Archive },
-                { key: 'collection', label: t('profilePage.tabs.collection'), icon: Medal }
+                { key: 'collection', label: t('profilePage.tabs.collection'), icon: Medal },
+                ...(isOwnProfile ? [{ key: 'payment', label: 'Payment Settings', icon: CreditCard }] : [])
               ].map((tab) => (
                 <button 
                   key={tab.key}
@@ -590,6 +602,13 @@ const ProfilePage: React.FC = () => {
           {/* コレクション */}
           {!battleLoading && activeTab === 'collection' && (
             <CollectionPage userId={displayedUserId!} isOwnProfile={isOwnProfile} />
+          )}
+
+          {/* 決済設定（自分のプロファイルのみ） */}
+          {isOwnProfile && activeTab === 'payment' && (
+            <div className="animate-fade-in">
+              <PaymentSettings />
+            </div>
           )}
         </div>
       </div>

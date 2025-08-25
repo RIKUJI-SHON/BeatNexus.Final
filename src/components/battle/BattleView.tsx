@@ -198,6 +198,56 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
     }
   }, [playerBInView, playerBVideoLoaded]);
 
+  // 投票状態を更新する共通関数
+  const refreshVoteStatus = useCallback(async () => {
+    try {
+      // 最新の投票状態を取得
+      const voteStatus = await getUserVote(battle.id);
+      
+      if (voteStatus.hasVoted) {
+        setHasVoted(voteStatus.vote);
+      } else {
+        setHasVoted(null);
+      }
+      
+      // コメントもリフレッシュ
+      await fetchBattleComments(battle.id);
+    } catch (error) {
+      console.error('❌ Failed to refresh vote status:', error);
+    }
+  }, [battle.id, getUserVote, fetchBattleComments]);
+
+  // SuperTip決済結果の処理
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const paymentStatus = urlParams.get('payment');
+    const sessionId = urlParams.get('session_id');
+
+    if (paymentStatus === 'success' && sessionId) {
+      console.log('🎉 SuperTip payment success detected:', sessionId);
+      
+      // 投票状態をリフレッシュ
+      refreshVoteStatus();
+      
+      // 成功メッセージを表示
+      alert('SuperTip投票が完了しました！ありがとうございます！');
+      
+      // URLパラメータをクリア
+      const newUrl = window.location.pathname;
+      window.history.replaceState({}, '', newUrl);
+      
+    } else if (paymentStatus === 'canceled') {
+      console.log('❌ SuperTip payment canceled');
+      
+      // キャンセルメッセージを表示
+      alert('SuperTip決済がキャンセルされました。');
+      
+      // URLパラメータをクリア
+      const newUrl = window.location.pathname;
+      window.history.replaceState({}, '', newUrl);
+    }
+  }, [refreshVoteStatus]);
+
   // Get comments for this battle
   const comments = battleComments[battle.id] || [];
   const isLoadingComments = commentsLoading[battle.id] || false;
@@ -1043,6 +1093,8 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
           player={showVoteModal || 'A'}
           playerName={showVoteModal === 'A' ? battle.contestant_a?.username : battle.contestant_b?.username}
           isLoading={isVoting}
+          battleId={battle.id}
+          onRefreshVoteStatus={refreshVoteStatus}
         />
       )}
     </div>
