@@ -117,7 +117,7 @@ const StripeConnectDashboard: React.FC = () => {
     }
   };
 
-  // 🔗 Connect アカウント作成
+  // 🔗 Stripe オンボーディング開始（アカウント作成+設定を同時実行）
   const createConnectAccount = async () => {
     try {
       setLoading(true);
@@ -128,37 +128,49 @@ const StripeConnectDashboard: React.FC = () => {
         return;
       }
 
-      // ユーザーのメールアドレスを取得
+      // Step 1: 最小限のアカウント作成（必要な場合のみ）
       const userEmail = session.user?.email;
       if (!userEmail) {
         showNotification('メールアドレスが取得できません', 'error');
         return;
       }
 
-      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-connect-account`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${session.access_token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          email: userEmail,
-          country: 'JP'
-        })
+      try {
+        // 簡易アカウント作成を試行（既に存在する場合はスキップ）
+        await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-connect-account`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${session.access_token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            email: userEmail,
+            country: 'JP'
+          })
+        });
+      } catch (error) {
+        // アカウント作成失敗でも続行（既に存在する可能性）
+        console.log('アカウント作成をスキップ（既に存在する可能性）:', error);
+      }
+
+      // Step 2: Stripeオンボーディングリンクを作成してリダイレクト
+      const { data, error } = await supabase.functions.invoke('stripe-onboarding', {
+        body: {
+          refresh_url: window.location.href,
+          return_url: `${window.location.origin}/payment-setup?success=true`
+        }
       });
 
-      const data = await response.json();
-
-      if (data.success) {
-        showNotification('Stripe Connectアカウントが作成されました！', 'success');
-        setHasAccount(true);
-        await checkAccountStatus();
+      if (data?.success) {
+        // Stripeオンボーディングページにリダイレクト
+        showNotification('Stripeアカウント設定ページにリダイレクトします...', 'info');
+        window.location.href = data.onboarding_url;
       } else {
-        showNotification(data.error || 'アカウント作成に失敗しました', 'error');
+        throw new Error(data?.error || error?.message || 'オンボーディングリンクの作成に失敗しました');
       }
     } catch (error) {
-      console.error('アカウント作成エラー:', error);
-      showNotification('アカウント作成に失敗しました', 'error');
+      console.error('アカウント設定エラー:', error);
+      showNotification(error instanceof Error ? error.message : 'アカウント設定でエラーが発生しました', 'error');
     } finally {
       setLoading(false);
     }
