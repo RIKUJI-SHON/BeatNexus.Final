@@ -128,32 +128,7 @@ const StripeConnectDashboard: React.FC = () => {
         return;
       }
 
-      // Step 1: 最小限のアカウント作成（必要な場合のみ）
-      const userEmail = session.user?.email;
-      if (!userEmail) {
-        showNotification('メールアドレスが取得できません', 'error');
-        return;
-      }
-
-      try {
-        // 簡易アカウント作成を試行（既に存在する場合はスキップ）
-        await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-connect-account`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${session.access_token}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            email: userEmail,
-            country: 'JP'
-          })
-        });
-      } catch (error) {
-        // アカウント作成失敗でも続行（既に存在する可能性）
-        console.log('アカウント作成をスキップ（既に存在する可能性）:', error);
-      }
-
-      // Step 2: stripe-onboarding関数でオンボーディングリンクを作成してリダイレクト
+      // Stripe オンボーディングリンクを作成してリダイレクト
       const { data, error } = await supabase.functions.invoke('stripe-onboarding', {
         body: {
           refresh_url: window.location.href,
