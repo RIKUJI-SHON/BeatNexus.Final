@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { SuperTipVoteModal } from '../voting/SuperTipVoteModal';
+// import { SuperTipVoteModal } from '../voting/SuperTipVoteModal'; // Temporarily disabled - will be reimplemented
 import { useFeatureFlags } from '../../hooks/useFeatureFlags';
 
 interface VoteCommentModalProps {
@@ -25,7 +25,7 @@ export const VoteCommentModal: React.FC<VoteCommentModalProps> = ({
   playerName,
   isLoading = false,
   battleId,
-  onRefreshVoteStatus
+  onRefreshVoteStatus: _onRefreshVoteStatus // Temporarily unused
 }) => {
   const { t } = useTranslation();
   const { isSuperTipEnabled } = useFeatureFlags();
@@ -191,33 +191,18 @@ export const VoteCommentModal: React.FC<VoteCommentModalProps> = ({
 
       {/* SuperTip Modal - 機能フラグで制御 */}
       {isSuperTipEnabled && battleId && (
-        <SuperTipVoteModal
-          isOpen={showSuperTipModal}
-          battleId={battleId}
-          player={player}
-          playerName={playerName}
-          onClose={() => setShowSuperTipModal(false)}
-          onSuccess={async (result) => {
-            console.log('SuperTip success:', result);
-            setShowSuperTipModal(false);
-            
-            // SuperTip投票成功時はコメント付き投票として扱う
-            if (result.comment) {
-              onVote(result.comment);
-            } else {
-              // コメントなしの場合はシンプル投票として扱う
-              onSimpleVote(player);
-            }
-            
-            // 投票状態をリフレッシュ
-            if (onRefreshVoteStatus) {
-              await onRefreshVoteStatus();
-            }
-            
-            // モーダルを閉じる
-            onClose();
-          }}
-        />
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-slate-800 p-6 rounded-xl border border-slate-700 max-w-md w-full mx-4">
+            <h3 className="text-lg font-semibold text-white mb-4">Super Tips機能</h3>
+            <p className="text-slate-400 mb-6">Super Tips機能は現在開発中です。実装完了まで少々お待ちください。</p>
+            <button 
+              onClick={() => setShowSuperTipModal(false)}
+              className="w-full bg-slate-700 hover:bg-slate-600 text-white py-2 px-4 rounded-lg transition-colors"
+            >
+              閉じる
+            </button>
+          </div>
+        </div>
       )}
     </>
   );

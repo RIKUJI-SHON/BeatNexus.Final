@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { SuperTipVoteModal } from '../voting/SuperTipVoteModal';
+// import { SuperTipVoteModal } from '../voting/SuperTipVoteModal'; // Temporarily disabled - will be reimplemented
 
 interface VoteCommentModalProps {
   isOpen: boolean;
@@ -184,19 +184,19 @@ export const VoteCommentModal: React.FC<VoteCommentModalProps> = ({
       </div>
 
       {/* SuperTip Modal */}
-      {battleId && (
-        <SuperTipVoteModal
-          isOpen={showSuperTipModal}
-          battleId={battleId}
-          player={player}
-          playerName={playerName}
-          onClose={() => setShowSuperTipModal(false)}
-          onSuccess={(result) => {
-            console.log('SuperTip success:', result);
-            setShowSuperTipModal(false);
-            // 必要に応じて親コンポーネントに通知
-          }}
-        />
+      {battleId && showSuperTipModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-slate-800 p-6 rounded-xl border border-slate-700 max-w-md w-full mx-4">
+            <h3 className="text-lg font-semibold text-white mb-4">Super Tips機能</h3>
+            <p className="text-slate-400 mb-6">Super Tips機能は現在開発中です。実装完了まで少々お待ちください。</p>
+            <button 
+              onClick={() => setShowSuperTipModal(false)}
+              className="w-full bg-slate-700 hover:bg-slate-600 text-white py-2 px-4 rounded-lg transition-colors"
+            >
+              閉じる
+            </button>
+          </div>
+        </div>
       )}
     </>
   );

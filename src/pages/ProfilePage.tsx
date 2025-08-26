@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
-import { Card } from '../components/ui/Card';
+// import { Card } from '../components/ui/Card'; // Unused for now
 import { AvatarUpload } from '../components/profile/AvatarUpload';
 import { BattleCard } from '../components/battle/BattleCard';
 import { ArchivedBattleCard } from '../components/battle/ArchivedBattleCard';
@@ -29,7 +29,7 @@ import { trackBeatNexusEvents } from '../utils/analytics';
 import { getDefaultAvatarUrl } from '../utils';
 import { Battle } from '../types';
 import CollectionPage from '../components/rewards/CollectionPage';
-import { PaymentSettings } from '../components/payment/PaymentSettings';
+// import { PaymentSettings } from '../components/payment/PaymentSettings'; // Temporarily disabled - will be reimplemented in Super Tips feature
 
 interface UserProfile {
   id: string;
@@ -607,7 +607,14 @@ const ProfilePage: React.FC = () => {
           {/* 決済設定（自分のプロファイルのみ） */}
           {isOwnProfile && activeTab === 'payment' && (
             <div className="animate-fade-in">
-              <PaymentSettings />
+              <div className="text-center py-16">
+                <div className="bg-slate-800/50 rounded-xl p-8 border border-slate-700">
+                  <CreditCard className="h-16 w-16 text-slate-400 mx-auto mb-4" />
+                  <h3 className="text-xl font-semibold text-slate-200 mb-2">Super Tips機能</h3>
+                  <p className="text-slate-400 mb-4">Super Tips決済設定は現在開発中です。</p>
+                  <p className="text-sm text-slate-500">実装予定：Stripe Connect統合による寄付機能</p>
+                </div>
+              </div>
             </div>
           )}
         </div>
