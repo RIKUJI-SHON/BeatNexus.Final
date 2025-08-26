@@ -77,7 +77,6 @@ import AuthConfirmPage from './pages/AuthConfirmPage';
 import BattleCardVotedPreviewPage from './pages/BattleCardVotedPreviewPage';
 import StorefrontPage from './pages/StorefrontPage';
 import PurchaseSuccessPage from './pages/PurchaseSuccessPage';
-import StripeTestPage from './pages/StripeTestPage';
 
 // CSS for animations
 import './tailwind.extensions.css';
@@ -125,7 +124,6 @@ function RouterContent() {
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/guidelines" element={<UserGuidelinesPage />} />
             <Route path="/notifications/test" element={<NotificationTestPage />} />
-            <Route path="/stripe-test" element={<StripeTestPage />} />
             <Route path="/result-test" element={<BattleResultTestPage />} />
             <Route path="/reset-password" element={<ResetPasswordPage />} />
             <Route path="/auth/confirm" element={<AuthConfirmPage />} />
