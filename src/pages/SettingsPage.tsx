@@ -7,7 +7,7 @@ import { Modal } from '../components/ui/Modal';
 import { Input } from '../components/ui/Input';
 import { Button } from '../components/ui/Button';
 import { PushNotificationSetup } from '../components/ui/PushNotificationSetup';
-import StripeConnectDashboard from '../components/settings/StripeConnectDashboard';
+// import StripeConnectDashboard from '../components/settings/StripeConnectDashboard'; // Temporarily disabled - will be reimplemented
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { trackBeatNexusEvents } from '../utils/analytics';
@@ -466,7 +466,13 @@ const SettingsPage: React.FC = () => {
                 <p className="text-sm text-gray-400 mb-4">
                   他のユーザーからSuperTipを受け取るための設定を行います
                 </p>
-                <StripeConnectDashboard />
+                <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700">
+                  <div className="text-center">
+                    <h4 className="text-lg font-semibold text-slate-200 mb-2">Super Tips機能</h4>
+                    <p className="text-slate-400 mb-4">Super Tips決済設定は現在開発中です。</p>
+                    <p className="text-sm text-slate-500">実装予定：Stripe Connect統合による寄付機能</p>
+                  </div>
+                </div>
               </div>
               
               <div>
