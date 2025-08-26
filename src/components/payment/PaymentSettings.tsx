@@ -137,7 +137,7 @@ export const PaymentSettings: React.FC = () => {
     setIsCreatingOnboarding(true);
     try {
       const currentUrl = window.location.origin;
-      const { data, error } = await supabase.functions.invoke('create-onboarding-link', {
+      const { data, error } = await supabase.functions.invoke('stripe-onboarding', {
         body: {
           refresh_url: `${currentUrl}/profile?tab=payment`,
           return_url: `${currentUrl}/profile?tab=payment&success=true`

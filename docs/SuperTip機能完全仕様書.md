@@ -69,7 +69,9 @@ src/
 supabase/
 ├── functions/
 │   ├── create-super-tip-checkout/    # Stripe Checkout Session作成
-│   ├── create-connect-account/       # プレイヤーStripe Connect設定
+│   ├── create-connect-account/       # プレイヤーStripe Connect アカウント作成
+│   ├── stripe-onboarding/            # Stripe Connect オンボーディング(統合)
+│   ├── get-account-status/           # Stripe Connect アカウント状態取得
 │   └── stripe-super-tip-webhook/     # Stripe Webhook処理
 └── migrations/
     └── 20250825_create_super_tips_table.sql  # データベース設計
@@ -414,6 +416,9 @@ npx supabase db push --project-ref qgqcjtjxaoplhxurbpis
 # Edge Functions デプロイ
 npx supabase functions deploy create-super-tip-checkout --project-ref qgqcjtjxaoplhxurbpis
 npx supabase functions deploy create-connect-account --project-ref qgqcjtjxaoplhxurbpis
+npx supabase functions deploy stripe-onboarding --project-ref qgqcjtjxaoplhxurbpis
+npx supabase functions deploy get-account-status --project-ref qgqcjtjxaoplhxurbpis
+npx supabase functions deploy stripe-super-tip-webhook --project-ref qgqcjtjxaoplhxurbpis
 
 # フロントエンド デプロイ（Vercel等）
 npm run build
@@ -451,6 +456,8 @@ npm run build
 - **2025-01-18**: テーブル構造統一マイグレーション実施
 - **2025-01-18**: 開発環境と本番環境の構造差異解消
 - **2025-01-18**: 仕様書を実際のDB構造に合わせて修正
+- **2025-01-18**: Stripe Connect Edge Functions をstripe-onboarding関数に統一
+- **2025-01-18**: create-onboarding-linkからstripe-onboardingへの移行完了
 
 ---
 

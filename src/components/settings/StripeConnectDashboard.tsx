@@ -153,7 +153,7 @@ const StripeConnectDashboard: React.FC = () => {
         console.log('アカウント作成をスキップ（既に存在する可能性）:', error);
       }
 
-      // Step 2: Stripeオンボーディングリンクを作成してリダイレクト
+      // Step 2: stripe-onboarding関数でオンボーディングリンクを作成してリダイレクト
       const { data, error } = await supabase.functions.invoke('stripe-onboarding', {
         body: {
           refresh_url: window.location.href,
