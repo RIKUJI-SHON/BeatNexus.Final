@@ -81,6 +81,10 @@ export const StripeConnectSetup: React.FC<StripeConnectSetupProps> = ({ onStatus
           'Authorization': `Bearer ${data.session.access_token}`,
           'Content-Type': 'application/json',
         },
+        body: JSON.stringify({
+          email: user.email,
+          country: 'JP'
+        })
       });
 
       const result = await response.json();

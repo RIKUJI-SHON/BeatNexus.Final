@@ -102,6 +102,10 @@ export const PaymentSettings: React.FC = () => {
     setIsCreatingAccount(true);
     try {
       const { data, error } = await supabase.functions.invoke('create-connect-account', {
+        body: {
+          email: user.email,
+          country: 'JP'
+        },
         headers: {
           'Authorization': `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`,
         }

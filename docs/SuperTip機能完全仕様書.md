@@ -84,46 +84,60 @@ supabase/
 CREATE TABLE super_tips (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   
-  -- 関連情報
-  battle_id UUID NOT NULL REFERENCES battles(id) ON DELETE CASCADE,
-  sender_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
-  recipient_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+  -- ユーザー関連
+  voter_user_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+  supported_player_user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
   
-  -- 投票情報
-  vote CHAR(1) CHECK (vote IN ('A', 'B')) NOT NULL,
-  comment TEXT NOT NULL CHECK (LENGTH(comment) <= 500),
+  -- バトル関連（分離された設計）
+  active_battle_id UUID REFERENCES active_battles(id) ON DELETE CASCADE,
+  archived_battle_id UUID REFERENCES archived_battles(id) ON DELETE CASCADE,
   
   -- 金額情報（円単位）
-  amount INTEGER NOT NULL CHECK (amount >= 100 AND amount <= 10000),
-  platform_fee INTEGER NOT NULL DEFAULT 0,
-  recipient_amount INTEGER NOT NULL DEFAULT 0,
+  amount_jpy INTEGER NOT NULL CHECK (amount_jpy >= 100),
   
   -- Stripe決済情報
   stripe_payment_intent_id TEXT UNIQUE,
-  stripe_transfer_id TEXT,
+  stripe_account_id TEXT NOT NULL,
   
   -- ステータス
-  status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'completed', 'failed', 'cancelled')),
+  payment_status TEXT NOT NULL DEFAULT 'pending' 
+    CHECK (payment_status IN ('pending', 'processing', 'succeeded', 'failed', 'canceled')),
+  
+  -- メタデータ
+  metadata JSONB DEFAULT '{}',
   
   -- タイムスタンプ
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  completed_at TIMESTAMPTZ,
   
-  -- 制約
-  UNIQUE(sender_id, battle_id) -- 1ユーザー1バトルにつき1回のSuperTip制限
+  -- 制約: アクティブまたはアーカイブバトルのどちらか一つのみ
+  CONSTRAINT check_battle_reference CHECK (
+    (active_battle_id IS NOT NULL AND archived_battle_id IS NULL) OR
+    (active_battle_id IS NULL AND archived_battle_id IS NOT NULL)
+  )
 );
 ```
 
 ### 関連テーブル拡張
 ```sql
 -- プロファイルテーブル（Stripe Connect情報）
-ALTER TABLE profiles ADD COLUMN stripe_account_id TEXT UNIQUE;
-ALTER TABLE profiles ADD COLUMN stripe_onboarding_completed BOOLEAN DEFAULT FALSE;
+ALTER TABLE profiles ADD COLUMN stripe_account_id TEXT;
+ALTER TABLE profiles ADD COLUMN stripe_charges_enabled BOOLEAN DEFAULT FALSE;
 
 -- 投票テーブル（SuperTip関連情報）
-ALTER TABLE battle_votes ADD COLUMN has_super_tip BOOLEAN DEFAULT FALSE;
-ALTER TABLE battle_votes ADD COLUMN super_tip_id UUID REFERENCES super_tips(id);
+ALTER TABLE battle_votes ADD COLUMN super_tip_amount INTEGER DEFAULT 0 
+  CHECK (super_tip_amount IS NULL OR super_tip_amount >= 100);
+ALTER TABLE battle_votes ADD COLUMN stripe_payment_intent_id TEXT;
+ALTER TABLE battle_votes ADD COLUMN payment_status TEXT DEFAULT 'none' 
+  CHECK (payment_status IN ('none', 'pending', 'completed', 'failed'));
+
+-- アーカイブ投票テーブル（SuperTip関連情報）
+ALTER TABLE archived_battle_votes ADD COLUMN super_tip_amount INTEGER 
+  CHECK (super_tip_amount IS NULL OR super_tip_amount >= 100);
+ALTER TABLE archived_battle_votes ADD COLUMN stripe_payment_intent_id TEXT;
+ALTER TABLE archived_battle_votes ADD COLUMN payment_status TEXT 
+  CHECK (payment_status IS NULL OR payment_status IN ('pending', 'succeeded', 'failed', 'canceled'));
+ALTER TABLE archived_battle_votes ADD COLUMN has_super_tip BOOLEAN DEFAULT FALSE;
 ```
 
 ---
@@ -134,12 +148,13 @@ ALTER TABLE battle_votes ADD COLUMN super_tip_id UUID REFERENCES super_tips(id);
 ```mermaid
 graph TD
     A[ユーザーがSuperTipボタンクリック] --> B[金額・コメント入力]
-    B --> C[create-super-tip-checkout関数実行]
-    C --> D[投票処理実行（先行処理）]
+    B --> C[投票処理実行（先行処理）]
+    C --> D[super_tipsレコード作成]
     D --> E[Stripe Checkout Session作成]
     E --> F[Stripe決済ページにリダイレクト]
     F --> G[ユーザーが決済完了]
-    G --> H[BattleViewに戻る（投票済み状態）]
+    G --> H[Webhook経由でpayment_status更新]
+    H --> I[BattleViewに戻る（投票済み状態）]
 ```
 
 ### 2. プレイヤー収益フロー
@@ -355,20 +370,18 @@ beatnexus.test@gmail.com
 
 ### 集計データ
 ```sql
--- SuperTip統計ビュー
+-- SuperTip統計ビュー（統合バージョン）
 CREATE VIEW super_tip_stats AS
 SELECT 
-  battle_id,
+  COALESCE(active_battle_id, archived_battle_id) as battle_id,
   COUNT(*) as total_super_tips,
-  SUM(amount) as total_amount,
-  SUM(recipient_amount) as total_recipient_amount,
-  SUM(platform_fee) as total_platform_fee,
-  AVG(amount) as average_amount,
-  COUNT(CASE WHEN vote = 'A' THEN 1 END) as vote_a_super_tips,
-  COUNT(CASE WHEN vote = 'B' THEN 1 END) as vote_b_super_tips
+  SUM(amount_jpy) as total_amount_jpy,
+  AVG(amount_jpy) as average_amount_jpy,
+  COUNT(CASE WHEN payment_status = 'succeeded' THEN 1 END) as completed_super_tips,
+  SUM(CASE WHEN payment_status = 'succeeded' THEN amount_jpy ELSE 0 END) as total_completed_amount_jpy
 FROM super_tips 
-WHERE status = 'completed'
-GROUP BY battle_id;
+WHERE payment_status IN ('succeeded', 'completed')
+GROUP BY COALESCE(active_battle_id, archived_battle_id);
 ```
 
 ### 表示項目
@@ -435,6 +448,9 @@ npm run build
 - **2025-08-26**: 機能フラグ制御追加
 - **2025-08-26**: 完全仕様書統合
 - **2025-08-26**: 本番環境非表示ステータス追加・段階的リリース計画明記
+- **2025-01-18**: テーブル構造統一マイグレーション実施
+- **2025-01-18**: 開発環境と本番環境の構造差異解消
+- **2025-01-18**: 仕様書を実際のDB構造に合わせて修正
 
 ---
 
