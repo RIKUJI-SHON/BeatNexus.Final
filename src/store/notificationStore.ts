@@ -32,6 +32,74 @@ const handleSeasonStartNotification = async (notificationData: Notification) => 
   }
 };
 
+// Helper: handle season end notifications and open SeasonEndModal with user ranks
+const handleSeasonEndNotification = async (notificationData: Notification) => {
+  console.log('🏁 [SeasonEndModal] handleSeasonEndNotification called:', notificationData);
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      console.log('❌ [SeasonEndModal] No authenticated user');
+      return;
+    }
+
+    const seasonId = notificationData.relatedSeasonId;
+    if (!seasonId) {
+      console.warn('⚠️ [SeasonEndModal] No relatedSeasonId in notification');
+    }
+
+    // fetch season meta
+    const { data: seasonMeta } = await supabase
+      .from('seasons')
+      .select('id,name,start_at,end_at')
+      .eq('id', seasonId)
+      .maybeSingle();
+
+    // Fetch season player rankings list and find current user
+    const { data: seasonPlayers } = await supabase.rpc('get_season_rankings_by_id', {
+      p_season_id: seasonId,
+    });
+    type SeasonPlayerRow = { user_id: string; rank?: number; points?: number; season_points?: number };
+    const userPlayer = Array.isArray(seasonPlayers)
+      ? (seasonPlayers as SeasonPlayerRow[]).find((r) => r.user_id === user.id)
+      : null;
+
+    // Fetch season voter rankings list and find current user
+    const { data: seasonVoters } = await supabase.rpc('get_season_voter_rankings_by_id', {
+      p_season_id: seasonId,
+    });
+    type SeasonVoterRow = { user_id?: string; id?: string; rank?: number; season_vote_points?: number; votes?: number; points?: number };
+    const userVoter = Array.isArray(seasonVoters)
+      ? (seasonVoters as SeasonVoterRow[]).find((r) => (r.user_id ?? r.id) === user.id)
+      : null;
+
+    const playerRank = userPlayer?.rank ?? null;
+    const playerPoints = (userPlayer?.points ?? userPlayer?.season_points) ?? null;
+    const voterRank = userVoter?.rank ?? null;
+    const voterPoints = (userVoter?.season_vote_points ?? userVoter?.votes ?? userVoter?.points) ?? null;
+
+    const { useSeasonEndStore } = await import('./seasonEndStore');
+    useSeasonEndStore.getState().showSeasonEndModal({
+      seasonId: seasonId || 'unknown',
+      seasonName: seasonMeta?.name ?? null,
+      seasonStartAt: seasonMeta?.start_at ?? null,
+      seasonEndAt: seasonMeta?.end_at ?? null,
+      playerRank,
+      playerPoints,
+      voterRank,
+      voterPoints,
+    });
+
+    // After showing, delete notification
+    if (notificationData.id) {
+      const { deleteNotification } = useNotificationStore.getState();
+      await deleteNotification(notificationData.id);
+      console.log('✅ [SeasonEndModal] Season end notification deleted after showing modal');
+    }
+  } catch (error) {
+    console.error('❌ [SeasonEndModal] Error handling season end notification:', error);
+  }
+};
+
 // Helper function to handle battle matched notifications
 const handleBattleMatchedNotification = async (notificationData: Notification) => {
   console.log('⚡ [BattleMatchedModal] handleBattleMatchedNotification called:', notificationData);
@@ -195,9 +263,12 @@ const handleBattleResultNotification = async (notificationData: Notification) =>
     const isWin = battleData.winner_id === user.id;
     const userRatingChange = isPlayer1 ? battleData.player1_rating_change : battleData.player2_rating_change;
     const userFinalRating = isPlayer1 ? battleData.player1_final_rating : battleData.player2_final_rating;
+    type JoinedProfile = { username?: string | null } | null;
+    const p1Profile = (battleData.player1_profile as JoinedProfile) || null;
+    const p2Profile = (battleData.player2_profile as JoinedProfile) || null;
     const opponentUsername = isPlayer1 
-      ? (battleData.player2_profile as any)?.username || 'Unknown'
-      : (battleData.player1_profile as any)?.username || 'Unknown';
+      ? (p2Profile?.username ?? 'Unknown')
+      : (p1Profile?.username ?? 'Unknown');
 
     const rankInfo = getCurrentRank(userFinalRating);
 
@@ -235,7 +306,7 @@ export interface Notification {
   id: string;
   title: string;
   message: string;
-  type: 'info' | 'success' | 'warning' | 'battle_matched' | 'battle_win' | 'battle_lose' | 'battle_draw' | 'season_start' | 'news_article';
+  type: 'info' | 'success' | 'warning' | 'battle_matched' | 'battle_win' | 'battle_lose' | 'battle_draw' | 'season_start' | 'season_end' | 'news_article';
   isRead: boolean;
   relatedBattleId?: string;
   relatedSeasonId?: string; // 新シーズン用
@@ -471,6 +542,16 @@ export const useNotificationStore = create<NotificationState>()(
             await handleSeasonStartNotification(pendingSeasonStart);
           } else {
             console.log('🚫 [NotificationStore] No pending season start notifications found');
+          }
+
+          // 🏁 シーズン終了通知があればモーダルを表示
+          const pendingSeasonEnd = notifications.find(
+            (n) => !n.isRead && n.type === 'season_end'
+          );
+
+          if (pendingSeasonEnd) {
+            console.log('🏁 [NotificationStore] Pending season end found on initial fetch, showing modal');
+            await handleSeasonEndNotification(pendingSeasonEnd);
           }
         } catch (error) {
           console.error('Error in fetchNotifications:', error);

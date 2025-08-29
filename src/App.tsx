@@ -47,6 +47,8 @@ import { useBattleMatchedStore } from './store/battleMatchedStore';
 
 // New Season Modal
 import { NewSeasonModal } from './components/ui/NewSeasonModal';
+// Season End Modal
+import { SeasonEndModal } from './components/ui/SeasonEndModal';
 
 // Pages
 import HomePage from './pages/HomePage';
@@ -72,6 +74,7 @@ import NotificationTestPage from './pages/NotificationTestPage';
 import CommunityDetailPage from './pages/CommunityDetailPage';
 import AdPreviewPage from './pages/AdPreviewPage';
 import BattleResultTestPage from './pages/BattleResultTestPage';
+import SeasonEndPreviewPage from './pages/SeasonEndPreviewPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
 import AuthConfirmPage from './pages/AuthConfirmPage';
 import BattleCardVotedPreviewPage from './pages/BattleCardVotedPreviewPage';
@@ -125,6 +128,7 @@ function RouterContent() {
             <Route path="/guidelines" element={<UserGuidelinesPage />} />
             <Route path="/notifications/test" element={<NotificationTestPage />} />
             <Route path="/result-test" element={<BattleResultTestPage />} />
+            <Route path="/dev/season-end-preview" element={<SeasonEndPreviewPage />} />
             <Route path="/reset-password" element={<ResetPasswordPage />} />
             <Route path="/auth/confirm" element={<AuthConfirmPage />} />
             <Route path="/dev/battle-card-voted-preview" element={<BattleCardVotedPreviewPage />} />
@@ -235,6 +239,8 @@ function AppContent() {
       
       {/* New Season Modal - Global Level */}
       <NewSeasonModal />
+  {/* Season End Modal - Global Level */}
+  <SeasonEndModal />
     </Router>
   );
 }
