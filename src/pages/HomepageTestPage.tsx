@@ -8,11 +8,10 @@ import step2Matching from '../assets/images/steps/step2-matching.png';
 import step3Voting from '../assets/images/steps/step3-voting.png';
 import step4Results from '../assets/images/steps/step4-results.png';
 import { Card } from '../components/ui/Card';
-import { TopThreePodium } from '../components/ui/TopThreePodium';
 import { AuthModal } from '../components/auth/AuthModal';
 import { useCanonicalUrl, useDynamicMeta } from '../hooks/useSEO';
 import { supabase } from '../lib/supabase';
-import { Season, HistoricalSeasonRanking, Battle } from '../types';
+import { Battle } from '../types';
 import { useAuthStore } from '../store/authStore';
 import { useBattleStore } from '../store/battleStore';
 import { BattleCard } from '../components/battle/BattleCard';
@@ -21,15 +20,7 @@ import { getBattleUrlFromBattle } from '../utils/battleUrl';
 import BattlesPage from './BattlesPage';
 import { useTranslation } from 'react-i18next';
 import { AdSlot } from '../components/ads/AdSlot';
-
-interface VoterRankingEntry {
-  rank: number;
-  user_id: string;
-  username: string;
-  avatar_url: string | null;
-  votes: number;
-  season_id: string;
-}
+ 
 
 const HomepageTestPage: React.FC = () => {
   const { user } = useAuthStore();
@@ -38,10 +29,7 @@ const HomepageTestPage: React.FC = () => {
   const { archivedBattles, fetchArchivedBattles, loading: archivedLoading } = useBattleStore();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authModalMode, setAuthModalMode] = useState<'login' | 'signup' | 'resetPassword' | 'setNewPassword'>('signup');
-  const [latestEndedSeason, setLatestEndedSeason] = useState<Season | null>(null);
-  const [topThreeRankings, setTopThreeRankings] = useState<HistoricalSeasonRanking[]>([]);
-  const [topThreeVoterRankings, setTopThreeVoterRankings] = useState<VoterRankingEntry[]>([]);
-  const [rankingsLoading, setRankingsLoading] = useState(false);
+  // ランキング関連の状態はセクション削除に伴い不要
   const [statsData, setStatsData] = useState({
     totalBattles: 0,
     totalVotes: 0,
@@ -73,84 +61,7 @@ const HomepageTestPage: React.FC = () => {
     twitterImage: 'https://beatnexus.vercel.app/images/og-image.png'
   });
 
-  // 最新の終了したシーズンのTOP3を取得
-  useEffect(() => {
-    const fetchLatestSeasonRankings = async () => {
-      setRankingsLoading(true);
-      try {
-        // 全シーズンを取得
-        const { data: seasons, error: seasonsError } = await supabase.rpc('get_all_seasons');
-        if (seasonsError) throw seasonsError;
-
-        // 終了したシーズンを日付順でソートし、最新のものを取得
-        const endedSeasons = seasons?.filter((season: Season) => season.status === 'ended') || [];
-        if (endedSeasons.length === 0) return;
-
-        const latestEnded = endedSeasons.sort((a: Season, b: Season) => 
-          new Date(b.end_at).getTime() - new Date(a.end_at).getTime()
-        )[0];
-
-        setLatestEndedSeason(latestEnded);
-
-        // そのシーズンのランキングTOP3を取得
-        const { data: rankings, error: rankingsError } = await supabase.rpc('get_season_rankings_by_id', {
-          p_season_id: latestEnded.id
-        });
-
-        if (rankingsError) throw rankingsError;
-
-        const top3 = (rankings || []).slice(0, 3).map((entry: {
-          user_id: string;
-          rank: number;
-          points: number;
-          username: string;
-          avatar_url?: string;
-        }) => ({
-          id: `${entry.user_id}-${latestEnded.id}`,
-          season_id: latestEnded.id,
-          user_id: entry.user_id,
-          rank: entry.rank,
-          points: entry.points,
-          username: entry.username,
-          avatar_url: entry.avatar_url,
-          created_at: new Date().toISOString()
-        }));
-
-        setTopThreeRankings(top3);
-
-        // そのシーズンの投票者ランキングTOP3を取得
-        const { data: voterRankings, error: voterRankingsError } = await supabase.rpc('get_season_voter_rankings_by_id', {
-          p_season_id: latestEnded.id
-        });
-
-        if (voterRankingsError) throw voterRankingsError;
-
-        const top3Voters = (voterRankings || []).slice(0, 3).map((entry: {
-          rank: number;
-          user_id: string;
-          username: string;
-          avatar_url?: string;
-          votes: number;
-          season_id: string;
-        }) => ({
-          rank: entry.rank,
-          user_id: entry.user_id,
-          username: entry.username,
-          avatar_url: entry.avatar_url,
-          votes: entry.votes,
-          season_id: entry.season_id
-        }));
-
-        setTopThreeVoterRankings(top3Voters);
-      } catch (error) {
-        console.error('Failed to fetch latest season rankings:', error);
-      } finally {
-        setRankingsLoading(false);
-      }
-    };
-
-    fetchLatestSeasonRankings();
-  }, []);
+  // （ランキング取得ロジックは不要）
 
   // 統計データを取得（β Season 0 実績表示用：累計の概数）
   useEffect(() => {
