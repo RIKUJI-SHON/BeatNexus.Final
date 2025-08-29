@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Trophy, Search, Users, Calendar, ChevronDown, X, Star } from 'lucide-react';
+import { Trophy, Search, Users, Calendar, ChevronDown, X, Star, Clock } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Card } from '../components/ui/Card';
 import { TopThreePodium } from '../components/ui/TopThreePodium';
 import { useRankingStore } from '../store/rankingStore';
+import { useSubmissionStatus } from '../hooks/useSubmissionStatus';
 import { useTranslation } from 'react-i18next';
 import { trackBeatNexusEvents } from '../utils/analytics';
 import { getDefaultAvatarUrl } from '../utils';
@@ -58,6 +59,8 @@ const RankingPage: React.FC = () => {
     setActiveVoterRankingType,
     setSelectedSeasonId
   } = useRankingStore();
+  
+  const { submissionStatus } = useSubmissionStatus();
   
   const [activeTab, setActiveTab] = useState<TabType>('player');
   const [searchQuery, setSearchQuery] = useState('');
@@ -448,6 +451,25 @@ const RankingPage: React.FC = () => {
   const dropdownOptions = getDropdownOptions();
   const selectedOption = dropdownOptions.find(opt => opt.isSelected);
 
+  // シーズン終了判定（現在のアクティブシーズンランキング表示時のみ適用）
+  const isSeasonEnding = submissionStatus && 
+    !submissionStatus.canSubmit && 
+    submissionStatus.reason === 'ENDING_SOON' &&
+    (
+      (activeTab === 'player' && activeRankingType === 'current_season' && (!selectedSeasonId || selectedSeasonId === currentSeason?.id)) ||
+      (activeTab === 'voter' && activeVoterRankingType === 'current_season' && (!selectedSeasonId || selectedSeasonId === currentSeason?.id))
+    );
+  
+  // シーズン終了までの日数を計算
+  const getDaysUntilSeasonEnd = () => {
+    if (!submissionStatus?.activeSeason?.end_at) return 0;
+    const endDate = new Date(submissionStatus.activeSeason.end_at);
+    const now = new Date();
+    const diffTime = endDate.getTime() - now.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return Math.max(0, diffDays);
+  };
+
   if (currentError) {
     return (
       <div className="min-h-screen bg-gray-950 py-10">
@@ -747,9 +769,43 @@ const RankingPage: React.FC = () => {
 
         {/* Content Area */}
         <div className="space-y-6">
-
-          {/* 🏆 Top 3 Podium Section */}
-          {!currentLoading && topThreeForDisplay.length > 0 && (
+          {isSeasonEnding ? (
+            // シーズン終了時の代替メッセージ
+            <div className="text-center py-16 px-8">
+              <div className="relative mb-8">
+                {/* 背景グラデーション効果 */}
+                <div className="absolute inset-0 bg-gradient-to-r from-orange-500/20 via-yellow-500/20 to-red-500/20 blur-3xl animate-pulse"></div>
+                
+                <div className="relative w-24 h-24 mx-auto rounded-full bg-gradient-to-br from-orange-500/20 to-yellow-500/20 flex items-center justify-center shadow-2xl border border-orange-500/30">
+                  <Trophy className="h-12 w-12 text-orange-400" />
+                </div>
+              </div>
+              
+              <h2 className="text-3xl font-bold text-orange-200 mb-4">
+                {t('rankingPage.seasonEnding.title')}
+              </h2>
+              <p className="text-lg text-orange-300 mb-6 max-w-2xl mx-auto">
+                {t('rankingPage.seasonEnding.message')}
+              </p>
+              <p className="text-base text-orange-400 font-medium mb-8">
+                {t('rankingPage.seasonEnding.subtitle')}
+              </p>
+              
+              {/* カウントダウン表示 */}
+              <div className="flex items-center justify-center gap-3 text-lg text-orange-300 bg-orange-500/10 border border-orange-500/20 rounded-xl py-4 px-6 inline-flex">
+                <Clock className="h-6 w-6" />
+                <span className="font-semibold">
+                  {getDaysUntilSeasonEnd() > 0 
+                    ? t('rankingPage.seasonEnding.countdown', { days: getDaysUntilSeasonEnd() })
+                    : t('rankingPage.seasonEnding.subtitle')
+                  }
+                </span>
+              </div>
+            </div>
+          ) : (
+            <>
+              {/* 🏆 Top 3 Podium Section */}
+              {!currentLoading && topThreeForDisplay.length > 0 && (
             <div className="flex justify-center">
               <div className={`w-full max-w-md sm:max-w-lg rounded-2xl p-[1px] shadow-lg ${
                 activeTab === 'player'
@@ -952,6 +1008,8 @@ const RankingPage: React.FC = () => {
                 {searchQuery ? t('rankingPage.noUsersFound') : t('rankingPage.noRankingsYet')}
               </p>
             </div>
+          )}
+            </>
           )}
         </div>
       </div>

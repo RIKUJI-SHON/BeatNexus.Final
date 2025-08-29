@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Users } from 'lucide-react';
+import { ArrowRight, Users, Clock, Trophy } from 'lucide-react';
 import { useRankingStore } from '../../store/rankingStore';
+import { useSubmissionStatus } from '../../hooks/useSubmissionStatus';
 import { useTranslation } from 'react-i18next';
 import { SeasonVoterRankingEntry, SeasonRankingEntry } from '../../types';
 
@@ -27,6 +28,8 @@ export const TabbedRanking: React.FC<TabbedRankingProps> = ({
     fetchSeasonRankings,
     fetchSeasonVoterRankings 
   } = useRankingStore();
+  
+  const { submissionStatus } = useSubmissionStatus();
   
   const [activeTab, setActiveTab] = useState<RankingType>('player');
   const [isAnimating, setIsAnimating] = useState(false);
@@ -85,6 +88,19 @@ export const TabbedRanking: React.FC<TabbedRankingProps> = ({
     if (voteCount >= 10) return 'text-yellow-400';
     if (voteCount >= 5) return 'text-gray-400';
     return 'text-gray-500';
+  };
+
+  // シーズン終了判定（現在のアクティブシーズンのランキングのみ対象）
+  const isSeasonEnding = submissionStatus && !submissionStatus.canSubmit && submissionStatus.reason === 'ENDING_SOON';
+  
+  // シーズン終了までの日数を計算
+  const getDaysUntilSeasonEnd = () => {
+    if (!submissionStatus?.activeSeason?.end_at) return 0;
+    const endDate = new Date(submissionStatus.activeSeason.end_at);
+    const now = new Date();
+    const diffTime = endDate.getTime() - now.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return Math.max(0, diffDays);
   };
 
   const currentData = activeTab === 'player' ? seasonRankings.slice(0, maxItems) : seasonVoterRankings.slice(0, maxItems);
@@ -351,7 +367,39 @@ export const TabbedRanking: React.FC<TabbedRankingProps> = ({
 
       {/* Rankings Content */}
       <div className={`transition-all duration-300 ${isAnimating ? 'opacity-0 transform scale-95' : 'opacity-100 transform scale-100'}`}>
-        {currentLoading ? (
+        {isSeasonEnding ? (
+          <div className="text-center py-8 px-4">
+            <div className="relative mb-6">
+              {/* 背景グラデーション効果 */}
+              <div className="absolute inset-0 bg-gradient-to-r from-orange-500/20 via-yellow-500/20 to-red-500/20 blur-3xl animate-pulse"></div>
+              
+              <div className="relative w-16 h-16 mx-auto rounded-full bg-gradient-to-br from-orange-500/20 to-yellow-500/20 flex items-center justify-center shadow-2xl border border-orange-500/30">
+                <Trophy className="h-8 w-8 text-orange-400" />
+              </div>
+            </div>
+            
+            <h3 className="text-lg font-bold text-orange-200 mb-2">
+              {t('battlesPage.rankings.seasonEnding.title')}
+            </h3>
+            <p className="text-sm text-orange-300 mb-3">
+              {t('battlesPage.rankings.seasonEnding.message')}
+            </p>
+            <p className="text-xs text-orange-400 font-medium">
+              {t('battlesPage.rankings.seasonEnding.subtitle')}
+            </p>
+            
+            {/* カウントダウン表示 */}
+            <div className="mt-4 flex items-center justify-center gap-2 text-xs text-orange-300">
+              <Clock className="h-4 w-4" />
+              <span>
+                {getDaysUntilSeasonEnd() > 0 
+                  ? t('rankingPage.seasonEnding.countdown', { days: getDaysUntilSeasonEnd() })
+                  : t('battlesPage.rankings.seasonEnding.subtitle')
+                }
+              </span>
+            </div>
+          </div>
+        ) : currentLoading ? (
           <div className="text-center text-gray-400 py-8">
             <div className={`animate-spin w-8 h-8 border-2 ${activeTab === 'player' ? 'border-cyan-500' : 'border-purple-500'} border-t-transparent rounded-full mx-auto mb-3`}></div>
             <p className="text-sm">{t('battleFilters.loading')}</p>
@@ -372,7 +420,7 @@ export const TabbedRanking: React.FC<TabbedRankingProps> = ({
       </div>
 
       {/* View All Button */}
-      {showViewAllButton && currentData.length > 0 && (
+      {showViewAllButton && currentData.length > 0 && !isSeasonEnding && (
         <div className="text-center mt-4">
           <Link 
             to="/ranking"

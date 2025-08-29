@@ -833,6 +833,11 @@
       "titleCompact": "トップランキング",
       "viewFullButton": "全て見る",
       "noRankingsYet": "まだランキングがありません",
+      "seasonEnding": {
+        "title": "順位発表はシーズン終了後！",
+        "message": "シーズン終了が間近のため、ランキングは一時的に非表示です。",
+        "subtitle": "お楽しみに！"
+      },
       "table": {
         "rank": "ランク",
         "player": "プレイヤー",
@@ -1415,6 +1420,12 @@
       "voterRankings": "投票者ランキング",
       "player": "プレイヤー",
       "voter": "投票者"
+    },
+    "seasonEnding": {
+      "title": "順位発表まで、もう少し！",
+      "message": "シーズン終了が近づいているため、ランキングは一時的に非表示になっています。",
+      "subtitle": "シーズン終了後の順位発表をお楽しみに！",
+      "countdown": "シーズン終了まで残り{{days}}日"
     },
     "seasonTabs": {
       "currentSeason": "今シーズン",
