@@ -35,7 +35,7 @@ const BattlesPage: React.FC = () => {
   const ITEMS_PER_PAGE = 10; // 1ページあたりの表示件数
   
   const { battles, archivedBattles, loading, archiveLoading, error, fetchBattles, fetchArchivedBattles } = useBattleStore();
-  const { fetchRankings } = useRankingStore();
+  const { fetchRankings, seasons, currentSeason, fetchSeasons } = useRankingStore();
   const { user } = useAuthStore();
   
   // TabbedRanking handles its own limit
@@ -44,6 +44,7 @@ const BattlesPage: React.FC = () => {
     const initializeData = async () => {
       try {
         await Promise.all([
+          fetchSeasons(),
           fetchBattles(),
           fetchRankings(),
           fetchArchivedBattles(),
@@ -54,7 +55,7 @@ const BattlesPage: React.FC = () => {
       }
     };
     initializeData();
-  }, [fetchBattles, fetchRankings, fetchArchivedBattles]);
+  }, [fetchSeasons, fetchBattles, fetchRankings, fetchArchivedBattles]);
 
   const requireAuth = useRequireAuth({
     showAuthModal: true,
@@ -126,9 +127,23 @@ const BattlesPage: React.FC = () => {
     }
   }, [battles, sortBy, searchQuery, showMyBattlesOnly, user]);
 
+  // アクティブシーズンが無い場合、最新の終了シーズンのアーカイブのみを投票数順で表示する
   const filteredArchivedBattles = useMemo(() => {
     try {
       let battleList = [...(archivedBattles || [])];
+
+      // アクティブシーズンがない場合は、終了済みシーズンのうち最新のものに限定
+    if (!currentSeason && seasons && seasons.length > 0) {
+        const endedSeasons = seasons.filter(s => s.status === 'ended');
+        if (endedSeasons.length > 0) {
+          const latestEnded = endedSeasons.sort((a, b) => new Date(b.end_at).getTime() - new Date(a.end_at).getTime())[0];
+          battleList = battleList.filter(b => b.season_id === latestEnded.id);
+          // 票数（合計）で降順ソート
+      battleList.sort((a, b) => ((b.final_votes_a || 0) + (b.final_votes_b || 0)) - ((a.final_votes_a || 0) + (a.final_votes_b || 0)));
+      // この場合は以降の日時ソートはせずに返す
+      return battleList;
+        }
+      }
 
       // MY BATTLES フィルター（アーカイブバトル用）
       if (showMyBattlesOnly && user) {
@@ -145,8 +160,8 @@ const BattlesPage: React.FC = () => {
         );
       }
 
-      // 完了済みフィルターが選択されている場合のソート
-      if (sortBy === 'completed') {
+  // 完了済みフィルターが選択されている場合のソート
+  if (sortBy === 'completed') {
         return battleList.sort((a, b) => {
           const aTime = a.archived_at ? new Date(a.archived_at).getTime() : 0;
           const bTime = b.archived_at ? new Date(b.archived_at).getTime() : 0;
@@ -164,7 +179,7 @@ const BattlesPage: React.FC = () => {
       console.error('Error in filteredArchivedBattles:', error);
       return [];
     }
-  }, [archivedBattles, searchQuery, showMyBattlesOnly, user, sortBy]);
+  }, [archivedBattles, searchQuery, showMyBattlesOnly, user, sortBy, seasons, currentSeason]);
 
   // ページネーション用の計算
   const activeBattlesTotalItems = sortBy === 'completed' ? 0 : filteredBattles.length;
@@ -297,52 +312,101 @@ const BattlesPage: React.FC = () => {
                     </nav>
                   </>
                 ) : (
-                  <div 
-                    className="flex flex-col items-center justify-center py-16 px-8 text-center bg-gradient-to-br from-slate-800/40 to-slate-700/30 rounded-xl border border-slate-600/30"
-                    role="status"
-                    aria-live="polite"
-                  >
-                    {/* アイコン */}
-                    <div className="relative mb-6" aria-hidden="true">
-                      <div className="w-24 h-24 bg-gradient-to-br from-slate-700/60 to-slate-600/40 rounded-2xl flex items-center justify-center border border-slate-500/30">
-                        <Mic className="w-12 h-12 text-slate-400" />
+                  // フォールバック: アクティブシーズンが無い場合は最新終了シーズンのアーカイブを表示（投票数順）
+                  !currentSeason ? (
+                    archiveLoading ? (
+                      <Card className="bg-gray-900 border border-gray-800 p-8 text-center">
+                        <div className="animate-spin w-12 h-12 border-4 border-purple-500 border-t-transparent rounded-full mx-auto mb-4" aria-hidden="true"></div>
+                        <p className="text-gray-400">{t('battlesPage.status.loadingCompletedBattles')}</p>
+                      </Card>
+                    ) : paginatedArchivedBattles.length > 0 ? (
+                      <>
+                        {paginatedArchivedBattles.map(battle => (
+                          <ArchivedBattleCard 
+                            key={battle.id} 
+                            battle={battle}
+                          />
+                        ))}
+                        <Pagination
+                          currentPage={currentPage}
+                          totalPages={archivedBattlesTotalPages}
+                          onPageChange={handlePageChange}
+                          showingCount={ITEMS_PER_PAGE}
+                          totalCount={archivedBattlesTotalItems}
+                          className="mt-8"
+                        />
+                      </>
+                    ) : (
+                      <div 
+                        className="flex flex-col items-center justify-center py-16 px-8 text-center bg-gradient-to-br from-slate-800/40 to-slate-700/30 rounded-xl border border-slate-600/30"
+                        role="status"
+                        aria-live="polite"
+                      >
+                        <div className="relative mb-6" aria-hidden="true">
+                          <div className="w-24 h-24 bg-gradient-to-br from-slate-700/60 to-slate-600/40 rounded-2xl flex items-center justify-center border border-slate-500/30">
+                            <Archive className="w-12 h-12 text-slate-400" />
+                          </div>
+                          <div className="absolute inset-0 bg-gradient-to-br from-slate-500/10 to-slate-600/10 rounded-2xl blur-xl opacity-50" />
+                        </div>
+                        <div className="space-y-4 max-w-md">
+                          <h3 className="text-xl font-semibold text-slate-200">
+                            {t('battlesPage.status.noCompletedBattles')}
+                          </h3>
+                          <p className="text-slate-400 text-sm leading-relaxed">
+                            {t('battlesPage.status.checkBackSoonCompleted')}
+                          </p>
+                        </div>
                       </div>
-                      
-                      {/* 装飾的なグロー効果 */}
-                      <div className="absolute inset-0 bg-gradient-to-br from-slate-500/10 to-slate-600/10 rounded-2xl blur-xl opacity-50" />
-                    </div>
-
-                    {/* メッセージ */}
-                    <div className="space-y-4 max-w-md">
-                      <h2 className="text-xl font-semibold text-slate-200">
-                        {t('battlesPage.status.noBattlesFound')}
-                      </h2>
-                      
-                      {/* ヒント */}
-                      <div className="mt-6 p-4 bg-slate-800/60 rounded-lg border border-slate-600/40">
-                        <p className="text-cyan-300 text-sm font-medium flex items-center justify-center gap-2">
-                          <Mic className="w-4 h-4" aria-hidden="true" />
-                          {t('battlesPage.status.createBattleHint')}
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* 装飾的なパーティクル */}
-                    <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                      <div className="absolute top-10 left-10 w-2 h-2 bg-cyan-400/20 rounded-full animate-pulse" />
-                      <div className="absolute top-20 right-16 w-1 h-1 bg-purple-400/30 rounded-full animate-pulse" style={{ animationDelay: '1s' }} />
-                      <div className="absolute bottom-16 left-20 w-1.5 h-1.5 bg-amber-400/20 rounded-full animate-pulse" style={{ animationDelay: '2s' }} />
-                      <div className="absolute bottom-10 right-10 w-2 h-2 bg-pink-400/20 rounded-full animate-pulse" style={{ animationDelay: '0.5s' }} />
-                    </div>
-
-                    <Button
-                      variant="primary"
-                      className="bg-gradient-to-r from-cyan-500 to-purple-500 mt-6"
-                      onClick={handleCreateBattle}
+                    )
+                  ) : (
+                    // 通常: アクティブバトルが0件でアクティブシーズンは存在 → 既存メッセージ
+                    <div 
+                      className="flex flex-col items-center justify-center py-16 px-8 text-center bg-gradient-to-br from-slate-800/40 to-slate-700/30 rounded-xl border border-slate-600/30"
+                      role="status"
+                      aria-live="polite"
                     >
-                      {t('battlesPage.activeBattles.createBattleButton')}
-                    </Button>
-                  </div>
+                      {/* アイコン */}
+                      <div className="relative mb-6" aria-hidden="true">
+                        <div className="w-24 h-24 bg-gradient-to-br from-slate-700/60 to-slate-600/40 rounded-2xl flex items-center justify-center border border-slate-500/30">
+                          <Mic className="w-12 h-12 text-slate-400" />
+                        </div>
+                        
+                        {/* 装飾的なグロー効果 */}
+                        <div className="absolute inset-0 bg-gradient-to-br from-slate-500/10 to-slate-600/10 rounded-2xl blur-xl opacity-50" />
+                      </div>
+
+                      {/* メッセージ */}
+                      <div className="space-y-4 max-w-md">
+                        <h2 className="text-xl font-semibold text-slate-200">
+                          {t('battlesPage.status.noBattlesFound')}
+                        </h2>
+                        
+                        {/* ヒント */}
+                        <div className="mt-6 p-4 bg-slate-800/60 rounded-lg border border-slate-600/40">
+                          <p className="text-cyan-300 text-sm font-medium flex items-center justify-center gap-2">
+                            <Mic className="w-4 h-4" aria-hidden="true" />
+                            {t('battlesPage.status.createBattleHint')}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* 装飾的なパーティクル */}
+                      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                        <div className="absolute top-10 left-10 w-2 h-2 bg-cyan-400/20 rounded-full animate-pulse" />
+                        <div className="absolute top-20 right-16 w-1 h-1 bg-purple-400/30 rounded-full animate-pulse" style={{ animationDelay: '1s' }} />
+                        <div className="absolute bottom-16 left-20 w-1.5 h-1.5 bg-amber-400/20 rounded-full animate-pulse" style={{ animationDelay: '2s' }} />
+                        <div className="absolute bottom-10 right-10 w-2 h-2 bg-pink-400/20 rounded-full animate-pulse" style={{ animationDelay: '0.5s' }} />
+                      </div>
+
+                      <Button
+                        variant="primary"
+                        className="bg-gradient-to-r from-cyan-500 to-purple-500 mt-6"
+                        onClick={handleCreateBattle}
+                      >
+                        {t('battlesPage.activeBattles.createBattleButton')}
+                      </Button>
+                    </div>
+                  )
                 )
               ) : (
                 // アーカイブされたバトルの表示（sortBy === 'completed'の場合）

@@ -344,7 +344,7 @@ export const useBattleStore = create<BattleState>((set, get) => ({
       // Step 3: Fetch submissions
       const { data: submissionsData, error: submissionsError } = await supabase
         .from('submissions')
-        .select('id, user_id, video_url')
+        .select('id, user_id, video_url, stream_video_id')
         .in('id', submissionIds);
 
       if (submissionsError) {
@@ -693,6 +693,7 @@ export const useBattleStore = create<BattleState>((set, get) => ({
           final_votes_a,
           final_votes_b,
           archived_at,
+          season_id,
           battle_format,
           player1_user_id,
           player2_user_id,
@@ -716,7 +717,7 @@ export const useBattleStore = create<BattleState>((set, get) => ({
       }
 
       // Step 2: Get user IDs for profiles and submission IDs for videos
-  interface RawArchivedBattle { player1_user_id: string; player2_user_id: string; winner_id: string | null; player1_submission_id: string; player2_submission_id: string; final_votes_a: number; final_votes_b: number; archived_at: string; battle_format: BattleFormat | string; id: string; original_battle_id: string; created_at?: string; updated_at?: string; player1_rating_change: number | null; player2_rating_change: number | null; player1_final_rating: number | null; player2_final_rating: number | null; }
+  interface RawArchivedBattle { player1_user_id: string; player2_user_id: string; winner_id: string | null; player1_submission_id: string; player2_submission_id: string; final_votes_a: number; final_votes_b: number; archived_at: string; season_id: string | null; battle_format: BattleFormat | string; id: string; original_battle_id: string; created_at?: string; updated_at?: string; player1_rating_change: number | null; player2_rating_change: number | null; player1_final_rating: number | null; player2_final_rating: number | null; }
   const submissionIds = (battlesData as RawArchivedBattle[]).flatMap(battle => [
         battle.player1_submission_id,
         battle.player2_submission_id
@@ -770,6 +771,7 @@ export const useBattleStore = create<BattleState>((set, get) => ({
           final_votes_a: battle.final_votes_a as number,
           final_votes_b: battle.final_votes_b as number,
           archived_at: battle.archived_at as string,
+          season_id: battle.season_id ?? null,
       battle_format: battle.battle_format as BattleFormat, // DBの型をキャスト
           player1_user_id: battle.player1_user_id as string,
           player2_user_id: battle.player2_user_id as string,

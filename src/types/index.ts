@@ -62,6 +62,8 @@ export interface ArchivedBattle {
   final_votes_a: number;
   final_votes_b: number;
   archived_at: string;
+  // どのシーズンの試合かを識別するためのseason_id（UIの絞り込み/分析用）
+  season_id?: string | null;
   player1_user_id: string;
   player2_user_id: string;
   player1_submission_id: string;
