@@ -16,9 +16,9 @@ BEGIN
     SELECT 1 FROM information_schema.columns 
     WHERE table_schema = 'public' AND table_name = 'submissions' AND column_name = 'stream_status'
   ) THEN
-    -- 状態: uploading | processing | ready | error
+    -- 状態: pending | uploading | processing | ready | error（devと整合）
     ALTER TABLE public.submissions 
-      ADD COLUMN stream_status TEXT CHECK (stream_status IN ('uploading','processing','ready','error'));
+      ADD COLUMN stream_status TEXT DEFAULT 'pending' CHECK (stream_status IN ('pending','uploading','processing','ready','error'));
   END IF;
 
   IF NOT EXISTS (
@@ -104,7 +104,7 @@ BEGIN
   FROM public.submissions
   WHERE user_id = p_user_id
     AND created_at > NOW() - INTERVAL '1 hour'
-    AND status != 'withdrawn'
+    AND status != 'WITHDRAWN'::public.submission_status
   ORDER BY created_at DESC
   LIMIT 1;
 
@@ -150,7 +150,7 @@ BEGIN
     v_final_video_url,
     p_battle_format::public.battle_format,
     NOW(),
-    'WAITING_OPPONENT',
+    'WAITING_OPPONENT'::public.submission_status,
     p_stream_video_id,
     v_initial_stream_status
   ) RETURNING id INTO new_submission_id;

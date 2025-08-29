@@ -1,0 +1,23 @@
+# 実装ログ: 本番 Cloudflare Stream 同期 (Webhook/DB/Edge Functions)
+
+## 概要
+- 目的: 本番環境を Cloudflare Stream ファーストに対応させるため、DB マイグレーション適用、Edge Functions デプロイ(upload-webhook)、認証設定を整備。
+
+## 変更点
+- DB: `submissions` に `stream_*` カラム追加、`create_submission_with_cooldown_check` を `p_stream_video_id` 付きシグネチャに更新。
+- Edge Functions:
+  - `upload-video-stream`: 本番へデプロイ済み。
+  - `stream-webhook`: 本番へデプロイするため、`deno.json` の importMap を `_shared/import_map.json` へ揃え、`config.toml` で `verify_jwt=false` を追加。
+- 設定: Cloudflare/Supabase の必要環境変数を確認・整備 (CLOUDFLARE_ACCOUNT_ID, CLOUDFLARE_STREAM_API_TOKEN, CLOUDFLARE_STREAM_WEBHOOK_SECRET, SUPABASE_SERVICE_ROLE_KEY)。
+
+## 注意事項
+- Webhook は外部(CF)からのコールのため `verify_jwt=false` が必須。署名ヘッダ `cf-webhook-signature` は Supabase 側でシークレット照合する。
+- 冪等更新: `stream_video_id` で submissions を更新。`status` マッピングは uploading/processing/ready/error に正規化。
+
+## 動作確認
+1. direct_upload URL 取得 → 動画アップロード。
+2. CF 側の webhook 発火 → submissions の `stream_status` が `processing → ready` に遷移し、サムネ/プレビューが更新されることを確認。
+3. フロントの HybridVideoPlayer が `stream_video_id` 優先で再生できることを確認。
+
+## 既知の懸念
+- プラットフォーム側の verify_jwt 反映差異。`config.toml` と `--no-verify-jwt` の両方で担保する運用も検討。
