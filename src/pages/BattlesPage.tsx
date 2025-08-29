@@ -35,7 +35,7 @@ const BattlesPage: React.FC = () => {
   const ITEMS_PER_PAGE = 10; // 1ページあたりの表示件数
   
   const { battles, archivedBattles, loading, archiveLoading, error, fetchBattles, fetchArchivedBattles } = useBattleStore();
-  const { fetchRankings, seasons, currentSeason, fetchSeasons } = useRankingStore();
+  const { fetchRankings, currentSeason, fetchSeasons } = useRankingStore();
   const { user } = useAuthStore();
   
   // TabbedRanking handles its own limit
@@ -132,17 +132,10 @@ const BattlesPage: React.FC = () => {
     try {
       let battleList = [...(archivedBattles || [])];
 
-      // アクティブシーズンがない場合は、終了済みシーズンのうち最新のものに限定
-    if (!currentSeason && seasons && seasons.length > 0) {
-        const endedSeasons = seasons.filter(s => s.status === 'ended');
-        if (endedSeasons.length > 0) {
-          const latestEnded = endedSeasons.sort((a, b) => new Date(b.end_at).getTime() - new Date(a.end_at).getTime())[0];
-          battleList = battleList.filter(b => b.season_id === latestEnded.id);
-          // 票数（合計）で降順ソート
-      battleList.sort((a, b) => ((b.final_votes_a || 0) + (b.final_votes_b || 0)) - ((a.final_votes_a || 0) + (a.final_votes_b || 0)));
-      // この場合は以降の日時ソートはせずに返す
-      return battleList;
-        }
+      // アクティブシーズンがない場合は、シーズンに関係なく投票総数の降順で表示
+      if (!currentSeason) {
+        battleList.sort((a, b) => ((b.final_votes_a || 0) + (b.final_votes_b || 0)) - ((a.final_votes_a || 0) + (a.final_votes_b || 0)));
+        return battleList;
       }
 
       // MY BATTLES フィルター（アーカイブバトル用）
@@ -179,7 +172,7 @@ const BattlesPage: React.FC = () => {
       console.error('Error in filteredArchivedBattles:', error);
       return [];
     }
-  }, [archivedBattles, searchQuery, showMyBattlesOnly, user, sortBy, seasons, currentSeason]);
+  }, [archivedBattles, searchQuery, showMyBattlesOnly, user, sortBy, currentSeason]);
 
   // ページネーション用の計算
   const activeBattlesTotalItems = sortBy === 'completed' ? 0 : filteredBattles.length;
