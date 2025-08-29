@@ -15,9 +15,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@ffmpeg/core": "^0.12.10",
-    "@ffmpeg/ffmpeg": "^0.12.15",
-    "@ffmpeg/util": "^0.12.2",
+    "@cloudflare/stream-react": "^1.9.3",
     "@heroicons/react": "^2.2.0",
     "@radix-ui/react-slot": "^1.2.3",
     "@radix-ui/react-tabs": "^1.1.12",
@@ -45,6 +43,7 @@
     "stripe": "13.4.0",
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7",
+    "tus-js-client": "^4.3.1",
     "web-push": "^3.6.7",
     "zustand": "^4.5.2"
   },

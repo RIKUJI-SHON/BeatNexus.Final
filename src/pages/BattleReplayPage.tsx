@@ -10,8 +10,7 @@ import { ja, enUS } from 'date-fns/locale';
 import { cn } from '../lib/utils';
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '../store/authStore';
-import { OptimizedVideoPlayer } from '../components/ui/OptimizedVideoPlayer';
-import { getIOSCompatibleUrl } from '../utils/iosVideoMapping';
+import { HybridVideoPlayer } from '../components/ui/HybridVideoPlayer';
 import { VSIcon } from '../components/ui/VSIcon';
 import { ShareBattleButton } from '../components/ui/ShareBattleButton';
 import { trackBeatNexusEvents } from '../utils/analytics';
@@ -33,6 +32,7 @@ const BattleReplayPage: React.FC = () => {
   const [battle, setBattle] = useState<ArchivedBattle | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [streamIds, setStreamIds] = useState<{ a: string | null; b: string | null }>({ a: null, b: null });
   
   // URL パスからバトルIDを抽出（新旧両形式に対応）
   const id = useMemo(() => {
@@ -93,6 +93,26 @@ const BattleReplayPage: React.FC = () => {
       }
 
       setBattle(battleData);
+
+      // submissions から Stream Video ID を取得（存在すれば）
+      try {
+        const ids = [battleData.player1_submission_id, battleData.player2_submission_id].filter(Boolean) as string[];
+        if (ids.length > 0) {
+          const { data: subs, error: subsErr } = await supabase
+            .from('submissions')
+            .select('id, stream_video_id')
+            .in('id', ids);
+          if (!subsErr && subs) {
+            const map = new Map(subs.map((s) => [s.id, s.stream_video_id as string | null]));
+            setStreamIds({
+              a: map.get(battleData.player1_submission_id) ?? null,
+              b: map.get(battleData.player2_submission_id) ?? null,
+            });
+          }
+        }
+      } catch (e) {
+        console.warn('Failed to fetch stream ids for archived battle', e);
+      }
 
       // Track archived battle view event
       trackBeatNexusEvents.archivedBattleView(battleData.original_battle_id);
@@ -306,8 +326,14 @@ const BattleReplayPage: React.FC = () => {
 
   const resultBadge = getResultBadge();
 
+  // 再生状態の型
+  type UrlStatus = { available: true; videoUrl: string; streamId?: undefined };
+  type StreamStatus = { available: true; videoUrl: null; streamId: string };
+  type UnavailableStatus = { available: false; message: string; description: string };
+  type VideoStatus = UrlStatus | StreamStatus | UnavailableStatus;
+
   // 動画が利用可能かどうかを判定
-  const getVideoStatus = (videoUrl: string | null | undefined) => {
+  const getVideoStatus = (videoUrl: string | null | undefined): UrlStatus | UnavailableStatus => {
     if (!videoUrl) {
       return {
         available: false,
@@ -321,9 +347,13 @@ const BattleReplayPage: React.FC = () => {
       videoUrl: videoUrl
     };
   };
-
-  const player1VideoStatus = getVideoStatus(battle.player1_video_url);
-  const player2VideoStatus = getVideoStatus(battle.player2_video_url);
+  // Stream優先で再生可否を判定（フォールバックで従来URL）
+  const player1VideoStatus: VideoStatus = streamIds.a
+    ? { available: true, videoUrl: null, streamId: streamIds.a }
+    : getVideoStatus(battle.player1_video_url);
+  const player2VideoStatus: VideoStatus = streamIds.b
+    ? { available: true, videoUrl: null, streamId: streamIds.b }
+    : getVideoStatus(battle.player2_video_url);
 
   return (
     <>
@@ -508,17 +538,14 @@ const BattleReplayPage: React.FC = () => {
 
                     {/* Player A Video Preview */}
                     <div className={`aspect-video bg-black rounded-xl overflow-hidden relative shadow-2xl ${isAWinner ? 'border-4 border-cyan-400 shadow-cyan-400/80' : isBWinner ? 'border-2 opacity-60' : 'border-2'}`} style={{ borderColor: isAWinner ? '#22d3ee' : isBWinner ? '#6b7280' : playerColorA }}>
-                      {player1VideoStatus.available && player1VideoStatus.videoUrl ? (
-                        <OptimizedVideoPlayer
-                          videoUrl={player1VideoStatus.videoUrl}
-                          iosCompatUrl={getIOSCompatibleUrl(player1VideoStatus.videoUrl)}
-                          playerName="Player A"
-                          className=""
+                      {player1VideoStatus.available ? (
+                        <HybridVideoPlayer
+                          streamVideoId={'streamId' in player1VideoStatus ? player1VideoStatus.streamId : undefined}
+                          videoUrl={'videoUrl' in player1VideoStatus ? (player1VideoStatus.videoUrl ?? undefined) : undefined}
                           controls
-                          preload="metadata"
-                          isSecondVideo={false}
-                          onError={(errorInfo) => {
-                            console.error('Player A video error:', errorInfo);
+                          className="w-full h-full object-contain"
+                          onError={() => {
+                            console.error('Player A video error');
                           }}
                         />
                       ) : (
@@ -576,17 +603,14 @@ const BattleReplayPage: React.FC = () => {
 
                     {/* Player B Video Preview */}
                     <div className={`aspect-video bg-black rounded-xl overflow-hidden relative shadow-2xl ${isBWinner ? 'border-4 border-pink-400 shadow-pink-400/80' : isAWinner ? 'border-2 opacity-60' : 'border-2'}`} style={{ borderColor: isBWinner ? '#f472b6' : isAWinner ? '#6b7280' : playerColorB }}>
-                      {player2VideoStatus.available && player2VideoStatus.videoUrl ? (
-                        <OptimizedVideoPlayer
-                          videoUrl={player2VideoStatus.videoUrl}
-                          iosCompatUrl={getIOSCompatibleUrl(player2VideoStatus.videoUrl)}
-                          playerName="Player B"
-                          className=""
+                      {player2VideoStatus.available ? (
+                        <HybridVideoPlayer
+                          streamVideoId={'streamId' in player2VideoStatus ? player2VideoStatus.streamId : undefined}
+                          videoUrl={'videoUrl' in player2VideoStatus ? (player2VideoStatus.videoUrl ?? undefined) : undefined}
                           controls
-                          preload="metadata"
-                          isSecondVideo={true}
-                          onError={(errorInfo) => {
-                            console.error('Player B video error:', errorInfo);
+                          className="w-full h-full object-contain"
+                          onError={() => {
+                            console.error('Player B video error');
                           }}
                         />
                       ) : (

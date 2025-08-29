@@ -202,3 +202,70 @@ export const isValidVideoUrl = (url: string): boolean => {
   const videoExtensions = /\.(mp4|webm|mov|m4v)$/i;
   return videoExtensions.test(url) || url.includes('blob:');
 };
+
+/**
+ * 動画の長さを取得する関数
+ * @param file ビデオファイル
+ * @returns Promise<number> 動画の長さ（秒）
+ */
+export const getVideoDuration = (file: File): Promise<number> => {
+  return new Promise((resolve, reject) => {
+    const video = document.createElement('video');
+    video.preload = 'metadata';
+    
+    video.onloadedmetadata = () => {
+      window.URL.revokeObjectURL(video.src);
+      resolve(video.duration);
+    };
+    
+    video.onerror = () => {
+      window.URL.revokeObjectURL(video.src);
+      reject(new Error('動画の読み込みに失敗しました'));
+    };
+    
+    video.src = window.URL.createObjectURL(file);
+  });
+};
+
+/**
+ * バトル形式に対して動画の長さが有効かどうかをチェック
+ * @param duration 動画の長さ（秒）
+ * @param battleFormat バトル形式
+ * @returns boolean 有効な長さかどうか
+ */
+export const isValidDuration = (duration: number, battleFormat: string): boolean => {
+  switch (battleFormat) {
+    case 'lyrical_legend':
+      return duration >= 60 && duration <= 90;
+    case 'punchline_pro':
+      return duration >= 30 && duration <= 60;
+    case 'melodic_master':
+      return duration >= 60 && duration <= 120;
+    case 'flow_finesse':
+      return duration >= 45 && duration <= 75;
+    default:
+      return false;
+  }
+};
+
+/**
+ * 動画の長さエラーメッセージを取得
+ * @param duration 動画の長さ（秒）
+ * @param battleFormat バトル形式
+ * @param t 翻訳関数
+ * @returns エラーメッセージ
+ */
+export const getDurationErrorMessage = (duration: number, battleFormat: string, t: (key: string, params?: Record<string, unknown>) => string): string => {
+  const formatRanges: Record<string, string> = {
+    'lyrical_legend': '60-90',
+    'punchline_pro': '30-60',
+    'melodic_master': '60-120',
+    'flow_finesse': '45-75'
+  };
+  
+  const range = formatRanges[battleFormat] || '30-120';
+  return t('postPage.errors.invalidDuration', { 
+    current: Math.round(duration), 
+    required: range 
+  });
+};

@@ -44,7 +44,7 @@ export default defineConfig({
     // })
   ],
   optimizeDeps: {
-    exclude: ['lucide-react', '@ffmpeg/ffmpeg', '@ffmpeg/util'],
+    exclude: ['lucide-react'],
     include: ['void-elements', 'html-parse-stringify'],
     esbuildOptions: {
       // CommonJSパッケージのサポート強化

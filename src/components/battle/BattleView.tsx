@@ -17,10 +17,10 @@ import { generateBattleUrl } from '../../utils/battleUrl';
 
 import { supabase } from '../../lib/supabase';
 import { getDefaultAvatarUrl } from '../../utils';
-import { isIOSDevice, getOptimalPreloadSetting } from '../../utils/videoSupport';
-import { OptimizedVideoPlayer } from '../ui/OptimizedVideoPlayer';
+import { isIOSDevice } from '../../utils/videoSupport';
+import { HybridVideoPlayer } from '../ui/HybridVideoPlayer';
 import { useIntersectionObserver } from '../../hooks/useIntersectionObserver';
-import { getIOSCompatibleUrl } from '../../utils/iosVideoMapping';
+// import { getIOSCompatibleUrl } from '../../utils/iosVideoMapping';
 
 interface BattleViewProps {
   battle: Battle;
@@ -566,17 +566,14 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                 {/* Player A Video Preview */}
                 <div ref={playerARef} className="aspect-video bg-black rounded-xl overflow-hidden relative shadow-2xl border-2" style={{ borderColor: playerColorA }}>
                   {playerAVideoLoaded ? (
-                    <OptimizedVideoPlayer
+                    <HybridVideoPlayer
+                      streamVideoId={battle.stream_video_id_a}
                       videoUrl={battle.video_url_a}
-                      iosCompatUrl={getIOSCompatibleUrl(battle.video_url_a || '')}
-                      playerName="Player A"
-                      className=""
                       controls
-                      preload={getOptimalPreloadSetting()}
+                      className="w-full h-full object-contain"
                       muted={isIOSDevice()}
-                      isSecondVideo={false}
-                      onError={(errorInfo) => {
-                        console.error('Player A video error:', errorInfo);
+                      onError={() => {
+                        console.error('Player A video error');
                       }}
                     />
                   ) : (
@@ -635,19 +632,14 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                 {/* Player B Video Preview */}
                 <div ref={playerBRef} className="aspect-video bg-black rounded-xl overflow-hidden relative shadow-2xl border-2" style={{ borderColor: playerColorB }}>
                   {playerBVideoLoaded ? (
-                    <OptimizedVideoPlayer
+                    <HybridVideoPlayer
+                      streamVideoId={battle.stream_video_id_b}
                       videoUrl={battle.video_url_b}
-                      iosCompatUrl={getIOSCompatibleUrl(battle.video_url_b || '')}
-                      playerName="Player B"
-                      className=""
                       controls
-                      preload={isIOSDevice() ? 'none' : getOptimalPreloadSetting()} // iOS環境ではPlayer Bは手動読み込み
+                      className="w-full h-full object-contain"
                       muted={isIOSDevice()}
-                      isSecondVideo={true} // Player BはiOS環境で制限される
-                      onError={(errorInfo) => {
-                        console.error('Player B video error:', errorInfo);
-                        console.log('🔄 Attempting iOS-specific recovery for Player B...');
-                        // iOS特有のエラー時復旧処理を将来実装予定
+                      onError={() => {
+                        console.error('Player B video error');
                       }}
                     />
                   ) : (

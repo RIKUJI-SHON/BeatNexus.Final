@@ -7,11 +7,11 @@ import { useAuthStore } from '../store/authStore';
 import { supabase } from '../lib/supabase';
 import { useTranslation } from 'react-i18next';
 import { useSubmissionCooldown } from '../hooks/useSubmissionCooldown';
+import { useStreamUpload } from '../hooks/useStreamUpload';
 import { useSubmissionStatus } from '../hooks/useSubmissionStatus';
 import { trackBeatNexusEvents } from '../utils/analytics';
 import SubmissionModal from '../components/ui/SubmissionModal';
 import { MonthlyLimitCard } from '../components/ui/SubmissionCooldownCard';
-import { useStreamUpload } from '../hooks/useStreamUpload';
 
 // Maximum file size in bytes (2GB - 大容量動画対応強化)
 const MAX_FILE_SIZE = 2 * 1024 * 1024 * 1024;
@@ -104,7 +104,8 @@ const PostPage: React.FC = () => {
   const { t } = useTranslation();
   const { canSubmit, remainingTime, cooldownInfo, refreshCooldown } = useSubmissionCooldown();
   const { submissionStatus } = useSubmissionStatus();
-  const { uploadVideo } = useStreamUpload();
+  // Stream アップロード
+  const { uploadToStream, isUploading: isStreamUploading, progress: streamProgress, error: streamError } = useStreamUpload();
   
   // 投稿モーダルの状態
   const [isSubmissionModalOpen, setIsSubmissionModalOpen] = useState(false);
@@ -112,7 +113,17 @@ const PostPage: React.FC = () => {
   const [submissionStage, setSubmissionStage] = useState<string>('');
   const [submissionError, setSubmissionError] = useState<string | null>(null);
   const [isSubmissionProcessing, setIsSubmissionProcessing] = useState(false);
-  
+
+  // モーダル表示用の総合進捗を計算
+  const getModalProgress = () => {
+    return submissionProgress;
+  };
+
+  // モーダル表示用のステージメッセージを計算
+  const getModalStage = () => {
+    return submissionStage;
+  };
+
   // Redirect if not authenticated
   if (!user) {
     navigate('/');
@@ -155,26 +166,27 @@ const PostPage: React.FC = () => {
       setError(err instanceof Error ? err.message : t('postPage.errors.videoProcessingFailed'));
     }
   };
-
+  
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     setIsDragging(true);
   };
-
+  
   const handleDragLeave = () => {
     setIsDragging(false);
   };
-
+  
   const handleDrop = async (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     setIsDragging(false);
-    const file = e.dataTransfer.files[0];
+    
+    const file = e.dataTransfer.files?.[0];
+    
     if (file && file.type.startsWith('video/')) {
-      setVideoFile(file);
       await processVideoFile(file);
     }
   };
-
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -209,24 +221,107 @@ const PostPage: React.FC = () => {
         return;
       }
       
-      const finalVideoFile = videoFile;
+      let finalVideoFile = videoFile;
       
-      // ファイルサイズチェック
-      if (videoFile.size > MAX_FILE_SIZE) {
-        setSubmissionError(t('postPage.errors.fileTooBig', { current: (videoFile.size / 1024 / 1024).toFixed(1) }));
-        setIsSubmissionProcessing(false);
-        return;
-      }
+      // ⭐ 圧縮閾値を大幅に引き下げ（10MB以上は全て圧縮）
+      const compressionThreshold = 10 * 1024 * 1024; // 10MB（iOS最適化強化）
       
+      // Stream Direct Upload（圧縮処理を削除し、直接アップロード）
       setSubmissionStage(t('submissionModal.uploading'));
-      setSubmissionProgress(65);
-
-      let publicUrl: string | null = null;
-      let streamVideoId: string | null = null;
+      setSubmissionProgress(10);
       
       try {
-        console.log(`🔄 Starting Stream upload for ${videoFile.name}`);
-        streamVideoId = await uploadVideo(videoFile, battleFormat);
+        const originalSizeMB = videoFile.size / 1024 / 1024;
+        console.log(`🔄 Starting Stream upload for ${videoFile.name} (${originalSizeMB.toFixed(1)}MB)`);
+        
+        // 直接Streamにアップロード
+        finalVideoFile = videoFile;
+          
+          // Blobの場合はFileに変換
+          if (processedResult instanceof File) {
+            finalVideoFile = processedResult;
+          } else {
+            // BlobをFileに変換
+            const fileName = videoFile.name.replace(/\.[^/.]+$/, '') + '_compressed.mp4';
+            finalVideoFile = new File([processedResult], fileName, { type: 'video/mp4' });
+          }
+          
+          const compressedSizeMB = finalVideoFile.size / 1024 / 1024;
+          const reductionPercent = ((1 - finalVideoFile.size / videoFile.size) * 100).toFixed(1);
+          
+          console.log(`✅ Enhanced compression completed:`, {
+            originalSize: originalSizeMB.toFixed(1) + 'MB',
+            compressedSize: compressedSizeMB.toFixed(1) + 'MB',
+            reduction: reductionPercent + '%'
+          });
+          
+          // iOS向け最終チェック（50MB以下を推奨）
+          if (compressedSizeMB > 50) {
+            console.warn(`⚠️ File size (${compressedSizeMB.toFixed(1)}MB) may cause issues on iOS devices`);
+            setSubmissionStage(t('submissionModal.warnings.largeFileIos'));
+          }
+          
+          // 圧縮後のファイルサイズチェック
+          if (finalVideoFile.size > MAX_FILE_SIZE) {
+            setSubmissionError(t('postPage.errors.fileTooBig', { current: (finalVideoFile.size / 1024 / 1024).toFixed(1) }));
+            setIsSubmissionProcessing(false);
+            return;
+          }
+          
+          // 圧縮完了、投稿段階に移行
+          setSubmissionProgress(50);
+          setIsCompressing(false); // 圧縮完了
+          setSubmissionStage(t('submissionModal.uploading')); // 次の段階を明示
+        } catch (compressionError) {
+          console.error('Compression error:', compressionError);
+          setSubmissionError(compressionError instanceof Error ? compressionError.message : t('postPage.errors.videoProcessingFailed'));
+          setIsSubmissionProcessing(false);
+          setIsCompressing(false); // エラー時も圧縮状態をリセット
+          return;
+        }
+      } else {
+        // 10MB未満でもiOS最適化のため軽い圧縮を適用
+        console.log(`📦 File size (${(videoFile.size / 1024 / 1024).toFixed(1)}MB) is below threshold, applying light compression for iOS optimization...`);
+        
+        try {
+          setSubmissionStage(t('submissionModal.lightCompression'));
+          setSubmissionProgress(25);
+          setIsCompressing(true);
+          
+          const processedResult = await processVideo(videoFile);
+          
+          if (processedResult instanceof File) {
+            finalVideoFile = processedResult;
+          } else {
+            const fileName = videoFile.name.replace(/\.[^/.]+$/, '') + '_optimized.mp4';
+            finalVideoFile = new File([processedResult], fileName, { type: 'video/mp4' });
+          }
+          
+          console.log(`✅ Light compression applied: ${(finalVideoFile.size / 1024 / 1024).toFixed(1)}MB`);
+          setIsCompressing(false);
+        } catch (error) {
+          console.log('Light compression failed, using original file:', error);
+          // 軽い圧縮に失敗した場合は元のファイルを使用
+          setIsCompressing(false);
+        }
+        
+        // 最終サイズチェック
+        if (finalVideoFile.size > MAX_FILE_SIZE) {
+          setSubmissionError(t('postPage.errors.fileTooBig', { current: (finalVideoFile.size / 1024 / 1024).toFixed(1) }));
+          setIsSubmissionProcessing(false);
+          return;
+        }
+        setSubmissionProgress(50);
+      }
+      
+      // Upload: Cloudflare Stream 優先、失敗時は従来Supabaseにフォールバック
+      setSubmissionStage(t('submissionModal.uploading'));
+      setSubmissionProgress(60);
+      let publicUrl: string | null = null;
+      let streamVideoId: string | null = null;
+      try {
+        const streamRes = await uploadToStream(finalVideoFile, { name: finalVideoFile.name });
+        streamVideoId = streamRes.streamVideoId;
         setSubmissionStage('Cloudflare Stream: Upload completed');
         setSubmissionProgress(75);
       } catch (e) {
@@ -234,7 +329,7 @@ const PostPage: React.FC = () => {
         setSubmissionStage('Falling back to Supabase Storage');
         setSubmissionProgress(65);
 
-        const fileExt = videoFile.name.split('.').pop();
+        const fileExt = finalVideoFile.name.split('.').pop();
         const fileName = `${crypto.randomUUID()}.${fileExt}`;
         const filePath = `${user.id}/${fileName}`;
 
@@ -255,12 +350,12 @@ const PostPage: React.FC = () => {
       setSubmissionProgress(80);
 
       // Create submission record with cooldown check
-      const { data: submissionResult, error: submissionError } = await supabase
+    const { data: submissionResult, error: submissionError } = await supabase
         .rpc('create_submission_with_cooldown_check', {
           p_user_id: user.id,
-          p_video_url: publicUrl,
-          p_battle_format: battleFormat,
-          p_stream_video_id: streamVideoId
+      p_video_url: publicUrl, // Stream成功時は関数側でCloudflare MP4へ置換
+      p_battle_format: battleFormat,
+      p_stream_video_id: streamVideoId
         });
 
       if (submissionError) {
@@ -318,9 +413,22 @@ const PostPage: React.FC = () => {
       console.log('Webhook response headers:', Object.fromEntries(webhookResponse.headers.entries()));
 
       if (!webhookResponse.ok) {
+        const errorText = await webhookResponse.text();
         console.error('Webhook failed with status:', webhookResponse.status);
+        console.error('Webhook error response:', errorText);
         
-        const errorMessage = `Webhook call failed (${webhookResponse.status})`;
+        let errorMessage = `Webhook call failed (${webhookResponse.status})`;
+        try {
+          const errorData = JSON.parse(errorText);
+          errorMessage = errorData.error || errorData.message || errorMessage;
+          if (errorData.error_details) {
+            console.error('Detailed error:', errorData.error_details);
+            errorMessage += `\n詳細: ${errorData.error_details.name || 'Unknown'}`;
+          }
+        } catch {
+          errorMessage += `\nレスポンス: ${errorText}`;
+        }
+        
         throw new Error(errorMessage);
       }
 
@@ -365,7 +473,7 @@ const PostPage: React.FC = () => {
       
     } catch (err) {
       console.error('Submission error:', err);
-      setSubmissionError(err instanceof Error ? err.message : t('submissionModal.genericError'));
+  setSubmissionError(err instanceof Error ? err.message : t('submissionModal.genericError'));
       setIsSubmissionProcessing(false);
     }
   };
@@ -567,6 +675,8 @@ const PostPage: React.FC = () => {
                         <Video className="h-4 w-4 mr-2" />
                         {videoFile?.name} ({Math.round((videoFile?.size || 0) / 1024 / 1024 * 10) / 10} MB)
                       </div>
+                      
+                      {/* 圧縮進行状況表示 */}
                     </div>
 
                     {/* エラー表示（プレビューステップ） */}
@@ -938,14 +1048,16 @@ const PostPage: React.FC = () => {
         onClose={() => setIsSubmissionModalOpen(false)}
         videoFile={videoFile}
         videoPreviewUrl={videoPreviewUrl}
-        stage={submissionStage}
-        progress={submissionProgress}
+        stage={getModalStage()} // 詳細ステージを使用
+        stageKey={isCompressing ? (progress < 50 ? 'compressing' : 'lightCompression') : submissionStage}
+        progress={getModalProgress()} // 統合された進捗値を使用
         isProcessing={isSubmissionProcessing}
         error={submissionError}
         onCancel={() => {
           setIsSubmissionModalOpen(false);
           setIsSubmissionProcessing(false);
           setSubmissionError(null);
+          setIsCompressing(false);
         }}
       />
     </div>

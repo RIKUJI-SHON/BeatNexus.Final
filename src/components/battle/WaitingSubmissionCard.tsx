@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Clock, Video, AlertCircle, X, Play, Search, Timer } from 'lucide-react';
+import { Video, AlertCircle, X, Play, Search, Timer } from 'lucide-react';
 import { Card } from '../ui/Card';
 import { Button } from '../ui/Button';
 import { type Submission } from '../../store/submissionStore';
@@ -19,6 +19,25 @@ export const WaitingSubmissionCard: React.FC<WaitingSubmissionCardProps> = ({
   const [withdrawing, setWithdrawing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [thumbnailError, setThumbnailError] = useState(false);
+
+  // プレビュー用ソースを決定（Supabase URL優先→Stream preview→Stream thumbnail→なし）
+  const getPreview = () => {
+    if (submission.video_url) {
+      return { kind: 'video' as const, src: submission.video_url };
+    }
+    if (submission.stream_preview_url) {
+      return { kind: 'video' as const, src: submission.stream_preview_url };
+    }
+    if (submission.stream_thumbnail_url) {
+      return { kind: 'image' as const, src: submission.stream_thumbnail_url };
+    }
+    if (submission.stream_video_id) {
+      // Cloudflare標準サムネイル
+      return { kind: 'image' as const, src: `https://videodelivery.net/${submission.stream_video_id}/thumbnails/thumbnail.jpg` };
+    }
+    return { kind: 'none' as const, src: '' };
+  };
+  const preview = getPreview();
 
   const handleWithdraw = async () => {
     if (!confirm(t('myBattlesPage.waitingSubmissionCard.withdrawConfirm'))) return;
@@ -62,14 +81,23 @@ export const WaitingSubmissionCard: React.FC<WaitingSubmissionCardProps> = ({
           {/* Video Thumbnail */}
           <div className="flex-shrink-0">
             <div className="w-32 h-20 rounded-xl overflow-hidden bg-gray-800 relative shadow-lg border border-gray-700/50">
-              {!thumbnailError ? (
-                <video
-                  src={submission.video_url}
-                  className="w-full h-full object-cover"
-                  preload="metadata"
-                  muted
-                  onError={() => setThumbnailError(true)}
-                />
+              {!thumbnailError && preview.kind !== 'none' ? (
+                preview.kind === 'video' ? (
+                  <video
+                    src={preview.src}
+                    className="w-full h-full object-cover"
+                    preload="metadata"
+                    muted
+                    onError={() => setThumbnailError(true)}
+                  />
+                ) : (
+                  <img
+                    src={preview.src}
+                    className="w-full h-full object-cover"
+                    alt="thumbnail"
+                    onError={() => setThumbnailError(true)}
+                  />
+                )
               ) : (
                 <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-800 to-gray-900">
                   <Video className="h-8 w-8 text-gray-600" />
@@ -107,7 +135,12 @@ export const WaitingSubmissionCard: React.FC<WaitingSubmissionCardProps> = ({
             {/* Action Area */}
             <div className="flex items-center justify-between">
               <div className="text-xs text-gray-500 truncate max-w-[200px] bg-gray-800/30 px-2 py-1 rounded-lg">
-                📁 {submission.video_url.split('/').pop()?.split('?')[0] || ''}
+                {(() => {
+                  const labelFromUrl = submission.video_url ? submission.video_url.split('/').pop()?.split('?')[0] : '';
+                  const labelFromStream = submission.stream_video_id ? `stream:${submission.stream_video_id.slice(0, 8)}...` : '';
+                  const label = labelFromUrl || labelFromStream || 'no-media';
+                  return <>📁 {label}</>;
+                })()}
               </div>
               
               <Button

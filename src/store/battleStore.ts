@@ -3,7 +3,7 @@ import { Battle, ArchivedBattle, WaitingSubmission, BattleFormat, BattleComment,
 
 // 内部利用のRaw型定義（DBクエリ結果簡易形）
 interface RawBattle { id: string; player1_submission_id: string; player2_submission_id: string; battle_format: BattleFormat; status: string; votes_a: number | null; votes_b: number | null; end_voting_at: string; created_at: string; updated_at?: string; }
-interface RawSubmission { id: string; user_id: string; video_url: string; }
+interface RawSubmission { id: string; user_id: string; video_url: string | null; stream_video_id?: string | null; }
 interface RawProfile { id: string; username: string; avatar_url: string | null; }
 import { supabase } from '../lib/supabase';
 import { toast } from './toastStore';
@@ -164,7 +164,7 @@ export const useBattleStore = create<BattleState>((set, get) => ({
       // Step 3: submissionsデータを取得
       const { data: submissionsData, error: submissionsError } = await supabase
         .from('submissions')
-        .select('id, user_id, video_url')
+        .select('id, user_id, video_url, stream_video_id')
         .in('id', submissionIds);
 
       if (submissionsError) {
@@ -231,8 +231,10 @@ export const useBattleStore = create<BattleState>((set, get) => ({
           end_voting_at: battle.end_voting_at,
           created_at: battle.created_at,
           updated_at: battle.updated_at || battle.created_at,
-          video_url_a: player1Submission?.video_url,
-          video_url_b: player2Submission?.video_url,
+          video_url_a: player1Submission?.video_url || undefined,
+          video_url_b: player2Submission?.video_url || undefined,
+          stream_video_id_a: (player1Submission as RawSubmission | undefined)?.stream_video_id || undefined,
+          stream_video_id_b: (player2Submission as RawSubmission | undefined)?.stream_video_id || undefined,
           current_user_voted: votedBattleIds.has(battle.id)
         };
 
@@ -389,8 +391,10 @@ export const useBattleStore = create<BattleState>((set, get) => ({
           end_voting_at: battle.end_voting_at,
           created_at: battle.created_at,
           updated_at: battle.updated_at || battle.created_at,
-          video_url_a: player1Submission?.video_url,
-          video_url_b: player2Submission?.video_url,
+          video_url_a: player1Submission?.video_url || undefined,
+          video_url_b: player2Submission?.video_url || undefined,
+          stream_video_id_a: player1Submission?.stream_video_id || undefined,
+          stream_video_id_b: player2Submission?.stream_video_id || undefined,
           current_user_voted: votedBattleIds2.has(battle.id)
         };
         if (player1) obj.contestant_a = { username: player1.username, avatar_url: player1.avatar_url };

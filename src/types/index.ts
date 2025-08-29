@@ -42,6 +42,9 @@ export interface Battle {
   };
   video_url_a?: string;
   video_url_b?: string;
+  // Stream 再生用（新規）
+  stream_video_id_a?: string;
+  stream_video_id_b?: string;
   is_archived?: boolean;
   winner_id?: string | null;
   player1_rating_change?: number | null;
