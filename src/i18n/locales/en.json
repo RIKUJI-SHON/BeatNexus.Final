@@ -669,6 +669,22 @@
           "answer": "BeatNexus aims for a healthy community with responsibility by removing voting anonymity and making public who voted for whom."
         }
       },
+      "announcement": {
+          "badge": "Announcement",
+          "title": {
+            "season1": "Season 1",
+            "rest": "starts in early September"
+          },
+          "subtitle": "Now live (public). Join the new era.",
+          "stats": {
+            "totalUsers": "Total users (cumulative)",
+            "totalSubmissions": "Submissions (cumulative)",
+            "totalVotes": "Votes (cumulative)"
+          },
+          "cta": {
+            "joinNow": "Join now"
+          }
+      },
       "closing": {
         "title": {
           "history": "At the beginning of history,",

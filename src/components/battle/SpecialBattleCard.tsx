@@ -159,7 +159,7 @@ export const SpecialBattleCard: React.FC<SpecialBattleCardProps> = ({ battle }) 
         </div>
       </div>
       <h3 
-        className="text-base sm:text-xl font-bold text-white mb-2 truncate max-w-[90px] sm:max-w-[120px] md:max-w-[140px] mx-auto" 
+        className="text-base sm:text-xl font-bold text白 mb-2 truncate max-w-[90px] sm:max-w-[120px] md:max-w-[140px] mx-auto" 
         title={player?.username || t('battleCard.unknownUser')}
       >
         {player?.username || t('battleCard.unknownUser')}

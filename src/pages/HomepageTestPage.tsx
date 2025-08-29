@@ -12,8 +12,12 @@ import { TopThreePodium } from '../components/ui/TopThreePodium';
 import { AuthModal } from '../components/auth/AuthModal';
 import { useCanonicalUrl, useDynamicMeta } from '../hooks/useSEO';
 import { supabase } from '../lib/supabase';
-import { Season, HistoricalSeasonRanking } from '../types';
+import { Season, HistoricalSeasonRanking, Battle } from '../types';
 import { useAuthStore } from '../store/authStore';
+import { useBattleStore } from '../store/battleStore';
+import { BattleCard } from '../components/battle/BattleCard';
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from '../components/ui/carousel';
+import { getBattleUrlFromBattle } from '../utils/battleUrl';
 import BattlesPage from './BattlesPage';
 import { useTranslation } from 'react-i18next';
 import { AdSlot } from '../components/ads/AdSlot';
@@ -31,6 +35,7 @@ const HomepageTestPage: React.FC = () => {
   const { user } = useAuthStore();
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { archivedBattles, fetchArchivedBattles, loading: archivedLoading } = useBattleStore();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authModalMode, setAuthModalMode] = useState<'login' | 'signup' | 'resetPassword' | 'setNewPassword'>('signup');
   const [latestEndedSeason, setLatestEndedSeason] = useState<Season | null>(null);
@@ -40,8 +45,11 @@ const HomepageTestPage: React.FC = () => {
   const [statsData, setStatsData] = useState({
     totalBattles: 0,
     totalVotes: 0,
+    totalUsers: 0,
+    totalSubmissions: 0,
     loading: true
   });
+  const [carouselApi, setCarouselApi] = useState<CarouselApi | null>(null);
 
   // SEO設定
   useCanonicalUrl({
@@ -144,7 +152,7 @@ const HomepageTestPage: React.FC = () => {
     fetchLatestSeasonRankings();
   }, []);
 
-  // 統計データを取得
+  // 統計データを取得（β Season 0 実績表示用：累計の概数）
   useEffect(() => {
     const fetchStatsData = async () => {
       try {
@@ -169,9 +177,24 @@ const HomepageTestPage: React.FC = () => {
 
         const totalVotes = (activeBattleVotes || 0) + (archivedBattleVotes || 0);
 
+        // 総ユーザー数（profilesの有効ユーザー）
+        const { count: profilesCount, error: profilesError } = await supabase
+          .from('profiles')
+          .select('*', { count: 'exact', head: true })
+          .neq('is_deleted', true);
+        if (profilesError) throw profilesError;
+
+        // 総投稿数（submissions）
+        const { count: submissionsCount, error: submissionsError } = await supabase
+          .from('submissions')
+          .select('*', { count: 'exact', head: true });
+        if (submissionsError) throw submissionsError;
+
         setStatsData({
           totalBattles: battleCount || 0,
           totalVotes: totalVotes,
+          totalUsers: profilesCount || 0,
+          totalSubmissions: submissionsCount || 0,
           loading: false
         });
       } catch (error) {
@@ -182,6 +205,72 @@ const HomepageTestPage: React.FC = () => {
 
     fetchStatsData();
   }, []);
+
+  // アーカイブ上位（投票数順）取得（Hero内カルーセル用）
+  useEffect(() => {
+    // 既にロード済みでも軽いので呼び出し許容
+    fetchArchivedBattles().catch((e) => console.warn('fetchArchivedBattles failed:', e));
+  }, [fetchArchivedBattles]);
+
+  const topArchivedByVotes = React.useMemo(() => {
+    if (!archivedBattles || archivedBattles.length === 0) return [] as typeof archivedBattles;
+    return [...archivedBattles]
+      .sort((a, b) => (b.final_votes_a + b.final_votes_b) - (a.final_votes_a + a.final_votes_b))
+      .slice(0, 10);
+  }, [archivedBattles]);
+
+  // アクティブカードデザインで表示するための変換（クリックはリプレイへ）
+  const topArchivedAsActiveBattles = React.useMemo(() => {
+    return topArchivedByVotes.map<Battle>((a) => ({
+      id: a.original_battle_id,
+      created_at: a.created_at,
+      end_voting_at: a.archived_at, // 過去日時 → VOTING ENDED 表示
+      player1_submission_id: a.player1_submission_id,
+      player2_submission_id: a.player2_submission_id,
+      player1_user_id: a.player1_user_id,
+      player2_user_id: a.player2_user_id,
+      contestant_a_id: a.player1_user_id,
+      contestant_b_id: a.player2_user_id,
+      status: 'COMPLETED',
+      votes_a: a.final_votes_a,
+      votes_b: a.final_votes_b,
+      battle_format: a.battle_format,
+      updated_at: a.updated_at,
+      contestant_a: a.contestant_a,
+      contestant_b: a.contestant_b,
+      is_archived: false, // デザインはアクティブ表示にする
+      winner_id: a.winner_id,
+      player1_rating_change: a.player1_rating_change,
+      player2_rating_change: a.player2_rating_change,
+      player1_final_rating: a.player1_final_rating,
+      player2_final_rating: a.player2_final_rating,
+      video_url_a: a.player1_video_url ?? undefined,
+      video_url_b: a.player2_video_url ?? undefined,
+    }));
+  }, [topArchivedByVotes]);
+
+  // カルーセル自動スクロール（ずっと横に流れる & ループ）
+  useEffect(() => {
+    if (!carouselApi) return;
+    let raf: number | null = null;
+    let lastTime = 0;
+    const intervalMs = 2800; // スライド間隔
+
+  const tick = (ts: number) => {
+      if (!lastTime) lastTime = ts;
+      const diff = ts - lastTime;
+      if (diff >= intervalMs) {
+    // ループ有効のため末尾でも自動で先頭に戻る
+    carouselApi.scrollNext();
+        lastTime = ts;
+      }
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => {
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, [carouselApi]);
 
   const handleJoinNow = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -272,6 +361,8 @@ const HomepageTestPage: React.FC = () => {
         </div>
       </section>
 
+      
+
       {/* 1. ファーストビュー：瞬時に訪問者の心を掴む */}
       <section className="relative py-20 flex items-center justify-center overflow-hidden">
         {/* 背景画像削除: グラデーションのみ */}
@@ -294,6 +385,133 @@ const HomepageTestPage: React.FC = () => {
           <p className="text-lg md:text-xl text-gray-400 animate-fade-in-delay-3">
             {t('home.landingPage.hero.subtitle')}
           </p>
+        </div>
+      </section>
+
+      {/* Hero直下：アーカイブバトル上位カルーセル（投票数順） */}
+      <section className="py-10 bg-gradient-to-b from-black/0 to-black/0">
+        <div className="w-full max-w-none px-2 sm:px-6 lg:px-10">
+          <div className="mb-4 text-sm text-gray-400 sr-only">Archived Top Battles</div>
+          {archivedLoading && topArchivedAsActiveBattles.length === 0 ? (
+            <div className="text-center text-gray-400">Loading…</div>
+          ) : topArchivedAsActiveBattles.length > 0 ? (
+            <div className="relative">
+              <Carousel className="w-full" opts={{ align: 'start', loop: true, dragFree: true }} setApi={setCarouselApi}>
+                <CarouselContent>
+                  {topArchivedAsActiveBattles.map((battle) => (
+                    <CarouselItem key={battle.id} className="pl-8 basis-[95%] sm:basis-[70%] md:basis-[60%] lg:basis-1/2 xl:basis-[45%] 2xl:basis-[40%]">
+                      <div className="relative p-2 sm:p-3 md:p-4">
+                        {/* クリックオーバーレイ（常にリプレイに遷移） */}
+                        <div
+                          className="absolute inset-0 z-10 cursor-pointer"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            const slug = getBattleUrlFromBattle(battle);
+                            navigate(`/battle-replay/${slug}`);
+                          }}
+                        />
+                        <div className="relative z-0 origin-center mx-auto py-1">
+                          <BattleCard battle={battle} />
+                        </div>
+                      </div>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <CarouselPrevious className="-left-2 sm:-left-4 top-1/2 -translate-y-1/2 bg-gray-800/70 border-gray-700 hover:bg-gray-700">
+                  <span className="sr-only">Previous</span>
+                </CarouselPrevious>
+                <CarouselNext className="-right-2 sm:-right-4 top-1/2 -translate-y-1/2 bg-gray-800/70 border-gray-700 hover:bg-gray-700">
+                  <span className="sr-only">Next</span>
+                </CarouselNext>
+              </Carousel>
+            </div>
+          ) : (
+            <div className="text-center text-gray-500">No archived battles yet.</div>
+          )}
+        </div>
+      </section>
+
+      {/* Season Announcement & Beta Stats (moved below Hero) */}
+      <section className="py-16 bg-gradient-to-b from-gray-900 to-black">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="text-center mb-10">
+            <span className="inline-block px-3 py-1 text-xs font-semibold rounded-full bg-cyan-500/10 text-cyan-300 border border-cyan-400/30 mb-4">
+              {t('home.landingPage.announcement.badge')}
+            </span>
+            <h2 className="text-3xl md:text-4xl font-bold mb-3">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400">{t('home.landingPage.announcement.title.season1')}</span> {t('home.landingPage.announcement.title.rest')}
+            </h2>
+            <p className="text-gray-300">{t('home.landingPage.announcement.subtitle')}</p>
+          </div>
+
+          <div className="grid sm:grid-cols-3 gap-6">
+            <Card className="bg-gray-800/60 border-gray-700 p-6">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-lg bg-cyan-500/20 border border-cyan-400/20 flex items-center justify-center overflow-hidden">
+                  <img
+                    src="/images/Profile.png"
+                    alt={t('home.landingPage.announcement.stats.totalUsers')}
+                    className="w-8 h-8 object-contain"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </div>
+                <div>
+                  <p className="text-sm text-gray-400">{t('home.landingPage.announcement.stats.totalUsers')}</p>
+                  <p className="text-2xl font-bold text-white">{statsData.loading ? '—' : statsData.totalUsers.toLocaleString()}</p>
+                </div>
+              </div>
+            </Card>
+            <Card className="bg-gray-800/60 border-gray-700 p-6">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-lg bg-purple-500/20 border border-purple-400/20 flex items-center justify-center overflow-hidden">
+                  <img
+                    src="/images/VS.png"
+                    alt={t('home.landingPage.announcement.stats.totalSubmissions')}
+                    className="w-8 h-8 object-contain"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </div>
+                <div>
+                  <p className="text-sm text-gray-400">{t('home.landingPage.announcement.stats.totalSubmissions')}</p>
+                  <p className="text-2xl font-bold text-white">{statsData.loading ? '—' : statsData.totalSubmissions.toLocaleString()}</p>
+                </div>
+              </div>
+            </Card>
+            <Card className="bg-gray-800/60 border-gray-700 p-6">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-lg bg-amber-500/20 border border-amber-400/20 flex items-center justify-center overflow-hidden">
+                  <img
+                    src="/images/onboarding/judge.png"
+                    alt={t('home.landingPage.announcement.stats.totalVotes')}
+                    className="w-8 h-8 object-contain"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </div>
+                <div>
+                  <p className="text-sm text-gray-400">{t('home.landingPage.announcement.stats.totalVotes')}</p>
+                  <p className="text-2xl font-bold text-white">{statsData.loading ? '—' : statsData.totalVotes.toLocaleString()}</p>
+                </div>
+              </div>
+            </Card>
+          </div>
+
+          <div className="text-center mt-10">
+            <button
+              onClick={handleJoinNow}
+              className="relative inline-block p-px font-semibold leading-6 text-white bg-gray-800 shadow-2xl cursor-pointer rounded-xl shadow-zinc-900 transition-transform duration-300 ease-in-out hover:scale-105 active:scale-95 group"
+            >
+              <span className="absolute inset-0 rounded-xl bg-gradient-to-r from-teal-400 via-blue-500 to-purple-500 p-[2px] opacity-0 transition-opacity duration-500 group-hover:opacity-100"></span>
+              <span className="relative z-10 block px-8 py-4 rounded-xl bg-gray-950">
+                <div className="relative z-10 flex items-center space-x-2">
+                  <span className="text-lg">{t('home.landingPage.announcement.cta.joinNow')}</span>
+                  <ArrowRight className="w-5 h-5" />
+                </div>
+              </span>
+            </button>
+          </div>
         </div>
       </section>
 
@@ -553,7 +771,7 @@ const HomepageTestPage: React.FC = () => {
                         avatar_url: entry.avatar_url || undefined
                       }))}
                       activeTab="player"
-                      getRatingOrSeasonPoints={(entry) => entry.points}
+                      getRatingOrSeasonPoints={(entry) => (entry as HistoricalSeasonRanking).points}
                       getVoteCount={() => 0}
                       getRatingColor={(rating) => {
                         if (rating >= 1600) return 'text-purple-400';
@@ -562,8 +780,8 @@ const HomepageTestPage: React.FC = () => {
                         return 'text-gray-400';
                       }}
                       getVoteCountColor={() => 'text-gray-400'}
-                      getPosition={(entry) => entry.rank}
-                      getUserId={(entry) => entry.user_id}
+                      getPosition={(entry) => (entry as HistoricalSeasonRanking).rank}
+                      getUserId={(entry) => (entry as HistoricalSeasonRanking).user_id}
                     />
                   ) : (
                     <div className="text-center text-gray-400">
@@ -585,7 +803,7 @@ const HomepageTestPage: React.FC = () => {
                       }))}
                       activeTab="voter"
                       getRatingOrSeasonPoints={() => 0}
-                      getVoteCount={(entry) => entry.votes}
+                      getVoteCount={(entry) => (entry as VoterRankingEntry).votes}
                       getRatingColor={() => 'text-gray-400'}
                       getVoteCountColor={(voteCount) => {
                         if (voteCount >= 10) return 'text-purple-400';
@@ -593,8 +811,8 @@ const HomepageTestPage: React.FC = () => {
                         if (voteCount >= 3) return 'text-green-400';
                         return 'text-gray-400';
                       }}
-                      getPosition={(entry) => entry.rank}
-                      getUserId={(entry) => entry.user_id}
+                      getPosition={(entry) => (entry as VoterRankingEntry).rank}
+                      getUserId={(entry) => (entry as VoterRankingEntry).user_id}
                     />
                   ) : (
                     <div className="text-center text-gray-400">

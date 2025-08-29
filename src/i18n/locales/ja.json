@@ -647,6 +647,22 @@
           "answer": "BeatNexusでは投票の匿名性をなくし、誰が誰に投票したかを公開することで、責任感のある健全なコミュニティを目指しています。"
         }
       },
+      "announcement": {
+        "badge": "お知らせ",
+        "title": {
+          "season1": "Season 1",
+          "rest": "は9月上旬スタート予定"
+        },
+        "subtitle": "正式リリース中（一般公開）。新時代に参加しよう。",
+        "stats": {
+          "totalUsers": "総ユーザー数（累計）",
+          "totalSubmissions": "投稿数（累計）",
+          "totalVotes": "投票数（累計）"
+        },
+        "cta": {
+          "joinNow": "いますぐ参加する"
+        }
+      },
       "closing": {
         "title": {
           "history": "いよいよ始まった、",
