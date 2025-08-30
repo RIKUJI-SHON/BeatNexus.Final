@@ -84,6 +84,7 @@ import DevSuperTipsPage from './pages/DevSuperTipsPage';
 import SuperTipCompletePage from './pages/SuperTipCompletePage';
 import TokushohoPage from './pages/TokushohoPage';
 import LegalDisclosureEnPage from './pages/LegalDisclosureEnPage';
+import StripeConnectPage from './pages/StripeConnectPage';
 
 // CSS for animations
 import './tailwind.extensions.css';
@@ -140,6 +141,7 @@ function RouterContent() {
             <Route path="/auth/confirm" element={<AuthConfirmPage />} />
             <Route path="/dev/battle-card-voted-preview" element={<BattleCardVotedPreviewPage />} />
             <Route path="/dev/super-tips" element={<DevSuperTipsPage />} />
+            <Route path="/profile/stripe-connect" element={<StripeConnectPage />} />
           </Routes>
         </main>
         <Footer />

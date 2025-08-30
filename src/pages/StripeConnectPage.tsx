@@ -1,0 +1,282 @@
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Helmet } from 'react-helmet-async';
+import { supabase } from '../lib/supabase';
+import { ExternalLink, Loader2, Settings, CheckCircle2, AlertCircle } from 'lucide-react';
+
+type JsonValue = string | number | boolean | null | { [key: string]: JsonValue } | JsonValue[];
+
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
+
+export default function StripeConnectPage() {
+  const [user, setUser] = useState<Awaited<ReturnType<typeof supabase.auth.getUser>>['data']['user']>(null);
+  const [accessToken, setAccessToken] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [status, setStatus] = useState<JsonValue | null>(null);
+  const [, setLogs] = useState<string[]>([]);
+  const [, setOnboardingUrl] = useState<string | null>(null);
+
+  const appendLog = useCallback((line: string) => {
+    const entry = `${new Date().toLocaleTimeString()}  ${line}`;
+    setLogs((prev) => [entry, ...prev]);
+  }, []);
+
+  useEffect(() => {
+    const init = async () => {
+      const [{ data: userData }, { data: sessionData }] = await Promise.all([
+        supabase.auth.getUser(),
+        supabase.auth.getSession(),
+      ]);
+      setUser(userData.user);
+      setAccessToken(sessionData.session?.access_token ?? null);
+    };
+    init();
+  }, []);
+
+  const isAuthed = !!user && !!accessToken;
+
+  // 初期表示時の自動ステータス取得は、関数定義後に設定
+
+  const callSetupReceiving = useCallback(async () => {
+    if (!isAuthed) return;
+    setLoading(true);
+    setOnboardingUrl(null);
+  try {
+      appendLog('setup-super-tip-receiving を呼び出し');
+      const { data, error } = await supabase.functions.invoke('setup-super-tip-receiving', { body: {} });
+      if (error) {
+        appendLog(`invoke失敗（${error.message}）。fetch(POST)で再試行`);
+        const session = await supabase.auth.getSession();
+        const token = session.data.session?.access_token;
+        const r = await fetch(`${SUPABASE_URL}/functions/v1/setup-super-tip-receiving`, {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            apikey: SUPABASE_ANON_KEY,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({}),
+        });
+        const txt = await r.text();
+        appendLog(`fetch結果 HTTP ${r.status}`);
+        try {
+          const json = JSON.parse(txt) as JsonValue;
+          type OnboardingShape = { onboarding_url: string };
+          const hasOnboarding = (v: JsonValue): v is OnboardingShape =>
+            typeof v === 'object' && v !== null && 'onboarding_url' in v &&
+            typeof (v as Record<string, unknown>).onboarding_url === 'string';
+          if (hasOnboarding(json)) {
+            setOnboardingUrl(json.onboarding_url);
+            window.open(json.onboarding_url, '_blank');
+            appendLog('onboarding_url を受信（fetch）');
+          }
+          setStatus(json);
+        } catch {
+          appendLog('JSON parse 失敗');
+        }
+        return;
+      }
+      if (data?.onboarding_url) {
+        setOnboardingUrl(data.onboarding_url as string);
+        window.open(data.onboarding_url as string, '_blank');
+        appendLog('onboarding_url を受信');
+      } else {
+        appendLog('レスポンスに onboarding_url が見つかりません');
+      }
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : String(e);
+      console.error(e);
+      appendLog(`Error: ${msg}`);
+    } finally {
+      setLoading(false);
+    }
+  }, [appendLog, isAuthed]);
+
+  const callGetStatus = useCallback(async () => {
+    if (!isAuthed) return;
+    setLoading(true);
+    setStatus(null);
+    try {
+      appendLog('get-connect-account-status を呼び出し');
+      const res = await supabase.functions.invoke('get-connect-account-status');
+      if (res.error) {
+        appendLog(`invoke失敗（${res.error.message}）。fetch(GET)で再試行`);
+        const session = await supabase.auth.getSession();
+        const token = session.data.session?.access_token;
+        const r = await fetch(`${SUPABASE_URL}/functions/v1/get-connect-account-status`, {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            apikey: SUPABASE_ANON_KEY,
+          },
+        });
+        const json = await r.json();
+        setStatus(json);
+      } else {
+        setStatus(res.data as JsonValue);
+      }
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : String(e);
+      console.error(e);
+      appendLog(`Error: ${msg}`);
+    } finally {
+      setLoading(false);
+    }
+  }, [appendLog, isAuthed]);
+
+  // 初期表示時に自動でステータス取得
+  useEffect(() => {
+    if (isAuthed) {
+      callGetStatus();
+    }
+  }, [isAuthed, callGetStatus]);
+
+  const openExpressDashboard = useCallback(async () => {
+    if (!isAuthed) return;
+    setLoading(true);
+    try {
+      appendLog('get-express-login-link を呼び出し');
+      type LoginLinkResp = { success: boolean; url?: string } | null;
+      const { data, error } = (await supabase.functions.invoke('get-express-login-link')) as {
+        data: LoginLinkResp;
+        error: { message: string } | null;
+      };
+      if (error) {
+        appendLog(`invoke失敗（${error.message}）。fetch(GET)で再試行`);
+        const session = await supabase.auth.getSession();
+        const token = session.data.session?.access_token;
+        const r = await fetch(`${SUPABASE_URL}/functions/v1/get-express-login-link`, {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            apikey: SUPABASE_ANON_KEY,
+          },
+        });
+        const json = (await r.json()) as { success?: boolean; url?: string };
+        if (json && json.success && typeof json.url === 'string') {
+          window.open(json.url, '_blank');
+        } else {
+          setStatus(json);
+        }
+        return;
+      }
+      if (data && data.success && typeof data.url === 'string') {
+        window.open(data.url, '_blank');
+      } else {
+        setStatus(data as JsonValue);
+      }
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : String(e);
+      console.error(e);
+      appendLog(`Error: ${msg}`);
+    } finally {
+      setLoading(false);
+    }
+  }, [appendLog, isAuthed]);
+
+  const parsedStatus = useMemo(() => {
+    const s = status as JsonValue;
+    let charges: boolean | null = null;
+    let acct: string | null = null;
+    if (typeof s === 'object' && s !== null) {
+      const o = s as Record<string, unknown>;
+      if (typeof o.charges_enabled === 'boolean') charges = o.charges_enabled;
+      if (typeof o.stripe_connect_account_id === 'string') acct = o.stripe_connect_account_id as string;
+      else if (typeof o.account_id === 'string') acct = o.account_id as string;
+    }
+    return { charges_enabled: charges, account_id: acct } as { charges_enabled: boolean | null; account_id: string | null };
+  }, [status]);
+
+  const isReceivingReady = parsedStatus.charges_enabled === true;
+  const StatusIcon = isReceivingReady ? CheckCircle2 : AlertCircle;
+  const statusPillClass = isReceivingReady
+    ? 'bg-emerald-500/20 text-emerald-300'
+    : 'bg-amber-500/20 text-amber-300';
+  const statusText = isReceivingReady ? '受け取り可能です' : '受け取り設定が必要です';
+
+  return (
+    <div className="min-h-screen bg-gray-950 text-white p-4 sm:p-6 lg:p-8">
+      <div className="max-w-4xl mx-auto space-y-6">
+      <Helmet>
+        <title>Super Tip 受け取り設定 | BeatNexus</title>
+      </Helmet>
+
+      <div className="flex items-center gap-2">
+        <Settings className="h-6 w-6 text-cyan-400" />
+        <h1 className="text-3xl font-bold text-cyan-400">Super Tip 受け取り設定</h1>
+      </div>
+      <p className="text-sm text-gray-300">Super Tip（応援チップ）を受け取るための設定・再開、状態確認、Stripe Expressダッシュボードへの遷移ができます。</p>
+
+      {/* 受け取り可否ステータス */}
+      <div className="rounded-lg border border-gray-800 bg-gray-900 p-4 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          {loading ? (
+            <Loader2 className="h-5 w-5 animate-spin text-cyan-300" />
+          ) : (
+            <StatusIcon className={isReceivingReady ? 'h-5 w-5 text-emerald-300' : 'h-5 w-5 text-amber-300'} />
+          )}
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="font-semibold">受け取り状態</span>
+              <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${statusPillClass}`}>
+                {loading ? '確認中…' : statusText}
+              </span>
+            </div>
+            <p className="mt-1 text-sm text-gray-300">
+              {isReceivingReady
+                ? '売上の確認や振込設定は「Stripe Express ダッシュボード」から行えます。'
+                : '初めての場合や未完了の場合は「受け取り設定を開始」から必要情報を登録してください。設定が完了するまでSuper Tipは受け取れません。'}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* アクションのみ表示（ログ/生データは非表示） */}
+
+      <div className="grid sm:grid-cols-2 gap-3">
+        {!isReceivingReady && (
+          <button
+            disabled={!isAuthed || loading}
+            onClick={callSetupReceiving}
+            className="px-4 py-2 rounded bg-blue-600 hover:bg-blue-500 transition text-white disabled:opacity-50 inline-flex items-center justify-center gap-2"
+          >
+            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+            受け取り設定を開始/再開（Stripe Connect）
+          </button>
+        )}
+        <button
+          disabled={!isAuthed || loading}
+          onClick={openExpressDashboard}
+          className="px-4 py-2 rounded bg-slate-700 hover:bg-slate-600 transition text-white disabled:opacity-50 inline-flex items-center justify-center gap-2"
+        >
+          <ExternalLink className="h-4 w-4" /> Stripe Express ダッシュボードへ
+        </button>
+      </div>
+
+      {/* Super Tip 説明セクション */}
+      <div className="rounded-lg border border-gray-800 bg-gray-900 p-4 space-y-3">
+        <h2 className="text-lg font-semibold">Super Tipとは？</h2>
+        <ul className="list-disc list-inside text-sm text-gray-300 space-y-1">
+          <li>プレイヤーを応援するための小額チップ機能です。視聴や投票の流れの中で、あなたの活動を直接支援できます。</li>
+          <li>手数料はプラットフォーム手数料（現在10%）と決済手数料がかかります。詳細は「特定商取引法に基づく表記」をご確認ください。</li>
+          <li>受け取りにはStripe Connectのアカウント作成と、Stripe Expressでの振込設定が必要です。</li>
+          <li>決済はStripeのセキュリティ基準に則り、安全に処理されます（3Dセキュア等対応）。</li>
+        </ul>
+        <p className="text-xs text-gray-400">関連: <a href="/legal/tokushoho" className="text-cyan-300 underline">特定商取引法に基づく表記</a></p>
+      </div>
+
+      {/* 受け取り開始の流れ */}
+      <div className="rounded-lg border border-gray-800 bg-gray-900 p-4 space-y-3 mb-12">
+        <h2 className="text-lg font-semibold">受け取り開始の流れ</h2>
+        <ol className="list-decimal list-inside text-sm text-gray-300 space-y-1">
+          <li>「受け取り設定を開始/再開」を押して、Stripeで必要事項（本人確認・振込口座など）を登録します。</li>
+          <li>完了後このページに戻ると「受け取り可能」と表示されます。</li>
+          <li>売上の確認や入金タイミングの設定は「Stripe Express ダッシュボード」で行えます。</li>
+        </ol>
+      </div>
+
+  {/* ステータス/ログの可視化は行わない（内部的には初回ロードで取得） */}
+      </div>
+    </div>
+  );
+}
