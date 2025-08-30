@@ -119,6 +119,9 @@ export const Footer: React.FC = () => {
             <Link to="/privacy" className="text-gray-500 hover:text-white text-sm">
               {t('footer.privacyPolicy')}
             </Link>
+            <Link to="/legal/tokushoho" className="text-gray-500 hover:text-white text-sm">
+              特定商取引法に基づく表記
+            </Link>
             <button onClick={() => openManager()} className="text-gray-500 hover:text-white text-sm underline underline-offset-2">
               {t('footer.cookieSettings', 'Cookie設定')}
             </button>

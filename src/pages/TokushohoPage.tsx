@@ -26,7 +26,7 @@ const TokushohoPage: React.FC = () => {
 
         <section>
           <h2 className="font-semibold">所在地</h2>
-          <p>{''}</p>
+          <p>所在地は、請求があれば遅滞なく開示します。お問い合わせは上記メールアドレスへご連絡ください。</p>
         </section>
 
         <section>
@@ -74,7 +74,7 @@ const TokushohoPage: React.FC = () => {
 
         <section>
           <h2 className="font-semibold">営業時間/問い合わせ対応時間</h2>
-          <p>{''}</p>
+          <p>平日10:00–18:00（JST）、原則3営業日以内に返信</p>
         </section>
 
         <section>

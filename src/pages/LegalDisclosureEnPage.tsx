@@ -26,7 +26,7 @@ const LegalDisclosureEnPage: React.FC = () => {
 
         <section>
           <h2 className="font-semibold">Business Address</h2>
-          <p>{''}</p>
+          <p>The address will be disclosed without delay upon request. Please contact us via the email above.</p>
         </section>
 
         <section>
@@ -73,7 +73,7 @@ const LegalDisclosureEnPage: React.FC = () => {
 
         <section>
           <h2 className="font-semibold">Business Hours / Inquiry Response Time</h2>
-          <p>{''}</p>
+          <p>Weekdays 10:00–18:00 (JST), we generally respond within 3 business days.</p>
         </section>
 
         <section>
