@@ -82,6 +82,8 @@ import StorefrontPage from './pages/StorefrontPage';
 import PurchaseSuccessPage from './pages/PurchaseSuccessPage';
 import DevSuperTipsPage from './pages/DevSuperTipsPage';
 import SuperTipCompletePage from './pages/SuperTipCompletePage';
+import TokushohoPage from './pages/TokushohoPage';
+import LegalDisclosureEnPage from './pages/LegalDisclosureEnPage';
 
 // CSS for animations
 import './tailwind.extensions.css';
@@ -127,6 +129,8 @@ function RouterContent() {
             <Route path="/faq" element={<FAQPage />} />
             <Route path="/terms" element={<TermsPage />} />
             <Route path="/privacy" element={<PrivacyPolicyPage />} />
+            <Route path="/legal/tokushoho" element={<TokushohoPage />} />
+            <Route path="/legal/disclosure" element={<LegalDisclosureEnPage />} />
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/guidelines" element={<UserGuidelinesPage />} />
             <Route path="/notifications/test" element={<NotificationTestPage />} />
