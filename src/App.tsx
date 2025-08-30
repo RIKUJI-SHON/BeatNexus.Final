@@ -80,6 +80,8 @@ import AuthConfirmPage from './pages/AuthConfirmPage';
 import BattleCardVotedPreviewPage from './pages/BattleCardVotedPreviewPage';
 import StorefrontPage from './pages/StorefrontPage';
 import PurchaseSuccessPage from './pages/PurchaseSuccessPage';
+import DevSuperTipsPage from './pages/DevSuperTipsPage';
+import SuperTipCompletePage from './pages/SuperTipCompletePage';
 
 // CSS for animations
 import './tailwind.extensions.css';
@@ -119,6 +121,7 @@ function RouterContent() {
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="/storefront" element={<StorefrontPage />} />
             <Route path="/purchase-success" element={<PurchaseSuccessPage />} />
+            <Route path="/payments/super-tip/complete" element={<SuperTipCompletePage />} />
             <Route path="/ad-preview" element={<AdPreviewPage />} />
             <Route path="/tournament" element={<TournamentPage />} />
             <Route path="/faq" element={<FAQPage />} />
@@ -132,6 +135,7 @@ function RouterContent() {
             <Route path="/reset-password" element={<ResetPasswordPage />} />
             <Route path="/auth/confirm" element={<AuthConfirmPage />} />
             <Route path="/dev/battle-card-voted-preview" element={<BattleCardVotedPreviewPage />} />
+            <Route path="/dev/super-tips" element={<DevSuperTipsPage />} />
           </Routes>
         </main>
         <Footer />

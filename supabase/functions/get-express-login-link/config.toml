@@ -1,0 +1,2 @@
+# Authenticated function. Keep JWT verification enabled (default).
+# No special config required; present for clarity and future overrides.

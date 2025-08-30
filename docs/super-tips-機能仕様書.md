@@ -1,7 +1,7 @@
 # BeatNexus Super Tips機能仕様書
 
-**最終更新**: 2025年1月20日  
-**バージョン**: v1.0 (新規設計)  
+**最終更新**: 2025年8月30日  
+**バージョン**: v1.1 (最新推奨に更新)  
 **適用環境**: 開発環境・本番環境
 
 ## 📋 目次
@@ -19,10 +19,11 @@
 
 ## 概要
 
-BeatNexusのSuper Tips機能は、投票者がバトル投票時に応援したいビートボクサーに**寄付**を行える仕組みです。Stripe Connectを使用し、プラットフォーム手数料を差し引いた金額をバトラーが受け取ります。
+BeatNexusのSuper Tips機能は、投票者がバトル投票時に応援したいビートボクサーに寄付を行えるほか、投票と無関係にプレイヤーへ直接支援もできる仕組みです。Stripe Connectを使用し、プラットフォーム手数料を差し引いた金額をバトラーが受け取ります。
 
 ### 主要特徴
-- **投票と寄付の統合**: 通常の投票に寄付機能を追加
+- **投票と寄付の統合**: 通常の投票に寄付機能を追加（チェックで有効化）
+- **単独支援**: 投票と関係なくプレイヤー名横のボタンからいつでも支援可能
 - **直接送金**: Stripe Connect経由でバトラーに直接送金
 - **投票結果非影響**: 寄付額は投票結果に影響しない
 - **最小DB設計**: 必要最小限の情報のみDB保持、詳細はStripeで管理
@@ -129,20 +130,20 @@ Super Tips投票は**コメント付き投票**として扱われ、以下のポ
 
 ```mermaid
 graph TD
-    A[ユーザー] --> B[投票UI]
-    B --> C{Super Tips?}
-    C -->|Yes| D[SuperTipVoteModal]
-    C -->|No| E[通常投票処理]
-    
-    D --> F[寄付額選択]
-    F --> G[Stripe Payment]
-    G --> H[vote-with-super-tip API]
-    H --> I[Connect Transfer]
-    I --> J[通知送信]
-    J --> K[投票完了]
-    
-    E --> L[vote_battle API]
-    L --> K
+  A[ユーザー] --> B[投票UI]
+  B --> C{Super Tips?}
+  C -->|Yes| D[SuperTipVoteModal]
+  C -->|No| E[通常投票処理]
+
+  D --> F[寄付額選択]
+  F --> G[Stripe Payment]
+  G --> H[vote-with-super-tip API]
+  H --> I[Destination chargeで資金配分]
+  I --> J[通知送信]
+  J --> K[投票完了]
+
+  E --> L[vote_battle API]
+  L --> K
 ```
 
 ### 💾 データフロー
@@ -188,12 +189,12 @@ CREATE TABLE IF NOT EXISTS public.super_tips (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   
   -- 関連情報
-  battle_id uuid NOT NULL REFERENCES active_battles(id) ON DELETE CASCADE,
+  battle_id uuid REFERENCES active_battles(id) ON DELETE CASCADE,
   sender_user_id uuid NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
   recipient_user_id uuid NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
   
   -- 投票情報
-  vote char(1) NOT NULL CHECK (vote IN ('A', 'B')),
+  vote char(1) CHECK (vote IN ('A', 'B')),
   comment text NOT NULL CHECK (LENGTH(TRIM(comment)) > 0 AND LENGTH(comment) <= 500),
   
   -- 金額情報（円単位）
@@ -208,7 +209,7 @@ CREATE TABLE IF NOT EXISTS public.super_tips (
   payment_status text NOT NULL DEFAULT 'pending' 
     CHECK (payment_status IN ('pending', 'processing', 'succeeded', 'failed', 'canceled')),
   transfer_status text DEFAULT 'pending'
-    CHECK (transfer_status IN ('pending', 'paid', 'failed')),
+    CHECK (transfer_status IN ('pending', 'paid', 'canceled')),
   
   -- タイムスタンプ
   created_at timestamptz NOT NULL DEFAULT now(),
@@ -216,7 +217,8 @@ CREATE TABLE IF NOT EXISTS public.super_tips (
   completed_at timestamptz,
   
   -- 制約
-  UNIQUE(sender_user_id, battle_id) -- 1ユーザー1バトル1寄付制限
+  -- 1ユーザー1バトル1寄付制限（バトル指定時のみ）
+  CONSTRAINT super_tips_sender_battle_unique UNIQUE (sender_user_id, battle_id) DEFERRABLE INITIALLY IMMEDIATE
 );
 
 -- インデックス
@@ -261,6 +263,15 @@ CREATE TRIGGER update_super_tips_updated_at_trigger
   FOR EACH ROW EXECUTE FUNCTION update_super_tips_updated_at();
 ```
 
+-- 追加整合性: バトル未指定のときはvoteはNULL
+ALTER TABLE public.super_tips
+  ADD CONSTRAINT super_tips_vote_null_when_no_battle
+  CHECK (battle_id IS NOT NULL OR vote IS NULL);
+
+-- ユニーク制約をバトル指定時にのみ厳密にするための部分インデックス
+CREATE UNIQUE INDEX IF NOT EXISTS ux_super_tips_sender_battle
+  ON super_tips(sender_user_id, battle_id) WHERE battle_id IS NOT NULL;
+
 ### 📋 RLS (Row Level Security) ポリシー
 
 ```sql
@@ -270,18 +281,18 @@ ALTER TABLE super_tips ENABLE ROW LEVEL SECURITY;
 -- 閲覧ポリシー：送信者・受信者・バトル参加者
 CREATE POLICY "Users can view relevant super tips" ON super_tips
   FOR SELECT USING (
-    auth.uid() = sender_user_id OR 
-    auth.uid() = recipient_user_id OR
+    (select auth.uid()) = sender_user_id OR 
+    (select auth.uid()) = recipient_user_id OR
     EXISTS (
       SELECT 1 FROM active_battles 
       WHERE active_battles.id = super_tips.battle_id 
-      AND (active_battles.player1_user_id = auth.uid() OR active_battles.player2_user_id = auth.uid())
+      AND ((select auth.uid()) = active_battles.player1_user_id OR (select auth.uid()) = active_battles.player2_user_id)
     )
   );
 
 -- 作成ポリシー：認証済みユーザーが送信者として
 CREATE POLICY "Authenticated users can create super tips" ON super_tips
-  FOR INSERT WITH CHECK (auth.uid() = sender_user_id);
+  FOR INSERT WITH CHECK ((select auth.uid()) = sender_user_id);
 
 -- 更新ポリシー：システムのみ（webhook用）
 CREATE POLICY "System can update super tips" ON super_tips
@@ -363,24 +374,20 @@ interface SetupSuperTipReceivingResponse {
 5. onboarding_urlを即座にレスポンス
 6. DB更新：stripe_connect_account_id保存
 
-// 実装概要
+// 実装概要（最新推奨: Expressアカウント）
 const account = await stripe.accounts.create({
-  controller: {
-    fees: { payer: 'application' },
-    losses: { payments: 'application' },
-    stripe_dashboard: { type: 'express' }
-  },
+  type: 'express',
+  country: 'JP',
+  business_type: 'individual',
   capabilities: {
     transfers: { requested: true },
-    card_payments: { requested: true }
+    card_payments: { requested: true },
   },
-  business_type: 'individual',
-  country: 'JP',
   metadata: {
     platform: 'BeatNexus',
     user_id: user.id,
-    purpose: 'super_tips'
-  }
+    purpose: 'super_tips',
+  },
 });
 
 // 即座にAccount Links作成
@@ -423,14 +430,14 @@ interface VoteWithSuperTipResponse {
 2. 金額・コメント検証
 3. 重複チェック
 4. **アクティブシーズン確認**（既存投票システムと同様）
-5. Payment Intent作成
+5. Payment Intent作成（Destination charges推奨: application_fee_amount + transfer_data.destination + on_behalf_of）
 6. super_tipsレコード作成
 7. battle_votesレコード作成（season_id含む）
 8. **ユーザーポイント更新**（vote_count, season_vote_points）
 9. レスポンス返却（ポイント情報含む）
 ```
 
-#### 3. `/confirm-super-tip-payment`
+#### 3. （任意）`/confirm-super-tip-payment`
 
 **目的**: 決済完了後の処理
 
@@ -449,7 +456,7 @@ interface ConfirmSuperTipPaymentResponse {
 // 実装フロー
 1. Payment Intent確認
 2. 決済状況検証
-3. Transfer作成
+3. Separate charges and transfers方式を採用する場合に使用。Destination charges採用時は不要。
 4. super_tipsレコード更新
 5. 通知作成
 ```
@@ -459,12 +466,12 @@ interface ConfirmSuperTipPaymentResponse {
 **目的**: Stripe Webhook処理
 
 ```typescript
-// 処理対象イベント
+// 処理対象イベント（推奨）
 - payment_intent.succeeded
 - payment_intent.payment_failed
-- transfer.paid
-- transfer.failed
 - account.updated
+// Separate charges and transfers方式を使う場合のみ補助で:
+// - transfer.updated（必要時）
 
 // 実装フロー
 1. Webhook署名検証
@@ -505,8 +512,8 @@ interface GetConnectAccountStatusResponse {
 ```typescript
 interface SuperTipVoteModalProps {
   isOpen: boolean;
-  battleId: string;
-  player: 'A' | 'B';
+  battleId?: string; // 単独支援では未指定
+  player?: 'A' | 'B'; // 単独支援では未指定
   playerName: string;
   recipientStripeAccountId?: string;
   onClose: () => void;
@@ -517,7 +524,7 @@ interface SuperTipResult {
   super_tip_id: string;
   amount_jpy: number;
   comment: string;
-  vote: 'A' | 'B';
+  vote?: 'A' | 'B';
   payment_status: string;
 }
 
@@ -786,7 +793,7 @@ const errorMessages: Record<SuperTipError, string> = {
 #### 3. 決済処理
 | テストケース | 期待結果 |
 |-------------|----------|
-| 決済成功 | Transfer作成、状況更新、通知送信 |
+| 決済成功 | 決済完了（Destination chargesで自動配分）、状況更新、通知送信 |
 | 決済失敗 | エラー状況更新、ユーザー通知 |
 | Webhook遅延 | リトライ機構動作 |
 
@@ -849,6 +856,6 @@ console.log('SUPER_TIP_PAYMENT_SUCCEEDED', {
 
 ---
 
-**注意**: この仕様書は新規設計に基づいており、既存のSuper tips実装とは独立しています。実装前に既存関連テーブル・関数の削除が必要です。
+注意: 本仕様は最新のStripe/Supabase推奨に合わせ、Destination charges（transfer_data.destination + application_fee_amount + on_behalf_of）を推奨します。Separate charges and transfersを採用する場合はWebhookイベント・DB項目の扱いを読み替えてください。
 
 **重要**: Super Tips投票は既存の投票ポイントシステム（投票機能仕様書v6準拠）と完全に統合されており、通常の投票機能を損なうことなく拡張されています。

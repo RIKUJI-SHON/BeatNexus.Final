@@ -1,6 +1,12 @@
 # Super Tips機能実装手順
 
-**最終更新**: 2025年1月20日  
+重要: 実装の各フェーズが進むたびに、実装ログ（.cursor/docs/dev-rules/2025-08-30_super_tips.mdc）を必ず更新してください。特に、
+- 作成・変更したマイグレーションファイル名と要点
+- Edge Functionsの追加/変更点
+- 検証結果（PASS/FAIL）と対応
+を追記して整合性を保ちます。
+
+**最終更新**: 2025年8月30日  
 **前提条件**: 既存Super Tips関連の削除完了済み  
 **対象環境**: 開発環境 → 本番環境
 
@@ -28,7 +34,7 @@
 supabase/migrations/20250120120000_create_super_tips_system.sql
 ```
 
-#### マイグレーション内容
+#### マイグレーション内容（単独支援も許容し、Destination chargesに整合）
 ```sql
 -- 1. profilesテーブル拡張（Stripe Connect情報）
 ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS
@@ -43,17 +49,17 @@ CREATE INDEX IF NOT EXISTS idx_profiles_stripe_connect
 CREATE INDEX IF NOT EXISTS idx_profiles_stripe_charges_enabled 
   ON profiles(stripe_charges_enabled) WHERE stripe_charges_enabled = true;
 
--- 2. super_tipsテーブル作成
+-- 2. super_tipsテーブル作成（battle_id/voteは単独支援時にNULL可）
 CREATE TABLE IF NOT EXISTS public.super_tips (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   
   -- 関連情報
-  battle_id uuid NOT NULL REFERENCES active_battles(id) ON DELETE CASCADE,
+  battle_id uuid REFERENCES active_battles(id) ON DELETE CASCADE,
   sender_user_id uuid NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
   recipient_user_id uuid NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
   
   -- 投票情報
-  vote char(1) NOT NULL CHECK (vote IN ('A', 'B')),
+  vote char(1) CHECK (vote IN ('A', 'B')),
   comment text NOT NULL CHECK (LENGTH(TRIM(comment)) > 0 AND LENGTH(comment) <= 500),
   
   -- 金額情報（円単位）
@@ -68,7 +74,7 @@ CREATE TABLE IF NOT EXISTS public.super_tips (
   payment_status text NOT NULL DEFAULT 'pending' 
     CHECK (payment_status IN ('pending', 'processing', 'succeeded', 'failed', 'canceled')),
   transfer_status text DEFAULT 'pending'
-    CHECK (transfer_status IN ('pending', 'paid', 'failed')),
+    CHECK (transfer_status IN ('pending', 'paid', 'canceled')),
   
   -- タイムスタンプ
   created_at timestamptz NOT NULL DEFAULT now(),
@@ -76,7 +82,8 @@ CREATE TABLE IF NOT EXISTS public.super_tips (
   completed_at timestamptz,
   
   -- 制約
-  UNIQUE(sender_user_id, battle_id) -- 1ユーザー1バトル1寄付制限
+  -- 1ユーザー1バトル1寄付制限（バトル指定時のみ）
+  CONSTRAINT super_tips_sender_battle_unique UNIQUE (sender_user_id, battle_id) DEFERRABLE INITIALLY IMMEDIATE
 );
 
 -- インデックス
@@ -86,6 +93,15 @@ CREATE INDEX idx_super_tips_recipient ON super_tips(recipient_user_id);
 CREATE INDEX idx_super_tips_status ON super_tips(payment_status, transfer_status);
 CREATE INDEX idx_super_tips_created_at ON super_tips(created_at);
 CREATE INDEX idx_super_tips_stripe_payment ON super_tips(stripe_payment_intent_id);
+
+-- 補助制約（battle未指定ならvoteはNULL）
+ALTER TABLE public.super_tips
+  ADD CONSTRAINT super_tips_vote_null_when_no_battle
+  CHECK (battle_id IS NOT NULL OR vote IS NULL);
+
+-- 部分ユニーク（バトル指定時のみユニーク制約有効）
+CREATE UNIQUE INDEX IF NOT EXISTS ux_super_tips_sender_battle
+  ON super_tips(sender_user_id, battle_id) WHERE battle_id IS NOT NULL;
 
 -- 3. battle_votesテーブル拡張
 ALTER TABLE public.battle_votes ADD COLUMN IF NOT EXISTS
@@ -99,21 +115,21 @@ CREATE INDEX IF NOT EXISTS idx_battle_votes_super_tip
 -- 4. RLS設定
 ALTER TABLE super_tips ENABLE ROW LEVEL SECURITY;
 
--- 閲覧ポリシー
+-- 閲覧ポリシー（RLS最適化: auth.uid()をSELECTでラップ）
 CREATE POLICY "Users can view relevant super tips" ON super_tips
   FOR SELECT USING (
-    auth.uid() = sender_user_id OR 
-    auth.uid() = recipient_user_id OR
+    (select auth.uid()) = sender_user_id OR 
+    (select auth.uid()) = recipient_user_id OR
     EXISTS (
       SELECT 1 FROM active_battles 
       WHERE active_battles.id = super_tips.battle_id 
-      AND (active_battles.player1_user_id = auth.uid() OR active_battles.player2_user_id = auth.uid())
+      AND ((select auth.uid()) = active_battles.player1_user_id OR (select auth.uid()) = active_battles.player2_user_id)
     )
   );
 
--- 作成ポリシー
+-- 作成ポリシー（RLS最適化）
 CREATE POLICY "Authenticated users can create super tips" ON super_tips
-  FOR INSERT WITH CHECK (auth.uid() = sender_user_id);
+  FOR INSERT WITH CHECK ((select auth.uid()) = sender_user_id);
 
 -- 更新ポリシー（システム用）
 CREATE POLICY "System can update super tips" ON super_tips
@@ -278,18 +294,16 @@ serve(async (req) => {
       )
     }
 
-    // Stripe Connect Account作成
+  // Stripe Connect Account作成（最新推奨: Express）
     const accountResponse = await fetch('https://api.stripe.com/v1/accounts', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${STRIPE_SECRET_KEY}`,
         'Content-Type': 'application/x-www-form-urlencoded',
-        'Stripe-Version': '2025-07-30.basil'
+    // APIバージョンはダッシュボードに合わせる。固定ヘッダは省略可。
       },
       body: new URLSearchParams({
-        'controller[fees][payer]': 'application',
-        'controller[losses][payments]': 'application',
-        'controller[stripe_dashboard][type]': 'express',
+    'type': 'express',
         'capabilities[transfers][requested]': 'true',
         'capabilities[card_payments][requested]': 'true',
         'business_type': 'individual',
@@ -319,8 +333,7 @@ serve(async (req) => {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${STRIPE_SECRET_KEY}`,
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Stripe-Version': '2025-07-30.basil'
+        'Content-Type': 'application/x-www-form-urlencoded'
       },
       body: new URLSearchParams({
         'account': accountData.id,
@@ -542,14 +555,14 @@ supabase/functions/vote-with-super-tip/index.ts
 // - 金額・コメント検証  
 // - 重複チェック
 // - アクティブシーズン確認
-// - Payment Intent作成
+// - Payment Intent作成（Destination charges: transfer_data.destination, application_fee_amount, on_behalf_of）
 // - super_tipsレコード作成
 // - battle_votesレコード作成（season_id含む）
 // - ユーザーポイント更新（update_super_tip_vote_points使用）
 // - レスポンス返却
 ```
 
-### 📁 **Step 2.4: confirm-super-tip-payment**
+### 📁 **Step 2.4: confirm-super-tip-payment（任意: Separate charges方式のみ）**
 
 ```bash
 # ファイル作成  
@@ -583,11 +596,35 @@ mcp_supabase_deploy_edge_function(
 - [ ] get-connect-account-status: 状況取得
 - [ ] vote-with-super-tip: 投票+寄付処理
 - [ ] confirm-super-tip-payment: 決済完了処理
-- [ ] stripe-webhook: Webhook処理
+- [ ] stripe-webhook: Webhook処理（payment_intent.succeeded/payment_intent.payment_failed/account.updated）
 
 ---
 
 ## Phase 3: フロントエンド実装 🎨
+
+### ⚠️ 重要: PaymentIntent 確定時の return_url 指定
+
+- 3Dセキュア等のリダイレクト発生時に備え、PaymentIntent の confirm 時は必ず `return_url` を指定してください。
+- `/vote-with-super-tip` のレスポンスに `recommended_return_url` を追加済み。これを `stripe.confirmPayment`（または `stripe.confirmCardPayment`）の `confirmParams.return_url` に渡してください。
+- 例（擬似コード）:
+```ts
+const { client_secret, recommended_return_url } = await callVoteWithSuperTip();
+const result = await stripe.confirmPayment({
+  elements,
+  clientSecret: client_secret,
+  confirmParams: {
+    return_url: recommended_return_url,
+  },
+});
+```
+※ Elements APIの関数名は導入バージョンによって異なる場合があります。公式ドキュメントに従ってください。
+
+### 支払い方法の管理ポリシー（ダッシュボード優先）
+
+- Stripeの最新仕様に沿い、PaymentIntent作成時に `payment_method_types` を明示しません（ダッシュボードで有効な方法が適用）。
+- サーバー側では `automatic_payment_methods` は原則未指定（デフォルト有効）。必要な場合のみ環境変数で制御：
+  - `AUTOMATIC_PAYMENT_METHODS_ALLOW_REDIRECTS=never` を設定すると、リダイレクトを必要とする支払い方法を除外できます。
+  - 未設定時はリダイレクト型PMも許容。フロントで `return_url` を必ず渡してください。
 
 ### 📁 **Step 3.1: 状態管理**
 
@@ -605,7 +642,7 @@ src/hooks/useSuperTip.ts
 src/components/profile/StripeConnectOnboarding.tsx
 ```
 
-#### Super Tips投票UI
+#### Super Tips投票UI（単独支援にも流用）
 ```bash
 src/components/voting/SuperTipVoteModal.tsx
 src/components/battle/SuperTipDisplay.tsx
@@ -623,6 +660,7 @@ src/pages/ProfilePage.tsx                # Connect設定セクション追加
 #### 確認項目
 - [ ] プロフィールでConnect設定可能
 - [ ] バトル画面でSuper Tips投票可能
+- [ ] プレイヤー名横の「支援する」から単独支援可能
 - [ ] 寄付額選択・決済フロー動作
 - [ ] エラーハンドリング確認
 - [ ] レスポンシブデザイン確認
@@ -635,7 +673,7 @@ src/pages/ProfilePage.tsx                # Connect設定セクション追加
 
 #### 完全フローテスト
 1. [ ] Connect Account作成 → オンボーディング完了
-2. [ ] Super Tips投票 → 決済 → Transfer
+2. [ ] Super Tips投票 → 決済（Destination chargesで自動配分）
 3. [ ] ポイントシステム統合確認
 4. [ ] Webhook処理確認
 
@@ -650,7 +688,7 @@ src/pages/ProfilePage.tsx                # Connect設定セクション追加
 ```bash
 # 本番環境変数設定
 STRIPE_SECRET_KEY=sk_live_...
-STRIPE_WEBHOOK_SECRET=whsec_...
+STRIPE_WEBHOOK_SECRET=whsec_...  # 複数環境/エンドポイントごとに管理
 FRONTEND_URL=https://beatnexus.com
 
 # 本番プロジェクトID
@@ -722,7 +760,7 @@ mcp_supabase_apply_migration(
 ### **環境変数設定必須**
 ```bash
 STRIPE_SECRET_KEY      # Stripe シークレットキー
-STRIPE_WEBHOOK_SECRET  # Webhook署名検証用
+STRIPE_WEBHOOK_SECRET  # Webhook署名検証用（verify_jwt=falseのEdge Functionと併用）
 FRONTEND_URL          # リダイレクト先URL
 ```
 
@@ -736,5 +774,29 @@ FRONTEND_URL          # リダイレクト先URL
 - マイグレーション適用前のバックアップ
 - 問題発生時のロールバック手順準備
 - 段階的リリース計画
+
+### Webhook/セキュリティ補足
+- stripe-webhook関数はconfig.tomlで verify_jwt=false を設定（注: 配置方法により未反映のケースあり）
+- 未反映の場合はダッシュボードで当該関数のみ verify_jwt を手動OFF（外部Webhooksのみ）
+- PaymentIntent作成時はIdempotency-Keyを付与し重複防止
+- account.updated を一次ソースとして charges_enabled を同期
+
+### Sandbox（Stripe Test）設定手順（本番と差異を出さない運用）
+1. Webhookエンドポイント作成（Testモード）
+  - URL: {SUPABASE_URL}/functions/v1/stripe-webhook
+  - イベント（Your account）: payment_intent.succeeded, payment_intent.payment_failed
+  - イベント（Connected accounts を有効化）: account.updated
+2. Signing secret（whsec_...）を取得し、Supabase（開発環境）に設定
+  - 環境変数: STRIPE_WEBHOOK_SECRET
+3. APIキー/その他環境変数（開発環境）
+  - STRIPE_SECRET_KEY=sk_test_...
+  - FRONTEND_URL=https://dev-frontend.example（実際のURL）
+  - PLATFORM_FEE_PERCENT="10"（プラットフォーム手数料の割合。未設定時は既定10%）
+4. 検証
+  - Stripeダッシュボードから test event 送信→ 200 OK
+  - DB反映: super_tips.payment_status/transfer_status 更新、profiles.stripe_charges_enabled 同期
+5. ドリフト防止
+  - Webhookイベント構成・エンドポイントURL・手動verify_jwt OFFの運用を実装ログ（.cursor/docs/dev-rules/2025-08-30_super_tips.mdc）に記録
+  - 本番移行時は Live モードで同手順、環境変数のみ live 用に差し替え
 
 **この実装手順に従って、安全で確実なSuper Tips機能の実装を進めてください！**
