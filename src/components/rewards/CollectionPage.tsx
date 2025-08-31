@@ -40,24 +40,30 @@ const CollectionPage: React.FC<CollectionPageProps> = ({ userId, horizontal = fa
       }
 
       // ユーザーが獲得した報酬のみを取得（未獲得は表示しない）
+      // 他人プロフィール閲覧時のRLSを回避するため、SECURITY DEFINER RPCを使用
       const { data: userRewardsData, error: userRewardsError } = await supabase
-        .from('user_rewards')
-        .select(`
-          *,
-          reward:rewards(*)
-        `)
-        .eq('user_id', userId);
+        .rpc('get_public_user_rewards', { p_user_id: userId });
 
       if (userRewardsError) {
         console.error('User rewards fetch error:', userRewardsError);
         throw userRewardsError;
       }
 
+      // 型整形: reward(jsonb) を Reward 型に合わせる
+      const normalized: UserReward[] = (userRewardsData || []).map((row: any) => ({
+        id: row.id,
+        user_id: row.user_id,
+        reward_id: row.reward_id,
+        earned_at: row.earned_at,
+        earned_season_id: row.earned_season_id,
+        reward: row.reward as Reward,
+      }));
+
       console.log('Collection fetch successful:', {
-        userRewardsCount: userRewardsData?.length || 0
+        userRewardsCount: normalized?.length || 0
       });
 
-      setUserRewards(userRewardsData || []);
+      setUserRewards(normalized || []);
 
     } catch (error) {
       console.error('Error fetching collection:', error);
