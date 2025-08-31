@@ -157,6 +157,15 @@
       "description": "Subscription features will be available soon"
     }
   },
+  "rewards": {
+    "notifications": {
+      "earned": {
+        "title": "Season reward earned!",
+        "message": "You earned \"{{rewardName}}\".",
+        "viewCollection": "View collection"
+      }
+    }
+  },
   "battle": {
     "title": "Battle Detail",
     "loading": "Loading battle details...",

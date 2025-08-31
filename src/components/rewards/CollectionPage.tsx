@@ -8,9 +8,10 @@ import EmptyCollectionState from './EmptyCollectionState';
 interface CollectionPageProps {
   userId: string;
   isOwnProfile: boolean;
+  horizontal?: boolean; // 横スクロール表示（プロフィール上部用）
 }
 
-const CollectionPage: React.FC<CollectionPageProps> = ({ userId }) => {
+const CollectionPage: React.FC<CollectionPageProps> = ({ userId, horizontal = false }) => {
   const [userRewards, setUserRewards] = useState<UserReward[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -77,12 +78,30 @@ const CollectionPage: React.FC<CollectionPageProps> = ({ userId }) => {
       {/* コレクション表示 */}
       {earnedRewards.length === 0 ? (
         <EmptyCollectionState type="badges" />
+      ) : horizontal ? (
+        <div className="flex gap-4 overflow-x-auto pb-2 [-ms-overflow-style:'none'] [scrollbar-width:'none'] [&::-webkit-scrollbar]:hidden">
+          {earnedRewards.map((reward) => {
+            const earnedReward = userRewards.find(ur => ur.reward_id === reward.id);
+            if (reward.type !== 'badge') return null;
+            return (
+              <div key={reward.id} className="min-w-[200px] w-[200px]">
+                <BadgeCard
+                  id={reward.id}
+                  name={reward.name}
+                  description={reward.description || undefined}
+                  image_url={reward.image_url}
+                  isEarned={true}
+                  earnedAt={earnedReward?.earned_at}
+                />
+              </div>
+            );
+          })}
+        </div>
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
           {earnedRewards.map((reward) => {
-          const earnedReward = userRewards.find(ur => ur.reward_id === reward.id);
-          
-          if (reward.type === 'badge') {
+            const earnedReward = userRewards.find(ur => ur.reward_id === reward.id);
+            if (reward.type !== 'badge') return null;
             return (
               <BadgeCard
                 key={reward.id}
@@ -90,13 +109,10 @@ const CollectionPage: React.FC<CollectionPageProps> = ({ userId }) => {
                 name={reward.name}
                 description={reward.description || undefined}
                 image_url={reward.image_url}
-                isEarned={true} // 獲得済みのみ表示
+                isEarned={true}
                 earnedAt={earnedReward?.earned_at}
               />
             );
-          }
-          
-          return null;
           })}
         </div>
       )}

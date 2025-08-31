@@ -173,6 +173,15 @@
       "description": "サブスクリプション機能は近日公開予定です"
     }
   },
+  "rewards": {
+    "notifications": {
+      "earned": {
+        "title": "シーズン報酬獲得！",
+        "message": "「{{rewardName}}」を獲得しました！",
+        "viewCollection": "コレクションを見る"
+      }
+    }
+  },
   "battle": {
     "title": "対戦詳細",
     "loading": "対戦情報を読み込み中...",

@@ -5,6 +5,7 @@ import { useBattleResultStore } from './battleResultStore';
 import { useBattleMatchedStore } from './battleMatchedStore';
 import { getCurrentRank } from '../lib/rankUtils';
 import { BattleMatchedData } from '../components/ui/BattleMatchedModal';
+import { useRewardEarnedStore } from './rewardEarnedStore';
 
 // Helper function to handle season start notifications
 const handleSeasonStartNotification = async (notificationData: Notification) => {
@@ -306,11 +307,12 @@ export interface Notification {
   id: string;
   title: string;
   message: string;
-  type: 'info' | 'success' | 'warning' | 'battle_matched' | 'battle_win' | 'battle_lose' | 'battle_draw' | 'season_start' | 'season_end' | 'news_article';
+  type: 'info' | 'success' | 'warning' | 'battle_matched' | 'battle_win' | 'battle_lose' | 'battle_draw' | 'season_start' | 'season_end' | 'news_article' | 'reward_earned';
   isRead: boolean;
   relatedBattleId?: string;
   relatedSeasonId?: string; // 新シーズン用
   relatedSiteNewsId?: string; // 追加: site_news 記事参照
+  relatedRewardId?: string; // 追加: rewards 参照
   createdAt: Date;
   updatedAt: Date;
 }
@@ -475,6 +477,7 @@ export const useNotificationStore = create<NotificationState>()(
             relatedBattleId: item.related_battle_id,
             relatedSeasonId: item.related_season_id,
             relatedSiteNewsId: item.related_site_news_id,
+            relatedRewardId: item.related_reward_id,
             createdAt: new Date(item.created_at),
             updatedAt: new Date(item.updated_at),
           }));
@@ -553,6 +556,30 @@ export const useNotificationStore = create<NotificationState>()(
             console.log('🏁 [NotificationStore] Pending season end found on initial fetch, showing modal');
             await handleSeasonEndNotification(pendingSeasonEnd);
           }
+          // 🏅 報酬獲得通知があればモーダルを表示
+          const pendingRewardEarned = notifications.find(
+            (n) => !n.isRead && n.type === 'reward_earned' && !!n.relatedRewardId
+          );
+
+          if (pendingRewardEarned) {
+            console.log('🏅 [NotificationStore] Pending reward earned found on initial fetch, showing modal');
+            try {
+              const { data: reward, error: rewardError } = await supabase
+                .from('rewards')
+                .select('*')
+                .eq('id', pendingRewardEarned.relatedRewardId as string)
+                .maybeSingle();
+              if (rewardError) throw rewardError;
+              if (reward) {
+                useRewardEarnedStore.getState().open(reward);
+              }
+              if (pendingRewardEarned.id) {
+                await get().deleteNotification(pendingRewardEarned.id);
+              }
+            } catch (e) {
+              console.error('❌ [NotificationStore] Failed to process reward_earned notification', e);
+            }
+          }
         } catch (error) {
           console.error('Error in fetchNotifications:', error);
           set({ 
@@ -578,6 +605,7 @@ export const useNotificationStore = create<NotificationState>()(
               type: notificationData.type,
               related_battle_id: notificationData.relatedBattleId || null,
               related_season_id: notificationData.relatedSeasonId || null,
+              related_reward_id: notificationData.relatedRewardId || null,
             })
             .select()
             .single();

@@ -10,7 +10,7 @@ import {
   Save,
   X,
   Medal,
-  CreditCard
+  
 } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
@@ -52,7 +52,6 @@ const ProfilePage: React.FC = () => {
 
   const [battleLoading, setBattleLoading] = useState(true);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
-  const [activeTab, setActiveTab] = useState<'current' | 'history' | 'collection' | 'payment'>('current');
   const [isEditing, setIsEditing] = useState(false);
   const [editUsername, setEditUsername] = useState('');
   const [editBio, setEditBio] = useState('');
@@ -62,14 +61,10 @@ const ProfilePage: React.FC = () => {
   const displayedUserId = routeUserId || authUser?.id;
   const isOwnProfile = !routeUserId || (authUser?.id === routeUserId);
 
-  // URLパラメータでタブを設定
+  // 旧タブ用URLパラメータは無視（単一ページ表示に変更）
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const tabParam = urlParams.get('tab');
-    if (tabParam === 'payment' && isOwnProfile) {
-      setActiveTab('payment');
-    }
-  }, [isOwnProfile]);
+    // no-op
+  }, []);
 
   useEffect(() => {
     if (displayedUserId) {
@@ -236,6 +231,8 @@ const ProfilePage: React.FC = () => {
     userActiveBattles: userActiveBattles.map(b => ({ id: b.id, contestants: [b.player1_user_id, b.player2_user_id] })),
     userArchivedBattles: userArchivedBattles.map(b => ({ id: b.id, players: [b.player1_user_id, b.player2_user_id], winner: b.winner_id }))
   });
+
+  // 履歴はArchivedBattleCardをそのまま使う
   
   if (profileLoading) {
     return (
@@ -438,40 +435,10 @@ const ProfilePage: React.FC = () => {
 
 
 
-      {/* Main Content Area - Tabs for Battles and Posts */}
+      {/* Main Content Area - Stacked Sections */}
       <div className="container-ultra-wide py-12">
         <div className="w-full">
-          {/* Enhanced Tab Navigation */}
-          <div className="relative mb-12">
-            <div className="flex border-b border-slate-700/50 bg-slate-800/30 rounded-t-2xl p-2">
-              {[
-                { key: 'current', label: t('profilePage.tabs.currentBattles'), icon: Play },
-                { key: 'history', label: t('profilePage.tabs.battleHistory'), icon: Archive },
-                { key: 'collection', label: t('profilePage.tabs.collection'), icon: Medal },
-                ...(isOwnProfile ? [{ key: 'payment', label: 'Payment Settings', icon: CreditCard }] : [])
-              ].map((tab) => (
-                <button 
-                  key={tab.key}
-                  onClick={() => setActiveTab(tab.key as typeof activeTab)} 
-                  className={`group relative flex items-center gap-2 py-3 px-6 font-medium transition-all duration-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-cyan-500/50 ${
-                    activeTab === tab.key 
-                      ? 'text-cyan-400 bg-slate-700/50' 
-                      : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/30'
-                  }`}
-                >
-                  <tab.icon className={`h-4 w-4 transition-all duration-300 ${
-                    activeTab === tab.key ? 'text-cyan-400' : 'text-slate-500 group-hover:text-slate-300'
-                  }`} />
-                  <span className="relative">
-                    {tab.label}
-                    {activeTab === tab.key && (
-                      <div className="absolute -bottom-1 left-0 right-0 h-0.5 bg-gradient-to-r from-cyan-400 to-purple-400 rounded-full" />
-                    )}
-                  </span>
-                </button>
-              ))}
-            </div>
-          </div>
+          {/* タブは廃止。以下の順で縦に表示: Collection -> Active Battles -> Battle History */}
 
           {/* Loading State */}
           {battleLoading && (
@@ -481,142 +448,73 @@ const ProfilePage: React.FC = () => {
             </div>
           )}
 
-          {/* Current Battles Tab */}
-          {!battleLoading && activeTab === 'current' && (
-            <div className="animate-fade-in">
+          {/* Collection Section */}
+          {!battleLoading && (
+            <section className="animate-fade-in mb-12">
+              <div className="flex items-center gap-2 mb-4">
+                <Medal className="h-5 w-5 text-cyan-400" />
+                <h2 className="text-xl font-semibold text-slate-200">{t('profilePage.tabs.collection')}</h2>
+              </div>
+              <CollectionPage userId={displayedUserId!} isOwnProfile={isOwnProfile} horizontal />
+            </section>
+          )}
+
+          {/* Current Battles - PCサイズ（BattlesPage準拠） */}
+          {!battleLoading && (
+            <section className="animate-fade-in mb-12">
+              <div className="flex items-center gap-2 mb-4">
+                <Play className="h-5 w-5 text-cyan-400" />
+                <h2 className="text-xl font-semibold text-slate-200">{t('profilePage.tabs.currentBattles')}</h2>
+              </div>
               {userActiveBattles.length > 0 ? (
-                <div className="space-y-6">
-                  {userActiveBattles.map(battle => (
-                    <div key={battle.id} className="transform transition-all duration-300 hover:-translate-y-1">
+                <div className="flex gap-4 overflow-x-auto pb-2 [-ms-overflow-style:'none'] [scrollbar-width:'none'] [&::-webkit-scrollbar]:hidden">
+                  {userActiveBattles.map((battle) => (
+                    <div
+                      key={battle.id}
+                      className="min-w-[320px] w-[320px] sm:min-w-[420px] sm:w-[420px] lg:min-w-[560px] lg:w-[560px]"
+                    >
                       <BattleCard battle={battle} />
                     </div>
                   ))}
                 </div>
               ) : (
-                <div className={`
-                  flex flex-col items-center justify-center
-                  py-16 px-8 text-center
-                  bg-gradient-to-br from-slate-800/40 to-slate-700/30
-                  rounded-xl border border-slate-600/30
-                `}>
-                  {/* アイコン */}
-                  <div className="relative mb-6">
-                    <div className="w-24 h-24 bg-gradient-to-br from-slate-700/60 to-slate-600/40 rounded-2xl flex items-center justify-center border border-slate-500/30">
-                      <Target className="w-12 h-12 text-slate-400" />
-                    </div>
-                    
-                    {/* 装飾的なグロー効果 */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-slate-500/10 to-slate-600/10 rounded-2xl blur-xl opacity-50" />
-                  </div>
-
-                  {/* メッセージ */}
-                  <div className="space-y-4 max-w-md">
-                    <h3 className="text-xl font-semibold text-slate-200">
-                      {t('profilePage.battles.noActiveBattlesTitle')}
-                    </h3>
-                    
-                    <p className="text-slate-400 text-sm leading-relaxed">
-                      {t('profilePage.battles.noActiveBattlesDescription')}
-                    </p>
-                    
-                    {/* ヒント */}
-                    <div className="mt-6 p-4 bg-slate-800/60 rounded-lg border border-slate-600/40">
-                      <p className="text-cyan-300 text-xs font-medium flex items-center justify-center gap-2">
-                        <Target className="w-4 h-4" />
-                        新しいバトルに参加してスキルを試そう！
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* 装飾的なパーティクル */}
-                  <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                    <div className="absolute top-10 left-10 w-2 h-2 bg-cyan-400/20 rounded-full animate-pulse" />
-                    <div className="absolute top-20 right-16 w-1 h-1 bg-purple-400/30 rounded-full animate-pulse" style={{ animationDelay: '1s' }} />
-                    <div className="absolute bottom-16 left-20 w-1.5 h-1.5 bg-amber-400/20 rounded-full animate-pulse" style={{ animationDelay: '2s' }} />
-                    <div className="absolute bottom-10 right-10 w-2 h-2 bg-pink-400/20 rounded-full animate-pulse" style={{ animationDelay: '0.5s' }} />
-                  </div>
+                <div className="flex flex-col items-center justify-center py-10 px-6 text-center bg-slate-800/40 rounded-xl border border-slate-600/30">
+                  <Target className="w-10 h-10 text-slate-400 mb-3" />
+                  <h3 className="text-lg font-semibold text-slate-200 mb-1">{t('profilePage.battles.noActiveBattlesTitle')}</h3>
+                  <p className="text-slate-400 text-sm">{t('profilePage.battles.noActiveBattlesDescription')}</p>
                 </div>
               )}
-            </div>
+            </section>
           )}
 
-          {/* Battle History Tab */}
-          {!battleLoading && activeTab === 'history' && (
-            <div className="animate-fade-in">
+          {/* Battle History - PCサイズ（BattlesPage準拠） */}
+          {!battleLoading && (
+            <section className="animate-fade-in mb-4">
+              <div className="flex items-center gap-2 mb-4">
+                <Archive className="h-5 w-5 text-cyan-400" />
+                <h2 className="text-xl font-semibold text-slate-200">{t('profilePage.tabs.battleHistory')}</h2>
+              </div>
               {userArchivedBattles.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                  {userArchivedBattles.map(battle => (
-                    <div key={battle.id} className="transform transition-all duration-300 hover:-translate-y-1 hover:scale-[1.02]">
+                <div className="flex gap-4 overflow-x-auto pb-2 [-ms-overflow-style:'none'] [scrollbar-width:'none'] [&::-webkit-scrollbar]:hidden">
+                  {userArchivedBattles.map((battle) => (
+                    <div
+                      key={battle.id}
+                      className="min-w-[320px] w-[320px] sm:min-w-[420px] sm:w-[420px] lg:min-w-[560px] lg:w-[560px]"
+                    >
                       <ArchivedBattleCard battle={battle} />
                     </div>
                   ))}
                 </div>
               ) : (
-                <div className={`
-                  flex flex-col items-center justify-center
-                  py-16 px-8 text-center
-                  bg-gradient-to-br from-slate-800/40 to-slate-700/30
-                  rounded-xl border border-slate-600/30
-                `}>
-                  {/* アイコン */}
-                  <div className="relative mb-6">
-                    <div className="w-24 h-24 bg-gradient-to-br from-slate-700/60 to-slate-600/40 rounded-2xl flex items-center justify-center border border-slate-500/30">
-                      <Archive className="w-12 h-12 text-slate-400" />
-                    </div>
-                    
-                    {/* 装飾的なグロー効果 */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-slate-500/10 to-slate-600/10 rounded-2xl blur-xl opacity-50" />
-                  </div>
-
-                  {/* メッセージ */}
-                  <div className="space-y-4 max-w-md">
-                    <h3 className="text-xl font-semibold text-slate-200">
-                      {t('profilePage.battles.noArchivedBattlesTitle')}
-                    </h3>
-                    
-                    <p className="text-slate-400 text-sm leading-relaxed">
-                      {t('profilePage.battles.noArchivedBattlesDescription')}
-                    </p>
-                    
-                    {/* ヒント */}
-                    <div className="mt-6 p-4 bg-slate-800/60 rounded-lg border border-slate-600/40">
-                      <p className="text-cyan-300 text-xs font-medium flex items-center justify-center gap-2">
-                        <Archive className="w-4 h-4" />
-                        {t('profilePage.emptyStates.battleHistory')}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* 装飾的なパーティクル */}
-                  <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                    <div className="absolute top-10 left-10 w-2 h-2 bg-cyan-400/20 rounded-full animate-pulse" />
-                    <div className="absolute top-20 right-16 w-1 h-1 bg-purple-400/30 rounded-full animate-pulse" style={{ animationDelay: '1s' }} />
-                    <div className="absolute bottom-16 left-20 w-1.5 h-1.5 bg-amber-400/20 rounded-full animate-pulse" style={{ animationDelay: '2s' }} />
-                    <div className="absolute bottom-10 right-10 w-2 h-2 bg-pink-400/20 rounded-full animate-pulse" style={{ animationDelay: '0.5s' }} />
-                  </div>
+                <div className="flex flex-col items-center justify-center py-10 px-6 text-center bg-slate-800/40 rounded-xl border border-slate-600/30">
+                  <Archive className="w-10 h-10 text-slate-400 mb-3" />
+                  <h3 className="text-lg font-semibold text-slate-200 mb-1">{t('profilePage.battles.noArchivedBattlesTitle')}</h3>
+                  <p className="text-slate-400 text-sm">{t('profilePage.battles.noArchivedBattlesDescription')}</p>
                 </div>
               )}
-            </div>
+            </section>
           )}
 
-          {/* コレクション */}
-          {!battleLoading && activeTab === 'collection' && (
-            <CollectionPage userId={displayedUserId!} isOwnProfile={isOwnProfile} />
-          )}
-
-          {/* 決済設定（自分のプロファイルのみ） */}
-          {isOwnProfile && activeTab === 'payment' && (
-            <div className="animate-fade-in">
-              <div className="text-center py-16">
-                <div className="bg-slate-800/50 rounded-xl p-8 border border-slate-700">
-                  <CreditCard className="h-16 w-16 text-slate-400 mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold text-slate-200 mb-2">Super Tips機能</h3>
-                  <p className="text-slate-400 mb-4">Super Tips決済設定は現在開発中です。</p>
-                  <p className="text-sm text-slate-500">実装予定：Stripe Connect統合による寄付機能</p>
-                </div>
-              </div>
-            </div>
-          )}
         </div>
       </div>
     </div>
