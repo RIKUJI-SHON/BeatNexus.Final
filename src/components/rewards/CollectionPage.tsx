@@ -50,13 +50,20 @@ const CollectionPage: React.FC<CollectionPageProps> = ({ userId, horizontal = fa
       }
 
       // 型整形: reward(jsonb) を Reward 型に合わせる
-      const normalized: UserReward[] = (userRewardsData || []).map((row: any) => ({
+      const normalized: UserReward[] = (userRewardsData || []).map((row: {
+        id: string;
+        user_id: string;
+        reward_id: string;
+        earned_at: string;
+        earned_season_id: string | null;
+        reward: Reward;
+      }) => ({
         id: row.id,
         user_id: row.user_id,
         reward_id: row.reward_id,
         earned_at: row.earned_at,
         earned_season_id: row.earned_season_id,
-        reward: row.reward as Reward,
+        reward: row.reward,
       }));
 
       console.log('Collection fetch successful:', {
