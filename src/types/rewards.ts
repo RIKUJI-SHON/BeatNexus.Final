@@ -2,6 +2,8 @@ export interface Reward {
   id: string;
   name: string;
   description: string | null;
+  description_ja?: string | null;
+  description_en?: string | null;
   type: 'badge';
   image_url: string;
   season_id: string | null;

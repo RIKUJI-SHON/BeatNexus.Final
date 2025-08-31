@@ -14,6 +14,7 @@ interface CollectionPageProps {
 const CollectionPage: React.FC<CollectionPageProps> = ({ userId, horizontal = false }) => {
   const [userRewards, setUserRewards] = useState<UserReward[]>([]);
   const [loading, setLoading] = useState(true);
+  const [profileLanguage, setProfileLanguage] = useState<string>('en');
 
   const fetchCollection = useCallback(async () => {
     if (!userId) {
@@ -24,6 +25,19 @@ const CollectionPage: React.FC<CollectionPageProps> = ({ userId, horizontal = fa
 
     try {
       setLoading(true);
+
+      // プロフィールの言語を取得
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('language')
+        .eq('id', userId)
+        .single();
+
+      if (profileError) {
+        console.warn('Profile language fetch error:', profileError.message);
+      } else if (profile?.language) {
+        setProfileLanguage(profile.language);
+      }
 
       // ユーザーが獲得した報酬のみを取得（未獲得は表示しない）
       const { data: userRewardsData, error: userRewardsError } = await supabase
@@ -65,6 +79,13 @@ const CollectionPage: React.FC<CollectionPageProps> = ({ userId, horizontal = fa
     .map(ur => ur.reward)
     .filter((reward): reward is Reward => reward !== null);
 
+  const pickDescription = (reward: Reward) => {
+    const lang = (profileLanguage || '').toLowerCase();
+    if (lang === 'ja') return reward.description_ja || reward.description || null;
+    // default to English, fall back to JA, then original description
+    return reward.description_en || reward.description_ja || reward.description || null;
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center py-12">
@@ -88,7 +109,7 @@ const CollectionPage: React.FC<CollectionPageProps> = ({ userId, horizontal = fa
                 <BadgeCard
                   id={reward.id}
                   name={reward.name}
-                  description={reward.description || undefined}
+                  description={pickDescription(reward) || undefined}
                   image_url={reward.image_url}
                   isEarned={true}
                   earnedAt={earnedReward?.earned_at}
@@ -107,7 +128,7 @@ const CollectionPage: React.FC<CollectionPageProps> = ({ userId, horizontal = fa
                 key={reward.id}
                 id={reward.id}
                 name={reward.name}
-                description={reward.description || undefined}
+                description={pickDescription(reward) || undefined}
                 image_url={reward.image_url}
                 isEarned={true}
                 earnedAt={earnedReward?.earned_at}
@@ -118,4 +139,6 @@ const CollectionPage: React.FC<CollectionPageProps> = ({ userId, horizontal = fa
       )}
     </div>
   );
-};export default CollectionPage;
+};
+
+export default CollectionPage;
