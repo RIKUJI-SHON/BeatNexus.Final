@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { supabase } from '../lib/supabase';
 import { ExternalLink, Loader2, Settings, CheckCircle2, AlertCircle } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 type JsonValue = string | number | boolean | null | { [key: string]: JsonValue } | JsonValue[];
 
@@ -9,6 +10,7 @@ const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
 
 export default function StripeConnectPage() {
+  const { t } = useTranslation();
   const [user, setUser] = useState<Awaited<ReturnType<typeof supabase.auth.getUser>>['data']['user']>(null);
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -192,20 +194,20 @@ export default function StripeConnectPage() {
   const statusPillClass = isReceivingReady
     ? 'bg-emerald-500/20 text-emerald-300'
     : 'bg-amber-500/20 text-amber-300';
-  const statusText = isReceivingReady ? '受け取り可能です' : '受け取り設定が必要です';
+  const statusText = isReceivingReady ? t('superTip.connect.status.ready') : t('superTip.connect.status.needSetup');
 
   return (
     <div className="min-h-screen bg-gray-950 text-white p-4 sm:p-6 lg:p-8">
       <div className="max-w-4xl mx-auto space-y-6">
       <Helmet>
-        <title>Super Tip 受け取り設定 | BeatNexus</title>
+        <title>{t('superTip.connect.headTitle')}</title>
       </Helmet>
 
       <div className="flex items-center gap-2">
         <Settings className="h-6 w-6 text-cyan-400" />
-        <h1 className="text-3xl font-bold text-cyan-400">Super Tip 受け取り設定</h1>
+        <h1 className="text-3xl font-bold text-cyan-400">{t('superTip.connect.title')}</h1>
       </div>
-      <p className="text-sm text-gray-300">Super Tip（応援チップ）を受け取るための設定・再開、状態確認、Stripe Expressダッシュボードへの遷移ができます。</p>
+      <p className="text-sm text-gray-300">{t('superTip.connect.subtitle')}</p>
 
       {/* 受け取り可否ステータス */}
       <div className="rounded-lg border border-gray-800 bg-gray-900 p-4 flex items-center justify-between">
@@ -217,15 +219,15 @@ export default function StripeConnectPage() {
           )}
           <div>
             <div className="flex items-center gap-2">
-              <span className="font-semibold">受け取り状態</span>
+              <span className="font-semibold">{t('superTip.connect.status.label')}</span>
               <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${statusPillClass}`}>
-                {loading ? '確認中…' : statusText}
+                {loading ? t('superTip.connect.status.checking') : statusText}
               </span>
             </div>
             <p className="mt-1 text-sm text-gray-300">
               {isReceivingReady
-                ? '売上の確認や振込設定は「Stripe Express ダッシュボード」から行えます。'
-                : '初めての場合や未完了の場合は「受け取り設定を開始」から必要情報を登録してください。設定が完了するまでSuper Tipは受け取れません。'}
+                ? t('superTip.connect.status.descriptionReady')
+                : t('superTip.connect.status.descriptionNeedSetup')}
             </p>
           </div>
         </div>
@@ -241,7 +243,7 @@ export default function StripeConnectPage() {
             className="px-4 py-2 rounded bg-blue-600 hover:bg-blue-500 transition text-white disabled:opacity-50 inline-flex items-center justify-center gap-2"
           >
             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-            受け取り設定を開始/再開（Stripe Connect）
+            {t('superTip.connect.actions.startOrResume')}
           </button>
         )}
         <button
@@ -249,29 +251,29 @@ export default function StripeConnectPage() {
           onClick={openExpressDashboard}
           className="px-4 py-2 rounded bg-slate-700 hover:bg-slate-600 transition text-white disabled:opacity-50 inline-flex items-center justify-center gap-2"
         >
-          <ExternalLink className="h-4 w-4" /> Stripe Express ダッシュボードへ
+          <ExternalLink className="h-4 w-4" /> {t('superTip.connect.actions.openExpressDashboard')}
         </button>
       </div>
 
       {/* Super Tip 説明セクション */}
       <div className="rounded-lg border border-gray-800 bg-gray-900 p-4 space-y-3">
-        <h2 className="text-lg font-semibold">Super Tipとは？</h2>
+        <h2 className="text-lg font-semibold">{t('superTip.connect.whatIs.title')}</h2>
         <ul className="list-disc list-inside text-sm text-gray-300 space-y-1">
-          <li>プレイヤーを応援するための小額チップ機能です。視聴や投票の流れの中で、あなたの活動を直接支援できます。</li>
-          <li>手数料はプラットフォーム手数料（現在10%）と決済手数料がかかります。詳細は「特定商取引法に基づく表記」をご確認ください。</li>
-          <li>受け取りにはStripe Connectのアカウント作成と、Stripe Expressでの振込設定が必要です。</li>
-          <li>決済はStripeのセキュリティ基準に則り、安全に処理されます（3Dセキュア等対応）。</li>
+          <li>{t('superTip.connect.whatIs.point1')}</li>
+          <li>{t('superTip.connect.whatIs.point2')}</li>
+          <li>{t('superTip.connect.whatIs.point3')}</li>
+          <li>{t('superTip.connect.whatIs.point4')}</li>
         </ul>
-        <p className="text-xs text-gray-400">関連: <a href="/legal/tokushoho" className="text-cyan-300 underline">特定商取引法に基づく表記</a></p>
+        <p className="text-xs text-gray-400">{t('superTip.connect.related')}: <a href="/legal/tokushoho" className="text-cyan-300 underline">{t('superTip.connect.links.tokushoho')}</a></p>
       </div>
 
       {/* 受け取り開始の流れ */}
       <div className="rounded-lg border border-gray-800 bg-gray-900 p-4 space-y-3 mb-12">
-        <h2 className="text-lg font-semibold">受け取り開始の流れ</h2>
+        <h2 className="text-lg font-semibold">{t('superTip.connect.howToStart.title')}</h2>
         <ol className="list-decimal list-inside text-sm text-gray-300 space-y-1">
-          <li>「受け取り設定を開始/再開」を押して、Stripeで必要事項（本人確認・振込口座など）を登録します。</li>
-          <li>完了後このページに戻ると「受け取り可能」と表示されます。</li>
-          <li>売上の確認や入金タイミングの設定は「Stripe Express ダッシュボード」で行えます。</li>
+          <li>{t('superTip.connect.howToStart.step1')}</li>
+          <li>{t('superTip.connect.howToStart.step2')}</li>
+          <li>{t('superTip.connect.howToStart.step3')}</li>
         </ol>
       </div>
 

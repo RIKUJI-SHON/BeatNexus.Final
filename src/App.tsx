@@ -130,6 +130,8 @@ function RouterContent() {
             <Route path="/purchase-success" element={<PurchaseSuccessPage />} />
             <Route path="/payments/super-tip/complete" element={<SuperTipCompletePage />} />
             <Route path="/ad-preview" element={<AdPreviewPage />} />
+            {/* Post (投稿) ページ */}
+            <Route path="/post" element={<PostPage />} />
             <Route path="/tournament" element={<TournamentPage />} />
             <Route path="/faq" element={<FAQPage />} />
             <Route path="/terms" element={<TermsPage />} />

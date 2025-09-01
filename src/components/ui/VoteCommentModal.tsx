@@ -46,36 +46,36 @@ export const VoteCommentModal: React.FC<VoteCommentModalProps> = ({
 
   // バックエンドのエラーコードをユーザー向けの日本語に変換
   const mapBackendError = useCallback((code?: string, fallback?: string) => {
-    if (!code) return fallback || 'エラーが発生しました。時間をおいて再度お試しください。';
+    if (!code) return fallback || t('superTip.errors.generic');
     switch (code) {
       case 'INVALID_REQUEST':
-        return '入力内容が不足しています。金額・コメント・受け取り先を確認してください。';
+        return t('superTip.errors.invalidRequest');
       case 'SELF_TIP_NOT_ALLOWED':
-        return '自分自身へのSuper Tipは行えません。';
+        return t('superTip.errors.selfTipNotAllowed');
       case 'INVALID_AMOUNT':
-        return '金額は¥100〜¥10,000の範囲で指定してください。';
+        return t('superTip.errors.invalidAmount');
       case 'VOTE_NOT_ALLOWED_WITHOUT_BATTLE':
-        return 'バトル未指定での投票はできません。';
+        return t('superTip.errors.voteNotAllowedWithoutBattle');
       case 'BATTLE_NOT_FOUND':
-        return '対象のバトルが見つかりませんでした。';
+        return t('superTip.errors.battleNotFound');
       case 'BATTLE_NOT_ACTIVE':
-        return 'このバトルは現在投票できません。';
+        return t('superTip.errors.battleNotActive');
       case 'ALREADY_TIPPED_IN_BATTLE':
-        return 'このバトルでは既にSuper Tipを実行済みです。';
+        return t('superTip.errors.alreadyTippedInBattle');
       case 'RECIPIENT_NOT_READY':
-        return '受け取り先の設定が完了していないため、決済できません。';
+        return t('superTip.errors.recipientNotReady');
       case 'PI_CREATION_FAILED':
-        return '決済の作成に失敗しました。別の支払い方法でお試しください。';
+        return t('superTip.errors.piCreationFailed');
       case 'TIP_INSERT_FAILED':
-        return '内部エラーにより記録に失敗しました。しばらくしてから再度お試しください。';
+        return t('superTip.errors.tipInsertFailed');
       case 'DUP_CHECK_FAILED':
-        return '重複チェックでエラーが発生しました。時間をおいて再度お試しください。';
+        return t('superTip.errors.dupCheckFailed');
       case 'INTERNAL_SERVER_ERROR':
-        return 'サーバーで問題が発生しました。時間をおいて再度お試しください。';
+        return t('superTip.errors.internal');
       default:
-        return fallback || 'エラーが発生しました。時間をおいて再度お試しください。';
+        return fallback || t('superTip.errors.generic');
     }
-  }, []);
+  }, [t]);
 
   const STRIPE_PUBLISHABLE_KEY = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY as string | undefined;
   const stripePromise = STRIPE_PUBLISHABLE_KEY ? loadStripe(STRIPE_PUBLISHABLE_KEY) : null;
@@ -112,15 +112,15 @@ export const VoteCommentModal: React.FC<VoteCommentModalProps> = ({
     setTipError(null);
     if (!superTipOn) return; // ガード
     if (!canStartTip) {
-      setTipError('金額とコメントを確認してください');
+      setTipError(t('superTip.modal.errors.checkAmountAndComment'));
       return;
     }
     if (!battleId) {
-      setTipError('バトル情報が取得できません');
+      setTipError(t('superTip.modal.errors.missingBattle'));
       return;
     }
     if (!recipientUserId) {
-      setTipError('受け取り先ユーザーを特定できません');
+      setTipError(t('superTip.modal.errors.missingRecipient'));
       return;
     }
     setTipLoading(true);
@@ -128,7 +128,7 @@ export const VoteCommentModal: React.FC<VoteCommentModalProps> = ({
       const { data: userData } = await supabase.auth.getUser();
       const senderUserId = userData.user?.id;
       if (!senderUserId) {
-        setTipError('この操作にはログインが必要です');
+        setTipError(t('superTip.modal.errors.loginRequired'));
         return;
       }
 
@@ -163,10 +163,10 @@ export const VoteCommentModal: React.FC<VoteCommentModalProps> = ({
             setPiClientSecret(parsed.client_secret);
             setReturnUrl(parsed.recommended_return_url || null);
           } else {
-            setTipError(mapBackendError(parsed?.error || undefined, `エラーが発生しました (HTTP ${r.status})`));
+            setTipError(mapBackendError(parsed?.error || undefined, t('superTip.errors.http', { code: r.status }))); 
           }
         } catch {
-          setTipError(`エラーが発生しました (HTTP ${r.status})`);
+          setTipError(t('superTip.errors.http', { code: r.status }));
         }
         return;
       }
@@ -175,7 +175,7 @@ export const VoteCommentModal: React.FC<VoteCommentModalProps> = ({
         setPiClientSecret(resp.client_secret);
         setReturnUrl(resp.recommended_return_url || null);
       } else {
-        setTipError(mapBackendError(resp?.error || undefined, '不明なエラーが発生しました'));
+        setTipError(mapBackendError(resp?.error || undefined, t('superTip.errors.unknown')));
       }
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : String(e);
@@ -183,7 +183,7 @@ export const VoteCommentModal: React.FC<VoteCommentModalProps> = ({
     } finally {
       setTipLoading(false);
     }
-  }, [amount, battleId, canStartTip, comment, mapBackendError, player, recipientUserId, superTipOn]);
+  }, [amount, battleId, canStartTip, comment, mapBackendError, player, recipientUserId, superTipOn, t]);
 
   if (!isOpen) return null;
 
@@ -212,7 +212,7 @@ export const VoteCommentModal: React.FC<VoteCommentModalProps> = ({
             {/* SuperTip Opt-in */}
             <div className="mb-6">
               <div className="flex items-center justify-between">
-                <label className="text-sm font-medium text-gray-200">応援オプション（Super Tip）</label>
+                <label className="text-sm font-medium text-gray-200">{t('superTip.modal.supportOption')}</label>
                 <button
                   type="button"
                   onClick={() => {
@@ -231,10 +231,10 @@ export const VoteCommentModal: React.FC<VoteCommentModalProps> = ({
               {superTipOn && (
                 <div className="mt-3 space-y-3">
                   {!STRIPE_PUBLISHABLE_KEY && (
-                    <div className="text-xs text-red-400">VITE_STRIPE_PUBLISHABLE_KEY が未設定です。決済を利用できません。</div>
+                    <div className="text-xs text-red-400">{t('superTip.modal.errors.publishableKeyMissing')}</div>
                   )}
                   <div className="space-y-1">
-                    <div className="text-xs text-gray-400">プリセット</div>
+                    <div className="text-xs text-gray-400">{t('superTip.modal.presets')}</div>
                     <div className="flex flex-wrap gap-2">
                       {TIP_PRESETS.map(v => (
                         <button
@@ -248,7 +248,7 @@ export const VoteCommentModal: React.FC<VoteCommentModalProps> = ({
                     </div>
                   </div>
                   <div className="space-y-1">
-                    <label className="block text-xs text-gray-400">金額（¥100〜¥10,000）</label>
+                    <label className="block text-xs text-gray-400">{t('superTip.modal.amountLabel')}</label>
                     <input
                       type="number"
                       min={100}
@@ -258,7 +258,7 @@ export const VoteCommentModal: React.FC<VoteCommentModalProps> = ({
                       className="w-full rounded bg-gray-800 border border-gray-600 text-white px-3 py-2 text-sm"
                     />
                   </div>
-                  <div className="text-xs text-gray-400">プラットフォーム手数料（約10%）が含まれます。</div>
+                  <div className="text-xs text-gray-400">{t('superTip.modal.feeNote')}</div>
                   {tipError && <div className="text-sm text-red-400">{tipError}</div>}
                 </div>
               )}
@@ -349,14 +349,14 @@ export const VoteCommentModal: React.FC<VoteCommentModalProps> = ({
                           : 'bg-pink-500 border-pink-600'
                       }`}
                     >
-                      {tipLoading ? (
+            {tipLoading ? (
                         <div className="flex items-center justify-center gap-2">
                           <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                          処理中…
+              {t('superTip.modal.processing')}
                         </div>
                       ) : (
                         <div className="flex items-center justify-center space-x-2">
-                          <span>💸 決済を開始して投票する</span>
+              <span>💸 {t('superTip.modal.startPaymentAndVote')}</span>
                         </div>
                       )}
                     </button>
@@ -379,7 +379,7 @@ export const VoteCommentModal: React.FC<VoteCommentModalProps> = ({
                           />
                         </Elements>
                       ) : (
-                        <div className="text-sm text-red-400">Stripeの公開キーが設定されていないため、決済を続行できません。</div>
+                        <div className="text-sm text-red-400">{t('superTip.modal.errors.publishableKeyMissing')}</div>
                       )}
                     </div>
                   )}
@@ -391,7 +391,7 @@ export const VoteCommentModal: React.FC<VoteCommentModalProps> = ({
                     className="cursor-pointer transition-all text-white px-6 py-3 rounded-lg border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px] active:border-b-[2px] active:brightness-90 active:translate-y-[2px] disabled:opacity-50 disabled:cursor-not-allowed bg-gray-600 border-gray-700"
                   >
                     <div className="flex items-center justify-center space-x-2">
-                      <span>今回は投票だけ</span>
+                      <span>{t('superTip.modal.voteOnlyNow')}</span>
                     </div>
                   </button>
                 </>
@@ -411,6 +411,7 @@ function PaymentSection({ onComplete, returnUrl }: { onComplete?: () => Promise<
   const elements = useElements();
   const [submitting, setSubmitting] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+  const { t } = useTranslation();
 
   const onConfirm = useCallback(async () => {
     if (!stripe || !elements) return;
@@ -422,7 +423,7 @@ function PaymentSection({ onComplete, returnUrl }: { onComplete?: () => Promise<
         confirmParams: { return_url: returnUrl },
       });
       if (error) {
-        setErr(error.message || '決済エラーが発生しました');
+        setErr(error.message || t('superTip.modal.errors.paymentFailedGeneric'));
       } else {
         if (onComplete) await onComplete();
       }
@@ -432,7 +433,7 @@ function PaymentSection({ onComplete, returnUrl }: { onComplete?: () => Promise<
     } finally {
       setSubmitting(false);
     }
-  }, [elements, onComplete, returnUrl, stripe]);
+  }, [elements, onComplete, returnUrl, stripe, t]);
 
   return (
     <div className="space-y-3">
@@ -442,11 +443,11 @@ function PaymentSection({ onComplete, returnUrl }: { onComplete?: () => Promise<
         onClick={onConfirm}
         disabled={!stripe || !elements || submitting}
         className={`pay-btn w-full ${submitting ? 'is-loading' : ''}`}
-        aria-label={submitting ? '決済を確認中' : '決済を確定する'}
+        aria-label={submitting ? t('superTip.modal.confirming') : t('superTip.modal.confirmPayment')}
       >
         <span className="pay-btn__content">
           <span className="pay-btn__icon" aria-hidden="true" />
-          <span className="pay-btn__label">{submitting ? '確認中…' : '決済を確定する'}</span>
+          <span className="pay-btn__label">{submitting ? t('superTip.modal.confirming') : t('superTip.modal.confirmPayment')}</span>
         </span>
       </button>
     </div>

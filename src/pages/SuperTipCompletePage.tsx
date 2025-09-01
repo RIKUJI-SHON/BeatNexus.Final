@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const SuperTipCompletePage: React.FC = () => {
   const [searchParams] = useSearchParams();
+  const { t } = useTranslation();
   const paymentIntentId = searchParams.get('payment_intent');
   const redirectStatus = searchParams.get('redirect_status');
   const [loading, setLoading] = useState(true);
@@ -25,18 +27,18 @@ const SuperTipCompletePage: React.FC = () => {
           </div>
 
           {loading ? (
-            <p className="text-gray-600 dark:text-gray-300">決済を確認中...</p>
+            <p className="text-gray-600 dark:text-gray-300">{t('superTip.complete.checking')}</p>
           ) : (
             <>
               <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-                {isSucceeded ? 'Super Tip の決済が完了しました！' : isFailed ? '決済に失敗しました' : '決済処理を受け付けました'}
+                {isSucceeded ? t('superTip.complete.title.success') : isFailed ? t('superTip.complete.title.failed') : t('superTip.complete.title.processing')}
               </h1>
               <p className="text-gray-600 dark:text-gray-300 mb-6">
                 {isSucceeded
-                  ? 'ご支援ありがとうございます。処理は完了し、受取側に配分されました。'
+                  ? t('superTip.complete.desc.success')
                   : isFailed
-                  ? 'ブラウザの戻るで再試行するか、別の支払い方法をご利用ください。'
-                  : '必要に応じて数秒後に反映されます。ページを閉じても大丈夫です。'}
+                  ? t('superTip.complete.desc.failed')
+                  : t('superTip.complete.desc.processing')}
               </p>
 
               {paymentIntentId && (
@@ -51,13 +53,13 @@ const SuperTipCompletePage: React.FC = () => {
                   to="/dev/super-tips"
                   className="w-full bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors block"
                 >
-                  開発ページへ戻る
+                  {t('superTip.complete.backToDev')}
                 </Link>
                 <Link
                   to="/"
                   className="w-full border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 px-6 py-3 rounded-lg font-medium transition-colors block"
                 >
-                  ホームに戻る
+                  {t('superTip.complete.backToHome')}
                 </Link>
               </div>
             </>
@@ -69,7 +71,7 @@ const SuperTipCompletePage: React.FC = () => {
             to="/dev/super-tips"
             className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-sm transition-colors"
           >
-            /dev/super-tips を開く
+            {t('superTip.complete.openDevLink')}
           </Link>
         </div>
       </div>

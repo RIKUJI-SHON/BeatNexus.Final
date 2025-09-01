@@ -55,6 +55,116 @@
     "settings": "Settings",
     "logout": "Logout"
   },
+  "superTip": {
+    "settingsCard": {
+      "title": "Super Tip Receiving Settings",
+      "description": "Configure and access your dashboard to receive Super Tips (support tips).",
+      "openSettings": "Open Settings Page"
+    },
+    "connect": {
+      "headTitle": "Super Tip Receiving Settings | BeatNexus",
+      "title": "Super Tip Receiving Settings",
+      "subtitle": "Start or resume setup to receive Super Tips, check your status, and jump to the Stripe Express dashboard.",
+      "status": {
+        "label": "Receiving Status",
+        "checking": "Checking...",
+        "ready": "Ready to receive",
+        "needSetup": "Setup required",
+        "descriptionReady": "You can review payouts and configure deposits from the Stripe Express Dashboard.",
+        "descriptionNeedSetup": "If this is your first time or setup is incomplete, start from 'Start/Resume Setup'. Until completion, you cannot receive Super Tips."
+      },
+      "actions": {
+        "startOrResume": "Start/Resume Setup (Stripe Connect)",
+        "openExpressDashboard": "Open Stripe Express Dashboard"
+      },
+      "whatIs": {
+        "title": "What is Super Tip?",
+        "point1": "A small support tip to cheer on players. You can directly support creators within the watch/vote flow.",
+        "point2": "Fees apply: platform fee (currently 10%) and Stripe processing fees. See 'Legal Disclosure' for details.",
+        "point3": "Receiving requires a Stripe Connect account and deposit setup in Stripe Express.",
+        "point4": "Payments are processed securely under Stripe standards (3D Secure, etc.)."
+      },
+      "related": "Related",
+      "links": {
+        "tokushoho": "Legal Disclosure"
+      },
+      "howToStart": {
+        "title": "How to start receiving",
+        "step1": "Click 'Start/Resume Setup' and complete KYC/bank info in Stripe.",
+        "step2": "When completed, this page will show 'Ready to receive'.",
+        "step3": "You can check earnings and configure payout schedule in the Stripe Express Dashboard."
+      }
+    },
+    "complete": {
+      "checking": "Verifying payment...",
+      "title": {
+        "success": "Super Tip payment completed!",
+        "failed": "Payment failed",
+        "processing": "Payment processing accepted"
+      },
+      "desc": {
+        "success": "Thank you for your support. Processing is done and the recipient has been credited.",
+        "failed": "Please retry via browser back or try another payment method.",
+        "processing": "It may take a few seconds to reflect. It's safe to close this page."
+      },
+      "backToDev": "Back to Dev Page",
+      "backToHome": "Back to Home",
+      "openDevLink": "Open /dev/super-tips"
+    },
+    "preview": {
+      "title": "Super Tip Comment Card Preview",
+      "description": "The tier (1–4) by amount is expressed via color intensity. Even in standalone support, the supported side color (A=blue/B=red) applies. Badge is hidden on mobile.",
+      "badge": "Super Tip",
+      "sideA": "Side A",
+      "sideB": "Side B",
+      "standalone": "Standalone",
+      "amount": "¥{{amount}}"
+    },
+    "modal": {
+      "supportOption": "Support Option (Super Tip)",
+      "presets": "Presets",
+      "amountLabel": "Amount (¥100–¥10,000)",
+      "feeNote": "Includes platform fee (~10%).",
+      "defaultComment": "Cheering you on!",
+      "processing": "Processing...",
+      "confirmPayment": "Confirm payment",
+      "confirming": "Confirming...",
+      "startPaymentAndVote": "Start payment and vote",
+      "voteOnlyNow": "Vote only this time",
+      "errors": {
+        "publishableKeyMissing": "VITE_STRIPE_PUBLISHABLE_KEY is not set. Payments are unavailable.",
+        "checkAmountAndComment": "Please check amount and comment.",
+        "missingBattle": "Battle information is missing.",
+        "missingRecipient": "Recipient user could not be determined.",
+        "loginRequired": "Login is required for this action.",
+        "paymentFailedGeneric": "A payment error occurred."
+      }
+    },
+    "supportButton": "Support",
+    "supportModal": {
+      "titleWithName": "Support {{name}}",
+      "titleGeneric": "Support this beatboxer",
+      "commentLabel": "Comment (required, up to 500 chars)",
+      "startSupport": "Send (start support)"
+    },
+    "errors": {
+      "generic": "An error occurred. Please try again later.",
+      "invalidRequest": "Missing input. Check amount, comment, and recipient.",
+      "selfTipNotAllowed": "You cannot send a Super Tip to yourself.",
+      "invalidAmount": "Amount must be between ¥100 and ¥10,000.",
+      "voteNotAllowedWithoutBattle": "Cannot vote without specifying a battle.",
+      "battleNotFound": "Target battle not found.",
+      "battleNotActive": "This battle is not currently open for voting.",
+      "alreadyTippedInBattle": "You have already sent a Super Tip in this battle.",
+      "recipientNotReady": "Recipient is not ready to receive payments.",
+      "piCreationFailed": "Failed to create payment. Try another method.",
+      "tipInsertFailed": "Failed to record due to internal error. Please try again later.",
+      "dupCheckFailed": "Error during duplicate check. Please try again later.",
+      "internal": "A server error occurred. Please try again later.",
+      "http": "An error occurred (HTTP {{code}})",
+      "unknown": "An unknown error occurred"
+    }
+  },
   "submissionModal": {
     "title": "Submitting Video",
     "videoPreview": "Video Preview",

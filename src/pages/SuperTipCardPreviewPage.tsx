@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 type Side = 'A' | 'B';
 
@@ -25,11 +26,12 @@ const samples: Array<{ amount: number; side: Side; username: string; comment: st
   ];
 
 export default function SuperTipCardPreviewPage() {
+  const { t, i18n } = useTranslation();
   const rows = useMemo(() => samples.map((s, i) => {
     const tier = calcTier(s.amount);
     const sideCls = s.side === 'A' ? 'supertip-side-A' : 'supertip-side-B';
     const containerCls = `supertip-card ${sideCls} supertip-tier-${tier}`.trim();
-    const sideLabel = s.side === 'A' ? 'サイドA' : 'サイドB';
+    const sideLabel = s.side === 'A' ? t('superTip.preview.sideA') : t('superTip.preview.sideB');
     const sideLabelCls = s.side === 'A'
       ? 'border-cyan-300/60 text-cyan-200'
       : 'border-pink-300/60 text-pink-200';
@@ -47,29 +49,29 @@ export default function SuperTipCardPreviewPage() {
                 <span className="font-semibold text-white truncate">{s.username}</span>
                 <span className={`px-2 py-0.5 rounded-full border ${sideLabelCls}`}>{sideLabel}</span>
                 {s.standalone && (
-                  <span className="px-2 py-0.5 rounded-full border border-yellow-300/60 text-yellow-200">スタンドアロン</span>
+                  <span className="px-2 py-0.5 rounded-full border border-yellow-300/60 text-yellow-200">{t('superTip.preview.standalone')}</span>
                 )}
                 <span className="px-2 py-0.5 rounded-full border border-amber-300/60 text-amber-200">Tier {tier}</span>
                 <span className="supertip-badge hidden sm:inline-flex">
                   <span className="supertip-badge__dot" />
-                  Super Tip
+                  {t('superTip.preview.badge')}
                 </span>
               </div>
               <div className="text-gray-300 text-sm truncate">{s.comment}</div>
             </div>
             <div className="ml-auto text-right whitespace-nowrap">
-              <div className="text-white font-extrabold text-lg sm:text-xl tracking-wide">¥{s.amount.toLocaleString()}</div>
+              <div className="text-white font-extrabold text-lg sm:text-xl tracking-wide">{t('superTip.preview.amount', { amount: s.amount.toLocaleString(i18n.language) })}</div>
             </div>
           </div>
         </div>
       </div>
     );
-  }), []);
+  }), [i18n.language, t]);
 
   return (
     <div className="max-w-3xl mx-auto p-6 space-y-6">
-      <h1 className="text-2xl font-bold text-white">Super Tip コメントカード プレビュー</h1>
-  <p className="text-gray-400 text-sm">金額に応じたティア（1〜4）は色の濃淡で表現し、スタンドアロンでも支援先サイド（A=青/B=赤）の色が適用されます。モバイルではバッジ非表示。</p>
+      <h1 className="text-2xl font-bold text-white">{t('superTip.preview.title')}</h1>
+      <p className="text-gray-400 text-sm">{t('superTip.preview.description')}</p>
       <div className="space-y-4">
         {rows}
       </div>

@@ -3,6 +3,7 @@ import { supabase } from '../../lib/supabase';
 import { Elements, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import { Modal } from '../ui/Modal';
+import { useTranslation } from 'react-i18next';
 
 const STRIPE_PUBLISHABLE_KEY = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY as string | undefined;
 const stripePromise = STRIPE_PUBLISHABLE_KEY ? loadStripe(STRIPE_PUBLISHABLE_KEY) : null;
@@ -26,8 +27,9 @@ export const SupportTipModal: React.FC<SupportTipModalProps> = ({
   recipientName,
   onSuccess,
 }) => {
+  const { t } = useTranslation();
   const [amount, setAmount] = useState<number>(300);
-  const [comment, setComment] = useState<string>('応援してます！');
+  const [comment, setComment] = useState<string>(t('superTip.modal.defaultComment'));
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
@@ -45,7 +47,7 @@ export const SupportTipModal: React.FC<SupportTipModalProps> = ({
   const createPaymentIntent = useCallback(async () => {
     setError(null);
     if (!canSubmit) {
-      setError('金額とコメントを確認してください');
+      setError(t('superTip.modal.errors.checkAmountAndComment'));
       return;
     }
     setLoading(true);
@@ -54,7 +56,7 @@ export const SupportTipModal: React.FC<SupportTipModalProps> = ({
       const { data: userData } = await supabase.auth.getUser();
       const senderUserId = userData.user?.id;
       if (!senderUserId) {
-        setError('この操作にはログインが必要です');
+        setError(t('superTip.modal.errors.loginRequired'));
         return;
       }
       // Edge Function を呼び出して PaymentIntent を作成
@@ -68,7 +70,7 @@ export const SupportTipModal: React.FC<SupportTipModalProps> = ({
       };
 
       type TipPIResponse = { success: boolean; client_secret?: string; recommended_return_url?: string; error?: string } | null;
-      const { data, error } = await supabase.functions.invoke('vote-with-super-tip', { body: payload });
+  const { data, error } = await supabase.functions.invoke('vote-with-super-tip', { body: payload });
       if (error) {
         // fetchフォールバック
         const session = await supabase.auth.getSession();
@@ -90,10 +92,10 @@ export const SupportTipModal: React.FC<SupportTipModalProps> = ({
             setClientSecret(parsed.client_secret);
             setReturnUrl(parsed.recommended_return_url || null);
           } else {
-            setError(parsed?.error || `エラーが発生しました (HTTP ${r.status})`);
+    setError(parsed?.error || t('superTip.errors.http', { code: r.status }));
           }
         } catch {
-          setError(`エラーが発生しました (HTTP ${r.status})`);
+      setError(t('superTip.errors.http', { code: r.status }));
         }
         return;
       }
@@ -102,7 +104,7 @@ export const SupportTipModal: React.FC<SupportTipModalProps> = ({
         setClientSecret(resp.client_secret);
         setReturnUrl(resp.recommended_return_url || null);
       } else {
-        setError(resp?.error || '不明なエラーが発生しました');
+    setError(resp?.error || t('superTip.errors.unknown'));
       }
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : String(e);
@@ -110,24 +112,24 @@ export const SupportTipModal: React.FC<SupportTipModalProps> = ({
     } finally {
       setLoading(false);
     }
-  }, [amount, battleId, canSubmit, comment, recipientUserId]);
+  }, [amount, battleId, canSubmit, comment, recipientUserId, t]);
 
   return (
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title={recipientName ? `${recipientName} を応援する` : 'このビートボクサーを応援する'}
+      title={recipientName ? t('superTip.supportModal.titleWithName', { name: recipientName }) : t('superTip.supportModal.titleGeneric')}
       size="lg"
       backgroundOpacity="normal"
     >
       <div className="space-y-4">
           {!STRIPE_PUBLISHABLE_KEY && (
-            <div className="text-sm text-red-400">VITE_STRIPE_PUBLISHABLE_KEY が未設定です。決済テストには公開キーが必要です。</div>
+            <div className="text-sm text-red-400">{t('superTip.modal.errors.publishableKeyMissing')}</div>
           )}
 
           {/* 金額プリセット */}
           <div className="space-y-2">
-            <div className="text-sm text-gray-300">金額プリセット</div>
+            <div className="text-sm text-gray-300">{t('superTip.modal.presets')}</div>
             <div className="flex flex-wrap gap-2">
               {TIP_PRESETS.map((v) => (
                 <button
@@ -143,7 +145,7 @@ export const SupportTipModal: React.FC<SupportTipModalProps> = ({
 
           {/* 金額手動入力 */}
           <div className="space-y-1">
-            <label className="block text-sm text-gray-300">金額（¥100〜¥10,000）</label>
+            <label className="block text-sm text-gray-300">{t('superTip.modal.amountLabel')}</label>
             <input
               type="number"
               min={100}
@@ -156,7 +158,7 @@ export const SupportTipModal: React.FC<SupportTipModalProps> = ({
 
           {/* コメント入力 */}
           <div className="space-y-1">
-            <label className="block text-sm text-gray-300">コメント（必須・500文字以内）</label>
+            <label className="block text-sm text-gray-300">{t('superTip.supportModal.commentLabel')}</label>
             <textarea
               rows={3}
               maxLength={500}
@@ -176,7 +178,7 @@ export const SupportTipModal: React.FC<SupportTipModalProps> = ({
               onClick={createPaymentIntent}
               className="w-full px-4 py-3 rounded bg-amber-600 text-white font-semibold disabled:opacity-50"
             >
-              {loading ? '処理中…' : '送信（支援を開始）'}
+              {loading ? t('superTip.modal.processing') : t('superTip.supportModal.startSupport')}
             </button>
           ) : (
             <div className="space-y-3">
@@ -185,7 +187,7 @@ export const SupportTipModal: React.FC<SupportTipModalProps> = ({
                   <PaymentArea onSuccess={onSuccess} returnUrl={returnUrl || window.location.origin} />
                 </Elements>
               ) : (
-                <div className="text-sm text-red-400">Stripeの公開キーが設定されていないため、決済を続行できません。</div>
+                <div className="text-sm text-red-400">{t('superTip.modal.errors.publishableKeyMissing')}</div>
               )}
             </div>
           )}
@@ -199,6 +201,7 @@ function PaymentArea({ onSuccess, returnUrl }: { onSuccess?: () => Promise<void>
   const elements = useElements();
   const [submitting, setSubmitting] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+  const { t } = useTranslation();
 
   const onConfirm = useCallback(async () => {
     if (!stripe || !elements) return;
@@ -210,7 +213,7 @@ function PaymentArea({ onSuccess, returnUrl }: { onSuccess?: () => Promise<void>
         confirmParams: { return_url: returnUrl },
       });
       if (error) {
-        setErr(error.message || '決済エラーが発生しました');
+        setErr(error.message || t('superTip.modal.errors.paymentFailedGeneric'));
       } else {
         if (onSuccess) await onSuccess();
       }
@@ -220,7 +223,7 @@ function PaymentArea({ onSuccess, returnUrl }: { onSuccess?: () => Promise<void>
     } finally {
       setSubmitting(false);
     }
-  }, [elements, onSuccess, returnUrl, stripe]);
+  }, [elements, onSuccess, returnUrl, stripe, t]);
 
   return (
     <div className="space-y-3">
@@ -230,11 +233,11 @@ function PaymentArea({ onSuccess, returnUrl }: { onSuccess?: () => Promise<void>
         onClick={onConfirm}
         disabled={!stripe || !elements || submitting}
         className={`pay-btn w-full ${submitting ? 'is-loading' : ''}`}
-        aria-label={submitting ? '決済を確認中' : '決済を確定する'}
+        aria-label={submitting ? t('superTip.modal.confirming') : t('superTip.modal.confirmPayment')}
       >
         <span className="pay-btn__content">
           <span className="pay-btn__icon" aria-hidden="true" />
-          <span className="pay-btn__label">{submitting ? '確認中…' : '決済を確定する'}</span>
+          <span className="pay-btn__label">{submitting ? t('superTip.modal.confirming') : t('superTip.modal.confirmPayment')}</span>
         </span>
       </button>
     </div>

@@ -258,6 +258,7 @@
     "tiedVote": "同票",
     "leadingPlayer": "{{player}}がリード中",
     "videoError": "動画の読み込みに失敗しました",
+  "voteOnly": "投票のみ",
     "votingClosed": "投票は終了しました",
     "alreadyVoted": "既に投票済みです",
     "participantCannotVote": "参加者は投票できません",
@@ -343,6 +344,116 @@
       "ranking": "ランキング",
       "battleStart": "バトルスタート",
       "tournament": "トーナメント"
+    }
+  },
+  "superTip": {
+    "settingsCard": {
+      "title": "Super Tip受け取り設定",
+      "description": "Super Tip（応援チップ）を受け取るための設定やダッシュボードの確認ができます。",
+      "openSettings": "設定ページを開く"
+    },
+    "connect": {
+      "headTitle": "Super Tip 受け取り設定 | BeatNexus",
+      "title": "Super Tip 受け取り設定",
+      "subtitle": "Super Tip（応援チップ）を受け取るための設定・再開、状態確認、Stripe Expressダッシュボードへの遷移ができます。",
+      "status": {
+        "label": "受け取り状態",
+        "checking": "確認中…",
+        "ready": "受け取り可能です",
+        "needSetup": "受け取り設定が必要です",
+        "descriptionReady": "売上の確認や振込設定は「Stripe Express ダッシュボード」から行えます。",
+        "descriptionNeedSetup": "初めての場合や未完了の場合は「受け取り設定を開始」から必要情報を登録してください。設定が完了するまでSuper Tipは受け取れません。"
+      },
+      "actions": {
+        "startOrResume": "受け取り設定を開始/再開（Stripe Connect）",
+        "openExpressDashboard": "Stripe Express ダッシュボードへ"
+      },
+      "whatIs": {
+        "title": "Super Tipとは？",
+        "point1": "プレイヤーを応援するための小額チップ機能です。視聴や投票の流れの中で、あなたの活動を直接支援できます。",
+        "point2": "手数料はプラットフォーム手数料（現在10%）と決済手数料がかかります。詳細は「特定商取引法に基づく表記」をご確認ください。",
+        "point3": "受け取りにはStripe Connectのアカウント作成と、Stripe Expressでの振込設定が必要です。",
+        "point4": "決済はStripeのセキュリティ基準に則り、安全に処理されます（3Dセキュア等対応）。"
+      },
+      "related": "関連",
+      "links": {
+        "tokushoho": "特定商取引法に基づく表記"
+      },
+      "howToStart": {
+        "title": "受け取り開始の流れ",
+        "step1": "「受け取り設定を開始/再開」を押して、Stripeで必要事項（本人確認・振込口座など）を登録します。",
+        "step2": "完了後このページに戻ると「受け取り可能」と表示されます。",
+        "step3": "売上の確認や入金タイミングの設定は「Stripe Express ダッシュボード」で行えます。"
+      }
+    },
+    "complete": {
+      "checking": "決済を確認中...",
+      "title": {
+        "success": "Super Tip の決済が完了しました！",
+        "failed": "決済に失敗しました",
+        "processing": "決済処理を受け付けました"
+      },
+      "desc": {
+        "success": "ご支援ありがとうございます。処理は完了し、受取側に配分されました。",
+        "failed": "ブラウザの戻るで再試行するか、別の支払い方法をご利用ください。",
+        "processing": "必要に応じて数秒後に反映されます。ページを閉じても大丈夫です。"
+      },
+      "backToDev": "開発ページへ戻る",
+      "backToHome": "ホームに戻る",
+      "openDevLink": "/dev/super-tips を開く"
+    },
+    "preview": {
+      "title": "Super Tip コメントカード プレビュー",
+      "description": "金額に応じたティア（1〜4）は色の濃淡で表現し、スタンドアロンでも支援先サイド（A=青/B=赤）の色が適用されます。モバイルではバッジ非表示。",
+      "badge": "Super Tip",
+      "sideA": "サイドA",
+      "sideB": "サイドB",
+      "standalone": "スタンドアロン",
+      "amount": "¥{{amount}}"
+    },
+    "modal": {
+      "supportOption": "応援オプション（Super Tip）",
+      "presets": "プリセット",
+      "amountLabel": "金額（¥100〜¥10,000）",
+      "feeNote": "プラットフォーム手数料（約10%）が含まれます。",
+      "defaultComment": "応援してます！",
+      "processing": "処理中…",
+      "confirmPayment": "決済を確定する",
+      "confirming": "確認中…",
+      "startPaymentAndVote": "決済を開始して投票する",
+      "voteOnlyNow": "今回は投票だけ",
+      "errors": {
+        "publishableKeyMissing": "VITE_STRIPE_PUBLISHABLE_KEY が未設定です。決済を利用できません。",
+        "checkAmountAndComment": "金額とコメントを確認してください",
+        "missingBattle": "バトル情報が取得できません",
+        "missingRecipient": "受け取り先ユーザーを特定できません",
+        "loginRequired": "この操作にはログインが必要です",
+        "paymentFailedGeneric": "決済エラーが発生しました"
+      }
+    },
+    "supportButton": "応援する",
+    "supportModal": {
+      "titleWithName": "{{name}} を応援する",
+      "titleGeneric": "このビートボクサーを応援する",
+      "commentLabel": "コメント（必須・500文字以内）",
+      "startSupport": "送信（支援を開始）"
+    },
+    "errors": {
+      "generic": "エラーが発生しました。時間をおいて再度お試しください。",
+      "invalidRequest": "入力内容が不足しています。金額・コメント・受け取り先を確認してください。",
+      "selfTipNotAllowed": "自分自身へのSuper Tipは行えません。",
+      "invalidAmount": "金額は¥100〜¥10,000の範囲で指定してください。",
+      "voteNotAllowedWithoutBattle": "バトル未指定での投票はできません。",
+      "battleNotFound": "対象のバトルが見つかりませんでした。",
+      "battleNotActive": "このバトルは現在投票できません。",
+      "alreadyTippedInBattle": "このバトルでは既にSuper Tipを実行済みです。",
+      "recipientNotReady": "受け取り先の設定が完了していないため、決済できません。",
+      "piCreationFailed": "決済の作成に失敗しました。別の支払い方法でお試しください。",
+      "tipInsertFailed": "内部エラーにより記録に失敗しました。しばらくしてから再度お試しください。",
+      "dupCheckFailed": "重複チェックでエラーが発生しました。時間をおいて再度お試しください。",
+      "internal": "サーバーで問題が発生しました。時間をおいて再度お試しください。",
+      "http": "エラーが発生しました (HTTP {{code}})",
+      "unknown": "不明なエラーが発生しました"
     }
   },
   "monthlyLimit": {

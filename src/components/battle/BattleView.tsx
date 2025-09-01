@@ -514,10 +514,10 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                         type="button"
                         onClick={() => openSupportModalFor(battle.player1_user_id, battle.contestant_a?.username || 'Player A')}
                         className="support-gradient-button text-sm"
-                        aria-label="応援する"
+                        aria-label={t('superTip.supportButton')}
                       >
                         <span>📣</span>
-                        <span>応援する</span>
+                        <span>{t('superTip.supportButton')}</span>
                       </button>
                     </div>
                     <div className="mt-1">
@@ -558,10 +558,10 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                         type="button"
                         onClick={() => openSupportModalFor(battle.player1_user_id, battle.contestant_a?.username || 'Player A')}
                         className="support-gradient-button text-sm"
-                        aria-label="応援する"
+                        aria-label={t('superTip.supportButton')}
                       >
                         <span>📣</span>
-                        <span>応援する</span>
+                        <span>{t('superTip.supportButton')}</span>
                       </button>
                     </div>
                     <div className="mt-1">
@@ -624,10 +624,10 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                         type="button"
                         onClick={() => openSupportModalFor(battle.player2_user_id, battle.contestant_b?.username || 'Player B')}
                         className="support-gradient-button text-sm"
-                        aria-label="応援する"
+                        aria-label={t('superTip.supportButton')}
                       >
                         <span>📣</span>
-                        <span>応援する</span>
+                        <span>{t('superTip.supportButton')}</span>
                       </button>
                     </div>
                     <div className="mt-1 lg:text-right">
@@ -696,10 +696,10 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                         type="button"
                         onClick={() => openSupportModalFor(battle.player2_user_id, battle.contestant_b?.username || 'Player B')}
                         className="support-gradient-button text-sm"
-                        aria-label="応援する"
+                        aria-label={t('superTip.supportButton')}
                       >
                         <span>📣</span>
-                        <span>応援する</span>
+                        <span>{t('superTip.supportButton')}</span>
                       </button>
                     </div>
                     <div className="mt-1 text-right">
@@ -1097,16 +1097,16 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                                 </span>
                                 <span className="supertip-badge ml-2 hidden md:inline-flex">
                                   <span className="supertip-badge__dot" />
-                                  Super Tip
+                                  {t('superTip.preview.badge')}
                                 </span>
                                 {(!comment.superTipVote) && (
-                                  <span className="ml-1 px-2 py-0.5 rounded-full border border-yellow-300/60 text-yellow-200 text-[11px]">スタンドアロン</span>
+                                  <span className="ml-1 px-2 py-0.5 rounded-full border border-yellow-300/60 text-yellow-200 text-[11px]">{t('superTip.preview.standalone')}</span>
                                 )}
                               </div>
                               {comment.comment ? (
                                 <p className="text-gray-200 text-sm leading-relaxed">{comment.comment}</p>
                               ) : (
-                                <p className="text-gray-400 text-sm italic">投票のみ</p>
+                                <p className="text-gray-400 text-sm italic">{t('battleView.voteOnly')}</p>
                               )}
                             </div>
                             {typeof comment.superTipAmountJpy === 'number' && (
@@ -1144,7 +1144,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                           {comment.comment ? (
                             <p className="text-gray-300 text-sm">{comment.comment}</p>
                           ) : (
-                            <p className="text-gray-500 text-sm italic">投票のみ</p>
+                            <p className="text-gray-500 text-sm italic">{t('battleView.voteOnly')}</p>
                           )}
                         </div>
                       </div>
