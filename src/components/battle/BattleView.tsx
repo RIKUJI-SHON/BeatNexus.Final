@@ -22,6 +22,7 @@ import { HybridVideoPlayer } from '../ui/HybridVideoPlayer';
 import { useIntersectionObserver } from '../../hooks/useIntersectionObserver';
 // import { getIOSCompatibleUrl } from '../../utils/iosVideoMapping';
 import { SupportTipModal } from './SupportTipModal';
+import { toast } from '../../store/toastStore';
 
 interface BattleViewProps {
   battle: Battle;
@@ -83,12 +84,38 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
   
   const showVoteDetails = hasVoted !== null || isArchived || isUserParticipant;
 
-  // 単独支援モーダルを開く
-  const openSupportModalFor = (userId: string, name?: string) => {
+  // 単独支援モーダルを開く（受け取り設定チェック付き）
+  const openSupportModalFor = async (userId: string, name?: string) => {
     if (!user) {
       openAuthModal('login');
       return;
     }
+
+    try {
+      // 受け取り先ユーザーのStripe受け取り可否を確認
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('stripe_charges_enabled')
+        .eq('id', userId)
+        .single();
+
+      if (error) {
+        console.warn('⚠️ Failed to check recipient connect status:', error);
+      }
+
+      const ready = data?.stripe_charges_enabled === true;
+      if (!ready) {
+        // 受け取り設定が未完了の場合は通知のみ（i18nで日英対応）
+        toast.warning('Super Tip', t('superTip.errors.recipientNotReady'));
+        return;
+      }
+    } catch (e) {
+      console.error('❌ Error checking recipient connect status:', e);
+      // 失敗時は安全側でブロックし、ユーザーに通知（i18nで日英対応）
+      toast.warning('Super Tip', t('superTip.errors.recipientNotReady'));
+      return;
+    }
+
     setSupportTarget({ userId, name });
     setSupportModalOpen(true);
   };
@@ -1176,7 +1203,6 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
           onVote={(comment) => handleVoteWithComment(showVoteModal!, comment)}
           onSimpleVote={handleSimpleVote}
           player={showVoteModal || 'A'}
-          playerName={showVoteModal === 'A' ? battle.contestant_a?.username : battle.contestant_b?.username}
           isLoading={isVoting}
           battleId={battle.id}
           recipientUserId={showVoteModal === 'A' ? (battle.player1_user_id || battle.contestant_a_id || undefined) : (battle.player2_user_id || battle.contestant_b_id || undefined)}
