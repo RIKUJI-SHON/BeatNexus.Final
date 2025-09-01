@@ -2165,11 +2165,11 @@
   "profile": "View Profile",
   "editProfile": "Edit Profile",
   "voteCommentModal": {
-    "title": "Vote for {{player}}",
+  "title": "Vote",
     "subtitle": "Vote for {{playerName}}",
     "description": "You can add a comment or vote directly.",
     "commentLabel": "Comment (Optional)",
-    "commentPlaceholder": "Share your thoughts about {{player}}...",
+  "commentPlaceholder": "Share your thoughts about this battle...",
     "commentRequired": "A comment is required for comment voting",
     "voteButton": "Vote",
     "voting": "Voting...",

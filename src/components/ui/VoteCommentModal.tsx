@@ -12,7 +12,6 @@ interface VoteCommentModalProps {
   onVote: (comment: string) => void;
   onSimpleVote: (player: 'A' | 'B') => void;
   player: 'A' | 'B';
-  playerName?: string;
   isLoading?: boolean;
   battleId?: string;
   recipientUserId?: string; // 決済時の受け取り先
@@ -25,7 +24,6 @@ export const VoteCommentModal: React.FC<VoteCommentModalProps> = ({
   onVote,
   onSimpleVote,
   player,
-  playerName,
   isLoading = false,
   battleId,
   recipientUserId,
@@ -195,9 +193,7 @@ export const VoteCommentModal: React.FC<VoteCommentModalProps> = ({
           <div className="flex items-center justify-between p-6 border-b border-gray-700">
             <div className="flex items-center gap-3">
               <div className={`w-4 h-4 rounded-full ${player === 'A' ? 'bg-cyan-400' : 'bg-pink-400'}`}></div>
-              <h2 className="text-xl font-bold text-white">
-                {t('voteCommentModal.title')} {playerName || `Player ${player}`}
-              </h2>
+              <h2 className="text-xl font-bold text-white">{t('voteCommentModal.title')}</h2>
             </div>
             <button
               onClick={onClose}
@@ -272,7 +268,7 @@ export const VoteCommentModal: React.FC<VoteCommentModalProps> = ({
               <textarea
                 value={comment}
                 onChange={handleCommentChange}
-                placeholder={t('voteCommentModal.commentPlaceholder', { player: playerName || `Player ${player}` })}
+                placeholder={t('voteCommentModal.commentPlaceholder')}
                 className={`w-full p-3 rounded-lg bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 border resize-none ${
                   showError ? 'border-red-500 focus:ring-red-500/50' : 'border-gray-600 focus:ring-cyan-500/50'
                 }`}

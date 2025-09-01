@@ -1925,11 +1925,11 @@
   "profile": "プロフィールを見る",
   "editProfile": "プロフィールを編集",
   "voteCommentModal": {
-    "title": "Vote for {{player}}",
+  "title": "投票",
     "subtitle": "{{playerName}}への投票",
     "description": "コメントを入力するか、そのまま投票することができます。",
     "commentLabel": "コメント（任意）",
-    "commentPlaceholder": "{{player}}についての感想をシェアしてください...",
+  "commentPlaceholder": "このバトルについての感想をシェアしてください...",
     "commentRequired": "コメント付き投票にはコメントが必要です",
     "voteButton": "投票する",
     "voting": "投票中...",
