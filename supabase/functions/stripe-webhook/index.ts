@@ -90,10 +90,30 @@ serve(async (req) => {
     switch (event.type) {
       case 'payment_intent.succeeded': {
         const pi = event.data.object;
-        await supabase
+        // 1) super_tips更新
+        const { data: tipRows } = await supabase
           .from('super_tips')
           .update({ payment_status: 'succeeded', transfer_status: 'paid', completed_at: new Date().toISOString() })
-          .eq('stripe_payment_intent_id', pi.id);
+          .eq('stripe_payment_intent_id', pi.id)
+          .select('id, battle_id, sender_user_id, vote, comment, amount_jpy');
+
+        // 2) 投票付きの場合は battle_votes に反映（投票が未作成なら作成）
+        const tip = Array.isArray(tipRows) && tipRows.length > 0 ? tipRows[0] : null;
+        if (tip && tip.battle_id && tip.vote) {
+          // 呼び出し: apply_supertip_vote
+          const { error: rpcErr } = await supabase.rpc('apply_supertip_vote', {
+            p_sender_user_id: tip.sender_user_id,
+            p_battle_id: tip.battle_id,
+            p_vote: tip.vote,
+            p_comment: tip.comment || '',
+            p_super_tip_amount: tip.amount_jpy || 0,
+            p_payment_intent_id: pi.id,
+            p_super_tip_id: tip.id,
+          });
+          if (rpcErr) {
+            console.error('apply_supertip_vote RPC error', rpcErr);
+          }
+        }
         break;
       }
       case 'payment_intent.payment_failed': {

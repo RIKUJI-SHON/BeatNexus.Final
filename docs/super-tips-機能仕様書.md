@@ -272,6 +272,20 @@ ALTER TABLE public.super_tips
 CREATE UNIQUE INDEX IF NOT EXISTS ux_super_tips_sender_battle
   ON super_tips(sender_user_id, battle_id) WHERE battle_id IS NOT NULL;
 
+#### サーバーサイド挿入の認証バイパス（重要）
+
+Webhook 成功後にサーバー側で battle_votes を作成する際、クライアント認証コンテキスト（auth.uid()）が存在しないため、既存の BEFORE INSERT トリガー `validate_battle_vote()` がブロックする可能性があります。これに対処するため、以下を実装しています：
+
+- カスタム GUC フラグ `app.bypass_vote_auth` を導入
+- `validate_battle_vote()` 内で当該フラグが true の時のみ auth.uid() 要求をスキップ（NEW.user_id を上書きしない）
+- これに合わせて RPC `apply_supertip_vote(...)` を SECURITY DEFINER で実装し、INSERT 直前に `set_config('app.bypass_vote_auth','true', true)`、処理後に false を設定
+
+これにより、
+- クライアント経由の通常投票は従来どおり auth.uid() 必須
+- Webhook 経由のサーバーサイド materialization は明示フラグ下で安全に通過
+
+注：本仕様は Super Tips v1.1 の一部であり、RLS と組み合わせて最小権限で運用されます。
+
 ### 📋 RLS (Row Level Security) ポリシー
 
 ```sql
@@ -587,6 +601,7 @@ interface SuperTipDisplayProps {
 - まず Super Tipコメントを作成日時の降順で並べて先頭に表示し、その後に投票コメントを続けます。
 - 統合用の型は `BattleComment & { isSuperTip?: boolean }` とし、Super Tip由来の行には `isSuperTip = true` を付与します。
 - 表示上の区別は任意（例: 「Super Tip」バッジ）。表示有無やスタイル変更は将来のUIガイドラインに従います。
+ - Super Tipコメントにも通常コメントと同様の「投票サイドタグ（A/B）」をアバター右下に表示します。サイドは `superTipVote` があればそれを優先し、無い場合は `recipient_user_id` とバトルの `player1_user_id/player2_user_id` の一致で推定します。スタンドアロン支援（voteが無い）はサイドタグを表示しません。
 
 可視性（RLS）:
 - `super_tips` は RLS により閲覧可能者が制限されます（送信者・受取人・バトル参加者など）。RLSにより取得できない場合は、その行は表示されません。

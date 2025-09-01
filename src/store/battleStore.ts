@@ -38,7 +38,6 @@ interface BattleState {
   // subscribeToRealTimeUpdates: () => () => void; // 廃止済み
   voteBattle: (battleId: string, vote: 'A' | 'B') => Promise<void>;
   voteBattleWithComment: (battleId: string, vote: 'A' | 'B', comment: string) => Promise<void>;
-  cancelVote: (battleId: string) => Promise<void>;
   getUserVote: (battleId: string) => Promise<{ hasVoted: boolean; vote: 'A' | 'B' | null }>;
   fetchBattleComments: (battleId: string) => Promise<void>;
   fetchUserSubmissions: () => Promise<void>;
@@ -534,123 +533,6 @@ export const useBattleStore = create<BattleState>((set, get) => ({
     }
   },
 
-  cancelVote: async (battleId: string) => {
-    console.log('🗑️ Starting vote cancellation:', { battleId, timestamp: new Date().toISOString() });
-    
-    try {
-      // Get current user for logging
-      const { data: { user }, error: authError } = await supabase.auth.getUser();
-      console.log('👤 Current user for cancellation:', user?.id, user?.email);
-      
-      if (authError) {
-        console.error('❌ Auth error during cancellation:', authError);
-        toast.error(i18n.t('toasts.error'), i18n.t('battleStore.toasts.checkLoginStatus'));
-        throw new Error('Authentication failed');
-      }
-
-      console.log('📡 Calling cancel_vote RPC with params:', {
-        p_battle_id: battleId,
-        user_id: user?.id
-      });
-
-      const { data, error } = await supabase.rpc('cancel_vote', {
-        p_battle_id: battleId
-      });
-
-      console.log('📥 Cancel Vote RPC Response:', { 
-        data, 
-        error, 
-        dataType: typeof data,
-        timestamp: new Date().toISOString() 
-      });
-
-      if (error) {
-        console.error('❌ Cancel Vote RPC Error:', {
-          message: error.message,
-          details: error.details,
-          hint: error.hint,
-          code: error.code
-        });
-        toast.error(i18n.t('toasts.error'), `${i18n.t('battleStore.toasts.databaseError')}: ${error.message}`);
-        throw error;
-      }
-
-      // Process response - be more strict about success validation
-  if (data && typeof data === 'object' && Object.prototype.hasOwnProperty.call(data, 'success')) {
-        if (data.success === true) {
-          console.log('✅ Vote cancellation successful:', data);
-          toast.success(i18n.t('toasts.success'), i18n.t('battleStore.toasts.cancelVoteSuccess', { player: data.cancelled_vote }));
-          
-          // Only refresh if truly successful
-          console.log('🔄 Refreshing battles data after successful cancellation...');
-          await get().fetchBattles();
-          console.log('✅ Battles data refreshed after cancellation');
-          return; // Success - don't throw
-        } else {
-          console.log('⚠️ Vote cancellation failed:', data.error, data.message);
-          console.log('🔍 Additional debug info:', {
-            details: data.details,
-            step: data.step,
-            sqlstate: data.sqlstate
-          });
-          
-          let errorMessage = data.message || i18n.t('battleStore.toasts.cancelFailed');
-          
-          // Show more detailed error for unexpected_error
-          if (data.error === 'unexpected_error') {
-            errorMessage = `${i18n.t('battleStore.toasts.systemError')}: ${data.details || data.message}`;
-            if (data.step) {
-              errorMessage += ` (ステップ: ${data.step})`;
-            }
-          }
-          
-          switch (data.error) {
-            case 'no_vote_found':
-              toast.info(i18n.t('toasts.info'), i18n.t('battleStore.toasts.noVoteToCancel'));
-              break;
-            case 'voting_closed':
-              toast.warning(i18n.t('toasts.warning'), i18n.t('battleStore.toasts.cannotCancelEnded'));
-              break;
-            case 'voting_expired':
-              toast.warning(i18n.t('toasts.warning'), i18n.t('battleStore.toasts.cannotCancelExpired'));
-              break;
-            case 'authentication_required':
-              toast.error(i18n.t('toasts.error'), i18n.t('battleStore.toasts.loginRequired'));
-              break;
-            case 'battle_not_found':
-              toast.error(i18n.t('toasts.error'), i18n.t('battleStore.toasts.battleNotFound'));
-              break;
-            case 'unexpected_error':
-              toast.error(i18n.t('toasts.error'), errorMessage);
-              break;
-            default:
-              toast.error(i18n.t('toasts.error'), errorMessage);
-          }
-          
-          // Throw error to prevent local state update
-          throw new Error(errorMessage);
-        }
-      } else {
-        console.log('🤷 Unexpected cancellation response:', data);
-        toast.warning(i18n.t('toasts.warning'), i18n.t('battleStore.toasts.cancelProcessCompleted'));
-        throw new Error('Unexpected response format');
-      }
-      
-    } catch (error) {
-      console.error('💥 Cancel vote error:', {
-        error,
-        message: error instanceof Error ? error.message : 'Unknown error'
-      });
-      
-      // Only show error toast if it hasn't been shown already
-      if (error instanceof Error && !error.message.includes('データベースエラー:')) {
-        toast.error(i18n.t('toasts.error'), error instanceof Error ? error.message : i18n.t('battleStore.toasts.cancelFailed'));
-      }
-      
-      // Always throw to ensure component knows about the error
-      throw error;
-    }
-  },
 
   getUserVote: async (battleId: string) => {
     console.log('🔍 Getting user vote status:', { battleId });
@@ -1164,7 +1046,7 @@ export const useBattleStore = create<BattleState>((set, get) => ({
       console.log('📥 Battle comments data (votes):', voteComments);
 
       interface RawBattleComment { id: string; user_id: string; username: string; avatar_url: string | null; vote: 'A' | 'B'; comment: string | null; created_at: string; }
-      const commentsFromVotes: BattleComment[] = (voteComments as RawBattleComment[] || []).map((c) => ({
+  const commentsFromVotes: BattleComment[] = (voteComments as RawBattleComment[] || []).map((c) => ({
         id: c.id,
         post_id: '', // コメント機能統合前の暫定値
         user_id: c.user_id,
@@ -1244,11 +1126,18 @@ export const useBattleStore = create<BattleState>((set, get) => ({
           } as BattleComment;
         });
 
+  // 2.5) 重複排除（仕様優先）:
+  //     同一ユーザーが Super Tip コメントを投稿している場合は、
+  //     そのユーザーの「通常の投票コメント」を一覧から除外し、Super Tip 側のみ表示する。
+  //     （テキスト一致に依存せず、ユーザーID基準で排除することで重複を確実に防止）
+  const superTipUserSet = new Set(commentsFromSuperTips.map((c) => c.user_id));
+  const dedupedVoteComments = commentsFromVotes.filter((c) => !superTipUserSet.has(c.user_id));
+
       // 3) マージ：SuperTipコメントを先頭に並べ、その後に投票コメント（双方とも作成日時の降順を保つ）
       // 既に個別で降順にしているので、単純連結でOK
       const merged: BattleComment[] = [
         ...commentsFromSuperTips,
-        ...commentsFromVotes,
+        ...dedupedVoteComments,
       ];
 
       set(state => ({

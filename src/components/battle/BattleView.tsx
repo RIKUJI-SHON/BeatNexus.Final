@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Share2, ThumbsUp, MessageCircle, Play, X, Users, Timer } from 'lucide-react';
+import { Share2, ThumbsUp, MessageCircle, Play, Users, Timer } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 import { VoteCommentModal } from '../ui/VoteCommentModal';
@@ -65,7 +65,6 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
   const { 
     voteBattle, 
     voteBattleWithComment, 
-    cancelVote, 
     getUserVote, 
     fetchBattleComments, 
     battleComments, 
@@ -216,53 +215,50 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
     }
   }, [playerBInView, playerBVideoLoaded]);
 
-  // 投票状態を更新する共通関数
+  // 投票状態を更新（Webhook反映の遅延を考慮して短時間ポーリング）
   const refreshVoteStatus = useCallback(async () => {
     try {
-      // 最新の投票状態を取得
-      const voteStatus = await getUserVote(battle.id);
-      
-      if (voteStatus.hasVoted) {
-        setHasVoted(voteStatus.vote);
-      } else {
-        setHasVoted(null);
+      const maxTries = 8; // 最大約4秒（500ms * 8）
+      for (let i = 0; i < maxTries; i++) {
+        const voteStatus = await getUserVote(battle.id);
+        if (voteStatus.hasVoted && voteStatus.vote) {
+          setHasVoted(voteStatus.vote);
+          // コメントもリフレッシュ
+          await fetchBattleComments(battle.id);
+          return;
+        }
+        // まだ反映されていなければ少し待って再試行
+        await new Promise((r) => setTimeout(r, 500));
       }
-      
-      // コメントもリフレッシュ
-      await fetchBattleComments(battle.id);
+      // 最終的に未反映の場合は未投票扱いのまま
     } catch (error) {
       console.error('❌ Failed to refresh vote status:', error);
     }
   }, [battle.id, getUserVote, fetchBattleComments]);
 
-  // SuperTip決済結果の処理
+  // SuperTip決済のリダイレクト戻りを検知（Stripeの標準パラメータにも対応）
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const paymentStatus = urlParams.get('payment');
-    const sessionId = urlParams.get('session_id');
+    const url = new URL(window.location.href);
+    const params = url.searchParams;
+    const legacyPayment = params.get('payment'); // payment=success/canceled（従来）
+    const sessionId = params.get('session_id');
+    const redirectStatus = params.get('redirect_status'); // Stripe標準: succeeded/failed/canceled
+    const pi = params.get('payment_intent'); // Stripe標準
 
-    if (paymentStatus === 'success' && sessionId) {
-      console.log('🎉 SuperTip payment success detected:', sessionId);
-      
-      // 投票状態をリフレッシュ
+    const isSuccess = (legacyPayment === 'success' && !!sessionId) || redirectStatus === 'succeeded' || redirectStatus === 'requires_capture';
+    const isCanceled = legacyPayment === 'canceled' || redirectStatus === 'canceled' || redirectStatus === 'failed';
+
+    if (isSuccess) {
+      console.log('🎉 SuperTip payment success detected:', { sessionId, pi, redirectStatus });
+      // 投票状態をポーリングで更新
       refreshVoteStatus();
-      
-      // 成功メッセージを表示
-      alert('SuperTip投票が完了しました！ありがとうございます！');
-      
-      // URLパラメータをクリア
-      const newUrl = window.location.pathname;
-      window.history.replaceState({}, '', newUrl);
-      
-    } else if (paymentStatus === 'canceled') {
-      console.log('❌ SuperTip payment canceled');
-      
-      // キャンセルメッセージを表示
-      alert('SuperTip決済がキャンセルされました。');
-      
-      // URLパラメータをクリア
-      const newUrl = window.location.pathname;
-      window.history.replaceState({}, '', newUrl);
+      // クエリを消してクリーンなURLに戻す
+      url.search = '';
+      window.history.replaceState({}, '', url.toString());
+    } else if (isCanceled) {
+      console.log('❌ SuperTip payment canceled:', { sessionId, pi, redirectStatus });
+      url.search = '';
+      window.history.replaceState({}, '', url.toString());
     }
   }, [refreshVoteStatus]);
 
@@ -344,30 +340,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
     }
   };
 
-  // Handle cancel vote
-  const handleCancelVote = async () => {
-    if (!hasVoted) return;
-    
-    setIsVoting(true);
-    try {
-      await cancelVote(battle.id);
-      
-      // Update local state
-      if (hasVoted === 'A') {
-        setVotesA(prev => Math.max(0, prev - 1));
-      } else {
-        setVotesB(prev => Math.max(0, prev - 1));
-      }
-      setHasVoted(null);
-      
-      // Refresh comments
-      await fetchBattleComments(battle.id);
-    } catch (error) {
-      console.error('❌ Cancel vote failed:', error);
-    } finally {
-      setIsVoting(false);
-    }
-  };
+  // 取り消し機能は廃止: UI/ロジックを削除（再投票不可・分布表示は維持）
 
   // Handle vote button click - check authentication first
   const handleVoteButtonClick = (player: 'A' | 'B') => {
@@ -889,21 +862,12 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                             <div className="w-6 h-6 border-3 border-white border-t-transparent rounded-full animate-spin"></div>
                           </div>
                         ) : hasVoted === 'A' ? (
-                          <div className="relative">
-                            <button className="vote-btn-player-a vote-btn-voted">
-                              <div className="back"></div>
-                              <div className="front">
-                                <ThumbsUp className="h-4 w-4 md:h-5 md:w-5" />
-                              </div>
-                            </button>
-                            <button 
-                              onClick={handleCancelVote} 
-                              disabled={isVoting}
-                              className="absolute -top-1 -right-1 w-5 h-5 md:w-7 md:h-7 bg-red-500 hover:bg-red-600 rounded-full flex items-center justify-center text-white shadow-lg transition-all duration-200 hover:scale-110 disabled:opacity-50"
-                            >
-                              <X className="h-2.5 w-2.5 md:h-3.5 md:w-3.5" />
-                            </button>
-                          </div>
+                          <button className="vote-btn-player-a vote-btn-voted" disabled>
+                            <div className="back"></div>
+                            <div className="front">
+                              <ThumbsUp className="h-4 w-4 md:h-5 md:w-5" />
+                            </div>
+                          </button>
                         ) : (
                           <button 
                             onClick={() => handleVoteButtonClick('A')} 
@@ -956,21 +920,12 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                             <div className="w-6 h-6 border-3 border-white border-t-transparent rounded-full animate-spin"></div>
                           </div>
                         ) : hasVoted === 'B' ? (
-                          <div className="relative">
-                            <button className="vote-btn-player-b vote-btn-voted">
-                              <div className="back"></div>
-                              <div className="front">
-                                <ThumbsUp className="h-4 w-4 md:h-5 md:w-5" />
-                              </div>
-                            </button>
-                            <button 
-                              onClick={handleCancelVote} 
-                              disabled={isVoting}
-                              className="absolute -top-1 -right-1 w-5 h-5 md:w-7 md:h-7 bg-red-500 hover:bg-red-600 rounded-full flex items-center justify-center text-white shadow-lg transition-all duration-200 hover:scale-110 disabled:opacity-50"
-                            >
-                              <X className="h-2.5 w-2.5 md:h-3.5 md:w-3.5" />
-                            </button>
-                          </div>
+                          <button className="vote-btn-player-b vote-btn-voted" disabled>
+                            <div className="back"></div>
+                            <div className="front">
+                              <ThumbsUp className="h-4 w-4 md:h-5 md:w-5" />
+                            </div>
+                          </button>
                         ) : (
                           <button 
                             onClick={() => handleVoteButtonClick('B')} 
@@ -1118,13 +1073,21 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                                   return `w-10 h-10 rounded-full border-2 ${border}`;
                                 })()}
                               />
-                              {(hasVoted || isArchived || isUserParticipant) && (
-                                <div className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center ${
-                                  comment.vote === 'A' ? 'bg-gradient-to-r from-cyan-500 to-cyan-400' : 'bg-gradient-to-r from-pink-500 to-pink-400'
-                                }`}>
-                                  <span className="text-white font-bold text-xs">{comment.vote}</span>
-                                </div>
-                              )}
+                              {(hasVoted || isArchived || isUserParticipant) && (() => {
+                                const side: 'A' | 'B' | undefined = (comment.superTipVote as 'A' | 'B' | undefined)
+                                  ?? ((comment.superTipRecipientUserId === battle.player1_user_id) ? 'A'
+                                    : (comment.superTipRecipientUserId === battle.player2_user_id) ? 'B'
+                                    : undefined);
+                                if (!side) return null; // スタンドアロン支援はタグ非表示
+                                const cls = side === 'A'
+                                  ? 'bg-gradient-to-r from-cyan-500 to-cyan-400'
+                                  : 'bg-gradient-to-r from-pink-500 to-pink-400';
+                                return (
+                                  <div className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center ${cls}`}>
+                                    <span className="text-white font-bold text-xs">{side}</span>
+                                  </div>
+                                );
+                              })()}
                             </div>
                             <div className="flex-1">
                               <div className="flex items-center gap-2 mb-1">

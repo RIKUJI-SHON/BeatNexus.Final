@@ -197,7 +197,7 @@ serve(async (req) => {
       });
     }
 
-    // Insert super_tips
+  // Insert super_tips（投票付きなら vote と battle_id が保存され、webhook成功時に投票を反映する）
     const { data: tip, error: tipErr } = await supabase
       .from('super_tips')
       .insert({

@@ -141,12 +141,12 @@ export const VoteCommentModal: React.FC<VoteCommentModalProps> = ({
         comment: comment.trim(),
       };
 
-      type TipPIResponse = { success: boolean; client_secret?: string; recommended_return_url?: string; error?: string } | null;
-  const { data, error } = await supabase.functions.invoke('vote-with-super-tip', { body: payload });
+    type TipPIResponse = { success: boolean; client_secret?: string; recommended_return_url?: string; error?: string } | null;
+  const { data, error } = await supabase.functions.invoke('vote-with-super-tip-vote', { body: payload });
       if (error) {
         const session = await supabase.auth.getSession();
         const token = session.data.session?.access_token;
-        const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/vote-with-super-tip`;
+  const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/vote-with-super-tip-vote`;
         const r = await fetch(url, {
           method: 'POST',
           headers: {

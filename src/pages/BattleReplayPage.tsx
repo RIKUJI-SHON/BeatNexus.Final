@@ -876,12 +876,24 @@ const BattleReplayPage: React.FC = () => {
                       alt={comment.username}
                       className="w-10 h-10 rounded-full border-2 border-gray-600"
                     />
-                    {/* A/B投票タグ: アーカイブページでは常に表示 */}
-                    <div className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center ${
-                      comment.vote === 'A' ? 'bg-gradient-to-r from-blue-500 to-blue-400' : 'bg-gradient-to-r from-red-500 to-red-400'
-                    }`}>
-                      <span className="text-white font-bold text-xs">{comment.vote}</span>
-                    </div>
+                    {/* A/B投票タグ: Super Tip は superTipVote か recipient 推定、通常は vote */}
+                    {(() => {
+                      const side: 'A' | 'B' | undefined = comment.isSuperTip
+                        ? ((comment.superTipVote as 'A' | 'B' | undefined)
+                          ?? ((comment.superTipRecipientUserId === battle.player1_user_id) ? 'A'
+                            : (comment.superTipRecipientUserId === battle.player2_user_id) ? 'B'
+                            : undefined))
+                        : (comment.vote as 'A' | 'B' | undefined);
+                      if (!side) return null;
+                      const cls = side === 'A'
+                        ? 'bg-gradient-to-r from-blue-500 to-blue-400'
+                        : 'bg-gradient-to-r from-red-500 to-red-400';
+                      return (
+                        <div className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center ${cls}`}>
+                          <span className="text-white font-bold text-xs">{side}</span>
+                        </div>
+                      );
+                    })()}
                   </div>
                   
                   <div className="flex-1">
