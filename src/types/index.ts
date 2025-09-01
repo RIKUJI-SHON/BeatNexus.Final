@@ -223,6 +223,14 @@ export interface BattleComment {
   avatar_url?: string | null;
   vote?: 'A' | 'B';
   comment?: string | null;
+  // SuperTip由来のコメントであることを示すフラグ（優先表示用）
+  isSuperTip?: boolean;
+  // SuperTip金額（円）: isSuperTip が true のときに設定
+  superTipAmountJpy?: number;
+  // SuperTipの投票先（A/B、単独支援時はNULL可）
+  superTipVote?: 'A' | 'B';
+  // SuperTipの受取ユーザーID（サイド判定用）
+  superTipRecipientUserId?: string;
 }
 
 export interface ArchivedBattleVote {

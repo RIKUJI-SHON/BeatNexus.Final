@@ -10,7 +10,8 @@ import { useSubmissionCooldown } from '../hooks/useSubmissionCooldown';
 import { useSubmissionStatus } from '../hooks/useSubmissionStatus';
 import { trackBeatNexusEvents } from '../utils/analytics';
 import SubmissionModal from '../components/ui/SubmissionModal';
-import { MonthlyLimitCard } from '../components/ui/SubmissionCooldownCard';
+// Monthly Post Limit セクションを Super Tip 設定に置き換え
+import SuperTipSettingsCard from '../components/profile/SuperTipSettingsCard';
 import { useStreamUpload } from '../hooks/useStreamUpload';
 
 // Maximum file size in bytes (2GB - 大容量動画対応強化)
@@ -415,22 +416,13 @@ const PostPage: React.FC = () => {
           </div>
         </div>
 
-        {/* 重要な注意事項バナー */}
-        <div className="max-w-4xl mx-auto mb-8 sm:mb-12 grid gap-4 sm:grid-cols-2">
+  {/* 重要な注意事項バナー */}
+  <div className="max-w-4xl mx-auto mb-8 sm:mb-12 flex justify-center">
           <div className="bg-gradient-to-r from-purple-500/20 to-blue-500/20 border border-purple-500/30 rounded-xl py-4 px-6 backdrop-blur-sm hover:border-purple-500/50 transition-colors">
             <div className="flex items-center justify-center gap-3 text-purple-300">
               <Video className="h-5 w-5 flex-shrink-0" />
               <span className="font-medium text-base text-center">
                 {t('postPage.importantNotice.videoDuration')}
-              </span>
-            </div>
-          </div>
-          
-          <div className="bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-500/30 rounded-xl py-4 px-6 backdrop-blur-sm hover:border-amber-500/50 transition-colors">
-            <div className="flex items-center justify-center gap-3 text-amber-300">
-              <Settings className="h-5 w-5 flex-shrink-0" />
-              <span className="font-medium text-base text-center">
-                {t('postPage.importantNotice.videoQuality')}
               </span>
             </div>
           </div>
@@ -754,8 +746,8 @@ const PostPage: React.FC = () => {
               </div>
             </Card>
             
-            {/* 月間投稿制限カード */}
-            <MonthlyLimitCard />
+            {/* Super Tip 受け取り設定カード（投稿ページにも配置） */}
+            <SuperTipSettingsCard />
           </div>
 
           {/* 右カラム: ガイドライン */}

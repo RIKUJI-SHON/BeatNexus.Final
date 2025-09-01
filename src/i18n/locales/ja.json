@@ -1188,8 +1188,8 @@
   "postPage": {
     "title": "バトル動画を投稿",
     "subtitle": "あなたのスキルを披露して、コミュニティに挑戦しましょう",
-    "timeLimitEmphasis": " 動画は必ず1分～2分で投稿してください ",
-    "videoQualityWarning": "動画の画質はなるべく下げて撮影してください（4K撮影は避けてください）",
+  "timeLimitEmphasis": " 動画は必ず1分～2分で投稿してください ",
+  "videoQualityWarning": "動画の画質はなるべく下げて撮影してください",
     "backButton": "戻る",
     "selectFormat": {
       "label": "バトル形式を選択",
@@ -1295,7 +1295,7 @@
           },
           "resolution": {
             "title": "解像度",
-            "description": "4Kでの撮影は、ファイルサイズが大きくなるためお控えください。"
+            "description": ""
           }
         }
       }
@@ -1416,7 +1416,7 @@
     },
     "importantNotice": {
       "videoDuration": "動画は必ず1分～2分で投稿してください",
-      "videoQuality": "動画の画質はなるべく下げて撮影してください（4K撮影は避けてください）"
+  "videoQuality": "動画の画質はなるべく下げて撮影してください"
     }
   },
   "comingSoon": {

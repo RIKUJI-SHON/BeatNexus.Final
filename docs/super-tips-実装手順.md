@@ -619,6 +619,11 @@ const result = await stripe.confirmPayment({
 ```
 ※ Elements APIの関数名は導入バージョンによって異なる場合があります。公式ドキュメントに従ってください。
 
+開発環境での注意:
+- Edge Function は request の Origin / Referer を優先して `recommended_return_url` のベースURLを組み立てます（取得不可時のみ `FRONTEND_URL` を使用）。
+- ローカルは `http://localhost:5173`（Vite）など「http」を推奨。`https://localhost:3000` 等にすると自己署名証明書なしで `ERR_SSL_PROTOCOL_ERROR` になります。
+- もしローカルで https を使う場合は、mkcert 等でローカル証明書を発行し、フロントサーバーを https で起動してください。
+
 ### 支払い方法の管理ポリシー（ダッシュボード優先）
 
 - Stripeの最新仕様に沿い、PaymentIntent作成時に `payment_method_types` を明示しません（ダッシュボードで有効な方法が適用）。
@@ -746,6 +751,7 @@ mcp_supabase_apply_migration(
 - [ ] StripeConnectOnboarding 実装
 - [ ] SuperTipVoteModal 実装
 - [ ] 既存UI統合
+ - [ ] Super Tip コメントカード プレビュー追加（/dev/supertip-card-preview）
 
 ### **Phase 4: 統合テスト・本番**
 - [ ] 開発環境統合テスト
@@ -800,3 +806,26 @@ FRONTEND_URL          # リダイレクト先URL
   - 本番移行時は Live モードで同手順、環境変数のみ live 用に差し替え
 
 **この実装手順に従って、安全で確実なSuper Tips機能の実装を進めてください！**
+
+---
+
+## 付録: Super Tip コメントカード・プレビュー
+
+目的:
+- 金額（ティア）とサイド（A/B/なし）ごとの見た目・グロー強度・モバイル表示（バッジ非表示）を素早く確認するための開発者向けページ。
+
+ルート:
+- `/dev/supertip-card-preview`
+
+実装:
+- ファイル: `src/pages/SuperTipCardPreviewPage.tsx`
+- CSS: `src/index.css` の `.supertip-card`, `.supertip-side-A/B`, `.supertip-tier-1..4`, `.supertip-badge`
+
+サンプル構成:
+- 金額: 100 / 500 / 1000 / 3000 / 700 / 7000 等（ティア算出: <500=1, 500-999=2, 1000-2999=3, >=3000=4）
+- サイド: A, B, なし（スタンドアロン支援想定）
+- レイアウト: 通常コメントと高さを揃える1行構成。右端に金額（改行なし）、モバイル時はバッジ非表示。
+
+注意:
+- スタイル調整は `index.css` の変数を優先（グロー/スケール/影強度）。
+- 本ページは開発用途（本番UXへの導線は無し）。

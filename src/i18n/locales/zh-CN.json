@@ -1088,8 +1088,8 @@
   "postPage": {
     "title": "提交你的对战视频",
     "subtitle": "展示你的实力，向社区发起挑战",
-    "timeLimitEmphasis": "🔥 视频必须为 1–2 分钟（60–120 秒）🔥",
-    "videoQualityWarning": "请保持适度画质（避免以 4K 录制）",
+  "timeLimitEmphasis": "🔥 视频必须为 1–2 分钟（60–120 秒）🔥",
+  "videoQualityWarning": "请保持适度画质",
     "backButton": "返回",
     "selectFormat": {
       "label": "选择对战形式",
@@ -1188,7 +1188,7 @@
           },
           "resolution": {
             "title": "分辨率",
-            "description": "请避免以 4K 录制，以免文件过大。"
+            "description": ""
           }
         }
       }
@@ -1269,7 +1269,7 @@
       "fileSizeLarge": "{{size}}MB ⚠️",
       "description": "视频时长符合要求，但文件过大。我们可以在保留音质的前提下自动调整视频质量以优化文件大小。",
       "autoAdjustments": "自动调整：",
-      "resolutionOptimization": "分辨率优化（如 4K→1080p）",
+  "resolutionOptimization": "分辨率优化",
       "bitrateAdjustment": "比特率调整",
       "audioQualityMaintained": "保持高音质（128kbps）",
       "fileSizeTooLarge": "文件过大",
@@ -1335,7 +1335,7 @@
     },
     "importantNotice": {
       "videoDuration": "视频必须为 1–2 分钟",
-      "videoQuality": "录制时请降低画质（避免以 4K 录制）"
+  "videoQuality": "录制时请降低画质"
     }
   },
   "toasts": {

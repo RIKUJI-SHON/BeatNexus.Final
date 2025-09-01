@@ -1089,7 +1089,7 @@
     "title": "배틀 동영상 제출",
     "subtitle": "실력을 뽐내고 커뮤니티에 도전하세요",
     "timeLimitEmphasis": "🔥 동영상은 반드시 1-2분(60-120초) 길이여야 합니다 🔥",
-    "videoQualityWarning": "동영상 품질은 적당히 유지해주세요 (4K 녹화 피하기)",
+  "videoQualityWarning": "동영상 품질은 적당히 유지해주세요",
     "backButton": "뒤로",
     "selectFormat": {
       "label": "배틀 형식 선택",
@@ -1188,7 +1188,7 @@
           },
           "resolution": {
             "title": "해상도",
-            "description": "파일 크기가 증가하므로 4K 녹화는 피해주세요."
+            "description": ""
           }
         }
       }
@@ -1269,7 +1269,7 @@
       "fileSizeLarge": "{{size}}MB ⚠️",
       "description": "동영상 길이는 지정된 범위 내이지만, 파일 크기가 너무 큽니다. 오디오 품질을 유지하면서 파일 크기를 최적화하도록 자동으로 화질을 조정할 수 있습니다.",
       "autoAdjustments": "자동 조정 사항:",
-      "resolutionOptimization": "해상도 최적화(예: 4K→1080p)",
+  "resolutionOptimization": "해상도 최적화",
       "bitrateAdjustment": "비트레이트 조정",
       "audioQualityMaintained": "고음질 오디오 유지(128kbps)",
       "fileSizeTooLarge": "파일 크기가 너무 큽니다",
@@ -1335,7 +1335,7 @@
     },
     "importantNotice": {
       "videoDuration": "동영상은 1-2분 길이여야 합니다",
-      "videoQuality": "녹화 시 영상 화질을 낮춰주세요(4K 녹화 지양)"
+  "videoQuality": "녹화 시 영상 화질을 낮춰주세요"
     }
   },
   "toasts": {

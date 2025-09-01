@@ -21,6 +21,7 @@ import { isIOSDevice } from '../../utils/videoSupport';
 import { HybridVideoPlayer } from '../ui/HybridVideoPlayer';
 import { useIntersectionObserver } from '../../hooks/useIntersectionObserver';
 // import { getIOSCompatibleUrl } from '../../utils/iosVideoMapping';
+import { SupportTipModal } from './SupportTipModal';
 
 interface BattleViewProps {
   battle: Battle;
@@ -36,6 +37,8 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
   const [isLoadingVoteStatus, setIsLoadingVoteStatus] = useState(true);
   const [isVoting, setIsVoting] = useState(false);
   const [showVoteModal, setShowVoteModal] = useState<'A' | 'B' | null>(null);
+  const [supportModalOpen, setSupportModalOpen] = useState(false);
+  const [supportTarget, setSupportTarget] = useState<{ userId: string; name?: string } | null>(null);
   const [playerRatings, setPlayerRatings] = useState<{
     playerA: { rating: number; loading: boolean };
     playerB: { rating: number; loading: boolean };
@@ -80,6 +83,21 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
     false;
   
   const showVoteDetails = hasVoted !== null || isArchived || isUserParticipant;
+
+  // 単独支援モーダルを開く
+  const openSupportModalFor = (userId: string, name?: string) => {
+    if (!user) {
+      openAuthModal('login');
+      return;
+    }
+    setSupportTarget({ userId, name });
+    setSupportModalOpen(true);
+  };
+
+  const closeSupportModal = () => {
+    setSupportModalOpen(false);
+    setSupportTarget(null);
+  };
 
   // プロフィールページへの遷移関数
   const navigateToProfile = (userId: string) => {
@@ -511,14 +529,25 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                     />
                   </div>
                   <div className="flex flex-col">
-                    <div 
-                      className="text-white font-bold text-xl truncate max-w-[140px] md:max-w-[180px] cursor-pointer hover:text-cyan-300 transition-colors" 
-                      title={battle.contestant_a?.username || 'Player A'}
-                      onClick={() => navigateToProfile(battle.player1_user_id)}
-                    >
-                      {battle.contestant_a?.username || 'Player A'}
+                    <div className="flex items-center gap-3">
+                      <div 
+                        className="text-white font-bold text-xl truncate max-w-[140px] md:max-w-[180px] cursor-pointer hover:text-cyan-300 transition-colors" 
+                        title={battle.contestant_a?.username || 'Player A'}
+                        onClick={() => navigateToProfile(battle.player1_user_id)}
+                      >
+                        {battle.contestant_a?.username || 'Player A'}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => openSupportModalFor(battle.player1_user_id, battle.contestant_a?.username || 'Player A')}
+                        className="support-gradient-button text-sm"
+                        aria-label="応援する"
+                      >
+                        <span>📣</span>
+                        <span>応援する</span>
+                      </button>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="mt-1">
                       {playerRatings.playerA.loading ? (
                         <div className="text-sm text-gray-400">読み込み中...</div>
                       ) : (
@@ -544,14 +573,25 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                     />
                   </div>
                   <div className="flex flex-col">
-                    <div 
-                      className="text-white font-bold text-xl truncate max-w-[140px] md:max-w-[180px] cursor-pointer hover:text-cyan-300 transition-colors" 
-                      title={battle.contestant_a?.username || 'Player A'}
-                      onClick={() => navigateToProfile(battle.player1_user_id)}
-                    >
-                      {battle.contestant_a?.username || 'Player A'}
+                    <div className="flex items-center gap-3">
+                      <div 
+                        className="text-white font-bold text-xl truncate max-w-[140px] md:max-w-[180px] cursor-pointer hover:text-cyan-300 transition-colors" 
+                        title={battle.contestant_a?.username || 'Player A'}
+                        onClick={() => navigateToProfile(battle.player1_user_id)}
+                      >
+                        {battle.contestant_a?.username || 'Player A'}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => openSupportModalFor(battle.player1_user_id, battle.contestant_a?.username || 'Player A')}
+                        className="support-gradient-button text-sm"
+                        aria-label="応援する"
+                      >
+                        <span>📣</span>
+                        <span>応援する</span>
+                      </button>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="mt-1">
                       {playerRatings.playerA.loading ? (
                         <div className="text-sm text-gray-400">読み込み中...</div>
                       ) : (
@@ -599,14 +639,25 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                 {/* Player B Name - Desktop Layout (Above Video) */}
                 <div className="hidden lg:flex items-center gap-3 mb-4 lg:justify-end">
                   <div className="flex flex-col lg:items-end">
-                    <div 
-                      className="text-white font-bold text-xl truncate max-w-[140px] md:max-w-[180px] cursor-pointer hover:text-cyan-300 transition-colors" 
-                      title={battle.contestant_b?.username || 'Player B'}
-                      onClick={() => navigateToProfile(battle.player2_user_id)}
-                    >
-                      {battle.contestant_b?.username || 'Player B'}
+                    <div className="flex items-center gap-3 lg:flex-row-reverse">
+                      <div 
+                        className="text-white font-bold text-xl truncate max-w-[140px] md:max-w-[180px] cursor-pointer hover:text-cyan-300 transition-colors" 
+                        title={battle.contestant_b?.username || 'Player B'}
+                        onClick={() => navigateToProfile(battle.player2_user_id)}
+                      >
+                        {battle.contestant_b?.username || 'Player B'}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => openSupportModalFor(battle.player2_user_id, battle.contestant_b?.username || 'Player B')}
+                        className="support-gradient-button text-sm"
+                        aria-label="応援する"
+                      >
+                        <span>📣</span>
+                        <span>応援する</span>
+                      </button>
                     </div>
-                    <div className="flex items-center gap-2 lg:flex-row-reverse">
+                    <div className="mt-1 lg:text-right">
                       {playerRatings.playerB.loading ? (
                         <div className="text-sm text-gray-400">読み込み中...</div>
                       ) : (
@@ -660,14 +711,25 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                 {/* Player B Name - Below Video on Mobile */}
                 <div className="flex items-center gap-3 mt-4 lg:hidden justify-end">
                   <div className="flex flex-col items-end">
-                    <div 
-                      className="text-white font-bold text-xl truncate max-w-[140px] md:max-w-[180px] cursor-pointer hover:text-cyan-300 transition-colors" 
-                      title={battle.contestant_b?.username || 'Player B'}
-                      onClick={() => navigateToProfile(battle.player2_user_id)}
-                    >
-                      {battle.contestant_b?.username || 'Player B'}
+                    <div className="flex items-center gap-3 flex-row-reverse">
+                      <div 
+                        className="text-white font-bold text-xl truncate max-w-[140px] md:max-w-[180px] cursor-pointer hover:text-cyan-300 transition-colors" 
+                        title={battle.contestant_b?.username || 'Player B'}
+                        onClick={() => navigateToProfile(battle.player2_user_id)}
+                      >
+                        {battle.contestant_b?.username || 'Player B'}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => openSupportModalFor(battle.player2_user_id, battle.contestant_b?.username || 'Player B')}
+                        className="support-gradient-button text-sm"
+                        aria-label="応援する"
+                      >
+                        <span>📣</span>
+                        <span>応援する</span>
+                      </button>
                     </div>
-                    <div className="flex items-center gap-2 flex-row-reverse">
+                    <div className="mt-1 text-right">
                       {playerRatings.playerB.loading ? (
                         <div className="text-sm text-gray-400">読み込み中...</div>
                       ) : (
@@ -1025,37 +1087,105 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
               ) : comments.length > 0 ? (
                 <div className="space-y-4">
                   {comments.map((comment) => (
-                    <div key={comment.id} className="flex items-start gap-4 p-4 bg-gray-800 rounded-xl border border-gray-700/50">
-                      <div className="relative">
-                        <img
-                          src={comment.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${comment.user_id}`}
-                          alt={comment.username}
-                          className="w-10 h-10 rounded-full border-2 border-gray-600"
-                        />
-                        {/* A/B投票タグ: 現在のユーザーが投票済みまたはアーカイブ済みまたは参加者の場合のみ表示 */}
-                        {(hasVoted || isArchived || isUserParticipant) && (
-                          <div className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center ${
-                            comment.vote === 'A' ? 'bg-gradient-to-r from-cyan-500 to-cyan-400' : 'bg-gradient-to-r from-pink-500 to-pink-400'
-                          }`}>
-                            <span className="text-white font-bold text-xs">{comment.vote}</span>
+                    comment.isSuperTip ? (
+                      <div
+                        key={comment.id}
+                        className={(() => {
+                          // Decide side: prefer explicit superTipVote; fallback to recipient mapping
+                          const side: 'A' | 'B' | undefined = (comment.superTipVote as 'A' | 'B' | undefined)
+                            ?? ((comment.superTipRecipientUserId === battle.player1_user_id) ? 'A'
+                              : (comment.superTipRecipientUserId === battle.player2_user_id) ? 'B'
+                              : undefined);
+                          // Tier by amount
+                          const amt = comment.superTipAmountJpy ?? 0;
+                          const tier = amt >= 3000 ? 4 : amt >= 1000 ? 3 : amt >= 500 ? 2 : 1;
+                          const sideCls = side === 'A' ? 'supertip-side-A' : side === 'B' ? 'supertip-side-B' : '';
+                          return `supertip-card ${sideCls} supertip-tier-${tier}`.trim();
+                        })()}
+                      >
+                        <div className="supertip-card-info p-4">
+                          <div className="flex items-start gap-4">
+                            <div className="relative shrink-0">
+                              <img
+                                src={comment.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${comment.user_id}`}
+                                alt={comment.username}
+                                className={(() => {
+                                  const side: 'A' | 'B' | undefined = (comment.superTipVote as 'A' | 'B' | undefined)
+                                    ?? ((comment.superTipRecipientUserId === battle.player1_user_id) ? 'A'
+                                      : (comment.superTipRecipientUserId === battle.player2_user_id) ? 'B'
+                                      : undefined);
+                                  const border = side === 'A' ? 'border-cyan-300/70' : side === 'B' ? 'border-pink-300/70' : 'border-yellow-300/70';
+                                  return `w-10 h-10 rounded-full border-2 ${border}`;
+                                })()}
+                              />
+                              {(hasVoted || isArchived || isUserParticipant) && (
+                                <div className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center ${
+                                  comment.vote === 'A' ? 'bg-gradient-to-r from-cyan-500 to-cyan-400' : 'bg-gradient-to-r from-pink-500 to-pink-400'
+                                }`}>
+                                  <span className="text-white font-bold text-xs">{comment.vote}</span>
+                                </div>
+                              )}
+                            </div>
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-1">
+                                <span className="font-semibold text-white">{comment.username}</span>
+                                <span className="text-xs text-gray-400">
+                                  {new Date(comment.created_at).toLocaleDateString('ja-JP')}
+                                </span>
+                                <span className="supertip-badge ml-2 hidden md:inline-flex">
+                                  <span className="supertip-badge__dot" />
+                                  Super Tip
+                                </span>
+                                {(!comment.superTipVote) && (
+                                  <span className="ml-1 px-2 py-0.5 rounded-full border border-yellow-300/60 text-yellow-200 text-[11px]">スタンドアロン</span>
+                                )}
+                              </div>
+                              {comment.comment ? (
+                                <p className="text-gray-200 text-sm leading-relaxed">{comment.comment}</p>
+                              ) : (
+                                <p className="text-gray-400 text-sm italic">投票のみ</p>
+                              )}
+                            </div>
+                            {typeof comment.superTipAmountJpy === 'number' && (
+                              <div className="ml-auto self-center text-right text-white/95 text-base sm:text-lg md:text-2xl font-extrabold tracking-tight whitespace-nowrap">
+                                ¥{Intl.NumberFormat('ja-JP').format(comment.superTipAmountJpy)}
+                              </div>
+                            )}
                           </div>
-                        )}
-                      </div>
-                      
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="font-semibold text-white">{comment.username}</span>
-                          <span className="text-xs text-gray-500">
-                            {new Date(comment.created_at).toLocaleDateString('ja-JP')}
-                          </span>
                         </div>
-                        {comment.comment ? (
-                          <p className="text-gray-300 text-sm">{comment.comment}</p>
-                        ) : (
-                          <p className="text-gray-500 text-sm italic">投票のみ</p>
-                        )}
                       </div>
-                    </div>
+                    ) : (
+                      <div key={comment.id} className="flex items-start gap-4 p-4 bg-gray-800 rounded-xl border border-gray-700/50">
+                        <div className="relative">
+                          <img
+                            src={comment.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${comment.user_id}`}
+                            alt={comment.username}
+                            className="w-10 h-10 rounded-full border-2 border-gray-600"
+                          />
+                          {(hasVoted || isArchived || isUserParticipant) && (
+                            <div className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center ${
+                              comment.vote === 'A' ? 'bg-gradient-to-r from-cyan-500 to-cyan-400' : 'bg-gradient-to-r from-pink-500 to-pink-400'
+                            }`}>
+                              <span className="text-white font-bold text-xs">{comment.vote}</span>
+                            </div>
+                          )}
+                        </div>
+                        
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="font-semibold text-white">{comment.username}</span>
+                            <span className="text-xs text-gray-500">
+                              {new Date(comment.created_at).toLocaleDateString('ja-JP')}
+                            </span>
+                          </div>
+                          {comment.comment ? (
+                            <p className="text-gray-300 text-sm">{comment.comment}</p>
+                          ) : (
+                            <p className="text-gray-500 text-sm italic">投票のみ</p>
+                          )}
+                        </div>
+                      </div>
+                    )
                   ))}
                 </div>
               ) : (
@@ -1086,7 +1216,27 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
           playerName={showVoteModal === 'A' ? battle.contestant_a?.username : battle.contestant_b?.username}
           isLoading={isVoting}
           battleId={battle.id}
+          recipientUserId={showVoteModal === 'A' ? (battle.player1_user_id || battle.contestant_a_id || undefined) : (battle.player2_user_id || battle.contestant_b_id || undefined)}
           onRefreshVoteStatus={refreshVoteStatus}
+        />
+      )}
+
+      {/* Support Tip Modal */}
+      {supportModalOpen && supportTarget && (
+        <SupportTipModal
+          isOpen={supportModalOpen}
+          onClose={closeSupportModal}
+          battleId={battle.id}
+          recipientUserId={supportTarget.userId}
+          recipientName={supportTarget.name}
+          onSuccess={async () => {
+            try {
+              // 決済成功後にコメントを再取得（webhookで反映された後に一覧へ）
+              await fetchBattleComments(battle.id);
+            } finally {
+              closeSupportModal();
+            }
+          }}
         />
       )}
     </div>

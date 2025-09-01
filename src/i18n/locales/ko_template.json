@@ -1087,7 +1087,7 @@
     "title": "Submit Your Battle Video",
     "subtitle": "Show off your skills and challenge the community",
     "timeLimitEmphasis": "🔥 Videos MUST be 1-2 minutes (60-120 seconds) long 🔥",
-    "videoQualityWarning": "Please keep video quality moderate (avoid 4K recording)",
+  "videoQualityWarning": "Please keep video quality moderate",
     "backButton": "Back",
     "selectFormat": {
       "label": "Select Battle Format",
@@ -1186,7 +1186,7 @@
           },
           "resolution": {
             "title": "Resolution",
-            "description": "Please avoid 4K recording as it increases file size."
+            "description": ""
           }
         }
       }
@@ -1274,7 +1274,7 @@
       "fileSizeLarge": "{{size}}MB ⚠️",
       "description": "The video length is within the specified range, but the file size is too large. We can automatically adjust the video quality while preserving audio quality to optimize file size.",
       "autoAdjustments": "Automatic adjustments:",
-      "resolutionOptimization": "Resolution optimization (4K→1080p etc.)",
+  "resolutionOptimization": "Resolution optimization",
       "bitrateAdjustment": "Bitrate adjustment",
       "audioQualityMaintained": "High audio quality maintained (128kbps)",
       "fileSizeTooLarge": "File size is too large",
@@ -1340,7 +1340,7 @@
     },
     "importantNotice": {
       "videoDuration": "Videos must be 1-2 minutes long",
-      "videoQuality": "Please lower video quality when recording (avoid 4K recording)"
+  "videoQuality": "Please lower video quality when recording"
     }
   },
   "toasts": {

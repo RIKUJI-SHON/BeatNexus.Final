@@ -1087,8 +1087,8 @@
   "postPage": {
     "title": "Senden Sie Ihr Kampfvideo",
     "subtitle": "Zeigen Sie Ihre Fähigkeiten und fordern Sie die Community heraus",
-    "timeLimitEmphasis": "🔥 Videos MÜSSEN 1-2 Minuten (60-120 Sekunden) lang sein 🔥",
-    "videoQualityWarning": "Bitte halten Sie die Videoqualität moderat (vermeiden Sie 4K-Aufnahmen)",
+  "timeLimitEmphasis": "🔥 Videos MÜSSEN 1-2 Minuten (60-120 Sekunden) lang sein 🔥",
+  "videoQualityWarning": "Bitte halten Sie die Videoqualität moderat",
     "backButton": "Zurück",
     "selectFormat": {
       "label": "Kampfformat wählen",
@@ -1182,7 +1182,7 @@
           },
           "resolution": {
             "title": "Auflösung",
-            "description": "Bitte vermeiden Sie 4K-Aufnahmen, da sie die Dateigröße erhöhen."
+            "description": ""
           }
         }
       }
@@ -1263,7 +1263,7 @@
       "fileSizeLarge": "{{size}}MB ⚠️",
       "description": "Die Videolänge liegt im angegebenen Bereich, aber die Dateigröße ist zu groß. Wir können die Videoqualität automatisch anpassen, während die Audioqualität erhalten bleibt, um die Dateigröße zu optimieren.",
       "autoAdjustments": "Automatische Anpassungen:",
-      "resolutionOptimization": "Auflösungsoptimierung (4K→1080p etc.)",
+  "resolutionOptimization": "Auflösungsoptimierung",
       "bitrateAdjustment": "Bitrate-Anpassung",
       "audioQualityMaintained": "Hohe Audioqualität beibehalten (128kbps)",
       "fileSizeTooLarge": "Dateigröße ist zu groß",
@@ -1323,7 +1323,7 @@
     },
     "importantNotice": {
       "videoDuration": "Videos müssen 1-2 Minuten lang sein",
-      "videoQuality": "Bitte senken Sie die Videoqualität bei der Aufnahme (vermeiden Sie 4K-Aufnahmen)"
+  "videoQuality": "Bitte senken Sie die Videoqualität bei der Aufnahme"
     }
   },
   "toasts": {

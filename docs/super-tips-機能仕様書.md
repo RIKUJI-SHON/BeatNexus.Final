@@ -1,6 +1,6 @@
 # BeatNexus Super Tips機能仕様書
 
-**最終更新**: 2025年8月30日  
+**最終更新**: 2025年9月1日  
 **バージョン**: v1.1 (最新推奨に更新)  
 **適用環境**: 開発環境・本番環境
 
@@ -576,6 +576,45 @@ interface SuperTipDisplayProps {
 - 応援コメント表示
 - アニメーション効果
 
+#### 4. コメント表示の統合・優先度（v1.1 追加）
+
+バトル画面のコメントフィードは、以下の2系統のソースを統合して表示します。
+
+- 投票コメント: 既存の RPC `get_battle_comments` の結果（通常/コメント付き投票）
+- Super Tipコメント: `super_tips` から該当バトルの支払い成功行（`payment_status = 'succeeded'`）の `comment`
+
+統合ルール:
+- まず Super Tipコメントを作成日時の降順で並べて先頭に表示し、その後に投票コメントを続けます。
+- 統合用の型は `BattleComment & { isSuperTip?: boolean }` とし、Super Tip由来の行には `isSuperTip = true` を付与します。
+- 表示上の区別は任意（例: 「Super Tip」バッジ）。表示有無やスタイル変更は将来のUIガイドラインに従います。
+
+可視性（RLS）:
+- `super_tips` は RLS により閲覧可能者が制限されます（送信者・受取人・バトル参加者など）。RLSにより取得できない場合は、その行は表示されません。
+- 取得に失敗/0件時は投票コメントのみの表示にフォールバックします。
+
+補足:
+- フロントの内部実装では `super_tips` の行に紐づく送信者プロフィール（ユーザー名・アバター）を埋め込み取得し、コメント表示に用います。
+- Stripe Webhook により `payment_status` が更新されるため、支払い成功後は自動的にフィード上位に現れます。
+
+#### 5. Super Tip コメントカード・プレビュー（開発用）
+
+目的:
+- 金額ティアおよびサイド（A/B/なし）による見た目と発光強度を確認するための開発者向けプレビューページ。
+
+ルート:
+- `/dev/supertip-card-preview`
+
+ファイル:
+- `src/pages/SuperTipCardPreviewPage.tsx`
+
+スタイル:
+- `src/index.css` の `.supertip-card`, `.supertip-side-A/B`, `.supertip-tier-1..4`, `.supertip-badge`
+
+仕様メモ:
+- ティア（JPY）: <500=Tier1, 500–999=Tier2, 1000–2999=Tier3, >=3000=Tier4
+- レイアウト: 通常コメントと高さを揃えた1行。金額は右端固定（nowrap）。
+- モバイル: バッジは明示的に非表示。
+
 ### 📱 UI/UX仕様
 
 #### 寄付額選択UI
@@ -606,6 +645,9 @@ const SuperTipComment = {
   icon: '💰',
   animation: 'animate-pulse'
 };
+
+// コメント統合の並び順（概念図）
+// [Super Tipコメント (新しい順) ...] + [投票コメント (新しい順) ...]
 ```
 
 ### 🔧 状態管理（Zustand）
@@ -637,6 +679,7 @@ interface SuperTipStore {
 - **JWT認証**: Supabase Auth必須
 - **ユーザー検証**: auth.uid()でのユーザー特定
 - **権限チェック**: バトル参加者の自己寄付防止
+- **RLS可視性**: `super_tips` のコメントはRLSにより可視性が制限され、許可されたユーザーにのみ表示されます
 
 #### 2. 金額検証
 - **フロントエンド**: リアルタイム入力検証
@@ -665,7 +708,12 @@ const event = stripe.webhooks.constructEvent(body, sig, webhookSecret);
 | バトル状態 | Backend | status='ACTIVE'確認 |
 | 投票期限 | Backend | end_voting_at確認 |
 
-### 🛡️ エラーハンドリング
+#### � 既存UIの差分（v1.1）
+- VoteCommentModal: Super Tips関連の旧プレースホルダーUIは削除（投票モーダル内統合は後続リリースで検討）。
+- BattleView: 単独支援（投票なしで応援）用の導線をプレイヤー名付近に配置予定。支払い完了後のコメントは上記ルールで最上位に表示。
+- PostPage: 旧「Monthly Post Limit」セクションを Super Tip受け取り設定カード（`/profile/stripe-connect` への導線）に置換。
+
+### �🛡️ エラーハンドリング
 
 ```typescript
 // 共通エラータイプ
@@ -744,8 +792,8 @@ const errorMessages: Record<SuperTipError, string> = {
 
 3. **既存コンポーネント拡張**
    ```bash
-   - VoteCommentModal.tsx: Super Tipsボタン追加
-   - BattleView.tsx: Super Tips表示統合
+  - VoteCommentModal.tsx: Super Tipsボタン（現状なし、将来の統合候補）
+  - BattleView.tsx: Super Tips表示統合 + 単独支援導線
    - ProfilePage.tsx: Connect設定セクション追加
    ```
 

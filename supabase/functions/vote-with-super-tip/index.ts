@@ -5,7 +5,8 @@ declare const Deno: { env: { get: (name: string) => string | undefined } };
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, x-client-version, apikey, content-type',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
 
 type VoteTipRequest = {
@@ -84,11 +85,17 @@ serve(async (req) => {
         });
       }
       const b = battle as unknown as BattleRow;
-      if (b.status && b.status !== 'active') {
-        return new Response(JSON.stringify({ success: false, error: 'BATTLE_NOT_ACTIVE' }), {
-          status: 400,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        });
+      // 単独支援（voteが無い）場合は、バトルが非アクティブでも許容する。
+      // 投票を伴うSuper Tip（voteあり）の場合のみ、アクティブ戦に限定。
+      if (body.vote != null) {
+        // 注意: 本番DBでは 'ACTIVE' のように大文字で保持されるケースがあるため、大小無視で比較する
+        const statusUpper = (b.status || '').toUpperCase();
+        if (statusUpper && statusUpper !== 'ACTIVE') {
+          return new Response(JSON.stringify({ success: false, error: 'BATTLE_NOT_ACTIVE' }), {
+            status: 400,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
+        }
       }
       const { data: dup, error: dupErr } = await supabase
         .from('super_tips')
@@ -215,7 +222,18 @@ serve(async (req) => {
     }
 
   // 推奨の戻り先URL（3Dセキュアなどリダイレクト発生時に必須）
-  const recommendedReturnUrl = `${FRONTEND_URL}/payments/super-tip/complete`;
+  // 開発環境では https://localhost:3000 が未設定で SSL エラーになることがあるため、
+  // まずはリクエストの Origin/Referer を優先し、取得できない場合のみ FRONTEND_URL を使用する。
+  let baseUrl = FRONTEND_URL;
+  try {
+    const originHeader = req.headers.get('origin') ?? req.headers.get('referer');
+    if (originHeader) {
+      baseUrl = new URL(originHeader).origin;
+    }
+  } catch {
+    // 無効なURLは無視し、FRONTEND_URLを使用
+  }
+  const recommendedReturnUrl = `${baseUrl}/payments/super-tip/complete`;
 
   return new Response(JSON.stringify({ success: true, client_secret: pi.client_secret, tip, recommended_return_url: recommendedReturnUrl }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

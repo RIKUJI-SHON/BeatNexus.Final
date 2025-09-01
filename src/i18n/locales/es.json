@@ -1088,8 +1088,8 @@
   "postPage": {
     "title": "Envía tu video de batalla",
     "subtitle": "Muestra tus habilidades y desafía a la comunidad",
-    "timeLimitEmphasis": "🔥 Los videos DEBEN durar 1-2 minutos (60-120 segundos) 🔥",
-    "videoQualityWarning": "Por favor mantén la calidad del video moderada (evita grabar en 4K)",
+  "timeLimitEmphasis": "🔥 Los videos DEBEN durar 1-2 minutos (60-120 segundos) 🔥",
+  "videoQualityWarning": "Por favor mantén la calidad del video moderada",
     "backButton": "Atrás",
     "selectFormat": {
       "label": "Seleccionar formato de batalla",
@@ -1188,7 +1188,7 @@
           },
           "resolution": {
             "title": "Resolution",
-            "description": "Please avoid 4K recording as it increases file size."
+            "description": ""
           }
         }
       }
@@ -1269,7 +1269,7 @@
       "fileSizeLarge": "{{size}}MB ⚠️",
       "description": "The video length is within the specified range, but the file size is too large. We can automatically adjust the video quality while preserving audio quality to optimize file size.",
       "autoAdjustments": "Automatic adjustments:",
-      "resolutionOptimization": "Resolution optimization (4K→1080p etc.)",
+  "resolutionOptimization": "Resolution optimization",
       "bitrateAdjustment": "Bitrate adjustment",
       "audioQualityMaintained": "High audio quality maintained (128kbps)",
       "fileSizeTooLarge": "File size is too large",
@@ -1335,7 +1335,7 @@
     },
     "importantNotice": {
       "videoDuration": "Videos must be 1-2 minutes long",
-      "videoQuality": "Please lower video quality when recording (avoid 4K recording)"
+  "videoQuality": "Please lower video quality when recording"
     }
   },
   "toasts": {

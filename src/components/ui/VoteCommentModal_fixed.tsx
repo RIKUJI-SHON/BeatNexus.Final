@@ -22,12 +22,12 @@ export const VoteCommentModal: React.FC<VoteCommentModalProps> = ({
   player,
   playerName,
   isLoading = false,
-  battleId
+  // battleId
 }) => {
   const { t } = useTranslation();
   const [comment, setComment] = useState('');
   const [showError, setShowError] = useState(false);
-  const [showSuperTipModal, setShowSuperTipModal] = useState(false);
+  // const [showSuperTipModal, setShowSuperTipModal] = useState(false);
 
   const handleCommentVote = () => {
     const trimmedComment = comment.trim();
@@ -75,39 +75,7 @@ export const VoteCommentModal: React.FC<VoteCommentModalProps> = ({
           </div>
 
           <div className="p-6">
-            {/* SuperTip Section */}
-            <div className="mb-6">
-              <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
-                ⭐ SuperTip で応援
-              </h3>
-              <p className="text-sm text-gray-400 mb-4">
-                応援したいプレイヤーにSuperTipを送って、特別な投票をしよう！
-              </p>
-              
-              <div className="grid grid-cols-2 gap-3">
-                {[
-                  { amount: 100, label: '¥100' },
-                  { amount: 300, label: '¥300' },
-                  { amount: 500, label: '¥500' },
-                  { amount: 1000, label: '¥1,000' }
-                ].map((tip) => (
-                  <button
-                    key={tip.amount}
-                    onClick={() => {
-                      if (battleId) {
-                        setShowSuperTipModal(true);
-                      } else {
-                        alert('バトルIDが設定されていません');
-                      }
-                    }}
-                    disabled={isLoading}
-                    className="p-3 rounded-lg bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-500 hover:to-orange-500 border border-yellow-500 hover:border-yellow-400 transition-all text-white text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {tip.label}
-                  </button>
-                ))}
-              </div>
-            </div>
+            {/* SuperTip Section removed as requested */}
 
             {/* Comment Input */}
             <div className="mb-6">
@@ -183,21 +151,7 @@ export const VoteCommentModal: React.FC<VoteCommentModalProps> = ({
         </div>
       </div>
 
-      {/* SuperTip Modal */}
-      {battleId && showSuperTipModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-slate-800 p-6 rounded-xl border border-slate-700 max-w-md w-full mx-4">
-            <h3 className="text-lg font-semibold text-white mb-4">Super Tips機能</h3>
-            <p className="text-slate-400 mb-6">Super Tips機能は現在開発中です。実装完了まで少々お待ちください。</p>
-            <button 
-              onClick={() => setShowSuperTipModal(false)}
-              className="w-full bg-slate-700 hover:bg-slate-600 text-white py-2 px-4 rounded-lg transition-colors"
-            >
-              閉じる
-            </button>
-          </div>
-        </div>
-      )}
+  {/* SuperTip Modal removed as requested */}
     </>
   );
 };

@@ -87,6 +87,7 @@ import SuperTipCompletePage from './pages/SuperTipCompletePage';
 import TokushohoPage from './pages/TokushohoPage';
 import LegalDisclosureEnPage from './pages/LegalDisclosureEnPage';
 import StripeConnectPage from './pages/StripeConnectPage';
+import SuperTipCardPreviewPage from './pages/SuperTipCardPreviewPage';
 
 // CSS for animations
 import './tailwind.extensions.css';
@@ -115,7 +116,8 @@ function RouterContent() {
             <Route path="/my-battles" element={<MyBattlesPage />} />
             <Route path="/battle/:battlePath" element={<BattleViewPage />} />
             <Route path="/battle-replay/:battlePath" element={<BattleReplayPage />} />
-            <Route path="/post" element={<PostPage />} />
+            <Route path="/ad-preview" element={<AdPreviewPage />} />
+            <Route path="/dev/supertip-card-preview" element={<SuperTipCardPreviewPage />} />
             <Route path="/profile/:userId" element={<ProfilePage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/ranking" element={<RankingPage />} />

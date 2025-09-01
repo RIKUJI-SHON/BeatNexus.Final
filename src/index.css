@@ -979,6 +979,343 @@ video {
   backdrop-filter: blur(4px);
 }
 
+/* 支払いボタン（.pay-btn） */
+.pay-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 20px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: linear-gradient(135deg, rgba(88, 28, 135, 0.9), rgba(147, 51, 234, 0.9));
+  color: #fff;
+  font-weight: 700;
+  letter-spacing: .02em;
+  text-shadow: 0 1px 0 rgba(0,0,0,0.25);
+  box-shadow:
+    0 8px 24px rgba(147, 51, 234, 0.25),
+    inset 0 1px 0 rgba(255,255,255,0.12);
+  transition: transform .2s ease, box-shadow .2s ease, filter .2s ease, background .3s ease;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.pay-btn:focus-visible {
+  outline: 2px solid rgba(147, 197, 253, 0.8);
+  outline-offset: 2px;
+}
+
+.pay-btn:disabled,
+.pay-btn[aria-disabled="true"] {
+  opacity: .6;
+  cursor: not-allowed;
+  filter: grayscale(0.1);
+}
+
+.pay-btn:hover:not(:disabled):not([aria-disabled="true"]) {
+  transform: translateY(-1px);
+  box-shadow:
+    0 10px 28px rgba(147, 51, 234, 0.35),
+    inset 0 1px 0 rgba(255,255,255,0.15);
+}
+
+.pay-btn:active:not(:disabled):not([aria-disabled="true"]) {
+  transform: translateY(0);
+}
+
+.pay-btn__content {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 1;
+}
+
+.pay-btn__label {
+  font-size: 15px;
+}
+
+.pay-btn__icon {
+  width: 22px;
+  height: 22px;
+  border-radius: 9999px;
+  background: radial-gradient(circle at 30% 30%, #fff 0%, #ffd6ff 40%, rgba(255,255,255,0) 70%),
+              linear-gradient(135deg, #f0abfc, #c084fc);
+  position: relative;
+  box-shadow: 0 0 0 2px rgba(255,255,255,0.15), 0 6px 16px rgba(192, 132, 252, 0.35);
+  overflow: hidden;
+}
+
+.pay-btn__icon::before,
+.pay-btn__icon::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: conic-gradient(from 180deg at 50% 50%, rgba(255,255,255,0.7), rgba(255,255,255,0) 30%, rgba(255,255,255,0.7) 60%, rgba(255,255,255,0) 80%);
+  mix-blend-mode: overlay;
+  opacity: 0.7;
+  animation: pay-icon-rotate 3s linear infinite;
+}
+
+.pay-btn__icon::after {
+  filter: blur(6px);
+  opacity: 0.5;
+}
+
+@keyframes pay-icon-rotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* ローディング状態 */
+.pay-btn.is-loading {
+  filter: saturate(0.9) brightness(0.9);
+}
+
+.pay-btn.is-loading .pay-btn__label::after {
+  content: "";
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  margin-left: 8px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.6);
+  border-top-color: rgba(255,255,255,1);
+  animation: pay-spin .8s linear infinite;
+  vertical-align: -2px;
+}
+
+@keyframes pay-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* 応援ボタン（Support） */
+/* From Uiverse.io by gharsh11032000 */
+.animated-button {
+  position: relative;
+  display: inline-block;
+  padding: 12px 24px;
+  border: none;
+  font-size: 16px;
+  background-color: inherit;
+  border-radius: 100px;
+  font-weight: 600;
+  color: #ffffff40;
+  box-shadow: 0 0 0 2px #ffffff20;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.6s cubic-bezier(0.23, 1, 0.320, 1);
+}
+
+.animated-button span:last-child {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 20px;
+  height: 20px;
+  background-color: #2196F3;
+  border-radius: 50%;
+  opacity: 0;
+  transition: all 0.8s cubic-bezier(0.23, 1, 0.320, 1);
+}
+
+.animated-button span:first-child {
+  position: relative;
+  z-index: 1;
+}
+
+.animated-button:hover {
+  box-shadow: 0 0 0 5px #2195f360;
+  color: #ffffff;
+}
+
+.animated-button:active {
+  scale: 0.95;
+}
+
+.animated-button:hover span:last-child {
+  width: 150px;
+  height: 150px;
+  opacity: 1;
+}
+
+/* Uiverse.io by MuhammadHasann — container-button (scoped) */
+.container-button {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  grid-template-areas: "bt-1 bt-2 bt-3" "bt-4 bt-5 bt-6";
+  position: relative;
+  perspective: 800px;
+  padding: 0;
+  width: 135px;
+  height: 47px;
+  transition: all 0.3s ease-in-out;
+}
+
+.container-button:active { transform: scale(0.95); }
+
+.container-button .hover {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: 200;
+}
+
+.container-button .bt-1 { grid-area: bt-1; }
+.container-button .bt-2 { grid-area: bt-2; }
+.container-button .bt-3 { grid-area: bt-3; }
+.container-button .bt-4 { grid-area: bt-4; }
+.container-button .bt-5 { grid-area: bt-5; }
+.container-button .bt-6 { grid-area: bt-6; }
+
+.container-button .bt-1:hover ~ button {
+  transform: rotateX(15deg) rotateY(-15deg) rotateZ(0deg);
+  box-shadow: -2px -2px #18181888;
+}
+.container-button .bt-1:hover ~ button::after {
+  animation: cb-shake 0.5s ease-in-out 0.3s;
+  text-shadow: -2px -2px #18181888;
+}
+
+.container-button .bt-3:hover ~ button {
+  transform: rotateX(15deg) rotateY(15deg) rotateZ(0deg);
+  box-shadow: 2px -2px #18181888;
+}
+.container-button .bt-3:hover ~ button::after {
+  animation: cb-shake 0.5s ease-in-out 0.3s;
+  text-shadow: 2px -2px #18181888;
+}
+
+.container-button .bt-4:hover ~ button {
+  transform: rotateX(-15deg) rotateY(-15deg) rotateZ(0deg);
+  box-shadow: -2px 2px #18181888;
+}
+.container-button .bt-4:hover ~ button::after {
+  animation: cb-shake 0.5s ease-in-out 0.3s;
+  text-shadow: -2px 2px #18181888;
+}
+
+.container-button .bt-6:hover ~ button {
+  transform: rotateX(-15deg) rotateY(15deg) rotateZ(0deg);
+  box-shadow: 2px 2px #18181888;
+}
+.container-button .bt-6:hover ~ button::after {
+  animation: cb-shake 0.5s ease-in-out 0.3s;
+  text-shadow: 2px 2px #18181888;
+}
+
+.container-button .hover:hover ~ button::before { background: transparent; }
+
+.container-button .hover:hover ~ button::after {
+  content: "Click";
+  top: -150%;
+  transform: translate(-50%, 0);
+  font-size: 34px;
+  color: #f19c2b;
+}
+
+.container-button > button {
+  position: absolute;
+  padding: 0;
+  width: 135px;
+  height: 47px;
+  background: transparent;
+  font-size: 17px;
+  font-weight: 900;
+  border: 3px solid #f39923;
+  border-radius: 12px;
+  transition: all 0.3s ease-in-out;
+}
+
+.container-button > button::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 135px;
+  height: 47px;
+  background-color: #f5ae51;
+  border-radius: 12px;
+  transition: all 0.3s ease-in-out;
+  z-index: -1;
+}
+
+.container-button > button::after {
+  content: "📣 応援する";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 135px;
+  height: 47px;
+  background-color: transparent;
+  font-size: 17px;
+  font-weight: 900;
+  line-height: 47px;
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  transition: all 0.3s ease-in-out;
+  z-index: 2;
+}
+
+@keyframes cb-shake {
+  0% { left: 45%; }
+  25% { left: 54%; }
+  50% { left: 48%; }
+  75% { left: 52%; }
+  100% { left: 50%; }
+}
+
+/* Support gradient button (inspired by svgbackgrounds.com) */
+.support-gradient-button {
+  width: fit-content;
+  display: flex;
+  padding: 0.8em 1.1em;
+  gap: 0.4rem;
+  border: none;
+  font-weight: bold;
+  border-radius: 30px;
+  cursor: pointer;
+  text-shadow: 2px 2px 3px rgb(136 0 136 / 50%);
+  background:
+    linear-gradient(
+      15deg,
+      #880088,
+      #aa2068,
+      #cc3f47,
+      #de6f3d,
+      #f09f33,
+      #de6f3d,
+      #cc3f47,
+      #aa2068,
+      #880088
+    ) no-repeat;
+  background-size: 300%;
+  background-position: left center;
+  transition: background 0.3s ease;
+  color: #fff;
+}
+
+.support-gradient-button:hover {
+  background-size: 320%;
+  background-position: right center;
+}
+
+.support-gradient-button:hover svg { fill: #fff; }
+
+.support-gradient-button svg {
+  width: 23px;
+  fill: #f09f33;
+  transition: 0.3s ease;
+}
+
+
 .bnx-ad-headline {
   font-size: 18px;
   font-weight: 700;
@@ -1689,4 +2026,113 @@ video {
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* From Uiverse.io by alexruix — adapted for BeatNexus Super Tip card */
+.supertip-card {
+  /* Color and intensity variables (overridden by side/tier classes) */
+  /* Base colors are decided by side (A/B). Tier changes lightness via white mix. */
+  --st-color-start-base: #f7ba2b; /* default base (overridden by side) */
+  --st-color-end-base: #ea5358;   /* default base (overridden by side) */
+  --st-mix-amount: 0%; /* 0% (Tier4,濃) → 35% (Tier1,薄) */
+  /* Compute actual gradient colors by mixing with white */
+  --st-color-start: color-mix(in srgb, var(--st-color-start-base) calc(100% - var(--st-mix-amount)), white);
+  --st-color-end: color-mix(in srgb, var(--st-color-end-base) calc(100% - var(--st-mix-amount)), white);
+  /* Keep effects constant across tiers (差は色の薄さで表現) */
+  --st-inner: #0b1220;
+  --st-glow-blur: 20px;
+  --st-glow-opacity: 0.5;
+  --st-scale: 0.99;
+  --st-shadow-alpha: 0.12;
+
+  width: 100%;
+  height: auto;
+  padding: 5px;
+  border-radius: 1rem;
+  overflow: visible;
+  background: linear-gradient(to left, var(--st-color-start) 0%, var(--st-color-end) 100%);
+  position: relative;
+  z-index: 1;
+}
+
+.supertip-card::after {
+  position: absolute;
+  content: "";
+  top: 12px; /* reduced from 30px for compact list rows */
+  left: 0;
+  right: 0;
+  z-index: -1;
+  height: 100%;
+  width: 100%;
+  transform: scale(var(--st-scale));
+  filter: blur(var(--st-glow-blur));
+  opacity: var(--st-glow-opacity);
+  background: linear-gradient(to left, var(--st-color-start) 0%, var(--st-color-end) 100%);
+  transition: opacity .4s;
+}
+
+.supertip-card-info {
+  --color: var(--st-inner);
+  background: var(--color);
+  color: inherit; /* keep text colors from children */
+  display: block; /* allow custom inner layout */
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  border-radius: .7rem;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.35), 0 0 0 1px rgba(255,255,255,0.05), 0 0 24px rgba(255,255,255, var(--st-shadow-alpha));
+}
+
+.supertip-card:hover::after {
+  opacity: 0;
+}
+
+.supertip-card:hover .supertip-card-info {
+  transition: color .6s;
+}
+
+/* Sides: A=blueish, B=reddish */
+.supertip-side-A { --st-color-start-base: #22d3ee; --st-color-end-base: #3b82f6; }
+.supertip-side-B { --st-color-start-base: #f43f5e; --st-color-end-base: #ea5358; }
+
+/* Tiers by amount (JPY) */
+.supertip-tier-1 { /* < 500 → 最も薄い */
+  --st-mix-amount: 35%;
+}
+.supertip-tier-2 { /* 500-999 */
+  --st-mix-amount: 22%;
+}
+.supertip-tier-3 { /* 1000-2999 */
+  --st-mix-amount: 10%;
+}
+.supertip-tier-4 { /* >= 3000 → 最も濃い */
+  --st-mix-amount: 0%;
+}
+
+/* Badge (kept from previous implementation) */
+.supertip-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 10px;
+  border-radius: 9999px;
+  font-size: 11px;
+  letter-spacing: 0.3px;
+  color: #ffffff;
+  background: linear-gradient(90deg, rgba(247,186,43,0.25), rgba(234,83,88,0.25));
+  border: 1px solid rgba(247,186,43,0.55);
+  box-shadow: 0 0 0 1px rgba(234,83,88,0.25) inset;
+}
+
+.supertip-badge__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #f7ba2b, #ea5358);
+  box-shadow: 0 0 8px rgba(247,186,43,0.7);
+}
+
+/* Mobile: hide Super Tip badge explicitly (defensive in case of class order issues) */
+@media (max-width: 767.98px) {
+  .supertip-badge { display: none !important; }
 }

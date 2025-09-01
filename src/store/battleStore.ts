@@ -1151,19 +1151,20 @@ export const useBattleStore = create<BattleState>((set, get) => ({
     }));
 
     try {
-      const { data, error } = await supabase.rpc('get_battle_comments', {
+      // 1) 既存の投票コメントを取得（RPC）
+      const { data: voteComments, error: voteErr } = await supabase.rpc('get_battle_comments', {
         p_battle_id: battleId
       });
 
-      if (error) {
-        console.error('❌ Error fetching battle comments:', error);
-        throw error;
+      if (voteErr) {
+        console.error('❌ Error fetching battle comments:', voteErr);
+        throw voteErr;
       }
 
-      console.log('📥 Battle comments data:', data);
+      console.log('📥 Battle comments data (votes):', voteComments);
 
       interface RawBattleComment { id: string; user_id: string; username: string; avatar_url: string | null; vote: 'A' | 'B'; comment: string | null; created_at: string; }
-      const comments: BattleComment[] = (data as RawBattleComment[] || []).map((c) => ({
+      const commentsFromVotes: BattleComment[] = (voteComments as RawBattleComment[] || []).map((c) => ({
         id: c.id,
         post_id: '', // コメント機能統合前の暫定値
         user_id: c.user_id,
@@ -1173,13 +1174,87 @@ export const useBattleStore = create<BattleState>((set, get) => ({
         username: c.username,
         avatar_url: c.avatar_url,
         vote: c.vote,
-        comment: c.comment
+        comment: c.comment,
+        isSuperTip: false,
       }));
+
+      // 2) SuperTip由来のコメントを取得（battle_idに紐づく、支払い成功のみ優先表示）
+    // 取得するフィールド: id, sender_user_id, recipient_user_id, vote, comment, created_at, amount_jpy, profiles(username, avatar_url)
+      const { data: superTips, error: tipErr } = await supabase
+        .from('super_tips')
+        .select(`
+          id,
+          sender_user_id,
+      recipient_user_id,
+      vote,
+          comment,
+      amount_jpy,
+          created_at,
+          payment_status,
+          profiles:sender_user_id (
+            username,
+            avatar_url
+          )
+        `)
+        .eq('battle_id', battleId)
+        .eq('payment_status', 'succeeded')
+        .order('created_at', { ascending: false });
+
+      if (tipErr) {
+        console.error('❌ Error fetching super tip comments:', tipErr);
+        // SuperTip取得に失敗しても致命的ではないため、投票コメントのみで継続
+      }
+
+      type RawSuperTip = {
+        id: string;
+        sender_user_id: string;
+  recipient_user_id: string;
+  vote: 'A' | 'B' | null;
+        comment: string;
+  amount_jpy: number;
+        created_at: string;
+        payment_status: string;
+        profiles?: (
+          { username: string; avatar_url: string | null } |
+          { username: string; avatar_url: string | null }[]
+        ) | null;
+      };
+
+      const rawTips: RawSuperTip[] = ((superTips ?? []) as unknown as RawSuperTip[]);
+
+      const commentsFromSuperTips: BattleComment[] = rawTips
+        .filter((t) => ((t.comment ?? '').trim().length > 0))
+        .map((t) => {
+          const prof = Array.isArray(t.profiles) ? (t.profiles[0] ?? null) : (t.profiles ?? null);
+          return {
+            id: t.id,
+            post_id: '',
+            user_id: t.sender_user_id,
+            content: t.comment,
+            created_at: t.created_at,
+            updated_at: t.created_at,
+            username: prof?.username,
+            avatar_url: prof?.avatar_url ?? null,
+            vote: undefined,
+            comment: t.comment,
+            isSuperTip: true,
+            superTipAmountJpy: t.amount_jpy,
+            superTipVote: t.vote ?? undefined,
+            superTipRecipientUserId: t.recipient_user_id,
+          } as BattleComment;
+        });
+
+      // 3) マージ：SuperTipコメントを先頭に並べ、その後に投票コメント（双方とも作成日時の降順を保つ）
+      // 既に個別で降順にしているので、単純連結でOK
+      const merged: BattleComment[] = [
+        ...commentsFromSuperTips,
+        ...commentsFromVotes,
+      ];
 
       set(state => ({
         battleComments: {
           ...state.battleComments,
-          [battleId]: comments
+          [battleId]: merged
         }
       }));
 
