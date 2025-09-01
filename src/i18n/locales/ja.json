@@ -383,7 +383,19 @@
         "title": "受け取り開始の流れ",
         "step1": "「受け取り設定を開始/再開」を押して、Stripeで必要事項（本人確認・振込口座など）を登録します。",
         "step2": "完了後このページに戻ると「受け取り可能」と表示されます。",
-        "step3": "売上の確認や入金タイミングの設定は「Stripe Express ダッシュボード」で行えます。"
+        "step3": "売上の確認や入金タイミングの設定は「Stripe Express ダッシュボード」で行えます。",
+        "requiredInfoTitle": "アカウント作成時に必要な情報",
+        "requiredInfo": {
+          "emailPhone": "メールアドレス、電話番号",
+          "nameDobAddress": "名前（氏名）、生年月日、住所",
+          "industry": "業界の選択: 「Entertainment and recreation」 > 「musicians, bands, or orchestras」 を選択",
+          "websiteLabel": "Your website",
+          "websiteValue": "https://beatnexus.app",
+          "productDesc": "Product description: 「BeatNexus Supertipのため」",
+          "bank": "銀行口座",
+          "id": "身分証明書"
+        },
+        "dashboardNote": "これらを入力して作成が完了すると、Stripe Expressダッシュボードからご自身の売上額や推移、入金予定日程などを確認できます（ページ上部の「Stripe Express ダッシュボードを開く」からアクセス可能）。"
       }
     },
     "complete": {

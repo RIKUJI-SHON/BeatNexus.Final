@@ -92,7 +92,19 @@
         "title": "How to start receiving",
         "step1": "Click 'Start/Resume Setup' and complete KYC/bank info in Stripe.",
         "step2": "When completed, this page will show 'Ready to receive'.",
-        "step3": "You can check earnings and configure payout schedule in the Stripe Express Dashboard."
+        "step3": "You can check earnings and configure payout schedule in the Stripe Express Dashboard.",
+        "requiredInfoTitle": "Information required to create your account",
+        "requiredInfo": {
+          "emailPhone": "Email address and phone number",
+          "nameDobAddress": "Full name, date of birth, and address",
+          "industry": "Industry: select 'Entertainment and recreation' > 'musicians, bands, or orchestras'",
+          "websiteLabel": "Your website",
+          "websiteValue": "https://beatnexus.app",
+          "productDesc": "Product description: 'For BeatNexus Supertip'",
+          "bank": "Bank account",
+          "id": "Identity document"
+        },
+        "dashboardNote": "After completing these steps, you can review your earnings, trends, and payout schedule from the Stripe Express dashboard (use the 'Open Stripe Express Dashboard' button above)."
       }
     },
     "complete": {

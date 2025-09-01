@@ -275,6 +275,20 @@ export default function StripeConnectPage() {
           <li>{t('superTip.connect.howToStart.step2')}</li>
           <li>{t('superTip.connect.howToStart.step3')}</li>
         </ol>
+        {/* 追加案内：アカウント作成時に必要な情報（明記） */}
+        <h3 className="text-md font-semibold mt-2">{t('superTip.connect.howToStart.requiredInfoTitle')}</h3>
+        <ul className="list-disc list-inside text-sm text-gray-300 space-y-1">
+          <li>{t('superTip.connect.howToStart.requiredInfo.emailPhone')}</li>
+          <li>{t('superTip.connect.howToStart.requiredInfo.nameDobAddress')}</li>
+          <li>{t('superTip.connect.howToStart.requiredInfo.industry')}</li>
+          <li>
+            {t('superTip.connect.howToStart.requiredInfo.websiteLabel')}: <a href="https://beatnexus.app" className="text-cyan-300 underline" target="_blank" rel="noreferrer">{t('superTip.connect.howToStart.requiredInfo.websiteValue')}</a>
+          </li>
+          <li>{t('superTip.connect.howToStart.requiredInfo.productDesc')}</li>
+          <li>{t('superTip.connect.howToStart.requiredInfo.bank')}</li>
+          <li>{t('superTip.connect.howToStart.requiredInfo.id')}</li>
+        </ul>
+        <p className="text-xs text-gray-400">{t('superTip.connect.howToStart.dashboardNote')}</p>
       </div>
 
   {/* ステータス/ログの可視化は行わない（内部的には初回ロードで取得） */}
