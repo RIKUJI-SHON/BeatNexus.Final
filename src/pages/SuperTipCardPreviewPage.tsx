@@ -10,7 +10,7 @@ function calcTier(amount: number): 1 | 2 | 3 | 4 {
   return 1;
 }
 
-const samples: Array<{ amount: number; side: Side; username: string; comment: string; standalone?: boolean }>
+const samples: Array<{ amount: number; side: Side; username: string; comment: string }>
   = [
     { amount: 100, side: 'A', username: 'Alice', comment: '応援してます！' },
     { amount: 500, side: 'A', username: 'Alice', comment: 'ナイス！' },
@@ -20,9 +20,7 @@ const samples: Array<{ amount: number; side: Side; username: string; comment: st
     { amount: 500, side: 'B', username: 'Bob', comment: '良い音！' },
     { amount: 1000, side: 'B', username: 'Bob', comment: '痺れた！' },
     { amount: 3000, side: 'B', username: 'Bob', comment: '最強🔥' },
-    // スタンドアロンでも支援したサイドの色を適用（A/B）。種類はチップで明記。
-    { amount: 700, side: 'A', username: 'Charlie', comment: 'スタンドアロン支援', standalone: true },
-    { amount: 7000, side: 'B', username: 'Dana', comment: 'スタンドアロン支援・大！', standalone: true },
+  // スタンドアロン表記はカードから削除
   ];
 
 export default function SuperTipCardPreviewPage() {
@@ -48,9 +46,7 @@ export default function SuperTipCardPreviewPage() {
               <div className="flex items-center gap-2 text-[13px]">
                 <span className="font-semibold text-white truncate">{s.username}</span>
                 <span className={`px-2 py-0.5 rounded-full border ${sideLabelCls}`}>{sideLabel}</span>
-                {s.standalone && (
-                  <span className="px-2 py-0.5 rounded-full border border-yellow-300/60 text-yellow-200">{t('superTip.preview.standalone')}</span>
-                )}
+                {/* standalone chip removed */}
                 <span className="px-2 py-0.5 rounded-full border border-amber-300/60 text-amber-200">Tier {tier}</span>
                 <span className="supertip-badge hidden sm:inline-flex">
                   <span className="supertip-badge__dot" />

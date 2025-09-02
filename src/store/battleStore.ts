@@ -1061,7 +1061,24 @@ export const useBattleStore = create<BattleState>((set, get) => ({
       }));
 
       // 2) SuperTip由来のコメントを取得（battle_idに紐づく、支払い成功のみ優先表示）
-    // 取得するフィールド: id, sender_user_id, recipient_user_id, vote, comment, created_at, amount_jpy, profiles(username, avatar_url)
+      //    アーカイブページから呼ばれる場合は archived_battles.id が渡ってくるため、
+      //    original_battle_id に解決してから super_tips を参照する。
+      let effectiveBattleId = battleId;
+      try {
+        const { data: archivedRow } = await supabase
+          .from('archived_battles')
+          .select('original_battle_id')
+          .eq('id', battleId)
+          .single();
+        if (archivedRow?.original_battle_id) {
+          effectiveBattleId = archivedRow.original_battle_id;
+        }
+  } catch {
+        // archived_battles に存在しない=アクティブバトルIDとみなし、そのまま進行
+        console.debug('archived_battles lookup skipped or failed; using provided battleId for super_tips');
+      }
+
+      // 取得するフィールド: id, sender_user_id, recipient_user_id, vote, comment, created_at, amount_jpy, profiles(username, avatar_url)
       const { data: superTips, error: tipErr } = await supabase
         .from('super_tips')
         .select(`
@@ -1078,7 +1095,7 @@ export const useBattleStore = create<BattleState>((set, get) => ({
             avatar_url
           )
         `)
-        .eq('battle_id', battleId)
+        .eq('battle_id', effectiveBattleId)
         .eq('payment_status', 'succeeded')
         .order('created_at', { ascending: false });
 
@@ -1126,6 +1143,16 @@ export const useBattleStore = create<BattleState>((set, get) => ({
           } as BattleComment;
         });
 
+      // 2.4) Super Tip を金額降順（同額は作成日時の新しい順）で並べ替え
+      const commentsFromSuperTipsSorted = [...commentsFromSuperTips].sort((a, b) => {
+        const amtA = a.superTipAmountJpy ?? 0;
+        const amtB = b.superTipAmountJpy ?? 0;
+        if (amtB !== amtA) return amtB - amtA;
+        const timeA = new Date(a.created_at).getTime();
+        const timeB = new Date(b.created_at).getTime();
+        return timeB - timeA;
+      });
+
   // 2.5) 重複排除（仕様優先）:
   //     同一ユーザーが Super Tip コメントを投稿している場合は、
   //     そのユーザーの「通常の投票コメント」を一覧から除外し、Super Tip 側のみ表示する。
@@ -1136,7 +1163,7 @@ export const useBattleStore = create<BattleState>((set, get) => ({
       // 3) マージ：SuperTipコメントを先頭に並べ、その後に投票コメント（双方とも作成日時の降順を保つ）
       // 既に個別で降順にしているので、単純連結でOK
       const merged: BattleComment[] = [
-        ...commentsFromSuperTips,
+        ...commentsFromSuperTipsSorted,
         ...dedupedVoteComments,
       ];
 

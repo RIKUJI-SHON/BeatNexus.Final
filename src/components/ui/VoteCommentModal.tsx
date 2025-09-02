@@ -41,6 +41,7 @@ export const VoteCommentModal: React.FC<VoteCommentModalProps> = ({
   const [returnUrl, setReturnUrl] = useState<string | null>(null);
   const [tipError, setTipError] = useState<string | null>(null);
   const [tipLoading, setTipLoading] = useState(false);
+  const [showTipCommentError, setShowTipCommentError] = useState(false);
 
   // バックエンドのエラーコードをユーザー向けの日本語に変換
   const mapBackendError = useCallback((code?: string, fallback?: string) => {
@@ -104,12 +105,16 @@ export const VoteCommentModal: React.FC<VoteCommentModalProps> = ({
     if (showError && e.target.value.trim()) {
       setShowError(false);
     }
+    if (showTipCommentError && e.target.value.trim()) {
+      setShowTipCommentError(false);
+    }
   };
 
   const createPaymentIntent = useCallback(async () => {
     setTipError(null);
     if (!superTipOn) return; // ガード
     if (!canStartTip) {
+  if (comment.trim().length === 0) setShowTipCommentError(true);
       setTipError(t('superTip.modal.errors.checkAmountAndComment'));
       return;
     }
@@ -215,6 +220,7 @@ export const VoteCommentModal: React.FC<VoteCommentModalProps> = ({
                     setSuperTipOn((v) => !v);
                     setTipError(null);
                     setPiClientSecret(null);
+                    setShowTipCommentError(false);
                   }}
                   className={`relative inline-flex h-6 w-11 items-center rounded-full transition ${superTipOn ? 'bg-amber-500' : 'bg-gray-600'}`}
                   aria-pressed={superTipOn}
@@ -263,27 +269,30 @@ export const VoteCommentModal: React.FC<VoteCommentModalProps> = ({
             {/* Comment Input */}
             <div className="mb-6">
               <label className="block text-sm font-medium text-gray-300 mb-2">
-                {t('voteCommentModal.commentLabel')}
+                {superTipOn ? t('voteCommentModal.commentLabelRequired') : t('voteCommentModal.commentLabel')}
               </label>
               <textarea
                 value={comment}
                 onChange={handleCommentChange}
                 placeholder={t('voteCommentModal.commentPlaceholder')}
                 className={`w-full p-3 rounded-lg bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 border resize-none ${
-                  showError ? 'border-red-500 focus:ring-red-500/50' : 'border-gray-600 focus:ring-cyan-500/50'
+                  (showError || (superTipOn && showTipCommentError)) ? 'border-red-500 focus:ring-red-500/50' : 'border-gray-600 focus:ring-cyan-500/50'
                 }`}
                 rows={3}
                 disabled={isLoading}
                 maxLength={500}
+                required={superTipOn}
+                aria-required={superTipOn}
               />
               <div className="mt-1 flex justify-between items-center">
                 <div className="text-xs text-gray-500">
                   {t('voteCommentModal.characterCount', { count: comment.length })}
                 </div>
-                {showError && (
-                  <div className="text-xs text-red-400">
-                    {t('voteCommentModal.commentRequired')}
-                  </div>
+                {showError && !superTipOn && (
+                  <div className="text-xs text-red-400">{t('voteCommentModal.commentRequired')}</div>
+                )}
+                {superTipOn && showTipCommentError && (
+                  <div className="text-xs text-red-400">{t('voteCommentModal.commentRequiredForSupport')}</div>
                 )}
               </div>
             </div>

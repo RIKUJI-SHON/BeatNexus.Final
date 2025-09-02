@@ -1126,9 +1126,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                                   <span className="supertip-badge__dot" />
                                   {t('superTip.preview.badge')}
                                 </span>
-                                {(!comment.superTipVote) && (
-                                  <span className="ml-1 px-2 py-0.5 rounded-full border border-yellow-300/60 text-yellow-200 text-[11px]">{t('superTip.preview.standalone')}</span>
-                                )}
+                                {/* Removed standalone label from comment card */}
                               </div>
                               {comment.comment ? (
                                 <p className="text-gray-200 text-sm leading-relaxed">{comment.comment}</p>

@@ -125,11 +125,10 @@
     },
     "preview": {
       "title": "Super Tip Comment Card Preview",
-      "description": "The tier (1–4) by amount is expressed via color intensity. Even in standalone support, the supported side color (A=blue/B=red) applies. Badge is hidden on mobile.",
+  "description": "The tier (1–4) by amount is expressed via color intensity. The supported side color (A=blue/B=red) applies. Badge is hidden on mobile.",
       "badge": "Super Tip",
       "sideA": "Side A",
       "sideB": "Side B",
-      "standalone": "Standalone",
       "amount": "¥{{amount}}"
     },
     "modal": {
@@ -2168,9 +2167,11 @@
   "title": "Vote",
     "subtitle": "Vote for {{playerName}}",
     "description": "You can add a comment or vote directly.",
-    "commentLabel": "Comment (Optional)",
+  "commentLabel": "Comment (Optional)",
+  "commentLabelRequired": "Comment (Required)",
   "commentPlaceholder": "Share your thoughts about this battle...",
     "commentRequired": "A comment is required for comment voting",
+  "commentRequiredForSupport": "A comment is required when using Support (Super Tip)",
     "voteButton": "Vote",
     "voting": "Voting...",
     "characterCount": "{{count}}/500 characters",

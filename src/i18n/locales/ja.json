@@ -416,11 +416,10 @@
     },
     "preview": {
       "title": "Super Tip コメントカード プレビュー",
-      "description": "金額に応じたティア（1〜4）は色の濃淡で表現し、スタンドアロンでも支援先サイド（A=青/B=赤）の色が適用されます。モバイルではバッジ非表示。",
+  "description": "金額に応じたティア（1〜4）は色の濃淡で表現し、支援先サイド（A=青/B=赤）の色が適用されます。モバイルではバッジ非表示。",
       "badge": "Super Tip",
       "sideA": "サイドA",
       "sideB": "サイドB",
-      "standalone": "スタンドアロン",
       "amount": "¥{{amount}}"
     },
     "modal": {
@@ -1928,9 +1927,11 @@
   "title": "投票",
     "subtitle": "{{playerName}}への投票",
     "description": "コメントを入力するか、そのまま投票することができます。",
-    "commentLabel": "コメント（任意）",
+  "commentLabel": "コメント（任意）",
+  "commentLabelRequired": "コメント（必須）",
   "commentPlaceholder": "このバトルについての感想をシェアしてください...",
     "commentRequired": "コメント付き投票にはコメントが必要です",
+  "commentRequiredForSupport": "応援オプション（Super Tip）を利用する場合、コメントは必須です",
     "voteButton": "投票する",
     "voting": "投票中...",
     "characterCount": "{{count}}/500文字",
