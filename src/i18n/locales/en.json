@@ -80,7 +80,7 @@
       "whatIs": {
         "title": "What is Super Tip?",
         "point1": "A small support tip to cheer on players. You can directly support creators within the watch/vote flow.",
-        "point2": "Fees apply: platform fee (currently 10%) and Stripe processing fees. See 'Legal Disclosure' for details.",
+  "point2": "Fees apply: platform fee (currently 15%) and Stripe processing fees. See 'Legal Disclosure' for details.",
         "point3": "Receiving requires a Stripe Connect account and deposit setup in Stripe Express.",
         "point4": "Payments are processed securely under Stripe standards (3D Secure, etc.)."
       },
@@ -135,7 +135,7 @@
       "supportOption": "Support Option (Super Tip)",
       "presets": "Presets",
       "amountLabel": "Amount (¥100–¥10,000)",
-      "feeNote": "Includes platform fee (~10%).",
+  "feeNote": "Includes platform fee (~15%).",
       "defaultComment": "Cheering you on!",
       "processing": "Processing...",
       "confirmPayment": "Confirm payment",
@@ -2188,7 +2188,14 @@
     "commentVote": "Vote with Comment",
     "simpleVote": "Vote Only",
     "commentVotePoints": "+300VP",
-    "simpleVotePoints": "+100VP"
+    "simpleVotePoints": "+100VP",
+    "useScoreSheet": "Use Score Sheet",
+    "scoreSheetNote": "Each section is scored out of 100. Enter A/B scores to see totals.",
+    "section": {
+      "skills": "Skills",
+      "musicality": "Musicality",
+      "originality": "Originality"
+    }
   },
   "auth": {
     "phoneNumber": "Phone Number",

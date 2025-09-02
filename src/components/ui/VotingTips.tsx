@@ -1,6 +1,5 @@
 import React, { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { HelpCircle } from 'lucide-react';
 import { Modal } from './Modal';
 
 interface VotingTipsProps {
@@ -105,16 +104,6 @@ export const VotingTips: React.FC<VotingTipsProps> = ({
 
   return (
     <>
-      {/* Trigger Button */}
-      <button 
-        className="flex items-center gap-1.5 cursor-pointer hover:bg-gray-700 px-2 py-1 rounded-md transition-colors"
-        onClick={() => setIsModalOpen(true)}
-      >
-        <div className="w-2 h-2 rounded-full bg-purple-500 animate-pulse shadow-md shadow-purple-500/50"></div>
-        <span className="text-purple-400 text-xs font-bold">{t('battleView.votingGuide')}</span>
-        <HelpCircle className="h-3 w-3 text-purple-400" />
-      </button>
-
       {/* Modal */}
       <Modal
         isOpen={isModalOpen}

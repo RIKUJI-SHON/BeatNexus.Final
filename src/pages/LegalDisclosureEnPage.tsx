@@ -81,7 +81,7 @@ const LegalDisclosureEnPage: React.FC = () => {
           <ul className="list-disc pl-5 space-y-1">
             <li>Payment flow: Stripe Connect (Express) with Destination charges</li>
             <li>Beneficiaries: Creators (connected accounts / battle participants)</li>
-            <li>Platform fee: 10% by default (subject to change by configuration)</li>
+            <li>Platform fee: 15% by default (subject to change by configuration)</li>
           </ul>
         </section>
 

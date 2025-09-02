@@ -371,7 +371,7 @@
       "whatIs": {
         "title": "Super Tipとは？",
         "point1": "プレイヤーを応援するための小額チップ機能です。視聴や投票の流れの中で、あなたの活動を直接支援できます。",
-        "point2": "手数料はプラットフォーム手数料（現在10%）と決済手数料がかかります。詳細は「特定商取引法に基づく表記」をご確認ください。",
+  "point2": "手数料はプラットフォーム手数料（現在15%）と決済手数料がかかります。詳細は「特定商取引法に基づく表記」をご確認ください。",
         "point3": "受け取りにはStripe Connectのアカウント作成と、Stripe Expressでの振込設定が必要です。",
         "point4": "決済はStripeのセキュリティ基準に則り、安全に処理されます（3Dセキュア等対応）。"
       },
@@ -426,7 +426,7 @@
       "supportOption": "応援オプション（Super Tip）",
       "presets": "プリセット",
       "amountLabel": "金額（¥100〜¥10,000）",
-      "feeNote": "プラットフォーム手数料（約10%）が含まれます。",
+  "feeNote": "プラットフォーム手数料（約15%）が含まれます。",
       "defaultComment": "応援してます！",
       "processing": "処理中…",
       "confirmPayment": "決済を確定する",
@@ -1948,7 +1948,14 @@
     "commentVote": "コメントして投票",
     "simpleVote": "投票のみ",
     "commentVotePoints": "+300VP",
-    "simpleVotePoints": "+100VP"
+    "simpleVotePoints": "+100VP",
+    "useScoreSheet": "スコアシートを使う",
+    "scoreSheetNote": "各セクションは100点満点。A/Bそれぞれを入力すると合計が表示されます。",
+    "section": {
+      "skills": "スキル",
+      "musicality": "音楽性",
+      "originality": "オリジナリティ"
+    }
   },
   "auth": {
     "phoneNumber": "電話番号",

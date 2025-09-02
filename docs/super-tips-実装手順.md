@@ -797,7 +797,7 @@ FRONTEND_URL          # リダイレクト先URL
 3. APIキー/その他環境変数（開発環境）
   - STRIPE_SECRET_KEY=sk_test_...
   - FRONTEND_URL=https://dev-frontend.example（実際のURL）
-  - PLATFORM_FEE_PERCENT="10"（プラットフォーム手数料の割合。未設定時は既定10%）
+  - PLATFORM_FEE_PERCENT="15"（プラットフォーム手数料の割合。未設定時は既定15%）
 4. 検証
   - Stripeダッシュボードから test event 送信→ 200 OK
   - DB反映: super_tips.payment_status/transfer_status 更新、profiles.stripe_charges_enabled 同期

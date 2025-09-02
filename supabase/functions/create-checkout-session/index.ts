@@ -83,7 +83,7 @@ serve(async (req) => {
       success_url, 
       cancel_url,
       quantity = 1,
-      application_fee_percent = 10 // Default 10% platform fee
+  application_fee_percent = 15 // Default 15% platform fee
     } = requestData
 
     // Validate required fields

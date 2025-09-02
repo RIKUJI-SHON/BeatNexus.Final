@@ -30,7 +30,7 @@ serve(async (req) => {
     const STRIPE_SECRET_KEY = Deno.env.get('STRIPE_SECRET_KEY');
     const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const PLATFORM_FEE_PERCENT = parseFloat(Deno.env.get('PLATFORM_FEE_PERCENT') || '10');
+  const PLATFORM_FEE_PERCENT = parseFloat(Deno.env.get('PLATFORM_FEE_PERCENT') || '15');
     const FRONTEND_URL = Deno.env.get('FRONTEND_URL') || 'http://localhost:5173';
     const APM_ALLOW_REDIRECTS = Deno.env.get('AUTOMATIC_PAYMENT_METHODS_ALLOW_REDIRECTS');
 
@@ -115,7 +115,7 @@ serve(async (req) => {
     }
 
     // Fees
-    const feePercent = Number.isFinite(PLATFORM_FEE_PERCENT) ? PLATFORM_FEE_PERCENT : 10;
+  const feePercent = Number.isFinite(PLATFORM_FEE_PERCENT) ? PLATFORM_FEE_PERCENT : 15;
     const applicationFeeAmount = Math.max(0, Math.min(body.amount_jpy, Math.floor((body.amount_jpy * feePercent) / 100)));
 
     // Create PaymentIntent (destination charge)

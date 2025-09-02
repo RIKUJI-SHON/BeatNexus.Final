@@ -18,8 +18,8 @@ const STRIPE_SECRET_KEY = Deno.env.get('STRIPE_SECRET_KEY');
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
 
-// 💰 プラットフォーム手数料設定（10%）
-const PLATFORM_FEE_PERCENTAGE = 0.10;
+// 💰 プラットフォーム手数料設定（15%）
+const PLATFORM_FEE_PERCENTAGE = 0.15;
 
 // ⚠️ プレースホルダー: 必要な環境変数がない場合のエラー
 if (!STRIPE_SECRET_KEY) {

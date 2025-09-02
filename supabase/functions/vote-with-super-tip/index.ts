@@ -29,8 +29,8 @@ serve(async (req) => {
     const STRIPE_SECRET_KEY = Deno.env.get('STRIPE_SECRET_KEY');
     const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-  // プラットフォーム手数料（割合）。未設定時は10%。
-  const PLATFORM_FEE_PERCENT = parseFloat(Deno.env.get('PLATFORM_FEE_PERCENT') || '10');
+  // プラットフォーム手数料（割合）。未設定時は15%。
+  const PLATFORM_FEE_PERCENT = parseFloat(Deno.env.get('PLATFORM_FEE_PERCENT') || '15');
   const FRONTEND_URL = Deno.env.get('FRONTEND_URL') || 'http://localhost:5173';
   const APM_ALLOW_REDIRECTS = Deno.env.get('AUTOMATIC_PAYMENT_METHODS_ALLOW_REDIRECTS'); // 'never' を推奨時に使用可
 
@@ -149,8 +149,8 @@ serve(async (req) => {
       cardPaymentsActive = false;
     }
 
-    // application_fee_amount を金額の割合（既定10%）で算出（少数は切り捨て）。
-    const feePercent = Number.isFinite(PLATFORM_FEE_PERCENT) ? PLATFORM_FEE_PERCENT : 10;
+  // application_fee_amount を金額の割合（既定15%）で算出（少数は切り捨て）。
+  const feePercent = Number.isFinite(PLATFORM_FEE_PERCENT) ? PLATFORM_FEE_PERCENT : 15;
     const calcFee = Math.floor((body.amount_jpy * feePercent) / 100);
     const applicationFeeAmount = Math.max(0, Math.min(body.amount_jpy, calcFee));
 

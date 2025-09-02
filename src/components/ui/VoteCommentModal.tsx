@@ -43,6 +43,54 @@ export const VoteCommentModal: React.FC<VoteCommentModalProps> = ({
   const [tipLoading, setTipLoading] = useState(false);
   const [showTipCommentError, setShowTipCommentError] = useState(false);
 
+  // --- Score Sheet (local-only UI) ---
+  const [useScoreSheet, setUseScoreSheet] = useState(false);
+  type ScoreState = {
+    skillA: number; skillB: number;
+    musicalityA: number; musicalityB: number;
+    originalityA: number; originalityB: number;
+  };
+  const [scoreSheet, setScoreSheet] = useState<ScoreState>({
+    skillA: 0,
+    skillB: 0,
+    musicalityA: 0,
+    musicalityB: 0,
+    originalityA: 0,
+    originalityB: 0,
+  });
+
+  const clamp100 = (n: number) => {
+    if (Number.isNaN(n)) return 0;
+    return Math.max(0, Math.min(100, Math.round(n)));
+  };
+
+  const totalA = scoreSheet.skillA + scoreSheet.musicalityA + scoreSheet.originalityA;
+  const totalB = scoreSheet.skillB + scoreSheet.musicalityB + scoreSheet.originalityB;
+
+  type ScoreKey = 'skills' | 'musicality' | 'originality';
+  const getValue = React.useCallback((key: ScoreKey, player: 'A'|'B') => {
+    switch (key) {
+      case 'skills': return player === 'A' ? scoreSheet.skillA : scoreSheet.skillB;
+      case 'musicality': return player === 'A' ? scoreSheet.musicalityA : scoreSheet.musicalityB;
+      case 'originality': return player === 'A' ? scoreSheet.originalityA : scoreSheet.originalityB;
+    }
+  }, [scoreSheet]);
+  const setValue = React.useCallback((key: ScoreKey, player: 'A'|'B', v: number) => {
+    setScoreSheet(prev => {
+      const next: ScoreState = { ...prev };
+      if (key === 'skills') {
+        if (player === 'A') next.skillA = v; else next.skillB = v;
+      }
+      if (key === 'musicality') {
+        if (player === 'A') next.musicalityA = v; else next.musicalityB = v;
+      }
+      if (key === 'originality') {
+        if (player === 'A') next.originalityA = v; else next.originalityB = v;
+      }
+      return next;
+    });
+  }, []);
+
   // バックエンドのエラーコードをユーザー向けの日本語に変換
   const mapBackendError = useCallback((code?: string, fallback?: string) => {
     if (!code) return fallback || t('superTip.errors.generic');
@@ -262,6 +310,85 @@ export const VoteCommentModal: React.FC<VoteCommentModalProps> = ({
                   </div>
                   <div className="text-xs text-gray-400">{t('superTip.modal.feeNote')}</div>
                   {tipError && <div className="text-sm text-red-400">{tipError}</div>}
+                </div>
+              )}
+            </div>
+
+            {/* Score Sheet Opt-in (under Super Tip) */}
+            <div className="mb-6">
+              <div className="flex items-center justify-between">
+                <label className="text-sm font-medium text-gray-200">{t('voteCommentModal.useScoreSheet')}</label>
+                <button
+                  type="button"
+                  onClick={() => setUseScoreSheet(v => !v)}
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition ${useScoreSheet ? 'bg-cyan-500' : 'bg-gray-600'}`}
+                  aria-pressed={useScoreSheet}
+                >
+                  <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${useScoreSheet ? 'translate-x-6' : 'translate-x-1'}`} />
+                </button>
+              </div>
+              {useScoreSheet && (
+                <div className="mt-3 space-y-4">
+                  <div className="text-xs text-gray-400">{t('voteCommentModal.scoreSheetNote')}</div>
+
+                  {/* Rows: Skills, Musicality, Originality */}
+                  {([{
+                    key: 'skills',
+                    label: t('voteCommentModal.section.skills')
+                  }, {
+                    key: 'musicality',
+                    label: t('voteCommentModal.section.musicality')
+                  }, {
+                    key: 'originality',
+                    label: t('voteCommentModal.section.originality')
+                  }] as { key: ScoreKey; label: string }[]).map(({ key, label }) => (
+                    <div key={key} className="border border-gray-700 rounded-lg p-3 bg-gray-900">
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="text-sm font-medium text-gray-200">{label}</span>
+                        <span className="text-[10px] text-gray-500">0-100</span>
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        {/* Player A */}
+                        <div>
+                          <label className="block text-xs text-cyan-300 mb-1">{t('playerA')}</label>
+                          <input
+                            type="number"
+                            min={0}
+                            max={100}
+                            value={getValue(key, 'A')}
+                            onChange={(e) => setValue(key, 'A', clamp100(Number(e.target.value)))}
+                            className="w-full rounded bg-gray-800 border border-gray-600 text-white px-3 py-2 text-sm"
+                          />
+                        </div>
+                        {/* Player B */}
+                        <div>
+                          <label className="block text-xs text-pink-300 mb-1">{t('playerB')}</label>
+                          <input
+                            type="number"
+                            min={0}
+                            max={100}
+                            value={getValue(key, 'B')}
+                            onChange={(e) => setValue(key, 'B', clamp100(Number(e.target.value)))}
+                            className="w-full rounded bg-gray-800 border border-gray-600 text-white px-3 py-2 text-sm"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+
+                  {/* Totals */}
+                  <div className="flex items-center justify-center gap-4">
+                    <div className="px-3 py-2 rounded-md bg-gray-800 border border-gray-700 text-sm">
+                      <span className="text-cyan-300 font-semibold mr-2">{t('playerA')}</span>
+                      <span className="text-white font-bold">{totalA}</span>
+                      <span className="text-gray-400 text-xs ml-1">/ 300</span>
+                    </div>
+                    <div className="px-3 py-2 rounded-md bg-gray-800 border border-gray-700 text-sm">
+                      <span className="text-pink-300 font-semibold mr-2">{t('playerB')}</span>
+                      <span className="text-white font-bold">{totalB}</span>
+                      <span className="text-gray-400 text-xs ml-1">/ 300</span>
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
