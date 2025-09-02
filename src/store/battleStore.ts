@@ -1,5 +1,7 @@
 import { create } from 'zustand';
 import { Battle, ArchivedBattle, WaitingSubmission, BattleFormat, BattleComment, BattleStatus } from '../types';
+import { ScoreSheet } from '../types/scoreSheet';
+import type { ScoreBreakdownEntry } from '../types/scoreBreakdown';
 
 // 内部利用のRaw型定義（DBクエリ結果簡易形）
 interface RawBattle { id: string; player1_submission_id: string; player2_submission_id: string; battle_format: BattleFormat; status: string; votes_a: number | null; votes_b: number | null; end_voting_at: string; created_at: string; updated_at?: string; }
@@ -36,11 +38,13 @@ interface BattleState {
   fetchTotalVotesCount: () => Promise<void>;
   fetchTotalSubmissionsCount: () => Promise<void>;
   // subscribeToRealTimeUpdates: () => () => void; // 廃止済み
-  voteBattle: (battleId: string, vote: 'A' | 'B') => Promise<void>;
-  voteBattleWithComment: (battleId: string, vote: 'A' | 'B', comment: string) => Promise<void>;
+  voteBattle: (battleId: string, vote: 'A' | 'B', scoreSheet?: ScoreSheet) => Promise<void>;
+  voteBattleWithComment: (battleId: string, vote: 'A' | 'B', comment: string, scoreSheet?: ScoreSheet) => Promise<void>;
   getUserVote: (battleId: string) => Promise<{ hasVoted: boolean; vote: 'A' | 'B' | null }>;
   fetchBattleComments: (battleId: string) => Promise<void>;
   fetchUserSubmissions: () => Promise<void>;
+  getBattleScoreBreakdown: (battleId: string) => Promise<ScoreBreakdownEntry[]>;
+  getArchivedBattleScoreBreakdown: (archivedBattleId: string) => Promise<ScoreBreakdownEntry[]>;
 }
 
 export const useBattleStore = create<BattleState>((set, get) => ({
@@ -58,6 +62,28 @@ export const useBattleStore = create<BattleState>((set, get) => ({
   waitingLoading: false,
   commentsLoading: {},
   error: null,
+  getBattleScoreBreakdown: async (battleId: string) => {
+    const { data, error } = await supabase.rpc('get_battle_score_breakdown', { p_battle_id: battleId });
+    if (error) {
+      if (error.message?.includes('forbidden') || error.message?.includes('not_authenticated')) {
+        throw new Error(i18n.t('errors.forbiddenScoreBreakdown', 'スコア内訳を表示できません。参加者のみアクセスできます。'));
+      }
+      throw error;
+    }
+    // data は rows の配列として返る。型整形
+    return (data || []) as ScoreBreakdownEntry[];
+  },
+
+  getArchivedBattleScoreBreakdown: async (archivedBattleId: string) => {
+    const { data, error } = await supabase.rpc('get_archived_battle_score_breakdown', { p_archived_battle_id: archivedBattleId });
+    if (error) {
+      if (error.message?.includes('forbidden') || error.message?.includes('not_authenticated')) {
+        throw new Error(i18n.t('errors.forbiddenScoreBreakdown', 'スコア内訳を表示できません。参加者のみアクセスできます。'));
+      }
+      throw error;
+    }
+    return (data || []) as ScoreBreakdownEntry[];
+  },
 
   fetchBattles: async () => {
     set({ loading: true, error: null });
@@ -410,51 +436,39 @@ export const useBattleStore = create<BattleState>((set, get) => ({
     }
   },
 
-  voteBattle: async (battleId: string, vote: 'A' | 'B') => {
-    console.log('🗳️ Starting vote process:', { battleId, vote, timestamp: new Date().toISOString() });
-    
+  voteBattle: async (battleId: string, vote: 'A' | 'B', scoreSheet?: ScoreSheet) => {
+    console.log('🗳️ Starting vote process:', { battleId, vote, hasScoreSheet: !!scoreSheet, timestamp: new Date().toISOString() });
     try {
-      // Get current user for logging
       const { data: { user }, error: authError } = await supabase.auth.getUser();
       console.log('👤 Current user:', user?.id, user?.email);
-      
       if (authError) {
         console.error('❌ Auth error:', authError);
         toast.error(i18n.t('toasts.error'), i18n.t('battleStore.toasts.checkLoginStatus'));
         return;
       }
 
-      console.log('📡 Calling vote_battle RPC with params:', {
-        p_battle_id: battleId,
-        p_vote: vote,
-        user_id: user?.id
-      });
+      const rpcArgs: { p_battle_id: string; p_vote: 'A' | 'B'; p_score_sheet?: ScoreSheet } = { p_battle_id: battleId, p_vote: vote as 'A' | 'B' };
+      if (scoreSheet) rpcArgs.p_score_sheet = scoreSheet;
 
-      const { data, error } = await supabase.rpc('vote_battle', {
-        p_battle_id: battleId,
-        p_vote: vote as 'A' | 'B'  // 明示的な型キャスト
-      });
+      console.log('📡 Calling vote_battle RPC with params:', { ...rpcArgs, user_id: user?.id });
+      const { data, error } = await supabase.rpc('vote_battle', rpcArgs);
 
-      console.log('📥 RPC Response:', { 
-        data, 
-        error, 
-        dataType: typeof data,
-        isNull: data === null,
-        isObject: data && typeof data === 'object',
-        timestamp: new Date().toISOString() 
-      });
-
+      console.log('📥 RPC Response:', { data, error, dataType: typeof data, isNull: data === null, isObject: data && typeof data === 'object', timestamp: new Date().toISOString() });
       if (error) {
-        console.error('❌ RPC Error details:', {
-          message: error.message,
-          details: error.details,
-          hint: error.hint,
-          code: error.code,
-          fullError: error
-        });
+        console.error('❌ RPC Error details:', { message: error.message, details: error.details, hint: error.hint, code: error.code, fullError: error });
         console.error('🔍 Full error object:', JSON.stringify(error, null, 2));
         toast.error(i18n.t('toasts.error'), `${i18n.t('battleStore.toasts.databaseError')}: ${error.message}`);
         throw error;
+      }
+
+      if (data && typeof data === 'object' && Object.prototype.hasOwnProperty.call(data, 'success')) {
+        if (data.success === false) {
+          switch (data.error) {
+            case 'invalid_score_sheet':
+              toast.error(i18n.t('toasts.error'), i18n.t('battleStore.toasts.invalidScoreSheet'));
+              return;
+          }
+        }
       }
 
       // Enhanced response handling
@@ -523,11 +537,7 @@ export const useBattleStore = create<BattleState>((set, get) => ({
       console.log('✅ Battles data refreshed');
       
     } catch (error) {
-      console.error('💥 Vote battle catch error:', {
-        error,
-        message: error instanceof Error ? error.message : 'Unknown error',
-        stack: error instanceof Error ? error.stack : undefined
-      });
+      console.error('💥 Vote battle catch error:', { error, message: error instanceof Error ? error.message : 'Unknown error', stack: error instanceof Error ? error.stack : undefined });
       toast.error(i18n.t('toasts.error'), error instanceof Error ? error.message : i18n.t('battleStore.toasts.voteError'));
       throw error;
     }
@@ -920,106 +930,53 @@ export const useBattleStore = create<BattleState>((set, get) => ({
     // Implementation of fetchUserSubmissions function
   },
 
-  voteBattleWithComment: async (battleId: string, vote: 'A' | 'B', comment: string) => {
-    console.log('🗳️💬 Starting vote with comment process:', { battleId, vote, comment, timestamp: new Date().toISOString() });
-    
+  voteBattleWithComment: async (battleId: string, vote: 'A' | 'B', comment: string, scoreSheet?: ScoreSheet) => {
+    console.log('🗳️💬 Starting vote with comment process:', { battleId, vote, hasScoreSheet: !!scoreSheet, timestamp: new Date().toISOString() });
     try {
-      // Get current user for logging
       const { data: { user }, error: authError } = await supabase.auth.getUser();
       console.log('👤 Current user:', user?.id, user?.email);
-      
       if (authError) {
         console.error('❌ Auth error:', authError);
         toast.error(i18n.t('toasts.error'), i18n.t('battleStore.toasts.checkLoginStatus'));
         return;
       }
 
-      console.log('📡 Calling vote_battle_with_comment RPC with params:', {
-        p_battle_id: battleId,
-        p_vote: vote,
-        p_comment: comment,
-        user_id: user?.id
-      });
+      const rpcArgs: { p_battle_id: string; p_vote: 'A' | 'B'; p_comment: string; p_score_sheet?: ScoreSheet } = { p_battle_id: battleId, p_vote: vote, p_comment: comment };
+      if (scoreSheet) rpcArgs.p_score_sheet = scoreSheet;
 
-      const { data, error } = await supabase.rpc('vote_battle_with_comment', {
-        p_battle_id: battleId,
-        p_vote: vote,
-        p_comment: comment
-      });
+      console.log('📡 Calling vote_battle_with_comment RPC with params:', { ...rpcArgs, user_id: user?.id });
+      const { data, error } = await supabase.rpc('vote_battle_with_comment', rpcArgs);
 
-      console.log('📥 RPC Response:', { 
-        data, 
-        error, 
-        dataType: typeof data,
-        timestamp: new Date().toISOString() 
-      });
-
+      console.log('📥 RPC Response:', { data, error, dataType: typeof data, timestamp: new Date().toISOString() });
       if (error) {
-        console.error('❌ RPC Error details:', {
-          message: error.message,
-          details: error.details,
-          hint: error.hint,
-          code: error.code,
-          fullError: error
-        });
+        console.error('❌ RPC Error details:', { message: error.message, details: error.details, hint: error.hint, code: error.code, fullError: error });
         toast.error(i18n.t('toasts.error'), `${i18n.t('battleStore.toasts.databaseError')}: ${error.message}`);
         throw error;
       }
 
-      // Enhanced response handling
-  if (data && typeof data === 'object' && Object.prototype.hasOwnProperty.call(data, 'success')) {
-        console.log('📊 JSON Function response:', {
-          success: data.success,
-          error: data.error,
-          message: data.message,
-          responseType: typeof data
-        });
-
+      if (data && typeof data === 'object' && Object.prototype.hasOwnProperty.call(data, 'success')) {
         if (data.success === false) {
-          console.log('⚠️ Vote blocked by function:', data.error, data.message);
-          
-          // Handle specific error types with appropriate messages
           switch (data.error) {
-            case 'User not authenticated':
-              toast.error(i18n.t('toasts.error'), i18n.t('battleStore.toasts.loginRequired'));
-              break;
-            case 'Battle not found or not active':
-              toast.error(i18n.t('toasts.error'), i18n.t('battleStore.toasts.battleNotFound'));
-              break;
-            case 'Voting period has ended':
-              toast.warning(i18n.t('toasts.warning'), i18n.t('battleStore.toasts.votingEnded'));
-              break;
-            case 'Cannot vote on your own battle':
-              toast.warning(i18n.t('toasts.warning'), i18n.t('battleStore.toasts.cannotVoteOwn'));
-              break;
-            default:
-              toast.error(i18n.t('toasts.error'), data.message || i18n.t('battleStore.toasts.voteError'));
+            case 'invalid_score_sheet':
+              toast.error(i18n.t('toasts.error'), i18n.t('battleStore.toasts.invalidScoreSheet'));
+              return;
           }
-          return;
-        } else if (data.success === true) {
-          // Success case with proper JSON response
-          console.log('✅ Vote with comment successful:', data);
-          const successMessage = comment 
-            ? i18n.t('battleStore.toasts.voteWithCommentSuccess', { player: vote })
-            : i18n.t('battleStore.toasts.voteSuccess', { player: vote });
-          toast.success(i18n.t('toasts.success'), successMessage);
-          
-          // Refresh comments for this battle
-          await get().fetchBattleComments(battleId);
         }
       }
 
+      if (data && typeof data === 'object' && data.success === true) {
+        const successMessage = comment 
+          ? i18n.t('battleStore.toasts.voteWithCommentSuccess', { player: vote })
+          : i18n.t('battleStore.toasts.voteSuccess', { player: vote });
+        toast.success(i18n.t('toasts.success'), successMessage);
+        await get().fetchBattleComments(battleId);
+      }
+
       console.log('🔄 Refreshing battles data...');
-      // Refresh battles after voting attempt
       await get().fetchBattles();
       console.log('✅ Battles data refreshed');
-      
     } catch (error) {
-      console.error('💥 Vote battle with comment catch error:', {
-        error,
-        message: error instanceof Error ? error.message : 'Unknown error',
-        stack: error instanceof Error ? error.stack : undefined
-      });
+      console.error('💥 Vote battle with comment catch error:', { error, message: error instanceof Error ? error.message : 'Unknown error', stack: error instanceof Error ? error.stack : undefined });
       toast.error(i18n.t('toasts.error'), error instanceof Error ? error.message : i18n.t('battleStore.toasts.voteError'));
       throw error;
     }

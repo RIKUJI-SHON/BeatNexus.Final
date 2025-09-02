@@ -9,8 +9,8 @@ import { loadStripe } from '@stripe/stripe-js';
 interface VoteCommentModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onVote: (comment: string) => void;
-  onSimpleVote: (player: 'A' | 'B') => void;
+  onVote: (comment: string, scoreSheet?: { skills: {A:number;B:number}; musicality:{A:number;B:number}; originality:{A:number;B:number} }) => void;
+  onSimpleVote: (player: 'A' | 'B', scoreSheet?: { skills: {A:number;B:number}; musicality:{A:number;B:number}; originality:{A:number;B:number} }) => void;
   player: 'A' | 'B';
   isLoading?: boolean;
   battleId?: string;
@@ -133,19 +133,26 @@ export const VoteCommentModal: React.FC<VoteCommentModalProps> = ({
     return superTipOn ? a >= 100 && a <= 10000 && comment.trim().length > 0 : true;
   }, [amount, comment, superTipOn]);
 
+  const buildScoreSheetPayload = () => {
+    if (!useScoreSheet) return undefined;
+    return {
+      skills: { A: scoreSheet.skillA, B: scoreSheet.skillB },
+      musicality: { A: scoreSheet.musicalityA, B: scoreSheet.musicalityB },
+      originality: { A: scoreSheet.originalityA, B: scoreSheet.originalityB },
+    } as const;
+  };
+
   const handleCommentVote = () => {
     const trimmedComment = comment.trim();
-    
     if (!trimmedComment) {
       setShowError(true);
       return;
     }
-    
-    onVote(trimmedComment);
+    onVote(trimmedComment, buildScoreSheetPayload());
   };
 
   const handleSimpleVote = () => {
-    onSimpleVote(player);
+    onSimpleVote(player, buildScoreSheetPayload());
   };
 
   const handleCommentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -430,7 +437,9 @@ export const VoteCommentModal: React.FC<VoteCommentModalProps> = ({
                 <>
                   {/* Comment Vote Button */}
                   <button
-                    onClick={handleCommentVote}
+                    onClick={() => {
+                      handleCommentVote();
+                    }}
                     disabled={isLoading}
                     className={`cursor-pointer transition-all text-white px-6 py-3 rounded-lg border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px] active:border-b-[2px] active:brightness-90 active:translate-y-[2px] disabled:opacity-50 disabled:cursor-not-allowed ${
                       player === 'A' 
@@ -452,7 +461,9 @@ export const VoteCommentModal: React.FC<VoteCommentModalProps> = ({
 
                   {/* Simple Vote Button */}
                   <button
-                    onClick={handleSimpleVote}
+                    onClick={() => {
+                      handleSimpleVote();
+                    }}
                     disabled={isLoading}
                     className="cursor-pointer transition-all text-white px-6 py-3 rounded-lg border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px] active:border-b-[2px] active:brightness-90 active:translate-y-[2px] disabled:opacity-50 disabled:cursor-not-allowed bg-gray-600 border-gray-700"
                   >

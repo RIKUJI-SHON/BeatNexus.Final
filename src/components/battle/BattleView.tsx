@@ -12,6 +12,8 @@ import { VSIcon } from '../ui/VSIcon';
 import { VotingTips } from '../ui/VotingTips';
 import { trackBeatNexusEvents } from '../../utils/analytics';
 import { ShareModal } from '../ui/ShareModal';
+import { ScoreBreakdownModal } from '../ui/ScoreBreakdownModal';
+import type { ScoreBreakdownEntry } from '../../types/scoreBreakdown';
 import { buildBattleShareText } from '../../utils/share';
 import { generateBattleUrl } from '../../utils/battleUrl';
 
@@ -40,6 +42,9 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
   const [showVoteModal, setShowVoteModal] = useState<'A' | 'B' | null>(null);
   const [supportModalOpen, setSupportModalOpen] = useState(false);
   const [supportTarget, setSupportTarget] = useState<{ userId: string; name?: string } | null>(null);
+  const [scoreModalOpen, setScoreModalOpen] = useState(false);
+  const [scoreEntries, setScoreEntries] = useState<ScoreBreakdownEntry[]>([]);
+  const [scoreLoading, setScoreLoading] = useState(false);
   const [playerRatings, setPlayerRatings] = useState<{
     playerA: { rating: number; loading: boolean };
     playerB: { rating: number; loading: boolean };
@@ -69,7 +74,9 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
     getUserVote, 
     fetchBattleComments, 
     battleComments, 
-    commentsLoading 
+  commentsLoading,
+  getBattleScoreBreakdown,
+  getArchivedBattleScoreBreakdown,
   } = useBattleStore();
   const { user } = useAuthStore();
   const { openAuthModal } = useAuthModal();
@@ -83,6 +90,24 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
     false;
   
   const showVoteDetails = hasVoted !== null || isArchived || isUserParticipant;
+
+  const openScoreBreakdown = useCallback(async () => {
+    if (!isUserParticipant) return; // ガード
+    try {
+      setScoreLoading(true);
+      const entries = isArchived
+        ? await getArchivedBattleScoreBreakdown(battle.id)
+        : await getBattleScoreBreakdown(battle.id);
+      setScoreEntries(entries);
+      setScoreModalOpen(true);
+    } catch (e: unknown) {
+      console.error('❌ Failed to load score breakdown:', e);
+      const msg = (e as { message?: string })?.message || '内訳の取得に失敗しました';
+      toast.error('Score', msg);
+    } finally {
+      setScoreLoading(false);
+    }
+  }, [battle.id, isArchived, isUserParticipant, getBattleScoreBreakdown, getArchivedBattleScoreBreakdown]);
 
   // 単独支援モーダルを開く（受け取り設定チェック付き）
   const openSupportModalFor = async (userId: string, name?: string) => {
@@ -294,7 +319,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
   const isLoadingComments = commentsLoading[battle.id] || false;
 
   // Handle simple vote without comment
-  const handleSimpleVote = async (player: 'A' | 'B') => {
+  const handleSimpleVote = async (player: 'A' | 'B', scoreSheet?: { skills: {A:number;B:number}; musicality:{A:number;B:number}; originality:{A:number;B:number} }) => {
     // 非ログインユーザーの場合はAuthModalを開く
     if (!user) {
       openAuthModal('login');
@@ -305,7 +330,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
     
     setIsVoting(true);
     try {
-      await voteBattle(battle.id, player);
+      await voteBattle(battle.id, player, scoreSheet);
       
       // Track vote event
       trackBeatNexusEvents.battleVote(battle.id);
@@ -331,7 +356,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
   };
 
   // Handle vote with comment
-  const handleVoteWithComment = async (player: 'A' | 'B', comment: string) => {
+  const handleVoteWithComment = async (player: 'A' | 'B', comment: string, scoreSheet?: { skills: {A:number;B:number}; musicality:{A:number;B:number}; originality:{A:number;B:number} }) => {
     // 非ログインユーザーの場合はAuthModalを開く
     if (!user) {
       openAuthModal('login');
@@ -342,7 +367,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
     
     setIsVoting(true);
     try {
-      await voteBattleWithComment(battle.id, player, comment);
+      await voteBattleWithComment(battle.id, player, comment, scoreSheet);
       
       // Track vote event
       trackBeatNexusEvents.battleVote(battle.id);
@@ -757,7 +782,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
             {/* Vote Distribution Bar - Only show if voted, archived, or participant */}
             {(hasVoted || isArchived || isUserParticipant) && (
               <div className="max-w-2xl mx-auto">
-                <div className="flex justify-between text-sm text-gray-400 mb-3">
+                <div className="flex justify-between text-sm text-gray-400 mb-2">
                   <div className="flex items-center gap-2 min-w-0">
                     <div 
                       className="w-3 h-3 rounded-full flex-shrink-0"
@@ -787,6 +812,17 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                     ></div>
                   </div>
                 </div>
+                {isUserParticipant && (
+                  <div className="flex justify-center mb-2">
+                    <button
+                      type="button"
+                      onClick={openScoreBreakdown}
+                      className="px-3 py-1.5 text-xs font-semibold rounded-md bg-gray-700 hover:bg-gray-600 text-white border border-gray-500 shadow"
+                    >
+                      スコア内訳を見る
+                    </button>
+                  </div>
+                )}
                 <div className="h-4 bg-gray-800 rounded-full overflow-hidden shadow-inner border border-gray-700">
                   <div className="h-full flex">
                     <div 
@@ -1198,8 +1234,8 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
         <VoteCommentModal
           isOpen={!!showVoteModal}
           onClose={() => setShowVoteModal(null)}
-          onVote={(comment) => handleVoteWithComment(showVoteModal!, comment)}
-          onSimpleVote={handleSimpleVote}
+          onVote={(comment, scoreSheet) => handleVoteWithComment(showVoteModal!, comment, scoreSheet)}
+          onSimpleVote={(p, scoreSheet) => handleSimpleVote(p, scoreSheet)}
           player={showVoteModal || 'A'}
           isLoading={isVoting}
           battleId={battle.id}
@@ -1224,6 +1260,17 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
               closeSupportModal();
             }
           }}
+        />
+      )}
+
+      {/* Score Breakdown Modal (participants only) */}
+      {isUserParticipant && (
+        <ScoreBreakdownModal
+          isOpen={scoreModalOpen}
+          onClose={() => setScoreModalOpen(false)}
+          entries={scoreEntries}
+          loading={scoreLoading}
+          title={t('battleView.scoreBreakdownTitle', 'スコア内訳')}
         />
       )}
     </div>
