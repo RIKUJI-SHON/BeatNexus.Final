@@ -1272,12 +1272,6 @@
     }
   },
   "postPage": {
-    "battleFormat": {
-      "label": "Battle Format",
-      "main": "MAIN BATTLE",
-      "mini": "MINI BATTLE",
-      "new": "New!!"
-    },
     "title": "Submit Your Battle Video",
     "subtitle": "Show off your skills and challenge the community",
   "timeLimitEmphasis": "🔥 Videos MUST be 1-2 minutes (60-120 seconds) long 🔥",
@@ -1452,23 +1446,6 @@
       "invalidFileType": "Invalid file type. Please select a video file.",
       "tooShort": "Video is too short ({{current}}s). Minimum: {{min}}s",
       "tooLong": "Video is too long ({{current}}s). Maximum: {{max}}s"
-    },
-    "rules": {
-      "length": "Video Length",
-      "rateChange": "Rating Change",
-      "seasonPoints": "Season Points",
-      "values": {
-        "main": {
-          "length": "60-120 seconds",
-          "rateChange": "Standard",
-          "seasonPoints": "+16 win / +8 draw / +4 loss (loss streak 2→0)"
-        },
-        "mini": {
-          "length": "30-60 seconds",
-          "rateChange": "Half of MAIN",
-          "seasonPoints": "+8 win / +4 draw / +2 loss (0 during losing streak)"
-        }
-      }
     },
     "compression": {
       "autoAvailable": "Automatic quality adjustment is available",

@@ -214,11 +214,6 @@ export const SpecialBattleCard: React.FC<SpecialBattleCardProps> = ({ battle }) 
                   <Clock className="h-3 w-3" />
                   <span className="text-xs font-medium">{timeRemaining}</span>
                 </div>
-                {/* フォーマットタグ */}
-                <div className="ml-3 px-2 py-1 rounded-full text-[10px] font-semibold border backdrop-blur-sm
-                  bg-indigo-500/15 text-indigo-200 border-indigo-400/30">
-                  {battle.battle_format === 'MINI_BATTLE' ? 'MINI BATTLE' : (battle.battle_format === 'MAIN_BATTLE' ? 'MAIN BATTLE' : 'THEME')}
-                </div>
               </div>
 
               <div className="grid grid-cols-3 items-center gap-4 md:gap-6 mb-6">
@@ -288,6 +283,13 @@ export const SpecialBattleCard: React.FC<SpecialBattleCardProps> = ({ battle }) 
                   </VoteButton>
                 </div>
               )}
+
+              {/* フォーマットタグ（カード下部中央） */}
+              <div className="mt-4 flex justify-center">
+                <div className="px-3 py-1 rounded-full text-xs font-medium border backdrop-blur-sm bg-indigo-500/15 text-indigo-200 border-indigo-400/30">
+                  {battle.battle_format === 'MINI_BATTLE' ? 'MINI BATTLE' : (battle.battle_format === 'MAIN_BATTLE' ? 'MAIN BATTLE' : 'THEME')}
+                </div>
+              </div>
 
 
             </div>

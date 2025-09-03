@@ -1260,8 +1260,6 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
           recipientUserId={showVoteModal === 'A' ? (battle.player1_user_id || battle.contestant_a_id || undefined) : (battle.player2_user_id || battle.contestant_b_id || undefined)}
           onRefreshVoteStatus={refreshVoteStatus}
           initialSupportOn={openVoteSupportOn}
-          playerAName={battle.contestant_a?.username || 'Player A'}
-          playerBName={battle.contestant_b?.username || 'Player B'}
         />
       )}
 
