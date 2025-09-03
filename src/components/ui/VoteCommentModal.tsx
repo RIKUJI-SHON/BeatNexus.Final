@@ -17,6 +17,8 @@ interface VoteCommentModalProps {
   recipientUserId?: string; // 決済時の受け取り先
   onRefreshVoteStatus?: () => Promise<void>;
   initialSupportOn?: boolean; // 追加: 初期状態で支援ONにする
+  playerAName?: string;
+  playerBName?: string;
 }
 
 export const VoteCommentModal: React.FC<VoteCommentModalProps> = ({
@@ -30,6 +32,8 @@ export const VoteCommentModal: React.FC<VoteCommentModalProps> = ({
   recipientUserId,
   onRefreshVoteStatus,
   initialSupportOn = false,
+  playerAName,
+  playerBName,
 }) => {
   const { t } = useTranslation();
   const [comment, setComment] = useState('');
@@ -68,6 +72,9 @@ export const VoteCommentModal: React.FC<VoteCommentModalProps> = ({
 
   const totalA = scoreSheet.skillA + scoreSheet.musicalityA + scoreSheet.originalityA;
   const totalB = scoreSheet.skillB + scoreSheet.musicalityB + scoreSheet.originalityB;
+
+  const nameA = playerAName || t('playerA');
+  const nameB = playerBName || t('playerB');
 
   type ScoreKey = 'skills' | 'musicality' | 'originality';
   const getValue = React.useCallback((key: ScoreKey, player: 'A'|'B') => {
@@ -359,7 +366,7 @@ export const VoteCommentModal: React.FC<VoteCommentModalProps> = ({
                       <div className="grid grid-cols-2 gap-3">
                         {/* Player A */}
                         <div>
-                          <label className="block text-xs text-cyan-300 mb-1">{t('playerA')}</label>
+                          <label className="block text-xs text-cyan-300 mb-1">{nameA}</label>
                           <input
                             type="number"
                             min={0}
@@ -371,7 +378,7 @@ export const VoteCommentModal: React.FC<VoteCommentModalProps> = ({
                         </div>
                         {/* Player B */}
                         <div>
-                          <label className="block text-xs text-pink-300 mb-1">{t('playerB')}</label>
+                          <label className="block text-xs text-pink-300 mb-1">{nameB}</label>
                           <input
                             type="number"
                             min={0}
@@ -388,12 +395,12 @@ export const VoteCommentModal: React.FC<VoteCommentModalProps> = ({
                   {/* Totals */}
                   <div className="flex items-center justify-center gap-4">
                     <div className="px-3 py-2 rounded-md bg-gray-800 border border-gray-700 text-sm">
-                      <span className="text-cyan-300 font-semibold mr-2">{t('playerA')}</span>
+                      <span className="text-cyan-300 font-semibold mr-2">{nameA}</span>
                       <span className="text-white font-bold">{totalA}</span>
                       <span className="text-gray-400 text-xs ml-1">/ 300</span>
                     </div>
                     <div className="px-3 py-2 rounded-md bg-gray-800 border border-gray-700 text-sm">
-                      <span className="text-pink-300 font-semibold mr-2">{t('playerB')}</span>
+                      <span className="text-pink-300 font-semibold mr-2">{nameB}</span>
                       <span className="text-white font-bold">{totalB}</span>
                       <span className="text-gray-400 text-xs ml-1">/ 300</span>
                     </div>
