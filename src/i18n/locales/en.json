@@ -156,7 +156,9 @@
       "titleWithName": "Support {{name}}",
       "titleGeneric": "Support this beatboxer",
       "commentLabel": "Comment (required, up to 500 chars)",
-      "startSupport": "Send (start support)"
+      "startSupport": "Start support",
+      "noVoteInfo": "This support does not include a vote. To support with a vote, open the comment vote modal and toggle 'Support' ON.",
+      "goVoteSupport": "Support with a vote"
     },
     "errors": {
       "generic": "An error occurred. Please try again later.",

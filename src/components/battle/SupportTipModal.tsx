@@ -15,6 +15,7 @@ export interface SupportTipModalProps {
   recipientUserId: string; // 支援先
   recipientName?: string; // 表示用
   onSuccess?: () => Promise<void> | void; // 決済フロー完了後のUI更新用
+  onRequestVoteSupport?: () => void; // 追加: 投票付き支援のモーダルを開かせる
 }
 
 const TIP_PRESETS = [100, 300, 500, 1000, 3000];
@@ -26,6 +27,7 @@ export const SupportTipModal: React.FC<SupportTipModalProps> = ({
   recipientUserId,
   recipientName,
   onSuccess,
+  onRequestVoteSupport,
 }) => {
   const { t } = useTranslation();
   const [amount, setAmount] = useState<number>(300);
@@ -123,6 +125,21 @@ export const SupportTipModal: React.FC<SupportTipModalProps> = ({
       backgroundOpacity="normal"
     >
       <div className="space-y-4">
+          {/* 注意喚起: 単独支援は投票には含まれません */}
+          <div className="rounded border border-amber-600/40 bg-amber-900/20 p-3 text-sm text-amber-200">
+            {t('superTip.supportModal.noVoteInfo', 'この支援は投票には含まれません。投票も同時に行うには、コメント付き投票モーダルから「応援する」をONにして進めてください。')}
+            {onRequestVoteSupport && (
+              <div className="mt-3">
+                <button
+                  type="button"
+                  onClick={onRequestVoteSupport}
+                  className="px-3 py-2 rounded bg-indigo-600 text-white text-sm hover:brightness-110"
+                >
+                  {t('superTip.supportModal.goVoteSupport', '投票しながら支援する')}
+                </button>
+              </div>
+            )}
+          </div>
           {!STRIPE_PUBLISHABLE_KEY && (
             <div className="text-sm text-red-400">{t('superTip.modal.errors.publishableKeyMissing')}</div>
           )}

@@ -42,6 +42,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
   const [showVoteModal, setShowVoteModal] = useState<'A' | 'B' | null>(null);
   const [supportModalOpen, setSupportModalOpen] = useState(false);
   const [supportTarget, setSupportTarget] = useState<{ userId: string; name?: string } | null>(null);
+  const [openVoteSupportOn, setOpenVoteSupportOn] = useState(false);
   const [scoreModalOpen, setScoreModalOpen] = useState(false);
   const [scoreEntries, setScoreEntries] = useState<ScoreBreakdownEntry[]>([]);
   const [scoreLoading, setScoreLoading] = useState(false);
@@ -149,6 +150,23 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
     setSupportModalOpen(false);
     setSupportTarget(null);
   };
+
+  // 単独支援モーダルから「投票しながら支援」を選択したとき
+  const openVoteSupportFromSupportModal = useCallback(() => {
+    // どちらのプレイヤーに対する支援か分からないため、受取人と一致する側を推定
+    if (!supportTarget) return;
+    const targetUserId = supportTarget.userId;
+    const side: 'A' | 'B' | null = String(targetUserId) === String(player1Id) ? 'A' : (String(targetUserId) === String(player2Id) ? 'B' : null);
+  setOpenVoteSupportOn(true);
+    if (!side) {
+      // サイドが特定できない場合はA側で開く（安全なフォールバック）
+      setShowVoteModal('A');
+    } else {
+      setShowVoteModal(side);
+    }
+    // 支援ONで開くため、一旦閉じてVoteCommentModal側のpropsで制御
+    setSupportModalOpen(false);
+  }, [player1Id, player2Id, supportTarget]);
 
   // プロフィールページへの遷移関数
   const navigateToProfile = (userId: string) => {
@@ -1233,7 +1251,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
       {showVoteModal && (
         <VoteCommentModal
           isOpen={!!showVoteModal}
-          onClose={() => setShowVoteModal(null)}
+          onClose={() => { setShowVoteModal(null); setOpenVoteSupportOn(false); }}
           onVote={(comment, scoreSheet) => handleVoteWithComment(showVoteModal!, comment, scoreSheet)}
           onSimpleVote={(p, scoreSheet) => handleSimpleVote(p, scoreSheet)}
           player={showVoteModal || 'A'}
@@ -1241,6 +1259,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
           battleId={battle.id}
           recipientUserId={showVoteModal === 'A' ? (battle.player1_user_id || battle.contestant_a_id || undefined) : (battle.player2_user_id || battle.contestant_b_id || undefined)}
           onRefreshVoteStatus={refreshVoteStatus}
+          initialSupportOn={openVoteSupportOn}
         />
       )}
 
@@ -1252,6 +1271,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
           battleId={battle.id}
           recipientUserId={supportTarget.userId}
           recipientName={supportTarget.name}
+          onRequestVoteSupport={openVoteSupportFromSupportModal}
           onSuccess={async () => {
             try {
               // 決済成功後にコメントを再取得（webhookで反映された後に一覧へ）

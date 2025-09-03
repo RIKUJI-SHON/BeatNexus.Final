@@ -16,6 +16,7 @@ interface VoteCommentModalProps {
   battleId?: string;
   recipientUserId?: string; // 決済時の受け取り先
   onRefreshVoteStatus?: () => Promise<void>;
+  initialSupportOn?: boolean; // 追加: 初期状態で支援ONにする
 }
 
 export const VoteCommentModal: React.FC<VoteCommentModalProps> = ({
@@ -28,6 +29,7 @@ export const VoteCommentModal: React.FC<VoteCommentModalProps> = ({
   battleId,
   recipientUserId,
   onRefreshVoteStatus,
+  initialSupportOn = false,
 }) => {
   const { t } = useTranslation();
   const [comment, setComment] = useState('');
@@ -35,7 +37,7 @@ export const VoteCommentModal: React.FC<VoteCommentModalProps> = ({
   // const [showSuperTipModal, setShowSuperTipModal] = useState(false);
 
   // --- Super Tip (opt-in) ---
-  const [superTipOn, setSuperTipOn] = useState(false);
+  const [superTipOn, setSuperTipOn] = useState(initialSupportOn);
   const [amount, setAmount] = useState<number>(300);
   const [piClientSecret, setPiClientSecret] = useState<string | null>(null);
   const [returnUrl, setReturnUrl] = useState<string | null>(null);

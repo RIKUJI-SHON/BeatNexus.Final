@@ -447,7 +447,9 @@
       "titleWithName": "{{name}} を応援する",
       "titleGeneric": "このビートボクサーを応援する",
       "commentLabel": "コメント（必須・500文字以内）",
-      "startSupport": "送信（支援を開始）"
+      "startSupport": "この内容で支援をはじめる",
+      "noVoteInfo": "この支援は投票には含まれません。投票も同時に行うには、コメント付き投票モーダルから『応援する』をONにして進めてください。",
+      "goVoteSupport": "投票しながら支援する"
     },
     "errors": {
       "generic": "エラーが発生しました。時間をおいて再度お試しください。",
