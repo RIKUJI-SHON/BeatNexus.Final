@@ -13,6 +13,7 @@ import SubmissionModal from '../components/ui/SubmissionModal';
 // Monthly Post Limit セクションを Super Tip 設定に置き換え
 import SuperTipSettingsCard from '../components/profile/SuperTipSettingsCard';
 import { useStreamUpload } from '../hooks/useStreamUpload';
+import type { BattleFormat } from '../types';
 
 // Maximum file size in bytes (2GB - 大容量動画対応強化)
 const MAX_FILE_SIZE = 2 * 1024 * 1024 * 1024;
@@ -49,7 +50,7 @@ const isValidDuration = (duration: number, format: string): boolean => {
     case 'MAIN_BATTLE':
       return duration >= 60 && duration <= 120;
     case 'MINI_BATTLE':
-      return duration >= 30 && duration <= 59;
+  return duration >= 30 && duration <= 60;
     case 'THEME_CHALLENGE':
       return duration >= 30 && duration <= 120;
     default:
@@ -69,9 +70,9 @@ const getDurationErrorMessage = (duration: number, format: string, t: (key: stri
       break;
     case 'MINI_BATTLE':
       if (duration < 30) {
-        return t('postPage.errors.miniBattleTooShort', { duration: Math.round(duration), required: '30-59' });
-      } else if (duration > 59) {
-        return t('postPage.errors.miniBattleTooLong', { duration: Math.round(duration), required: '30-59' });
+        return t('postPage.errors.miniBattleTooShort', { duration: Math.round(duration), required: '30-60' });
+      } else if (duration > 60) {
+        return t('postPage.errors.miniBattleTooLong', { duration: Math.round(duration), required: '30-60' });
       }
       break;
     case 'THEME_CHALLENGE':
@@ -90,7 +91,8 @@ const PostPage: React.FC = () => {
   const [videoPreviewUrl, setVideoPreviewUrl] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [step, setStep] = useState<'upload' | 'preview' | 'success'>('upload');
-  const battleFormat = 'MAIN_BATTLE'; // Fixed to MAIN_BATTLE
+  // バトル形式選択（MAIN または MINI）
+  const [battleFormat, setBattleFormat] = useState<BattleFormat>('MAIN_BATTLE');
   const [acceptedGuidelines, setAcceptedGuidelines] = useState(false);
   const [acceptedFacePolicy, setAcceptedFacePolicy] = useState(false);
   const [acceptedContent, setAcceptedContent] = useState(false);
@@ -230,6 +232,8 @@ const PostPage: React.FC = () => {
         streamVideoId = await uploadVideo(videoFile, battleFormat);
         setSubmissionStage('Cloudflare Stream: Upload completed');
         setSubmissionProgress(75);
+        // 明示的に直リンクは使わないことを示す（RPCのオーバーロード曖昧性回避のため）
+        publicUrl = null as unknown as string;
       } catch (e) {
         console.warn('Stream upload failed, falling back to Supabase Storage:', e);
         setSubmissionStage('Falling back to Supabase Storage');
@@ -256,10 +260,11 @@ const PostPage: React.FC = () => {
       setSubmissionProgress(80);
 
       // Create submission record with cooldown check
-      const { data: submissionResult, error: submissionError } = await supabase
+    const { data: submissionResult, error: submissionError } = await supabase
         .rpc('create_submission_with_cooldown_check', {
           p_user_id: user.id,
-          p_video_url: publicUrl,
+      // Stream成功時はnull（直リンク未使用）
+      p_video_url: publicUrl ?? null,
           p_battle_format: battleFormat,
           p_stream_video_id: streamVideoId
         });
@@ -416,17 +421,7 @@ const PostPage: React.FC = () => {
           </div>
         </div>
 
-  {/* 重要な注意事項バナー */}
-  <div className="max-w-4xl mx-auto mb-8 sm:mb-12 flex justify-center">
-          <div className="bg-gradient-to-r from-purple-500/20 to-blue-500/20 border border-purple-500/30 rounded-xl py-4 px-6 backdrop-blur-sm hover:border-purple-500/50 transition-colors">
-            <div className="flex items-center justify-center gap-3 text-purple-300">
-              <Video className="h-5 w-5 flex-shrink-0" />
-              <span className="font-medium text-base text-center">
-                {t('postPage.importantNotice.videoDuration')}
-              </span>
-            </div>
-          </div>
-        </div>
+  {/* 注意バナー削除済み（以前は静的な動画長メッセージを表示） */}
 
         {/* 2カラムレイアウト: 左（動画エリア）・右（ガイドライン） */}
         <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
@@ -438,6 +433,51 @@ const PostPage: React.FC = () => {
                 
                 {step === 'upload' && (
                   <>
+                    {/* バトル形式選択 */}
+                    <div className="mb-6">
+                      <label className="block text-slate-200 font-semibold mb-2">{t('postPage.battleFormat.label', 'バトル形式')}</label>
+                      <div className="flex flex-wrap gap-3 items-start">
+                        <button
+                          type="button"
+                          onClick={() => setBattleFormat('MAIN_BATTLE')}
+                          className={`px-4 py-2 rounded-lg border transition-all ${battleFormat === 'MAIN_BATTLE' ? 'bg-cyan-600 text-white border-cyan-500' : 'bg-slate-800 text-slate-200 border-slate-600 hover:bg-slate-700'}`}
+                        >
+                          {t('postPage.battleFormat.main', 'MAIN BATTLE')}
+                        </button>
+                        <div className="relative inline-block">
+                          <div className="absolute -top-3 left-1/2 -translate-x-1/2 select-none">
+                            <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-pink-600 text-white shadow">
+                              {t('postPage.battleFormat.new', 'New!!')}
+                            </span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => setBattleFormat('MINI_BATTLE')}
+                            className={`px-4 py-2 rounded-lg border transition-all ${battleFormat === 'MINI_BATTLE' ? 'bg-cyan-600 text-white border-cyan-500' : 'bg-slate-800 text-slate-200 border-slate-600 hover:bg-slate-700'}`}
+                            aria-label={t('postPage.battleFormat.mini', 'MINI BATTLE')}
+                            title={t('postPage.battleFormat.mini', 'MINI BATTLE')}
+                          >
+                            {t('postPage.battleFormat.mini', 'MINI BATTLE')}
+                          </button>
+                        </div>
+                      </div>
+                      {/* 選択中フォーマットのルール表示 */}
+                      <div className="mt-3 text-sm text-slate-300">
+                        {battleFormat === 'MAIN_BATTLE' ? (
+                          <>
+                            <div>• {t('postPage.rules.length')}: {t('postPage.rules.values.main.length')}</div>
+                            <div>• {t('postPage.rules.rateChange')}: {t('postPage.rules.values.main.rateChange')}</div>
+                            <div>• {t('postPage.rules.seasonPoints')}: {t('postPage.rules.values.main.seasonPoints')}</div>
+                          </>
+                        ) : (
+                          <>
+                            <div>• {t('postPage.rules.length')}: {t('postPage.rules.values.mini.length')}</div>
+                            <div>• {t('postPage.rules.rateChange')}: {t('postPage.rules.values.mini.rateChange')}</div>
+                            <div>• {t('postPage.rules.seasonPoints')}: {t('postPage.rules.values.mini.seasonPoints')}</div>
+                          </>
+                        )}
+                      </div>
+                    </div>
                     {/* 投稿制限情報カード */}
                     {(!canSubmit || (submissionStatus && !submissionStatus.canSubmit)) && (cooldownInfo || submissionStatus) && (
                       <div className="mb-6 bg-orange-500/10 border border-orange-500/30 rounded-xl p-4 backdrop-blur-sm">
@@ -472,7 +512,7 @@ const PostPage: React.FC = () => {
                             <h4 className="font-semibold text-slate-50 mb-1">{t('postPage.errors.problemOccurred')}</h4>
                             <div className="text-sm text-red-200 whitespace-pre-line mb-4">{error}</div>
                             
-                            {(error.includes('秒') || error.includes('seconds')) && (
+              {(error.includes('秒') || error.includes('seconds')) && (
                               <div className="flex flex-wrap gap-2">
                                 <button
                                   onClick={() => {
@@ -483,6 +523,7 @@ const PostPage: React.FC = () => {
                                 >
                                   {t('postPage.errors.selectDifferentVideo', '別の動画を選択')}
                                 </button>
+                <span className="text-xs text-slate-400 mt-2">[{battleFormat}]</span>
                               </div>
                             )}
                           </div>

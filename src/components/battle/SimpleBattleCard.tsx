@@ -134,6 +134,11 @@ export const SimpleBattleCard: React.FC<SimpleBattleCardProps> = ({ battle }) =>
                   <Clock className="h-3 w-3" />
                   <span className="text-xs font-medium">{timeRemaining}</span>
                 </div>
+                {/* フォーマットタグ */}
+                <div className="ml-3 px-2 py-1 rounded-full text-[10px] font-semibold border backdrop-blur-sm
+                  bg-indigo-500/15 text-indigo-200 border-indigo-400/30">
+                  {battle.battle_format === 'MINI_BATTLE' ? 'MINI BATTLE' : (battle.battle_format === 'MAIN_BATTLE' ? 'MAIN BATTLE' : 'THEME')}
+                </div>
               </div>
 
               <div className="grid grid-cols-3 items-center gap-4 md:gap-6 mb-6">
@@ -175,9 +180,14 @@ export const SimpleBattleCard: React.FC<SimpleBattleCardProps> = ({ battle }) =>
                   {battle.is_archived && (
                     <div className="mt-1 text-xs font-semibold text-emerald-300">
                       {(() => {
-                        if (battle.winner_id === battle.player1_user_id) return '+16 SP';
-                        if (battle.winner_id === battle.player2_user_id) return '+4 SP';
-                        return '+8 SP';
+                        const isDraw = !battle.winner_id;
+                        const isWinner = battle.winner_id === battle.player1_user_id;
+                        const baseWin = battle.battle_format === 'MINI_BATTLE' ? 8 : 16;
+                        const baseDraw = battle.battle_format === 'MINI_BATTLE' ? 4 : 8;
+                        const baseLoss = battle.battle_format === 'MINI_BATTLE' ? 2 : 4;
+                        if (isDraw) return `+${baseDraw} SP`;
+                        if (isWinner) return `+${baseWin} SP`;
+                        return `+${baseLoss} SP`;
                       })()}
                     </div>
                   )}
@@ -245,9 +255,14 @@ export const SimpleBattleCard: React.FC<SimpleBattleCardProps> = ({ battle }) =>
                   {battle.is_archived && (
                     <div className="mt-1 text-xs font-semibold text-emerald-300">
                       {(() => {
-                        if (battle.winner_id === battle.player2_user_id) return '+16 SP';
-                        if (battle.winner_id === battle.player1_user_id) return '+4 SP';
-                        return '+8 SP';
+                        const isDraw = !battle.winner_id;
+                        const isWinner = battle.winner_id === battle.player2_user_id;
+                        const baseWin = battle.battle_format === 'MINI_BATTLE' ? 8 : 16;
+                        const baseDraw = battle.battle_format === 'MINI_BATTLE' ? 4 : 8;
+                        const baseLoss = battle.battle_format === 'MINI_BATTLE' ? 2 : 4;
+                        if (isDraw) return `+${baseDraw} SP`;
+                        if (isWinner) return `+${baseWin} SP`;
+                        return `+${baseLoss} SP`;
                       })()}
                     </div>
                   )}

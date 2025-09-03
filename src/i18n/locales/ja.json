@@ -1344,8 +1344,11 @@
       "duration": "再生時間",
       "size": "ファイルサイズ"
     },
-    "format": {
-      "mainBattle": "メインバトル"
+    "battleFormat": {
+      "label": "バトル形式",
+  "main": "メインバトル",
+  "mini": "ミニバトル",
+      "new": "New!!"
     },
     "guidelines": {
       "title": "ガイドライン",
@@ -1497,6 +1500,23 @@
       "invalidFileType": "無効なファイル形式です。動画ファイルを選択してください。",
       "tooShort": "動画が短すぎます（{{current}}秒）。最小：{{min}}秒",
       "tooLong": "動画が長すぎます（{{current}}秒）。最大：{{max}}秒"
+    },
+    "rules": {
+      "length": "動画の長さ",
+      "rateChange": "レート変動",
+      "seasonPoints": "シーズンポイント",
+      "values": {
+        "main": {
+          "length": "60-120秒",
+          "rateChange": "通常",
+          "seasonPoints": "勝+16 / 引分+8 / 負+4(連敗時2→0)"
+        },
+        "mini": {
+          "length": "30-60秒",
+          "rateChange": "MAINの半分",
+          "seasonPoints": "勝+8 / 引分+4 / 負+2(連敗時0)"
+        }
+      }
     },
     "submissionGuidelines": {
       "title": "動画投稿ガイドライン",

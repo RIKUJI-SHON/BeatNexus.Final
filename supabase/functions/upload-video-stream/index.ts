@@ -18,11 +18,29 @@ serve(async (req: Request) => {
       });
     }
 
+    const body = await req.json().catch(() => ({}));
     const {
       name,
+      fileName,
+      battleFormat,
       requireSignedURLs = false,
-      maxDurationSeconds = 120,
-    } = await req.json().catch(() => ({}));
+      maxDurationSeconds,
+    } = body as Record<string, unknown>;
+
+    // Determine max duration by battle format if not explicitly provided
+    // MAIN_BATTLE: up to 120s, MINI_BATTLE: up to 60s, THEME_CHALLENGE: up to 120s (default)
+    let effectiveMaxDuration = typeof maxDurationSeconds === 'number' ? maxDurationSeconds : 120;
+    if (typeof battleFormat === 'string') {
+      switch (battleFormat) {
+        case 'MINI_BATTLE':
+          effectiveMaxDuration = 60;
+          break;
+        case 'MAIN_BATTLE':
+        case 'THEME_CHALLENGE':
+        default:
+          effectiveMaxDuration = 120;
+      }
+    }
 
     const accountId = Deno.env.get('CLOUDFLARE_ACCOUNT_ID');
     const apiToken = Deno.env.get('CLOUDFLARE_STREAM_API_TOKEN');
@@ -40,9 +58,9 @@ serve(async (req: Request) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        maxDurationSeconds,
+        maxDurationSeconds: effectiveMaxDuration,
         requireSignedURLs,
-        meta: { name: name ?? 'BeatNexus Upload' },
+        meta: { name: (name as string) ?? (fileName as string) ?? 'BeatNexus Upload' },
       }),
     });
     const data = await cfRes.json();
