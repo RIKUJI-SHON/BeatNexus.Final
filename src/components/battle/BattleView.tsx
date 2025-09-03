@@ -819,7 +819,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                       onClick={openScoreBreakdown}
                       className="px-3 py-1.5 text-xs font-semibold rounded-md bg-gray-700 hover:bg-gray-600 text-white border border-gray-500 shadow"
                     >
-                      スコア内訳を見る
+                      {t('battleView.scoreBreakdownButton', 'スコア内訳を見る')}
                     </button>
                   </div>
                 )}

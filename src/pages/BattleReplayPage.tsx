@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Users, Calendar, ShieldCheck, ShieldX, Swords, AlertTriangle, ArchiveX, Trophy, MessageSquare } from 'lucide-react';
 import { Button } from '../components/ui/Button';
@@ -17,6 +17,8 @@ import { trackBeatNexusEvents } from '../utils/analytics';
 import { getDefaultAvatarUrl } from '../utils';
 import { Helmet } from 'react-helmet-async';
 import { getBattleIdFromPath } from '../utils/battleUrl';
+import ScoreBreakdownModal from '../components/ui/ScoreBreakdownModal';
+import type { ScoreBreakdownEntry } from '../types/scoreBreakdown';
 
 // 固定色設定（BattleViewと統一）
 const playerColorA = '#3B82F6'; // Blue for Player A
@@ -28,11 +30,14 @@ const BattleReplayPage: React.FC = () => {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const { user } = useAuthStore();
-  const { battleComments, commentsLoading, fetchBattleComments } = useBattleStore();
+  const { battleComments, commentsLoading, fetchBattleComments, getArchivedBattleScoreBreakdown } = useBattleStore();
   const [battle, setBattle] = useState<ArchivedBattle | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [streamIds, setStreamIds] = useState<{ a: string | null; b: string | null }>({ a: null, b: null });
+  const [scoreModalOpen, setScoreModalOpen] = useState(false);
+  const [scoreEntries, setScoreEntries] = useState<ScoreBreakdownEntry[]>([]);
+  const [scoreLoading, setScoreLoading] = useState(false);
   
   // URL パスからバトルIDを抽出（新旧両形式に対応）
   const id = useMemo(() => {
@@ -45,6 +50,25 @@ const BattleReplayPage: React.FC = () => {
     playerA: { rating: 1200, loading: true },
     playerB: { rating: 1200, loading: true },
   });
+
+  const isUserParticipant = useMemo(() => {
+    if (!user || !battle) return false;
+    return user.id === battle.player1_user_id || user.id === battle.player2_user_id;
+  }, [user, battle]);
+
+  const openScoreBreakdown = useCallback(async () => {
+    if (!battle?.id) return;
+    try {
+      setScoreLoading(true);
+      const entries = await getArchivedBattleScoreBreakdown(battle.id);
+      setScoreEntries(entries);
+      setScoreModalOpen(true);
+    } catch (e) {
+      console.error('failed to fetch archived score breakdown', e);
+    } finally {
+      setScoreLoading(false);
+    }
+  }, [battle?.id, getArchivedBattleScoreBreakdown]);
 
   const ogImageUrl = 'https://beat-nexus-heatbeat-test.vercel.app/images/OGP.png';
   const pageTitle = battle ? 
@@ -690,6 +714,17 @@ const BattleReplayPage: React.FC = () => {
                       ></div>
                     </div>
                   </div>
+                  {isUserParticipant && (
+                    <div className="flex justify-center mb-2">
+                      <button
+                        type="button"
+                        onClick={openScoreBreakdown}
+                        className="px-3 py-1.5 text-xs font-semibold rounded-md bg-gray-700 hover:bg-gray-600 text-white border border-gray-500 shadow"
+                      >
+                        {t('battleView.scoreBreakdownButton', 'スコア内訳を見る')}
+                      </button>
+                    </div>
+                  )}
                   <div className="h-4 bg-gray-800 rounded-full overflow-hidden shadow-inner border border-gray-700">
                     <div className="h-full flex">
                       <div 
@@ -924,6 +959,16 @@ const BattleReplayPage: React.FC = () => {
             </div>
           )}
         </div>
+        {/* Score Breakdown Modal (participants only) */}
+        {isUserParticipant && (
+          <ScoreBreakdownModal
+            isOpen={scoreModalOpen}
+            onClose={() => setScoreModalOpen(false)}
+            entries={scoreEntries}
+            loading={scoreLoading}
+            title={t('battleView.scoreBreakdownTitle', 'スコア内訳')}
+          />
+        )}
       </div>
     </>
   );
