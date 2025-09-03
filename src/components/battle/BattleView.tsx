@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Share2, ThumbsUp, MessageCircle, Play, Users, Timer } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 import { VoteCommentModal } from '../ui/VoteCommentModal';
 import { useBattleStore } from '../../store/battleStore';
@@ -34,10 +34,12 @@ interface BattleViewProps {
 export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = false }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
   const [hasVoted, setHasVoted] = useState<'A' | 'B' | null>(null);
   const [votesA, setVotesA] = useState(battle.votes_a);
   const [votesB, setVotesB] = useState(battle.votes_b);
   const [isLoadingVoteStatus, setIsLoadingVoteStatus] = useState(true);
+  const [showPaymentResult, setShowPaymentResult] = useState<'succeeded' | 'failed' | 'processing' | null>(null);
   const [isVoting, setIsVoting] = useState(false);
   const [showVoteModal, setShowVoteModal] = useState<'A' | 'B' | null>(null);
   const [supportModalOpen, setSupportModalOpen] = useState(false);
@@ -484,6 +486,32 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
   });
   const battleUrlSlug = `${typeof window !== 'undefined' ? window.location.origin : ''}/battle/${generateBattleUrl(player1Name, player2Name, battle.id)}`;
 
+  // 決済完了リダイレクトからのクエリ (?superTip=...) を処理
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const st = params.get('superTip');
+    if (!st) return;
+    let status: 'succeeded' | 'failed' | 'processing' = 'processing';
+    if (st === 'succeeded') status = 'succeeded';
+    else if (st === 'failed' || st === 'canceled') status = 'failed';
+    setShowPaymentResult(status);
+
+    // 成功時はコメントを再取得
+    if (status === 'succeeded') {
+      fetchBattleComments(battle.id).catch(() => void 0);
+    }
+
+    // URLからクエリを除去（リロード時に再表示しない）
+    params.delete('superTip');
+    const cleaned = params.toString();
+    navigate({ pathname: location.pathname, search: cleaned ? `?${cleaned}` : '' }, { replace: true });
+
+    // 数秒後に自動クローズ
+    const timer = setTimeout(() => setShowPaymentResult(null), 4000);
+    return () => clearTimeout(timer);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.search]);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-950 to-gray-900 relative overflow-hidden">
       
@@ -497,6 +525,29 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
         <div className="absolute top-1/4 left-10 w-20 h-20 bg-blue-500/20 rounded-full blur-xl animate-pulse"></div>
         <div className="absolute bottom-1/4 right-10 w-16 h-16 bg-pink-500/20 rounded-full blur-xl animate-pulse delay-700"></div>
       </div>
+      {/* Super Tip 完了モーダル */}
+      {showPaymentResult && (
+        <div className="fixed inset-0 bg-black/70 z-[100] flex items-center justify-center p-4" onClick={() => setShowPaymentResult(null)}>
+          <div className="bg-gray-900 rounded-lg shadow-2xl p-6 max-w-sm w-full" onClick={(e) => e.stopPropagation()}>
+            <h3 className="text-xl font-bold text-white mb-3">
+              {showPaymentResult === 'succeeded' && t('superTip.complete.title.success')}
+              {showPaymentResult === 'failed' && t('superTip.complete.title.failed')}
+              {showPaymentResult === 'processing' && t('superTip.complete.title.processing')}
+            </h3>
+            <p className="text-gray-300 mb-4">
+              {showPaymentResult === 'succeeded' && t('superTip.complete.desc.success')}
+              {showPaymentResult === 'failed' && t('superTip.complete.desc.failed')}
+              {showPaymentResult === 'processing' && t('superTip.complete.desc.processing')}
+            </p>
+            <button
+              onClick={() => setShowPaymentResult(null)}
+              className="w-full px-4 py-2 rounded bg-emerald-600 text-white hover:brightness-110"
+            >
+              OK
+            </button>
+          </div>
+        </div>
+      )}
 
       <div className="relative container-ultra-wide py-8">
         

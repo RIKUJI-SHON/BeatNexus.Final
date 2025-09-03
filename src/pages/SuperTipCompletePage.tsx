@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 const SuperTipCompletePage: React.FC = () => {
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const { t } = useTranslation();
   const paymentIntentId = searchParams.get('payment_intent');
   const redirectStatus = searchParams.get('redirect_status');
+  const battleId = searchParams.get('battle_id');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -14,9 +16,20 @@ const SuperTipCompletePage: React.FC = () => {
     return () => clearTimeout(t);
   }, []);
 
+  // battle_id が付与されている場合は元のバトル視聴ページへ即時リダイレクト
+  useEffect(() => {
+    if (battleId) {
+      const status = redirectStatus || 'processing';
+      // /battle/:battlePath はフレンドリーURLとUUIDの両方に対応しているため、UUIDのみでもOK
+      const target = `/battle/${battleId}?superTip=${status}`;
+      navigate(target, { replace: true });
+    }
+  }, [battleId, redirectStatus, navigate]);
+
   const isSucceeded = redirectStatus === 'succeeded';
   const isFailed = redirectStatus === 'failed' || redirectStatus === 'canceled';
 
+  // battle_id がない旧フローのみこのフォールバックUIを表示
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
       <div className="max-w-md w-full mx-auto">

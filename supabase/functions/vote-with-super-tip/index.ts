@@ -233,7 +233,11 @@ serve(async (req) => {
   } catch {
     // 無効なURLは無視し、FRONTEND_URLを使用
   }
-  const recommendedReturnUrl = `${baseUrl}/payments/super-tip/complete`;
+  // 完了ページにバトルID等の文脈を付与して返す（フロントでバトル視聴ページへ誘導するため）
+  const qs = new URLSearchParams();
+  if (body.battle_id) qs.set('battle_id', body.battle_id);
+  qs.set('flow', 'standalone');
+  const recommendedReturnUrl = `${baseUrl}/payments/super-tip/complete${qs.toString() ? `?${qs.toString()}` : ''}`;
 
   return new Response(JSON.stringify({ success: true, client_secret: pi.client_secret, tip, recommended_return_url: recommendedReturnUrl }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

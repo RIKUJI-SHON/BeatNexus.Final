@@ -186,7 +186,13 @@ serve(async (req) => {
       const originHeader = req.headers.get('origin') ?? req.headers.get('referer');
       if (originHeader) baseUrl = new URL(originHeader).origin;
   } catch {/* ignore invalid header URL */}
-    const recommendedReturnUrl = `${baseUrl}/payments/super-tip/complete`;
+  // 完了ページにバトルIDや投票側(A/B)の文脈を付与
+  const qs = new URLSearchParams();
+  if (body.battle_id) qs.set('battle_id', body.battle_id);
+  if (body.vote) qs.set('vote', body.vote);
+  if (body.recipient_user_id) qs.set('recipient', body.recipient_user_id);
+  qs.set('flow', 'vote');
+  const recommendedReturnUrl = `${baseUrl}/payments/super-tip/complete${qs.toString() ? `?${qs.toString()}` : ''}`;
 
     return new Response(JSON.stringify({ success: true, client_secret: pi.client_secret, super_tip_id: tip.id, recommended_return_url: recommendedReturnUrl }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
