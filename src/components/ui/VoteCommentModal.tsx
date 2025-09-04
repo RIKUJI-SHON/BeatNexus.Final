@@ -354,12 +354,12 @@ export const VoteCommentModal: React.FC<VoteCommentModalProps> = ({
                     <div key={key} className="border border-gray-700 rounded-lg p-3 bg-gray-900">
                       <div className="flex items-center justify-between mb-3">
                         <span className="text-sm font-medium text-gray-200">{label}</span>
-                        <span className="text-[10px] text-gray-500">0-100</span>
+                        <span className="text-[10px] text-gray-500">{t('voteCommentModal.scoreRange', '0-100')}</span>
                       </div>
                       <div className="grid grid-cols-2 gap-3">
                         {/* Player A */}
                         <div>
-                          <label className="block text-xs text-cyan-300 mb-1">{t('playerA')}</label>
+                          <label className="block text-xs text-cyan-300 mb-1">{t('common.playerA', 'Player A')}</label>
                           <input
                             type="number"
                             min={0}
@@ -371,7 +371,7 @@ export const VoteCommentModal: React.FC<VoteCommentModalProps> = ({
                         </div>
                         {/* Player B */}
                         <div>
-                          <label className="block text-xs text-pink-300 mb-1">{t('playerB')}</label>
+                          <label className="block text-xs text-pink-300 mb-1">{t('common.playerB', 'Player B')}</label>
                           <input
                             type="number"
                             min={0}
@@ -388,14 +388,14 @@ export const VoteCommentModal: React.FC<VoteCommentModalProps> = ({
                   {/* Totals */}
                   <div className="flex items-center justify-center gap-4">
                     <div className="px-3 py-2 rounded-md bg-gray-800 border border-gray-700 text-sm">
-                      <span className="text-cyan-300 font-semibold mr-2">{t('playerA')}</span>
+                      <span className="text-cyan-300 font-semibold mr-2">{t('common.playerA', 'Player A')}</span>
                       <span className="text-white font-bold">{totalA}</span>
-                      <span className="text-gray-400 text-xs ml-1">/ 300</span>
+                      <span className="text-gray-400 text-xs ml-1">{t('voteCommentModal.maxTotal', { max: 300, defaultValue: '/ 300' })}</span>
                     </div>
                     <div className="px-3 py-2 rounded-md bg-gray-800 border border-gray-700 text-sm">
-                      <span className="text-pink-300 font-semibold mr-2">{t('playerB')}</span>
+                      <span className="text-pink-300 font-semibold mr-2">{t('common.playerB', 'Player B')}</span>
                       <span className="text-white font-bold">{totalB}</span>
-                      <span className="text-gray-400 text-xs ml-1">/ 300</span>
+                      <span className="text-gray-400 text-xs ml-1">{t('voteCommentModal.maxTotal', { max: 300, defaultValue: '/ 300' })}</span>
                     </div>
                   </div>
                 </div>

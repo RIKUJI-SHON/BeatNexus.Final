@@ -461,6 +461,13 @@ const PostPage: React.FC = () => {
                           </button>
                         </div>
                       </div>
+                      {/* MINI タグライン（選択時のみ） */}
+                      {battleFormat === 'MINI_BATTLE' && (
+                        <div className="mt-2 text-xs text-cyan-300">
+                          {t('postPage.battleFormat.tagline.mini', 'フリースタイルで気軽に挑戦しよう！')}
+                        </div>
+                      )}
+
                       {/* 選択中フォーマットのルール表示 */}
                       <div className="mt-3 text-sm text-slate-300">
                         {battleFormat === 'MAIN_BATTLE' ? (

@@ -177,7 +177,7 @@ export const SimpleBattleCard: React.FC<SimpleBattleCardProps> = ({ battle }) =>
                       {(() => {
                         const isDraw = !battle.winner_id;
                         const isWinner = battle.winner_id === battle.player1_user_id;
-                        const baseWin = battle.battle_format === 'MINI_BATTLE' ? 8 : 16;
+                        const baseWin = battle.battle_format === 'MINI_BATTLE' ? 16 : 32;
                         const baseDraw = battle.battle_format === 'MINI_BATTLE' ? 4 : 8;
                         const baseLoss = battle.battle_format === 'MINI_BATTLE' ? 2 : 4;
                         if (isDraw) return `+${baseDraw} SP`;
@@ -252,7 +252,7 @@ export const SimpleBattleCard: React.FC<SimpleBattleCardProps> = ({ battle }) =>
                       {(() => {
                         const isDraw = !battle.winner_id;
                         const isWinner = battle.winner_id === battle.player2_user_id;
-                        const baseWin = battle.battle_format === 'MINI_BATTLE' ? 8 : 16;
+                        const baseWin = battle.battle_format === 'MINI_BATTLE' ? 16 : 32;
                         const baseDraw = battle.battle_format === 'MINI_BATTLE' ? 4 : 8;
                         const baseLoss = battle.battle_format === 'MINI_BATTLE' ? 2 : 4;
                         if (isDraw) return `+${baseDraw} SP`;

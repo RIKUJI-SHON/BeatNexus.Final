@@ -1272,6 +1272,15 @@
     }
   },
   "postPage": {
+    "battleFormat": {
+      "label": "Battle Format",
+      "main": "MAIN BATTLE",
+      "mini": "MINI BATTLE",
+      "new": "New!!",
+      "tagline": {
+        "mini": "Jump in with freestyle and have fun!"
+      }
+    },
     "title": "Submit Your Battle Video",
     "subtitle": "Show off your skills and challenge the community",
   "timeLimitEmphasis": "🔥 Videos MUST be 1-2 minutes (60-120 seconds) long 🔥",
@@ -1447,7 +1456,24 @@
       "tooShort": "Video is too short ({{current}}s). Minimum: {{min}}s",
       "tooLong": "Video is too long ({{current}}s). Maximum: {{max}}s"
     },
-    "compression": {
+    "rules": {
+      "length": "Video Length",
+      "rateChange": "Rating Change",
+      "seasonPoints": "Season Points",
+      "values": {
+        "main": {
+          "length": "60-120 seconds",
+          "rateChange": "Standard (K=64)",
+          "seasonPoints": "+32 win / +8 draw / +4 loss (loss streak 2→0)"
+        },
+        "mini": {
+          "length": "30-60 seconds",
+          "rateChange": "Half of Main (K=32)",
+          "seasonPoints": "+16 win / +4 draw / +2 loss (0 during losing streak)"
+        }
+      }
+  },
+  "compression": {
       "autoAvailable": "Automatic quality adjustment is available",
       "videoDuration": "Video duration:",
       "fileSize": "File size:",
@@ -1475,7 +1501,7 @@
     },
     "submissionGuidelines": {
       "title": "Video Submission Guidelines",
-      "followFormatLength": "【REQUIRED】Main battles must strictly follow 60-120 seconds rule",
+  "followFormatLength": "【REQUIRED】Main: 60-120 seconds, Mini: 30-60 seconds (follow format rules strictly)",
       "ensureAudioQuality": "Ensure clear audio quality",
       "faceOptional": "Showing your face is optional, but mouth area is recommended",
       "noBackgroundMusic": "No background music or backing tracks",

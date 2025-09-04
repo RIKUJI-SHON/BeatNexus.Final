@@ -189,7 +189,7 @@ export const SpecialBattleCard: React.FC<SpecialBattleCardProps> = ({ battle }) 
         <div className="mt-1 text-xs font-semibold text-emerald-300">
           {(() => {
             const isDraw = !battle.winner_id;
-            const baseWin = battle.battle_format === 'MINI_BATTLE' ? 8 : 16;
+            const baseWin = battle.battle_format === 'MINI_BATTLE' ? 16 : 32;
             const baseDraw = battle.battle_format === 'MINI_BATTLE' ? 4 : 8;
             const baseLoss = battle.battle_format === 'MINI_BATTLE' ? 2 : 4;
             if (isDraw) return `+${baseDraw} SP`;

@@ -13,6 +13,7 @@ interface ScoreBreakdownModalProps {
 
 export const ScoreBreakdownModal: React.FC<ScoreBreakdownModalProps> = ({ isOpen, onClose, entries, loading, title }) => {
   const { t } = useTranslation();
+
   const renderTotals = (sheet: ScoreBreakdownEntry['score_sheet']) => {
     const totalA = sheet.skills.A + sheet.musicality.A + sheet.originality.A;
     const totalB = sheet.skills.B + sheet.musicality.B + sheet.originality.B;
@@ -37,9 +38,12 @@ export const ScoreBreakdownModal: React.FC<ScoreBreakdownModalProps> = ({ isOpen
                 <div key={`${e.user_id}-${idx}`} className="rounded-lg border border-gray-700 bg-gray-800 p-4">
                   <div className="flex items-center justify-between text-sm text-gray-400 mb-3">
                     <div className="flex items-center gap-2">
-                      <span>{t('battleView.scoreBreakdown.vote', '投票')}: <span className={e.vote === 'A' ? 'text-cyan-300' : 'text-pink-300'}>{e.vote}</span></span>
+                      <span>
+                        {t('battleView.scoreBreakdown.vote', '投票')}:&nbsp;
+                        <span className={e.vote === 'A' ? 'text-cyan-300' : 'text-pink-300'}>{e.vote}</span>
+                      </span>
                     </div>
-                    <span>{new Date(e.created_at).toLocaleString('ja-JP')}</span>
+                    <span>{new Date(e.created_at).toLocaleString(t('common.locale', 'ja-JP'))}</span>
                   </div>
                   {e.comment && (
                     <div className="text-gray-200 text-sm mb-3">{e.comment}</div>
@@ -54,11 +58,11 @@ export const ScoreBreakdownModal: React.FC<ScoreBreakdownModalProps> = ({ isOpen
                         <div className="text-gray-300 text-sm mb-2">{t(`battleView.scoreBreakdown.labels.${row.key}`, row.key)}</div>
                         <div className="flex items-end justify-between">
                           <div>
-                            <div className="text-xs text-gray-400">A</div>
+                            <div className="text-xs text-gray-400">{t('common.playerAShort', 'A')}</div>
                             <div className="text-cyan-300 text-lg font-bold">{row.a}</div>
                           </div>
                           <div>
-                            <div className="text-xs text-gray-400 text-right">B</div>
+                            <div className="text-xs text-gray-400 text-right">{t('common.playerBShort', 'B')}</div>
                             <div className="text-pink-300 text-lg font-bold text-right">{row.b}</div>
                           </div>
                         </div>
@@ -68,8 +72,8 @@ export const ScoreBreakdownModal: React.FC<ScoreBreakdownModalProps> = ({ isOpen
                   <div className="mt-3 flex items-center justify-between">
                     <div className="text-sm text-gray-400">{t('battleView.scoreBreakdown.total', '合計')}</div>
                     <div className="flex items-center gap-6">
-                      <div className="text-cyan-300 text-xl font-extrabold">A: {totalA}</div>
-                      <div className="text-pink-300 text-xl font-extrabold">B: {totalB}</div>
+                      <div className="text-cyan-300 text-xl font-extrabold">{t('common.playerAShort', 'A')}: {totalA}</div>
+                      <div className="text-pink-300 text-xl font-extrabold">{t('common.playerBShort', 'B')}: {totalB}</div>
                     </div>
                   </div>
                 </div>

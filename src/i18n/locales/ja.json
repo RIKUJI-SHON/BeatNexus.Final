@@ -1344,8 +1344,31 @@
       "duration": "再生時間",
       "size": "ファイルサイズ"
     },
-    "format": {
-      "mainBattle": "メインバトル"
+    "rules": {
+      "length": "動画の長さ",
+      "rateChange": "レート変動",
+      "seasonPoints": "シーズンポイント",
+      "values": {
+        "main": {
+          "length": "60〜120秒",
+          "rateChange": "標準（K=64）",
+          "seasonPoints": "勝 +32 / 引分 +8 / 負 4→2→0"
+        },
+        "mini": {
+          "length": "30〜60秒",
+          "rateChange": "MAINの半分（K=32）",
+          "seasonPoints": "勝 +16 / 引分 +4 / 負 2→1→0"
+        }
+      }
+    },
+    "battleFormat": {
+      "label": "バトル形式",
+  "main": "メインバトル",
+  "mini": "ミニバトル",
+      "new": "New!!",
+      "tagline": {
+        "mini": "フリースタイルで気軽に挑戦しよう！"
+      }
     },
     "guidelines": {
       "title": "ガイドライン",
@@ -1498,9 +1521,10 @@
       "tooShort": "動画が短すぎます（{{current}}秒）。最小：{{min}}秒",
       "tooLong": "動画が長すぎます（{{current}}秒）。最大：{{max}}秒"
     },
+    
     "submissionGuidelines": {
       "title": "動画投稿ガイドライン",
-      "followFormatLength": "【必須】メインバトルは60秒から120秒のルール厳守",
+  "followFormatLength": "【必須】メインバトルは60秒から120秒、ミニバトルは30秒から60秒のルール厳守",
       "ensureAudioQuality": "クリアな音質を確保してください",
       "faceOptional": "顔出しは任意ですが、口元の表示を推奨",
       "noBackgroundMusic": "背景音楽やバッキングトラックは禁止",
