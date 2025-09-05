@@ -28,6 +28,9 @@ export const AD_PLACEMENTS = {
   'battles.list.after-10.infeed': { variant: 'infeed', active: true, description: 'Battles 一覧 10件後 InFeed 深部' },
   'ranking.top.banner': { variant: 'banner', active: true, description: 'Ranking トップポディウム直下 Banner' },
   'ranking.list.after-5.infeed': { variant: 'infeed', active: true, description: 'Ranking 5位後 InFeed' },
+  'battles.archived.after-3.infeed': { variant: 'infeed', active: true, description: 'ArchivedBattles 一覧 3件後 InFeed' },
+  'battles.archived.after-6.infeed': { variant: 'infeed', active: true, description: 'ArchivedBattles 一覧 6件後 InFeed' },
+  'battles.archived.after-9.infeed': { variant: 'infeed', active: true, description: 'ArchivedBattles 一覧 9件後 InFeed' },
   // 追加候補 (第2フェーズ) - active false
   'battles.sidebar.ranking-bottom.card': { variant: 'sidebar', active: false, description: 'Battles サイドバー下部 SidebarPromo' },
   'battles.carousel.after-4.card': { variant: 'carousel', active: false, description: 'Battles NewsCarousel 4枚目後 Carousel' },

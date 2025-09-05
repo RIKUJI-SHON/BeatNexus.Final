@@ -110,7 +110,7 @@ export const AdSlot: React.FC<AdSlotProps> = ({ placementKey, variant='infeed', 
       {render ? (
         render({ creative: c, click: handleClick })
       ) : (
-  <AdCard creative={c} onClick={handleClick} variant={resolvedVariant} />
+  <AdCard creative={c} onClick={handleClick} variant={resolvedVariant} placementKey={placementKey} />
       )}
     </div>
   );
@@ -121,10 +121,14 @@ interface AdCardProps {
   creative: NonNullable<ReturnType<typeof useAdServe>['creative']>;
   onClick: () => void;
   variant?: 'infeed' | 'banner' | 'inline' | 'carousel';
+  placementKey: string;
 }
 
-const AdCard: React.FC<AdCardProps> = ({ creative, onClick, variant = 'infeed' }) => {
+const AdCard: React.FC<AdCardProps> = ({ creative, onClick, variant = 'infeed', placementKey }) => {
   // 旧 variant クラス組合せ関数は simple 系統へ統一したため未使用
+  const isBattleListPlacement = placementKey.startsWith('battles.list.');
+  const isArchivedListPlacement = placementKey.startsWith('battles.archived.');
+  const isRankingPlacement = placementKey.startsWith('ranking.');
 
   if (variant === 'carousel') {
     // カルーセル広告: 画像をカルーセル全体に表示、全体がクリック可能
@@ -195,11 +199,11 @@ const AdCard: React.FC<AdCardProps> = ({ creative, onClick, variant = 'infeed' }
     // モバイルでは画像のみ表示（正方形・小さめサイズ）
     return (
       <>
-        {/* モバイル版: 画像のみ正方形表示 */}
-        <div className="md:hidden w-full flex justify-center">
+    {/* モバイル版: 画像のみ正方形表示 */}
+    <div className="md:hidden w-full flex justify-center">
           {creative.file_url ? (
             <div 
-              className="bnx-ad-mobile-square w-48 aspect-square relative overflow-hidden rounded-2xl cursor-pointer group"
+              className={"bnx-ad-mobile-square aspect-square relative overflow-hidden rounded-2xl cursor-pointer group max-w-full " + (isRankingPlacement ? 'w-72' : 'w-48')}
               onClick={onClick}
               role="article"
               aria-label="Ad"
@@ -273,11 +277,11 @@ const AdCard: React.FC<AdCardProps> = ({ creative, onClick, variant = 'infeed' }
 
   return (
     <>
-      {/* モバイル版: 画像のみ正方形表示 */}
-      <div className="md:hidden w-full flex justify-center">
+  {/* モバイル版: 画像のみ正方形表示 */}
+  <div className="md:hidden w-full flex justify-center">
         {creative.file_url ? (
           <div 
-            className="bnx-ad-mobile-square w-48 aspect-square relative overflow-hidden rounded-2xl cursor-pointer group"
+            className={"bnx-ad-mobile-square aspect-square relative overflow-hidden rounded-2xl cursor-pointer group max-w-full " + ((isBattleListPlacement || isArchivedListPlacement || isRankingPlacement) ? 'w-72' : 'w-48')}
             onClick={onClick}
             role="article"
             aria-label="Ad"

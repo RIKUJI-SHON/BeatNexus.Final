@@ -63,3 +63,11 @@ export function generatePeriodicAdRules(
 export function generateBattleAdRules(maxItems: number): InjectRule[] {
   return generatePeriodicAdRules(3, maxItems, 'battles.list.after-{position}.infeed');
 }
+
+/**
+ * アーカイブバトル一覧用の3件ごと広告挿入ルールを生成
+ * @param maxItems アーカイブバトルアイテムの最大数
+ */
+export function generateArchivedBattleAdRules(maxItems: number): InjectRule[] {
+  return generatePeriodicAdRules(3, maxItems, 'battles.archived.after-{position}.infeed');
+}

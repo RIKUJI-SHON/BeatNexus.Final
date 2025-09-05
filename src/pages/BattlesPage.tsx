@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Trophy, Mic, Archive } from 'lucide-react';
 import { BattleCard } from '../components/battle/BattleCard';
 import { AdSlot } from '../components/ads/AdSlot';
-import { injectAdSlots, isAdSlotPlaceholder, generateBattleAdRules } from '../utils/injectAdSlots';
+import { injectAdSlots, isAdSlotPlaceholder, generateBattleAdRules, generateArchivedBattleAdRules } from '../utils/injectAdSlots';
 import { ArchivedBattleCard } from '../components/battle/ArchivedBattleCard';
 import { BattleFilters } from '../components/battle/BattleFilters';
 import { Pagination } from '../components/ui/Pagination';
@@ -198,6 +198,10 @@ const BattlesPage: React.FC = () => {
     return injectAdSlots(paginatedActiveBattles, adRules);
   }, [paginatedActiveBattles, sortBy]);
   const paginatedArchivedBattles = filteredArchivedBattles.slice(startIndex, endIndex);
+  const archivedWithAds = useMemo(() => {
+    const rules = generateArchivedBattleAdRules(paginatedArchivedBattles.length);
+    return injectAdSlots(paginatedArchivedBattles, rules);
+  }, [paginatedArchivedBattles]);
 
   // フィルターが変更されたときにページを1に戻す
   useEffect(() => {
@@ -314,12 +318,22 @@ const BattlesPage: React.FC = () => {
                       </Card>
                     ) : paginatedArchivedBattles.length > 0 ? (
                       <>
-                        {paginatedArchivedBattles.map(battle => (
-                          <ArchivedBattleCard 
-                            key={battle.id} 
-                            battle={battle}
-                          />
-                        ))}
+                        {archivedWithAds.map((item, idx) => {
+                          if (isAdSlotPlaceholder(item)) {
+                            return (
+                              <div key={`ad-arch-${item.__adPlacement}-${idx}`} role="listitem">
+                                <AdSlot placementKey={item.__adPlacement} preloadMargin="300px" className="my-4" />
+                              </div>
+                            );
+                          }
+                          const battle = item as typeof paginatedArchivedBattles[number];
+                          return (
+                            <ArchivedBattleCard 
+                              key={battle.id} 
+                              battle={battle}
+                            />
+                          );
+                        })}
                         <Pagination
                           currentPage={currentPage}
                           totalPages={archivedBattlesTotalPages}
@@ -410,12 +424,22 @@ const BattlesPage: React.FC = () => {
                   </Card>
                 ) : paginatedArchivedBattles.length > 0 ? (
                   <>
-                    {paginatedArchivedBattles.map(battle => (
-                      <ArchivedBattleCard 
-                        key={battle.id} 
-                        battle={battle}
-                      />
-                    ))}
+                    {archivedWithAds.map((item, idx) => {
+                      if (isAdSlotPlaceholder(item)) {
+                        return (
+                          <div key={`ad-arch-${item.__adPlacement}-${idx}`} role="listitem">
+                            <AdSlot placementKey={item.__adPlacement} preloadMargin="300px" className="my-4" />
+                          </div>
+                        );
+                      }
+                      const battle = item as typeof paginatedArchivedBattles[number];
+                      return (
+                        <ArchivedBattleCard 
+                          key={battle.id} 
+                          battle={battle}
+                        />
+                      );
+                    })}
                     
                     {/* アーカイブバトル用のページネーション */}
                     <Pagination
