@@ -99,15 +99,19 @@ export default function SuperTipProductionTestPage() {
   // 初期化
   useEffect(() => {
     const init = async () => {
+      appendLog('ユーザー認証情報を取得中...');
       const { data: userData } = await supabase.auth.getUser();
       setUser(userData.user);
       
       if (userData.user) {
+        appendLog(`ユーザー認証確認完了: ${userData.user.email}`);
         setTestForm(prev => ({
           ...prev,
           recipient_user_id: userData.user!.id // 自分自身をテスト受取人に設定
         }));
-        appendLog('ユーザー認証確認完了');
+        appendLog(`受取人IDを設定: ${userData.user.id}`);
+      } else {
+        appendLog('ユーザー認証情報が取得できませんでした');
       }
     };
     init();
@@ -120,16 +124,50 @@ export default function SuperTipProductionTestPage() {
     setLoading(true);
     try {
       appendLog('Connect Account状況を確認中...');
+      
+      // 本番環境のEdge Function URL を直接確認
+      const functionUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-connect-account-status`;
+      appendLog(`Edge Function URL: ${functionUrl}`);
+      
       const { data, error } = await supabase.functions.invoke('get-connect-account-status');
       
       if (error) {
         appendLog(`Connect状況確認エラー: ${error.message}`);
+        appendLog(`エラー詳細: ${JSON.stringify(error)}`);
+        console.error('Connect status error:', error);
+        
+        // エラーの場合、データベースから直接確認を試行
+        appendLog('データベースから直接profile情報を確認中...');
+        const { data: profileData, error: profileError } = await supabase
+          .from('profiles')
+          .select('stripe_connect_account_id, stripe_charges_enabled')
+          .eq('id', user.id)
+          .single();
+          
+        if (profileError) {
+          appendLog(`Profile取得エラー: ${profileError.message}`);
+        } else {
+          appendLog(`Profile情報: ${JSON.stringify(profileData)}`);
+          // Profileデータから手動でconnect状況を構築
+          if (profileData) {
+            const mockConnectStatus = {
+              success: true,
+              has_account: Boolean(profileData.stripe_connect_account_id),
+              charges_enabled: Boolean(profileData.stripe_charges_enabled),
+              account_id: profileData.stripe_connect_account_id || undefined
+            };
+            setConnectStatus(mockConnectStatus);
+            appendLog(`Profile情報からConnect状況を構築: ${JSON.stringify(mockConnectStatus)}`);
+          }
+        }
       } else {
         setConnectStatus(data);
-        appendLog('Connect状況確認完了');
+        appendLog(`Connect状況確認完了: ${JSON.stringify(data)}`);
+        console.log('Connect status data:', data);
       }
     } catch (err) {
       appendLog(`Connect状況確認失敗: ${err}`);
+      console.error('Connect status exception:', err);
     } finally {
       setLoading(false);
     }
@@ -209,13 +247,18 @@ export default function SuperTipProductionTestPage() {
 
   // Connect状況のパース
   const parsedConnectStatus = useMemo(() => {
-    if (!connectStatus || typeof connectStatus !== 'object') return null;
+    if (!connectStatus || typeof connectStatus !== 'object') {
+      console.log('Connect status parsing: invalid data', connectStatus);
+      return null;
+    }
     const status = connectStatus as Record<string, unknown>;
-    return {
+    const result = {
       hasAccount: Boolean(status.has_account),
       chargesEnabled: Boolean(status.charges_enabled),
       accountId: status.account_id as string | undefined,
     };
+    console.log('Connect status parsed:', result);
+    return result;
   }, [connectStatus]);
 
   const isConnectReady = parsedConnectStatus?.chargesEnabled === true;
@@ -254,6 +297,16 @@ export default function SuperTipProductionTestPage() {
             </button>
           </div>
           
+          {/* デバッグ: 生データ表示 */}
+          {connectStatus && (
+            <div className="mb-4 p-3 bg-black rounded text-xs">
+              <div className="text-green-400 mb-2">取得された生データ:</div>
+              <pre className="text-gray-300 whitespace-pre-wrap">
+                {JSON.stringify(connectStatus, null, 2)}
+              </pre>
+            </div>
+          )}
+          
           {parsedConnectStatus && (
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
@@ -278,18 +331,36 @@ export default function SuperTipProductionTestPage() {
           )}
 
           {!isConnectReady && (
-            <button
-              onClick={setupConnectAccount}
-              disabled={loading}
-              className="mt-4 w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white py-2 px-4 rounded transition flex items-center justify-center gap-2"
-            >
-              {loading ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <ExternalLink className="h-4 w-4" />
-              )}
-              Connect Account を設定
-            </button>
+            <div className="space-y-2">
+              <button
+                onClick={setupConnectAccount}
+                disabled={loading}
+                className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white py-2 px-4 rounded transition flex items-center justify-center gap-2"
+              >
+                {loading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <ExternalLink className="h-4 w-4" />
+                )}
+                Connect Account を設定
+              </button>
+              
+              {/* デバッグ用: 手動でConnect状況をオーバーライド */}
+              <button
+                onClick={() => {
+                  setConnectStatus({
+                    success: true,
+                    has_account: true,
+                    charges_enabled: true,
+                    account_id: 'test_account_override'
+                  });
+                  appendLog('Connect状況を手動でオーバーライドしました（テスト用）');
+                }}
+                className="w-full bg-amber-600 hover:bg-amber-700 text-white py-1 px-4 rounded transition text-sm"
+              >
+                🔧 Connect状況を強制的に有効にする（デバッグ用）
+              </button>
+            </div>
           )}
         </div>
 
@@ -300,13 +371,32 @@ export default function SuperTipProductionTestPage() {
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium mb-2">受取人ユーザーID</label>
-              <input
-                type="text"
-                value={testForm.recipient_user_id}
-                onChange={(e) => setTestForm(prev => ({ ...prev, recipient_user_id: e.target.value }))}
-                className="w-full bg-gray-800 border border-gray-600 rounded px-3 py-2 text-sm font-mono"
-                placeholder="受取人のユーザーID"
-              />
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={testForm.recipient_user_id}
+                  onChange={(e) => setTestForm(prev => ({ ...prev, recipient_user_id: e.target.value }))}
+                  className="flex-1 bg-gray-800 border border-gray-600 rounded px-3 py-2 text-sm font-mono"
+                  placeholder="受取人のユーザーID"
+                />
+                <button
+                  onClick={() => {
+                    if (user?.id) {
+                      setTestForm(prev => ({ ...prev, recipient_user_id: user.id }));
+                      appendLog(`自分のIDを設定: ${user.id}`);
+                    }
+                  }}
+                  disabled={!user?.id}
+                  className="px-3 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white text-sm rounded transition"
+                >
+                  自分のID
+                </button>
+              </div>
+              {user?.id && (
+                <div className="mt-1 text-xs text-gray-400">
+                  あなたのID: {user.id}
+                </div>
+              )}
             </div>
 
             <div>
@@ -355,6 +445,23 @@ export default function SuperTipProductionTestPage() {
         {/* 決済フロー */}
         <div className="rounded-lg border border-gray-800 bg-gray-900 p-4">
           <h2 className="text-lg font-semibold mb-4">決済テスト</h2>
+          
+          {/* デバッグ情報表示 */}
+          <div className="mb-4 p-3 bg-gray-800 rounded text-xs space-y-1">
+            <div className="text-gray-400">ボタン有効化条件チェック:</div>
+            <div className={`${loading ? 'text-red-300' : 'text-green-300'}`}>
+              ローディング中: {loading ? 'はい（無効化要因）' : 'いいえ'}
+            </div>
+            <div className={`${!isConnectReady ? 'text-red-300' : 'text-green-300'}`}>
+              Connect設定完了: {isConnectReady ? 'はい' : 'いいえ（無効化要因）'}
+            </div>
+            <div className={`${!testForm.recipient_user_id ? 'text-red-300' : 'text-green-300'}`}>
+              受取人ID設定: {testForm.recipient_user_id ? 'はい' : 'いいえ（無効化要因）'}
+            </div>
+            <div className="text-gray-300">
+              受取人ID: {testForm.recipient_user_id || '未設定'}
+            </div>
+          </div>
           
           {paymentStep === 'setup' && (
             <button
