@@ -98,6 +98,8 @@ function resolveAdTrackUrls(){
   const urls: string[] = [];
   if (base) {
     urls.push(base.replace(/\/$/, '') + '/functions/v1/ad-track');
+    // 本番環境ではSupabase URLのみを使用（フォールバックはローカル開発時のみ）
+    return urls;
   }
   // フォールバック (ローカル開発時のプロキシ / Next.js rewrite 等)
   urls.push('/functions/v1/ad-track','/ad/track');
@@ -106,9 +108,11 @@ function resolveAdTrackUrls(){
 
 async function postJson(payload: {token: string; event_type: string; timestamp: string; anon_session_id?: string; userId?: string; client_meta?: unknown}, attempt=0): Promise<Response>{
   const urlCandidates = resolveAdTrackUrls();
+  dbg('Attempting to send request to URLs:', urlCandidates);
   let lastErr: unknown;
   for (const base of urlCandidates){
     try {
+      dbg('Sending POST request to:', base);
       const res = await fetch(base, {
         method: 'POST',
         headers: { 
@@ -124,7 +128,11 @@ async function postJson(payload: {token: string; event_type: string; timestamp: 
         keepalive: true,
       });
       
-      if (res.ok) return res;
+      dbg('Response status:', res.status, 'for URL:', base);
+      if (res.ok) {
+        dbg('Request successful to:', base);
+        return res;
+      }
       
       // エラーの分類と適切な処理
       if (res.status === 401) {
@@ -145,9 +153,14 @@ async function postJson(payload: {token: string; event_type: string; timestamp: 
           throw new SilentError(`Duplicate event: ${errorText}`);
         }
         lastErr = new Error(`Bad request: ${errorText}`);
+      } else if (res.status === 405) {
+        // 405: Method Not Allowed（通常はルーティング問題）
+        dbg('405 Method Not Allowed - skipping URL:', base);
+        lastErr = new Error(`Method not allowed for URL: ${base}`);
+        continue; // 次のURLを試す
       } else {
         // その他のエラー（404, 500など）は技術的問題の可能性
-        lastErr = new Error(`HTTP ${res.status}: ${res.statusText}`);
+        lastErr = new Error(`HTTP ${res.status}: ${res.statusText} for URL: ${base}`);
       }
     } catch (e){ 
       if (e instanceof SilentError) {
