@@ -96,25 +96,37 @@ function resolveAdTrackUrls(){
   const meta = (import.meta as unknown as { env?: ImportMetaEnvLike });
   const base = meta.env?.VITE_SUPABASE_URL;
   
-  // デバッグ: 環境変数の確認
-  dbg('Environment check:', { 
-    hasSupabaseUrl: !!base, 
-    supabaseUrl: base ? base.slice(0, 30) + '...' : 'undefined'
-  });
-  
-  const urls: string[] = [];
-  if (base && base.includes('supabase.co')) {
-    // Supabase URLが有効な場合は、それのみを使用
-    const trackUrl = base.replace(/\/$/, '') + '/functions/v1/ad-track';
-    urls.push(trackUrl);
-    dbg('Using Supabase URL only:', trackUrl);
-    return urls;
+  // デバッグ: 環境変数の確認（alert使用で本番環境でも確認可能）
+  if (typeof window !== 'undefined' && window.location.search.includes('adDebug=1')) {
+    alert(`Environment check: hasSupabaseUrl=${!!base}, url=${base ? base.slice(0, 30) + '...' : 'undefined'}`);
   }
   
-  // 開発環境でのフォールバック (本番では到達しないはず)
-  dbg('Warning: Using fallback URLs (should not happen in production)');
-  urls.push('/functions/v1/ad-track', '/ad/track');
-  return urls;
+  // 本番環境では必ずSupabase URLを使用（フォールバック完全無効化）
+  if (base && base.includes('supabase.co')) {
+    const trackUrl = base.replace(/\/$/, '') + '/functions/v1/ad-track';
+    if (typeof window !== 'undefined' && window.location.search.includes('adDebug=1')) {
+      alert(`Using Supabase URL only: ${trackUrl}`);
+    }
+    return [trackUrl];
+  }
+  
+  // 環境変数が読み込まれていない場合は、本番用にハードコード
+  // これは緊急対応として、本来は環境変数が正しく設定されるべき
+  const productionUrl = 'https://qgqcjtjxaoplhxurbpis.supabase.co/functions/v1/ad-track';
+  if (typeof window !== 'undefined') {
+    if (window.location.hostname === 'beatnexus.app' || window.location.hostname === 'www.beatnexus.app') {
+      if (window.location.search.includes('adDebug=1')) {
+        alert(`Fallback to hardcoded production URL: ${productionUrl}`);
+      }
+      return [productionUrl];
+    }
+  }
+  
+  // 開発環境でのフォールバック
+  if (typeof window !== 'undefined' && window.location.search.includes('adDebug=1')) {
+    alert('Warning: Using fallback URLs (development mode)');
+  }
+  return ['/functions/v1/ad-track', '/ad/track'];
 }
 
 async function postJson(payload: {token: string; event_type: string; timestamp: string; anon_session_id?: string; userId?: string; client_meta?: unknown}, attempt=0): Promise<Response>{

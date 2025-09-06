@@ -59,7 +59,7 @@ export default defineConfig({
     minify: 'terser',
     terserOptions: {
       compress: {
-        drop_console: true, // console.logを本番から削除
+        drop_console: false, // デバッグのため一時的にconsole.logを保持
         drop_debugger: true
       }
     },
