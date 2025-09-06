@@ -49,7 +49,7 @@ export const useSuperTips = () => {
           amount_jpy,
           payment_status,
           created_at,
-          sender_profile:profiles!super_tips_sender_user_id_fkey (
+          profiles!sender_user_id (
             username,
             avatar_url
           )
@@ -69,8 +69,8 @@ export const useSuperTips = () => {
         (data || []).map(async (tip) => {
           const tipWithCorrectProfile = {
             ...tip,
-            sender_profile: Array.isArray(tip.sender_profile) && tip.sender_profile.length > 0 
-              ? tip.sender_profile[0] 
+            sender_profile: Array.isArray(tip.profiles) && tip.profiles.length > 0 
+              ? tip.profiles[0] 
               : { username: 'Unknown User', avatar_url: null }
           };
 
@@ -84,8 +84,8 @@ export const useSuperTips = () => {
               .select(`
                 player1_user_id,
                 player2_user_id,
-                player1_profile:profiles!active_battles_player1_user_id_fkey (username),
-                player2_profile:profiles!active_battles_player2_user_id_fkey (username)
+                player1_profile:profiles!player1_user_id (username),
+                player2_profile:profiles!player2_user_id (username)
               `)
               .eq('id', tip.battle_id)
               .single();
