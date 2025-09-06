@@ -123,16 +123,54 @@ async function postJson(payload: {token: string; event_type: string; timestamp: 
         }),
         keepalive: true,
       });
+      
       if (res.ok) return res;
-      lastErr = new Error(`HTTP ${res.status}`);
-    } catch (e){ lastErr = e; }
+      
+      // エラーの分類と適切な処理
+      if (res.status === 401) {
+        // 401: 認証失敗（トークン期限切れ、重複防止など）
+        // これは正常な動作の可能性が高いため、静かに処理
+        const errorText = await res.text().catch(() => 'Authentication failed');
+        dbg('auth failed (expected for duplicates/expired tokens)', { 
+          status: res.status, 
+          token: payload.token.slice(0, 16),
+          reason: errorText
+        });
+        throw new SilentError(`Authentication failed: ${errorText}`);
+      } else if (res.status === 400) {
+        // 400: リクエスト形式エラー（重複検知含む）
+        const errorText = await res.text().catch(() => 'Bad request');
+        if (errorText.includes('duplicate') || errorText.includes('already processed')) {
+          dbg('duplicate event (expected)', { token: payload.token.slice(0, 16) });
+          throw new SilentError(`Duplicate event: ${errorText}`);
+        }
+        lastErr = new Error(`Bad request: ${errorText}`);
+      } else {
+        // その他のエラー（404, 500など）は技術的問題の可能性
+        lastErr = new Error(`HTTP ${res.status}: ${res.statusText}`);
+      }
+    } catch (e){ 
+      if (e instanceof SilentError) {
+        throw e; // SilentErrorはそのまま再throw
+      }
+      lastErr = e; 
+    }
   }
+  
   if (attempt < 2) { // retry 3 回 (0,1,2)
     const backoff = Math.pow(2, attempt) * 1000; // 1s,2s
     await new Promise(r=> setTimeout(r, backoff));
     return postJson(payload, attempt+1);
   }
   throw lastErr ?? new Error('request failed');
+}
+
+// 静かに処理するエラークラス（コンソールに表示しない）
+class SilentError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'SilentError';
+  }
 }
 
 export function queueImpression(token: string, options: { anon: string; userId?: string; meta?: Record<string, unknown> }){
@@ -179,10 +217,24 @@ export async function flushImpressions(){
           recentMap.set(recentKey(item.token, 'impression', userOrAnon), now()+IMP_VISIBILITY_RESEND_WINDOW);
           dbg('sent impression ok', { token: item.token.slice(0,16), userOrAnon });
         }
-    } catch {
-        // 失敗: オフライン queue に戻す
-        saveOfflineQueue([...loadOfflineQueue(), { token: item.token, anon: item.anon, userId: item.userId, meta: item.meta, queuedAt: now() }]);
-        dbg('impression send failed -> queued offline', { token: item.token.slice(0,16) });
+      } catch (err) {
+        // SilentError（重複・認証失敗）は静かに処理
+        if (err instanceof SilentError) {
+          dbg('impression silently skipped', { 
+            reason: err.message, 
+            token: item.token.slice(0,16) 
+          });
+          // 重複検知の場合、クライアント側キャッシュも更新
+          if (err.message.includes('duplicate') || err.message.includes('Authentication failed')) {
+            const userOrAnon = item.userId || item.anon || 'anon';
+            recentMap.set(recentKey(item.token, 'impression', userOrAnon), now()+IMP_VISIBILITY_RESEND_WINDOW);
+          }
+        } else {
+          // 技術的エラーのみコンソールに表示し、オフラインキューに保存
+          console.warn('Ad impression tracking failed (technical error):', err);
+          dbg('impression error -> queued offline', { err, token: item.token.slice(0,16) });
+          saveOfflineQueue([...loadOfflineQueue(), { token: item.token, anon: item.anon, userId: item.userId, meta: item.meta, queuedAt: now() }]);
+        }
       }
     }
   } catch {
@@ -209,7 +261,27 @@ export function trackClick(token: string, options: { anon: string; userId?: stri
   };
 
   // fetch を使用（sendBeacon は Authorization ヘッダーを設定できないため）
-  postJson(payload).catch(()=>{
+  postJson(payload).then(() => {
+    const userOrAnon = options.userId || options.anon;
+    recentMap.set(recentKey(token, 'click', userOrAnon), now() + CLICK_RESEND_WINDOW);
+    dbg('click sent ok', { token: token.slice(0,16), userOrAnon });
+  }).catch((err) => {
+    // SilentError（重複・認証失敗）は静かに処理
+    if (err instanceof SilentError) {
+      dbg('click silently skipped', { 
+        reason: err.message, 
+        token: token.slice(0,16) 
+      });
+      // 重複検知の場合、クライアント側キャッシュも更新
+      if (err.message.includes('duplicate') || err.message.includes('Authentication failed')) {
+        const userOrAnon = options.userId || options.anon;
+        recentMap.set(recentKey(token, 'click', userOrAnon), now() + CLICK_RESEND_WINDOW);
+      }
+    } else {
+      // 技術的エラーのみコンソールに表示
+      console.warn('Ad click tracking failed (technical error):', err);
+      dbg('click error', { err, token: token.slice(0,16) });
+    }
     // クリックは再試行しない (UX 優先) が offline なら一応保管
     if (!navigator.onLine){
       saveOfflineQueue([...loadOfflineQueue(), { token, anon: options.anon, userId: options.userId, meta: options.meta, queuedAt: now() }]);
