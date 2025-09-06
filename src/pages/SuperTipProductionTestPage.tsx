@@ -84,6 +84,9 @@ export default function SuperTipProductionTestPage() {
     recipient_user_id: '', // 他のユーザーのIDを設定
     comment: '本番環境テスト用のSuper Tip！',
     amount_jpy: 500,
+    battle_id: '', // バトルIDを追加（オプション）
+    vote: 'A' as 'A' | 'B', // 投票先を追加（オプション）
+    use_battle: false, // バトル投票を使うかどうかのフラグ
   });
 
   const [paymentClientSecret, setPaymentClientSecret] = useState<string | null>(null);
@@ -181,25 +184,48 @@ export default function SuperTipProductionTestPage() {
     try {
       appendLog('Super Tip決済作成開始...');
       
-      const { data, error } = await supabase.functions.invoke('vote-with-super-tip-vote', {
-        body: {
-          recipient_user_id: testForm.recipient_user_id,
-          comment: testForm.comment,
-          amount_jpy: testForm.amount_jpy,
-          // バトルIDは指定しない（単独支援テスト）
+      // バトル投票か単独支援かで関数を切り替え
+      if (testForm.use_battle && testForm.battle_id) {
+        const { data, error } = await supabase.functions.invoke('vote-with-super-tip-vote', {
+          body: {
+            battle_id: testForm.battle_id,
+            sender_user_id: user.id,
+            recipient_user_id: testForm.recipient_user_id,
+            comment: testForm.comment,
+            amount_jpy: testForm.amount_jpy,
+            vote: testForm.vote,
+          }
+        });
+        
+        if (error) throw new Error(error.message);
+        if (data?.client_secret) {
+          setPaymentClientSecret(data.client_secret);
+          setPaymentStep('payment');
+          appendLog('バトル投票付きPayment Intent作成成功');
+          appendLog(`Super Tip ID: ${data.super_tip_id}`);
+        } else {
+          throw new Error('Payment Intent作成に失敗しました');
         }
-      });
-
-      if (error) {
-        throw new Error(error.message);
-      }
-
-      if (data?.payment_intent_client_secret) {
-        setPaymentClientSecret(data.payment_intent_client_secret);
-        setPaymentStep('payment');
-        appendLog('Payment Intent作成成功');
       } else {
-        throw new Error('Payment Intent作成に失敗しました');
+        const { data, error } = await supabase.functions.invoke('vote-with-super-tip', {
+          body: {
+            sender_user_id: user.id,
+            recipient_user_id: testForm.recipient_user_id,
+            comment: testForm.comment,
+            amount_jpy: testForm.amount_jpy,
+            // バトルIDと投票は指定しない（単独支援テスト）
+          }
+        });
+        
+        if (error) throw new Error(error.message);
+        if (data?.client_secret) {
+          setPaymentClientSecret(data.client_secret);
+          setPaymentStep('payment');
+          appendLog('単独支援Payment Intent作成成功');
+          appendLog(`Super Tip ID: ${data.tip?.id || data.super_tip_id}`);
+        } else {
+          throw new Error('Payment Intent作成に失敗しました');
+        }
       }
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
@@ -215,6 +241,11 @@ export default function SuperTipProductionTestPage() {
   const checkRecipientConnectStatus = useCallback(async () => {
     if (!testForm.recipient_user_id) {
       appendLog('受取人IDが設定されていません');
+      return;
+    }
+
+    if (testForm.recipient_user_id === user?.id) {
+      appendLog('❌ 自己送金は禁止されています');
       return;
     }
 
@@ -247,7 +278,7 @@ export default function SuperTipProductionTestPage() {
     } finally {
       setLoading(false);
     }
-  }, [testForm.recipient_user_id, appendLog]);
+  }, [testForm.recipient_user_id, user?.id, appendLog]);
   const setupConnectAccount = useCallback(async () => {
     if (!user) return;
 
@@ -445,6 +476,34 @@ export default function SuperTipProductionTestPage() {
             </div>
 
             <div>
+              <label className="block text-sm font-medium mb-2">テストモード</label>
+              <div className="space-y-2">
+                <label className="flex items-center">
+                  <input
+                    type="radio"
+                    name="test_mode"
+                    checked={!testForm.use_battle}
+                    onChange={() => setTestForm(prev => ({ ...prev, use_battle: false }))}
+                    className="mr-2"
+                  />
+                  <span className="text-green-400">単独支援（推奨）</span>
+                  <span className="ml-2 text-xs text-gray-400">- バトル不要、本番環境で安全</span>
+                </label>
+                <label className="flex items-center">
+                  <input
+                    type="radio"
+                    name="test_mode"
+                    checked={testForm.use_battle}
+                    onChange={() => setTestForm(prev => ({ ...prev, use_battle: true }))}
+                    className="mr-2"
+                  />
+                  <span className="text-amber-400">バトル投票付き</span>
+                  <span className="ml-2 text-xs text-gray-400">- バトル必要、開発環境推奨</span>
+                </label>
+              </div>
+            </div>
+
+            <div>
               <label className="block text-sm font-medium mb-2">金額（円）</label>
               <select
                 value={testForm.amount_jpy}
@@ -457,6 +516,56 @@ export default function SuperTipProductionTestPage() {
                 <option value={1000}>¥1,000</option>
                 <option value={3000}>¥3,000</option>
               </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2">バトルID</label>
+              <input
+                type="text"
+                value={testForm.battle_id}
+                onChange={(e) => setTestForm(prev => ({ ...prev, battle_id: e.target.value }))}
+                disabled={!testForm.use_battle}
+                className="w-full bg-gray-800 border border-gray-600 rounded px-3 py-2 text-sm font-mono disabled:opacity-50 disabled:cursor-not-allowed"
+                placeholder="投票するバトルのID"
+              />
+              <div className="mt-1 text-xs text-gray-400">
+                バトル投票付きの場合のみ必須です
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2">投票先</label>
+              <div className="flex gap-4">
+                <label className="flex items-center">
+                  <input
+                    type="radio"
+                    name="vote"
+                    value="A"
+                    checked={testForm.vote === 'A'}
+                    onChange={(e) => setTestForm(prev => ({ ...prev, vote: e.target.value as 'A' | 'B' }))}
+                    disabled={!testForm.use_battle}
+                    className="mr-2 disabled:opacity-50"
+                  />
+                  プレイヤーA
+                </label>
+                <label className="flex items-center">
+                  <input
+                    type="radio"
+                    name="vote"
+                    value="B"
+                    checked={testForm.vote === 'B'}
+                    onChange={(e) => setTestForm(prev => ({ ...prev, vote: e.target.value as 'A' | 'B' }))}
+                    disabled={!testForm.use_battle}
+                    className="mr-2 disabled:opacity-50"
+                  />
+                  プレイヤーB
+                </label>
+              </div>
+              {!testForm.use_battle && (
+                <div className="mt-1 text-xs text-gray-400">
+                  単独支援では投票は不要です
+                </div>
+              )}
             </div>
 
             <div className="bg-gray-800 p-3 rounded text-sm">
@@ -492,15 +601,36 @@ export default function SuperTipProductionTestPage() {
             <div className={`${!testForm.recipient_user_id ? 'text-red-300' : 'text-green-300'}`}>
               受取人ID設定: {testForm.recipient_user_id ? 'はい' : 'いいえ（無効化要因）'}
             </div>
+            <div className={`${!testForm.battle_id ? 'text-red-300' : 'text-green-300'}`}>
+              バトルID設定: {testForm.battle_id ? 'はい' : 'いいえ（無効化要因）'}
+            </div>
+            <div className={`${testForm.recipient_user_id === user?.id ? 'text-red-300' : 'text-green-300'}`}>
+              自己送金チェック: {testForm.recipient_user_id === user?.id ? '自己送金のため無効' : '問題なし'}
+            </div>
             <div className="text-gray-300">
               受取人ID: {testForm.recipient_user_id || '未設定'}
+            </div>
+            <div className="text-gray-300">
+              バトルID: {testForm.battle_id || '未設定'}
+            </div>
+            <div className="text-gray-300">
+              投票先: {testForm.vote}
+            </div>
+            <div className="text-gray-300">
+              あなたのID: {user?.id || '未ログイン'}
             </div>
           </div>
           
           {paymentStep === 'setup' && (
             <button
               onClick={createSuperTipPayment}
-              disabled={loading || !isConnectReady || !testForm.recipient_user_id}
+              disabled={
+                loading || 
+                !isConnectReady || 
+                !testForm.recipient_user_id || 
+                (testForm.use_battle && !testForm.battle_id) || 
+                testForm.recipient_user_id === user?.id
+              }
               className="w-full bg-green-600 hover:bg-green-700 disabled:bg-gray-600 text-white py-3 px-4 rounded transition flex items-center justify-center gap-2"
             >
               {loading ? (
