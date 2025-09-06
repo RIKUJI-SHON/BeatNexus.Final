@@ -1,48 +1,58 @@
-import { defineConfig } from 'vite';
+import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 
 // https://vitejs.dev/config/
-export default defineConfig({
-  plugins: [
-    react(),
-    // カスタムプラグインでvoid-elementsの問題を解決
-    {
-      name: 'void-elements-fix',
-      load(id) {
-        if (id.includes('void-elements')) {
-          return `
-            const voidElements = {
-              "area": true,
-              "base": true,
-              "br": true,
-              "col": true,
-              "embed": true,
-              "hr": true,
-              "img": true,
-              "input": true,
-              "link": true,
-              "meta": true,
-              "param": true,
-              "source": true,
-              "track": true,
-              "wbr": true
-            };
-            export default voidElements;
-            export { voidElements };
-          `;
+export default defineConfig(({ mode }) => {
+  // 環境変数を明示的に読み込み
+  const env = loadEnv(mode, process.cwd(), '');
+  
+  return {
+    plugins: [
+      react(),
+      // カスタムプラグインでvoid-elementsの問題を解決
+      {
+        name: 'void-elements-fix',
+        load(id) {
+          if (id.includes('void-elements')) {
+            return `
+              const voidElements = {
+                "area": true,
+                "base": true,
+                "br": true,
+                "col": true,
+                "embed": true,
+                "hr": true,
+                "img": true,
+                "input": true,
+                "link": true,
+                "meta": true,
+                "param": true,
+                "source": true,
+                "track": true,
+                "wbr": true
+              };
+              export default voidElements;
+              export { voidElements };
+            `;
+          }
         }
       }
-    }
-    // VitePWAを無効化してブラウザネイティブPWAを使用
-    // VitePWA({
-    //   registerType: 'autoUpdate',
-    //   manifest: false,
-    //   devOptions: {
-    //     enabled: false
-    //   }
-    // })
-  ],
+      // VitePWAを無効化してブラウザネイティブPWAを使用
+      // VitePWA({
+      //   registerType: 'autoUpdate',
+      //   manifest: false,
+      //   devOptions: {
+      //     enabled: false
+      //   }
+      // })
+    ],
+    // 環境変数の明示的定義
+    define: {
+      __VITE_SUPABASE_URL__: JSON.stringify(env.VITE_SUPABASE_URL || 'https://qgqcjtjxaoplhxurbpis.supabase.co'),
+      __VITE_SUPABASE_ANON_KEY__: JSON.stringify(env.VITE_SUPABASE_ANON_KEY || ''),
+      __VITE_AD_DEBUG__: JSON.stringify(env.VITE_AD_DEBUG || '1'),
+    },
   optimizeDeps: {
     exclude: ['lucide-react'],
     include: ['void-elements', 'html-parse-stringify'],
@@ -102,4 +112,5 @@ export default defineConfig({
     },
   },
   publicDir: 'public'
+  };
 });

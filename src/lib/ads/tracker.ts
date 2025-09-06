@@ -2,6 +2,10 @@
 // 広告計測統合ユーティリティ: impression バッチ / click 即時 + retry / offline queue
 // 要件: FR-1..FR-7
 
+// グローバル変数の型定義
+declare const __VITE_SUPABASE_URL__: string;
+declare const __VITE_AD_DEBUG__: string;
+
 interface PendingImpression {
   token: string;
   anon?: string;
@@ -93,8 +97,14 @@ function initGlobal(){
 // 常に Supabase プロジェクト URL 優先 (vite 環境変数)
 interface ImportMetaEnvLike { VITE_SUPABASE_URL?: string }
 function resolveAdTrackUrls(){
+  // vite.config.tsで明示的に定義された変数を使用
   const meta = (import.meta as unknown as { env?: ImportMetaEnvLike });
-  const base = meta.env?.VITE_SUPABASE_URL;
+  let base = meta.env?.VITE_SUPABASE_URL;
+  
+  // フォールバック: defineで定義されたグローバル変数を使用
+  if (!base && typeof __VITE_SUPABASE_URL__ !== 'undefined') {
+    base = __VITE_SUPABASE_URL__;
+  }
   
   // デバッグ: 環境変数の確認（alert使用で本番環境でも確認可能）
   if (typeof window !== 'undefined' && window.location.search.includes('adDebug=1')) {
@@ -105,7 +115,7 @@ function resolveAdTrackUrls(){
   if (base && base.includes('supabase.co')) {
     const trackUrl = base.replace(/\/$/, '') + '/functions/v1/ad-track';
     if (typeof window !== 'undefined' && window.location.search.includes('adDebug=1')) {
-      alert(`Using Supabase URL only: ${trackUrl}`);
+      alert(`Using Supabase URL from env: ${trackUrl}`);
     }
     return [trackUrl];
   }
