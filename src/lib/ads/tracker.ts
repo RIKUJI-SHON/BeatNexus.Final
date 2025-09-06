@@ -95,14 +95,25 @@ interface ImportMetaEnvLike { VITE_SUPABASE_URL?: string }
 function resolveAdTrackUrls(){
   const meta = (import.meta as unknown as { env?: ImportMetaEnvLike });
   const base = meta.env?.VITE_SUPABASE_URL;
+  
+  // デバッグ: 環境変数の確認
+  dbg('Environment check:', { 
+    hasSupabaseUrl: !!base, 
+    supabaseUrl: base ? base.slice(0, 30) + '...' : 'undefined'
+  });
+  
   const urls: string[] = [];
-  if (base) {
-    urls.push(base.replace(/\/$/, '') + '/functions/v1/ad-track');
-    // 本番環境ではSupabase URLのみを使用（フォールバックはローカル開発時のみ）
+  if (base && base.includes('supabase.co')) {
+    // Supabase URLが有効な場合は、それのみを使用
+    const trackUrl = base.replace(/\/$/, '') + '/functions/v1/ad-track';
+    urls.push(trackUrl);
+    dbg('Using Supabase URL only:', trackUrl);
     return urls;
   }
-  // フォールバック (ローカル開発時のプロキシ / Next.js rewrite 等)
-  urls.push('/functions/v1/ad-track','/ad/track');
+  
+  // 開発環境でのフォールバック (本番では到達しないはず)
+  dbg('Warning: Using fallback URLs (should not happen in production)');
+  urls.push('/functions/v1/ad-track', '/ad/track');
   return urls;
 }
 
