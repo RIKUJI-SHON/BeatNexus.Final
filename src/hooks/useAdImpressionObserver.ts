@@ -1,11 +1,16 @@
 // useAdImpressionObserver.ts
-// 目的: DOM要素が 50% 以上 1000ms 連続可視になったら impression を一度送信する。
+// 目的: DOM要素が 50% 以上 300ms 連続可視になったら impression を一度送信する。 (要件 FR-1)
 // シンプル化: 要素が外れたらタイマーリセット。複雑な部分 (部分的な断続) は MVP では扱わない。
 
 import { useEffect, useRef } from 'react';
 import { getAnonSessionId } from '../utils/anonSession';
 import { detectDeviceType, getBrowserLanguage } from '../utils/deviceInfo';
 import { useRecentAdEventCache } from './useRecentAdEventCache';
+import { queueImpression as queueImpressionInternal } from '../lib/ads/tracker';
+
+declare global { interface Window { __AD_DEBUG_ENABLED?: boolean } }
+function isDebug(){ return typeof window !== 'undefined' && window.__AD_DEBUG_ENABLED; }
+function dbg(...args: unknown[]){ if (isDebug()) console.debug('[ad-imp]', ...args); }
 
 interface Params {
   enabled: boolean;
@@ -17,6 +22,27 @@ interface Params {
   onSent?: () => void;
 }
 
+// 型安全な impression 送信ヘルパー
+function sendImpression(
+  token: string, 
+  anon: string, 
+  userId?: string, 
+  meta?: Record<string, unknown>
+) {
+  dbg('send impression');
+  queueImpressionInternal(token, { 
+    anon, 
+    userId, 
+    meta: { 
+      vw: window.innerWidth, 
+      vh: window.innerHeight, 
+      lang: getBrowserLanguage(), 
+      device: detectDeviceType(),
+      ...meta
+    } 
+  });
+}
+
 export function useAdImpressionObserver(params: Params) {
   const { enabled, ref, creativeId, placementId, token, userId, onSent } = params;
   const recent = useRecentAdEventCache();
@@ -24,48 +50,54 @@ export function useAdImpressionObserver(params: Params) {
   const timerRef = useRef<number | null>(null);
 
   useEffect(() => {
-  if (!enabled || !ref.current || !token) return; // token を唯一必須にシフト (creativeId/placementId はサーバ側で復元)
+    if (!enabled || !ref.current || !token) { 
+      dbg('inactive', { enabled, hasRef: !!ref.current, hasToken: !!token }); 
+      return; 
+    }
+    
+    // この時点で token は確実に string
+    const tokenStr = token as string;
+    
     if (sentRef.current) return; // 1回のみ
 
     const anon = getAnonSessionId();
-  const userOrAnon = userId || anon || 'anon';
-  // token ベース重複キー (MVP: token 自体 + 種別)
-  const key = recent.makeKey({ creativeId: token, placementId: 't', userOrAnon, type: 'impression' });
-    if (recent.has(key)) { sentRef.current = true; return; }
+    const userOrAnon = userId || anon || 'anon';
+    // token ベース重複キー (MVP: token 自体 + 種別)
+    const key = recent.makeKey({ creativeId: tokenStr, placementId: 't', userOrAnon, type: 'impression' });
+    if (recent.has(key)) { 
+      sentRef.current = true; 
+      dbg('already recent (front dedupe)'); 
+      return; 
+    }
 
     const el = ref.current;
     const observer = new IntersectionObserver((entries) => {
       const entry = entries[0];
       if (!entry) return;
       const ratio = entry.intersectionRatio;
+      dbg('observe', { ratio });
+      
       if (ratio >= 0.5) {
-        // 開始: まだタイマーが無ければセット
+        // 開始: まだタイマーが無ければセット (300ms)
         if (timerRef.current == null) {
-          timerRef.current = window.setTimeout(async () => {
-            // 1000ms 経過 still in view? 再チェック (最新 entry が 0.5 以上か) -> 実装簡略: 再取得
-            const visible = entry.intersectionRatio >= 0.5; // entry は更新され続けるので近似でOK
+          dbg('>=0.5 start timer');
+          timerRef.current = window.setTimeout(() => {
+            const visible = entry.intersectionRatio >= 0.5;
             if (visible && !sentRef.current) {
-              try {
-                const res = await fetch('/ad/track', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ token, type: 'impression', anon, client_meta: { vw: window.innerWidth, vh: window.innerHeight, lang: getBrowserLanguage(), device: detectDeviceType() } }),
-                });
-                if (res.ok) {
-                  recent.set(key, 30_000); // 30s 再送防止
-                  sentRef.current = true;
-                  onSent?.();
-                }
-              } catch (e) {
-                // ネットワークエラー等は黙殺 (MVP) 将来: リトライ/ログ
-                console.warn('[ad] impression send failed', e);
+              // 一時的に型チェック回避
+              if (tokenStr) {
+                sendImpression(tokenStr, anon, userId);
               }
+              recent.set(key, 30_000); // 30s 再送防止 (フロント側)
+              sentRef.current = true;
+              onSent?.();
             }
-          }, 1000);
+          }, 300);
         }
       } else {
         // 50% 未満に落ちたらタイマー解除
         if (timerRef.current != null) {
+          dbg('<0.5 cancel timer');
           clearTimeout(timerRef.current);
           timerRef.current = null;
         }

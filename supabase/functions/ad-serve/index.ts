@@ -1,7 +1,12 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts"
-// 簡略化されたWeight-based広告配信システム - placement assignmentを無視
+// 重み付きシンプル広告配信 + 署名付きトークン発行（impression / click 用）
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { create, getNumericDate } from 'https://deno.land/x/djwt@v3.0.2/mod.ts'
+
+// deno-lint-ignore-file no-explicit-any
+interface DenoLike { env: { get: (key: string) => string | undefined } }
+declare const Deno: DenoLike;
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -12,7 +17,9 @@ const corsHeaders = {
  * 簡略化されたWeight-based広告選択
  * placement assignmentを無視して、全ての有効な広告から直接選択
  */
-async function selectAdDirectly(supabase: any) {
+// 型簡略化: Supabase クライアント rpc 戻り値のみ使用
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function selectAdDirectly(supabase: { rpc: (fn: string) => Promise<{ data: any; error: any }> }) {
   console.log('Selecting ad directly from all active ads by weight...')
   
   const { data, error } = await supabase.rpc('weighted_random_ad')
@@ -80,25 +87,55 @@ serve(async (req) => {
       )
     }
 
-    // 広告レスポンスを構築
+    // 署名トークン生成
+    const secret = Deno.env.get('AD_EVENT_SIGNING_SECRET') ?? ''
+    console.log('[ad-serve] Environment variable check:', {
+      hasSecret: !!secret,
+      secretLength: secret.length,
+      secretPrefix: secret.slice(0, 8),
+      timestamp: new Date().toISOString()
+    });
+    if (!secret) {
+      console.error('[ad-serve] AD_EVENT_SIGNING_SECRET not set')
+      return new Response(JSON.stringify({ ok:false, code:'AD_CONFIG_ERROR'}), { status:500, headers:{...corsHeaders,'Content-Type':'application/json'} })
+    }
+    const header = { alg: 'HS256', typ: 'JWT' }
+    const expSeconds = 60 * 5 // 5 分有効
+    const payload = {
+      sid: selectedAd.ad_id,        // simple_ad_id
+      pk: placement,                // placement key
+      iat: Math.floor(Date.now()/1000),
+      exp: getNumericDate(expSeconds)
+    }
+    // djwt v3 create は secretKey を CryptoKey で要求。HMAC ライブラリ経由で bytes 化。
+    const encoder = new TextEncoder()
+    const key = await crypto.subtle.importKey(
+      'raw',
+      encoder.encode(secret),
+      { name: 'HMAC', hash: 'SHA-256' },
+      false,
+      ['sign','verify']
+    )
+    const token = await create(header, payload, key)
+
     const response = {
       ok: true,
       data: {
         placement_key: placement,
         creative: {
-          creative_id: selectedAd.ad_id,
+          creative_id: selectedAd.ad_id, // 後方互換フィールド名
           headline: selectedAd.title,
           body: selectedAd.description,
-          cta_text: "詳しく見る",
+          cta_text: '詳しく見る',
           target_url: selectedAd.click_url,
           file_url: selectedAd.image_url
         },
-        token: null, // 計測停止中なのでnull
+        token,
         debug: {
           advertiser_id: selectedAd.advertiser_id,
-          advertiser_name: selectedAd.advertiser_name,
-          advertiser_weight: selectedAd.advertiser_weight,
-          selection_method: 'direct_weight_based'
+            advertiser_name: selectedAd.advertiser_name,
+            advertiser_weight: selectedAd.advertiser_weight,
+            selection_method: 'direct_weight_based'
         }
       }
     }
