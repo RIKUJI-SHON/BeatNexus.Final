@@ -2,6 +2,8 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
+import { usePaymentStatus } from '../hooks/usePaymentStatus';
+import { PaymentProcessing } from '../components/payments/PaymentProcessing';
 
 // Simple JSON-like type without using any
 type JsonValue = string | number | boolean | null | { [key: string]: JsonValue } | JsonValue[];
@@ -26,6 +28,22 @@ export default function DevSuperTipsPage() {
     comment: '応援してます！',
     amount_jpy: 300,
   });
+  
+  // URLパラメータからpayment_intent IDを取得
+  const [paymentIntentId, setPaymentIntentId] = useState<string | null>(null);
+  
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const paymentIntent = urlParams.get('payment_intent');
+    if (paymentIntent) {
+      setPaymentIntentId(paymentIntent);
+      // URLからパラメータを削除（オプション）
+      window.history.replaceState(null, '', window.location.pathname);
+    }
+  }, []);
+  
+  // ペイメント状態をポーリング
+  const { status: paymentStatus, loading: statusLoading, isSucceeded, isPending } = usePaymentStatus(paymentIntentId || undefined);
   const [paymentClientSecret, setPaymentClientSecret] = useState<string | null>(null);
   const [paymentReturnUrl, setPaymentReturnUrl] = useState<string | null>(null);
 
@@ -255,6 +273,15 @@ export default function DevSuperTipsPage() {
     <div className="max-w-3xl mx-auto p-4 space-y-6">
       <h1 className="text-2xl font-bold">Dev: Super Tips テスト</h1>
       <p className="text-sm text-gray-500">ログイン済みでこのページからEdge Functionsを叩いて動作確認します。</p>
+
+      {/* ペイメント処理状態表示 */}
+      {paymentIntentId && paymentStatus && (
+        <PaymentProcessing
+          status={paymentStatus.payment_status}
+          amount={voteForm.amount_jpy}
+          onComplete={() => setPaymentIntentId(null)}
+        />
+      )}
 
       <div className="rounded-md border p-3 text-sm">
         <div>Auth: {isAuthed ? '✅' : '❌'}</div>

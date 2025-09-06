@@ -4,6 +4,8 @@ import { supabase } from '../lib/supabase';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
 import { ExternalLink, Loader2, CreditCard, CheckCircle2, AlertCircle, DollarSign } from 'lucide-react';
+import { usePaymentStatus } from '../hooks/usePaymentStatus';
+import { PaymentProcessing } from '../components/payments/PaymentProcessing';
 
 // 型定義
 type JsonValue = string | number | boolean | null | { [key: string]: JsonValue } | JsonValue[];
@@ -78,6 +80,22 @@ export default function SuperTipProductionTestPage() {
   const [loading, setLoading] = useState(false);
   const [logs, setLogs] = useState<string[]>([]);
   const [connectStatus, setConnectStatus] = useState<JsonValue | null>(null);
+
+  // URLパラメータからpayment_intent IDを取得
+  const [paymentIntentId, setPaymentIntentId] = useState<string | null>(null);
+  
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const paymentIntent = urlParams.get('payment_intent');
+    if (paymentIntent) {
+      setPaymentIntentId(paymentIntent);
+      // URLからパラメータを削除（オプション）
+      window.history.replaceState(null, '', window.location.pathname);
+    }
+  }, []);
+  
+  // ペイメント状態をポーリング
+  const { status: paymentStatus } = usePaymentStatus(paymentIntentId || undefined);
 
   // テスト用Super Tip設定
   const [testForm, setTestForm] = useState({
@@ -334,6 +352,15 @@ export default function SuperTipProductionTestPage() {
       </Helmet>
 
       <div className="max-w-4xl mx-auto space-y-6">
+        {/* ペイメント処理状態表示 */}
+        {paymentIntentId && paymentStatus && (
+          <PaymentProcessing
+            status={paymentStatus.payment_status}
+            amount={testForm.amount_jpy}
+            onComplete={() => setPaymentIntentId(null)}
+          />
+        )}
+
         {/* ヘッダー */}
         <div className="flex items-center gap-2">
           <DollarSign className="h-6 w-6 text-cyan-400" />

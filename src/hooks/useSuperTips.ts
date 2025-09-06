@@ -49,7 +49,7 @@ export const useSuperTips = () => {
           amount_jpy,
           payment_status,
           created_at,
-          sender_profile:profiles!sender_user_id (
+          sender_profile:profiles!super_tips_sender_user_id_fkey (
             username,
             avatar_url
           )
@@ -84,8 +84,8 @@ export const useSuperTips = () => {
               .select(`
                 player1_user_id,
                 player2_user_id,
-                player1_profile:profiles!player1_user_id (username),
-                player2_profile:profiles!player2_user_id (username)
+                player1_profile:profiles!active_battles_player1_user_id_fkey (username),
+                player2_profile:profiles!active_battles_player2_user_id_fkey (username)
               `)
               .eq('id', tip.battle_id)
               .single();
