@@ -81,7 +81,7 @@ export default function SuperTipProductionTestPage() {
 
   // テスト用Super Tip設定
   const [testForm, setTestForm] = useState({
-    recipient_user_id: '', // あなたのユーザーIDを設定
+    recipient_user_id: '', // 他のユーザーのIDを設定
     comment: '本番環境テスト用のSuper Tip！',
     amount_jpy: 500,
   });
@@ -105,11 +105,8 @@ export default function SuperTipProductionTestPage() {
       
       if (userData.user) {
         appendLog(`ユーザー認証確認完了: ${userData.user.email}`);
-        setTestForm(prev => ({
-          ...prev,
-          recipient_user_id: userData.user!.id // 自分自身をテスト受取人に設定
-        }));
-        appendLog(`受取人IDを設定: ${userData.user.id}`);
+        // 自分自身は設定しない（自己送金は制限されているため）
+        appendLog('受取人IDは手動で他のユーザーのIDを設定してください');
       } else {
         appendLog('ユーザー認証情報が取得できませんでした');
       }
@@ -214,7 +211,43 @@ export default function SuperTipProductionTestPage() {
     }
   }, [user, testForm, appendLog]);
 
-  // Connect Account作成
+  // 受取人のConnect状況確認
+  const checkRecipientConnectStatus = useCallback(async () => {
+    if (!testForm.recipient_user_id) {
+      appendLog('受取人IDが設定されていません');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      appendLog(`受取人(${testForm.recipient_user_id})のConnect状況を確認中...`);
+      
+      // データベースから受取人のprofile情報を確認
+      const { data: profileData, error: profileError } = await supabase
+        .from('profiles')
+        .select('stripe_connect_account_id, stripe_charges_enabled, display_name, username')
+        .eq('id', testForm.recipient_user_id)
+        .single();
+        
+      if (profileError) {
+        appendLog(`受取人Profile取得エラー: ${profileError.message}`);
+      } else if (profileData) {
+        appendLog(`受取人情報: ${JSON.stringify(profileData)}`);
+        const connectReady = Boolean(profileData.stripe_charges_enabled);
+        appendLog(`受取人のConnect設定: ${connectReady ? '完了' : '未完了'}`);
+        
+        if (!connectReady) {
+          appendLog('⚠️ この受取人はStripe Connect設定が未完了です');
+        }
+      } else {
+        appendLog('受取人が見つかりませんでした');
+      }
+    } catch (err) {
+      appendLog(`受取人Connect状況確認失敗: ${err}`);
+    } finally {
+      setLoading(false);
+    }
+  }, [testForm.recipient_user_id, appendLog]);
   const setupConnectAccount = useCallback(async () => {
     if (!user) return;
 
@@ -377,24 +410,25 @@ export default function SuperTipProductionTestPage() {
                   value={testForm.recipient_user_id}
                   onChange={(e) => setTestForm(prev => ({ ...prev, recipient_user_id: e.target.value }))}
                   className="flex-1 bg-gray-800 border border-gray-600 rounded px-3 py-2 text-sm font-mono"
-                  placeholder="受取人のユーザーID"
+                  placeholder="Stripe Connect設定済みの他のユーザーのID"
                 />
                 <button
-                  onClick={() => {
-                    if (user?.id) {
-                      setTestForm(prev => ({ ...prev, recipient_user_id: user.id }));
-                      appendLog(`自分のIDを設定: ${user.id}`);
-                    }
-                  }}
-                  disabled={!user?.id}
-                  className="px-3 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white text-sm rounded transition"
+                  onClick={checkRecipientConnectStatus}
+                  disabled={loading || !testForm.recipient_user_id}
+                  className="px-3 py-2 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-600 text-white text-sm rounded transition"
                 >
-                  自分のID
+                  確認
                 </button>
+              </div>
+              <div className="mt-2 text-xs text-amber-300 bg-amber-500/20 border border-amber-500/30 rounded p-2">
+                ⚠️ 注意: 受取人は以下の条件を満たす必要があります<br/>
+                • Stripe Connect設定が完了していること<br/>
+                • あなた自身のIDではないこと（自己送金は禁止）<br/>
+                • 実在するユーザーIDであること
               </div>
               {user?.id && (
                 <div className="mt-1 text-xs text-gray-400">
-                  あなたのID: {user.id}
+                  あなたのID（使用不可）: {user.id}
                 </div>
               )}
             </div>
