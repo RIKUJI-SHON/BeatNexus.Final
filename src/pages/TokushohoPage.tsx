@@ -82,7 +82,7 @@ const TokushohoPage: React.FC = () => {
           <ul className="list-disc pl-5 space-y-1">
             <li>決済形態: Stripe Connect（Express）＋ Destination charges</li>
             <li>受益者: クリエイター（接続アカウント・バトル参加ビートボクサー）</li>
-            <li>プラットフォーム手数料: 既定15%（環境設定により変更される場合があります）</li>
+            <li>プレイヤーへの配分率: 支援額の85%（プラットフォーム運営費15%を除く）</li>
           </ul>
         </section>
 
