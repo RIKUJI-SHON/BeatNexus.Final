@@ -396,6 +396,16 @@
           "id": "身分証明書"
         },
         "dashboardNote": "これらを入力して作成が完了すると、Stripe Expressダッシュボードからご自身の売上額や推移、入金予定日程などを確認できます（ページ上部の「Stripe Express ダッシュボードを開く」からアクセス可能）。"
+      },
+      "receivedTips": {
+        "title": "受け取ったSuper Tips",
+        "refresh": "更新",
+        "refreshing": "更新中...",
+        "noTips": "まだSuper Tipsを受け取っていません",
+        "noTipsDesc": "プレイヤーからの応援を受け取ると、ここに表示されます",
+        "errorPrefix": "エラーが発生しました: ",
+        "loading": "読み込み中...",
+        "receivedAmount": "受取額: ¥{{amount}}"
       }
     },
     "complete": {

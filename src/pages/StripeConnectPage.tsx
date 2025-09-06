@@ -1,8 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { supabase } from '../lib/supabase';
-import { ExternalLink, Loader2, Settings, CheckCircle2, AlertCircle } from 'lucide-react';
+import { ExternalLink, Loader2, Settings, CheckCircle2, AlertCircle, MessageSquare } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useSuperTips } from '../hooks/useSuperTips';
+import { SuperTipCommentCard } from '../components/ui/SuperTipCommentCard';
 
 type JsonValue = string | number | boolean | null | { [key: string]: JsonValue } | JsonValue[];
 
@@ -17,6 +19,9 @@ export default function StripeConnectPage() {
   const [status, setStatus] = useState<JsonValue | null>(null);
   const [, setLogs] = useState<string[]>([]);
   const [, setOnboardingUrl] = useState<string | null>(null);
+  
+  // Super Tips受信履歴のhook
+  const { receivedTips, loading: tipsLoading, error: tipsError, refetch: refetchTips } = useSuperTips();
 
   const appendLog = useCallback((line: string) => {
     const entry = `${new Date().toLocaleTimeString()}  ${line}`;
@@ -290,6 +295,50 @@ export default function StripeConnectPage() {
         </ul>
         <p className="text-xs text-gray-400">{t('superTip.connect.howToStart.dashboardNote')}</p>
       </div>
+
+      {/* Super Tips受信履歴セクション */}
+      {isReceivingReady && (
+        <div className="rounded-lg border border-gray-800 bg-gray-900 p-4 space-y-4">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-r from-yellow-400 to-orange-500 flex items-center justify-center">
+              <MessageSquare className="h-4 w-4 text-black" />
+            </div>
+            <h2 className="text-lg font-semibold">{t('superTip.connect.receivedTips.title')}</h2>
+            <button
+              onClick={refetchTips}
+              disabled={tipsLoading}
+              className="ml-auto px-3 py-1 text-xs bg-gray-700 hover:bg-gray-600 rounded transition disabled:opacity-50"
+            >
+              {tipsLoading ? t('superTip.connect.receivedTips.refreshing') : t('superTip.connect.receivedTips.refresh')}
+            </button>
+          </div>
+
+          {tipsError ? (
+            <div className="text-center py-4 text-red-400">
+              <p>{t('superTip.connect.receivedTips.errorPrefix')}{tipsError}</p>
+            </div>
+          ) : tipsLoading ? (
+            <div className="flex items-center justify-center py-8">
+              <div className="flex items-center gap-3 text-gray-400">
+                <Loader2 className="w-5 h-5 animate-spin" />
+                {t('superTip.connect.receivedTips.loading')}
+              </div>
+            </div>
+          ) : receivedTips.length === 0 ? (
+            <div className="text-center py-8 text-gray-400">
+              <MessageSquare className="h-12 w-12 mx-auto mb-3 opacity-50" />
+              <p>{t('superTip.connect.receivedTips.noTips')}</p>
+              <p className="text-sm mt-1">{t('superTip.connect.receivedTips.noTipsDesc')}</p>
+            </div>
+          ) : (
+            <div className="space-y-3 max-h-96 overflow-y-auto">
+              {receivedTips.map((tip) => (
+                <SuperTipCommentCard key={tip.id} superTip={tip} />
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
   {/* ステータス/ログの可視化は行わない（内部的には初回ロードで取得） */}
       </div>
