@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Upload, X, CheckCircle, Video, AlertCircle, Mic, ArrowLeft, Settings } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
@@ -108,7 +108,7 @@ const PostPage: React.FC = () => {
   const { t } = useTranslation();
   const { canSubmit, remainingTime, cooldownInfo, refreshCooldown } = useSubmissionCooldown();
   const { submissionStatus } = useSubmissionStatus();
-  const { uploadVideo } = useStreamUpload();
+  const { uploadVideo, isUploading, progress: uploadProgress, uploadStage } = useStreamUpload();
   
   // 投稿モーダルの状態
   const [isSubmissionModalOpen, setIsSubmissionModalOpen] = useState(false);
@@ -116,6 +116,20 @@ const PostPage: React.FC = () => {
   const [submissionStage, setSubmissionStage] = useState<string>('');
   const [submissionError, setSubmissionError] = useState<string | null>(null);
   const [isSubmissionProcessing, setIsSubmissionProcessing] = useState(false);
+  
+  // アップロード進捗を監視
+  useEffect(() => {
+    if (isUploading && uploadProgress > 0) {
+      // アップロード進捗を10-70%の範囲で表示
+      const normalizedProgress = 10 + (uploadProgress * 0.6);
+      setSubmissionProgress(Math.min(normalizedProgress, 70));
+      
+      // uploadStageがあれば表示
+      if (uploadStage) {
+        setSubmissionStage(uploadStage);
+      }
+    }
+  }, [isUploading, uploadProgress, uploadStage]);
   
   // Redirect if not authenticated
   if (!user) {
@@ -223,7 +237,7 @@ const PostPage: React.FC = () => {
       }
       
       setSubmissionStage(t('submissionModal.uploading'));
-      setSubmissionProgress(65);
+      setSubmissionProgress(10);
 
       let publicUrl: string | null = null;
       let streamVideoId: string | null = null;
@@ -231,6 +245,7 @@ const PostPage: React.FC = () => {
       try {
         console.log(`🔄 Starting Stream upload for ${videoFile.name}`);
         streamVideoId = await uploadVideo(videoFile, battleFormat);
+        
         setSubmissionStage('Cloudflare Stream: Upload completed');
         setSubmissionProgress(75);
         // 明示的に直リンクは使わないことを示す（RPCのオーバーロード曖昧性回避のため）
@@ -238,7 +253,7 @@ const PostPage: React.FC = () => {
       } catch (e) {
         console.warn('Stream upload failed, falling back to Supabase Storage:', e);
         setSubmissionStage('Falling back to Supabase Storage');
-        setSubmissionProgress(65);
+        setSubmissionProgress(10);
 
         const fileExt = videoFile.name.split('.').pop();
         const fileName = `${crypto.randomUUID()}.${fileExt}`;
@@ -255,6 +270,7 @@ const PostPage: React.FC = () => {
           .from('videos')
           .getPublicUrl(filePath);
         publicUrl = url;
+        setSubmissionProgress(75);
       }
 
       setSubmissionStage(t('submissionModal.creating'));
