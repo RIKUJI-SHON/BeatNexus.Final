@@ -1526,7 +1526,8 @@
     },
     "success": {
       "title": "Video Submitted Successfully!",
-      "description": "Your video has been uploaded and will be matched with another beatboxer soon. We'll notify you when your battle goes live."
+      "description": "Your video has been uploaded and will be matched with another beatboxer soon. We'll notify you when your battle goes live.",
+      "snsEncouragement": "Upload your video to SNS with hashtags #BeatNexus #BNS1 to help hype up Season 1!"
     },
     "submission": {
       "cooldown": {

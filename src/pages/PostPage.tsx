@@ -784,9 +784,16 @@ const PostPage: React.FC = () => {
                     <h2 className="text-2xl sm:text-3xl font-bold text-slate-50 mb-3">
                       {t('postPage.success.title')}
                     </h2>
-                    <p className="text-slate-400 mb-8 text-base max-w-md mx-auto">
+                    <p className="text-slate-400 mb-4 text-base max-w-md mx-auto">
                       {t('postPage.success.description')}
                     </p>
+                    
+                    {/* SNS投稿促進メッセージ */}
+                    <div className="bg-gradient-to-r from-cyan-500/10 to-purple-500/10 border border-cyan-500/30 rounded-lg p-4 mb-8 max-w-lg mx-auto">
+                      <p className="text-cyan-200 text-sm font-medium">
+                        {t('postPage.success.snsEncouragement')}
+                      </p>
+                    </div>
                     
                     <div className="flex flex-col sm:flex-row justify-center gap-4">
                       <Button

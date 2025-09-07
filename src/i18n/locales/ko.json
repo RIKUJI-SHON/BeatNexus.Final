@@ -1314,7 +1314,8 @@
     },
     "success": {
       "title": "동영상이 성공적으로 제출되었습니다!",
-      "description": "동영상이 업로드되었으며 곧 다른 비트박서와 매칭됩니다. 배틀 시작 시 알림을 보내드릴게요."
+      "description": "동영상이 업로드되었으며 곧 다른 비트박서와 매칭됩니다. 배틀 시작 시 알림을 보내드릴게요.",
+      "snsEncouragement": "#BeatNexus #BNS1 해시태그를 사용해서 방금 투고한 동영상을 SNS에 업로드하고 Season 1을 더욱 화제로 만들어보자!"
     },
     "submission": {
       "cooldown": {
