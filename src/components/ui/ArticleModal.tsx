@@ -164,10 +164,18 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({ news, isOpen, onClos
               </div>
             )}
 
-            {/* Markdown記事本文 */}
+            {/* 記事本文（HTMLまたはMarkdown） */}
             {news.article_content && (
               <div className="prose prose-invert prose-sm sm:prose-base max-w-none space-y-4">
-                {renderMarkdown(news.article_content)}
+                {/* HTMLタグが含まれている場合はdangerouslySetInnerHTMLを使用 */}
+                {news.article_content.includes('<') ? (
+                  <div 
+                    dangerouslySetInnerHTML={{ __html: news.article_content }}
+                    className="article-content space-y-4"
+                  />
+                ) : (
+                  renderMarkdown(news.article_content)
+                )}
               </div>
             )}
 

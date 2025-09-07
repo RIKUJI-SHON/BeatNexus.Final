@@ -2136,3 +2136,81 @@ video {
 @media (max-width: 767.98px) {
   .supertip-badge { display: none !important; }
 }
+
+/* Article content styles for HTML rendering */
+.article-content {
+  color: #d1d5db; /* gray-300 */
+}
+
+.article-content h1 {
+  color: #ffffff;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.article-content h2 {
+  color: #ffffff;
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.article-content h3 {
+  color: #ffffff;
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.article-content p {
+  color: #d1d5db; /* gray-300 */
+  margin-bottom: 1rem;
+  line-height: 1.75;
+}
+
+.article-content ul {
+  color: #d1d5db; /* gray-300 */
+  margin-bottom: 1rem;
+}
+
+.article-content li {
+  color: #d1d5db; /* gray-300 */
+  margin-bottom: 0.5rem;
+}
+
+.article-content strong {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.article-content .bg-gradient-to-r {
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  color: #ffffff;
+}
+
+.article-content .bg-gray-800 {
+  border-radius: 0.5rem;
+  padding: 1rem;
+}
+
+.article-content .text-center {
+  text-align: center;
+}
+
+.article-content .text-cyan-400 {
+  color: #22d3ee;
+}
+
+.article-content .text-green-400 {
+  color: #4ade80;
+}
+
+.article-content .text-amber-400 {
+  color: #fbbf24;
+}
+
+.article-content .text-gray-300 {
+  color: #d1d5db;
+}
