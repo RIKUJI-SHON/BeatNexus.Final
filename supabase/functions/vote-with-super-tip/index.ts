@@ -221,6 +221,30 @@ serve(async (req) => {
       });
     }
 
+    // Create notification for recipient
+    const { data: senderProfile } = await supabase
+      .from('profiles')
+      .select('username')
+      .eq('id', body.sender_user_id)
+      .single();
+    
+    const senderName = senderProfile?.username || '匿名ユーザー';
+    const { error: notificationErr } = await supabase
+      .from('notifications')
+      .insert({
+        user_id: body.recipient_user_id,
+        title: 'Super Tipを受け取りました',
+        message: `${senderName}さんから${body.amount_jpy}円のSuper Tipを受け取りました。Stripe設定を確認してください。`,
+        type: 'super_tip_received',
+        related_super_tip_id: tip.id,
+        is_read: false,
+      });
+    
+    if (notificationErr) {
+      console.error('Failed to create notification:', notificationErr);
+      // 通知作成失敗はSuper Tipの処理を止めない
+    }
+
   // 推奨の戻り先URL（3Dセキュアなどリダイレクト発生時に必須）
   // 開発環境では https://localhost:3000 が未設定で SSL エラーになることがあるため、
   // まずはリクエストの Origin/Referer を優先し、取得できない場合のみ FRONTEND_URL を使用する。

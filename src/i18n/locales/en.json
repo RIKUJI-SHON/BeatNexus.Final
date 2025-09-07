@@ -1505,9 +1505,12 @@
       "ensureAudioQuality": "Ensure clear audio quality",
       "faceOptional": "Showing your face is optional, but mouth area is recommended",
       "noBackgroundMusic": "No background music or backing tracks",
+      "includeGreeting": "Must include greeting with \"BeatNexus Season 1\" and \"Player Name\" at the start of video",
       "agreeGuidelines": "I have read and agree to the Video Submission Guidelines",
       "understandFacePolicy": "I understand that showing my face is optional, and showing my mouth area is recommended",
-      "confirmOwnPerformance": "I confirm this is my own performance and does not contain prohibited content"
+      "confirmOwnPerformance": "I confirm this is my own performance and does not contain prohibited content",
+      "confirmGreeting": "I have included a greeting with \"BeatNexus Season 1\" and \"Player Name\" at the start of my video",
+      "allowSNSUsage": "I agree that the submitted video may be edited, published, and reused on YouTube, SNS, and other media for promotional purposes of this service."
     },
     "buttons": {
       "cancel": "Cancel",

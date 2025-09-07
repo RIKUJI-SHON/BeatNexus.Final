@@ -1294,7 +1294,8 @@
       "noBackgroundMusic": "No background music or backing tracks",
       "agreeGuidelines": "I have read and agree to the Video Submission Guidelines",
       "understandFacePolicy": "I understand that showing my face is optional, and showing my mouth area is recommended",
-      "confirmOwnPerformance": "I confirm this is my own performance and does not contain prohibited content"
+      "confirmOwnPerformance": "I confirm this is my own performance and does not contain prohibited content",
+      "allowSNSUsage": "J'accepte que la vidéo soumise puisse être éditée, publiée et réutilisée sur YouTube, les réseaux sociaux et autres médias à des fins promotionnelles de ce service."
     },
     "buttons": {
       "cancel": "Cancel",

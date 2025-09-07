@@ -1538,9 +1538,12 @@
       "ensureAudioQuality": "クリアな音質を確保してください",
       "faceOptional": "顔出しは任意ですが、口元の表示を推奨",
       "noBackgroundMusic": "背景音楽やバッキングトラックは禁止",
+      "includeGreeting": "動画冒頭で「BeatNexus Season 1」と「プレイヤー名」を含む挨拶を必ず行う",
       "agreeGuidelines": "動画投稿ガイドラインを読み、同意します",
       "understandFacePolicy": "顔出しは任意で、口元の表示が推奨されることを理解しています",
-      "confirmOwnPerformance": "これは私自身のパフォーマンスであり、禁止されたコンテンツは含まれていません"
+      "confirmOwnPerformance": "これは私自身のパフォーマンスであり、禁止されたコンテンツは含まれていません",
+      "confirmGreeting": "動画冒頭で「BeatNexus Season 1」と「プレイヤー名」を含む挨拶を行いました",
+      "allowSNSUsage": "投稿した動画を、当サービスのプロモーション等の目的で、YouTubeやSNSその他メディアで編集・公開・二次利用することに同意します"
     },
     "buttons": {
       "cancel": "キャンセル",

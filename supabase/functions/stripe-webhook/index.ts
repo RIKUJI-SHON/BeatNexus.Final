@@ -95,7 +95,7 @@ serve(async (req) => {
           .from('super_tips')
           .update({ payment_status: 'succeeded', transfer_status: 'paid', completed_at: new Date().toISOString() })
           .eq('stripe_payment_intent_id', pi.id)
-          .select('id, battle_id, sender_user_id, vote, comment, amount_jpy');
+          .select('id, battle_id, sender_user_id, recipient_user_id, vote, comment, amount_jpy');
 
         // 2) 投票付きの場合は battle_votes に反映（投票が未作成なら作成）
         const tip = Array.isArray(tipRows) && tipRows.length > 0 ? tipRows[0] : null;
@@ -114,14 +114,81 @@ serve(async (req) => {
             console.error('apply_supertip_vote RPC error', rpcErr);
           }
         }
+
+        // 3) Update or create notification for successful payment
+        if (tip) {
+          const { data: senderProfile } = await supabase
+            .from('profiles')
+            .select('username')
+            .eq('id', tip.sender_user_id)
+            .single();
+          
+          const senderName = senderProfile?.username || '匿名ユーザー';
+          
+          // Check if notification already exists
+          const { data: existingNotification } = await supabase
+            .from('notifications')
+            .select('id')
+            .eq('related_super_tip_id', tip.id)
+            .eq('type', 'super_tip_received')
+            .single();
+          
+          if (existingNotification) {
+            // Update existing notification
+            await supabase
+              .from('notifications')
+              .update({
+                title: 'Super Tipの支払いが完了しました',
+                message: `${senderName}さんから${tip.amount_jpy}円のSuper Tipの支払いが完了しました。`,
+                updated_at: new Date().toISOString(),
+              })
+              .eq('id', existingNotification.id);
+          } else {
+            // Create new notification if it doesn't exist
+            await supabase
+              .from('notifications')
+              .insert({
+                user_id: tip.recipient_user_id,
+                title: 'Super Tipの支払いが完了しました',
+                message: `${senderName}さんから${tip.amount_jpy}円のSuper Tipの支払いが完了しました。`,
+                type: 'super_tip_received',
+                related_super_tip_id: tip.id,
+                is_read: false,
+              });
+          }
+        }
         break;
       }
       case 'payment_intent.payment_failed': {
         const pi = event.data.object;
-        await supabase
+        const { data: tipRows } = await supabase
           .from('super_tips')
           .update({ payment_status: 'failed' })
-          .eq('stripe_payment_intent_id', pi.id);
+          .eq('stripe_payment_intent_id', pi.id)
+          .select('id, sender_user_id, recipient_user_id, amount_jpy');
+
+        // Update notification for failed payment
+        const tip = Array.isArray(tipRows) && tipRows.length > 0 ? tipRows[0] : null;
+        if (tip) {
+          const { data: senderProfile } = await supabase
+            .from('profiles')
+            .select('username')
+            .eq('id', tip.sender_user_id)
+            .single();
+          
+          const senderName = senderProfile?.username || '匿名ユーザー';
+          
+          // Update notification if exists
+          await supabase
+            .from('notifications')
+            .update({
+              title: 'Super Tipの支払いが失敗しました',
+              message: `${senderName}さんからの${tip.amount_jpy}円のSuper Tipの支払いが失敗しました。`,
+              updated_at: new Date().toISOString(),
+            })
+            .eq('related_super_tip_id', tip.id)
+            .eq('type', 'super_tip_received');
+        }
         break;
       }
       case 'account.updated': {

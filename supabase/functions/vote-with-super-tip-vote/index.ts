@@ -180,6 +180,30 @@ serve(async (req) => {
       return new Response(JSON.stringify({ success: false, error: 'TIP_INSERT_FAILED', details: tipErr }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
 
+    // Create notification for recipient
+    const { data: senderProfile } = await supabase
+      .from('profiles')
+      .select('username')
+      .eq('id', body.sender_user_id)
+      .single();
+    
+    const senderName = senderProfile?.username || '匿名ユーザー';
+    const { error: notificationErr } = await supabase
+      .from('notifications')
+      .insert({
+        user_id: body.recipient_user_id,
+        title: 'Super Tipを受け取りました',
+        message: `${senderName}さんから${body.amount_jpy}円のSuper Tipを受け取りました。Stripe設定を確認してください。`,
+        type: 'super_tip_received',
+        related_super_tip_id: tip.id,
+        is_read: false,
+      });
+    
+    if (notificationErr) {
+      console.error('Failed to create notification:', notificationErr);
+      // 通知作成失敗はSuper Tipの処理を止めない
+    }
+
     // Prepare return_url
     let baseUrl = FRONTEND_URL;
   try {

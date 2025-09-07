@@ -101,6 +101,26 @@ const handleSeasonEndNotification = async (notificationData: Notification) => {
   }
 };
 
+// Helper function to handle SuperTip received notifications
+const handleSuperTipReceivedNotification = async (notificationData: Notification) => {
+  console.log('💰 [SuperTipReceived] handleSuperTipReceivedNotification called:', notificationData);
+  
+  try {
+    // Stripe受け取り設定ページにリダイレクト
+    window.location.href = '/profile/stripe-connect';
+    
+    // 通知をDBから削除
+    if (notificationData.id) {
+      console.log('🗑️ [NotificationStore] Deleting super tip received notification from database');
+      const { deleteNotification } = useNotificationStore.getState();
+      await deleteNotification(notificationData.id);
+      console.log('✅ [NotificationStore] Super tip received notification deleted from database');
+    }
+  } catch (error) {
+    console.error('❌ [SuperTipReceived] Error handling super tip received notification:', error);
+  }
+};
+
 // Helper function to handle battle matched notifications
 const handleBattleMatchedNotification = async (notificationData: Notification) => {
   console.log('⚡ [BattleMatchedModal] handleBattleMatchedNotification called:', notificationData);
@@ -307,12 +327,13 @@ export interface Notification {
   id: string;
   title: string;
   message: string;
-  type: 'info' | 'success' | 'warning' | 'battle_matched' | 'battle_win' | 'battle_lose' | 'battle_draw' | 'season_start' | 'season_end' | 'news_article' | 'reward_earned';
+  type: 'info' | 'success' | 'warning' | 'battle_matched' | 'battle_win' | 'battle_lose' | 'battle_draw' | 'season_start' | 'season_end' | 'news_article' | 'reward_earned' | 'super_tip_received';
   isRead: boolean;
   relatedBattleId?: string;
   relatedSeasonId?: string; // 新シーズン用
   relatedSiteNewsId?: string; // 追加: site_news 記事参照
   relatedRewardId?: string; // 追加: rewards 参照
+  relatedSuperTipId?: string; // 追加: super_tips 参照
   createdAt: Date;
   updatedAt: Date;
 }
@@ -478,6 +499,7 @@ export const useNotificationStore = create<NotificationState>()(
             relatedSeasonId: item.related_season_id,
             relatedSiteNewsId: item.related_site_news_id,
             relatedRewardId: item.related_reward_id,
+            relatedSuperTipId: item.related_super_tip_id,
             createdAt: new Date(item.created_at),
             updatedAt: new Date(item.updated_at),
           }));
@@ -556,6 +578,17 @@ export const useNotificationStore = create<NotificationState>()(
             console.log('🏁 [NotificationStore] Pending season end found on initial fetch, showing modal');
             await handleSeasonEndNotification(pendingSeasonEnd);
           }
+
+          // 💰 SuperTip受信通知があればStripe設定ページにリダイレクト
+          const pendingSuperTipReceived = notifications.find(
+            (n) => !n.isRead && n.type === 'super_tip_received'
+          );
+
+          if (pendingSuperTipReceived) {
+            console.log('💰 [NotificationStore] Pending super tip received found on initial fetch, redirecting to Stripe settings');
+            await handleSuperTipReceivedNotification(pendingSuperTipReceived);
+          }
+
           // 🏅 報酬獲得通知があればモーダルを表示
           const pendingRewardEarned = notifications.find(
             (n) => !n.isRead && n.type === 'reward_earned' && !!n.relatedRewardId

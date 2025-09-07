@@ -1293,9 +1293,12 @@
       "ensureAudioQuality": "오디오를 선명하게 유지하세요",
       "faceOptional": "얼굴 노출은 선택사항이며, 입 부분 노출을 권장합니다",
       "noBackgroundMusic": "배경음악 및 반주 트랙 금지",
+      "includeGreeting": "동영상 시작 부분에 \"BeatNexus Season 1\"와 \"플레이어 이름\"을 포함한 인사말을 반드시 포함",
       "agreeGuidelines": "동영상 제출 가이드라인을 읽고 동의합니다",
       "understandFacePolicy": "얼굴 노출은 선택사항이며 입 부분 노출 권장 정책에 동의합니다",
-      "confirmOwnPerformance": "본인의 공연이며 금지된 콘텐츠가 없음을 확인합니다"
+      "confirmOwnPerformance": "본인의 공연이며 금지된 콘텐츠가 없음을 확인합니다",
+      "confirmGreeting": "동영상 시작 부분에 \"BeatNexus Season 1\"와 \"플레이어 이름\"을 포함한 인사말을 했습니다",
+      "allowSNSUsage": "제출한 동영상을 당 서비스의 프로모션 목적으로 YouTube, SNS 및 기타 미디어에서 편집, 게시, 재사용하는 것에 동의합니다"
     },
     "buttons": {
       "cancel": "취소",
