@@ -1,7 +1,8 @@
 # BeatNexus シンプル広告配信システム 完全仕様書
 
 **作成日**: 2025年8月21日  
-**バージョン**: 1.0  
+**バージョン**: 2.1  
+**最終更新**: 2025年9月7日（インプレッション計測基準をIAB標準に準拠）  
 **対象**: 運営チーム・開発チーム・広告運用担当者  
 **システム名**: BeatNexus Simple Ad Delivery System
 
@@ -564,7 +565,7 @@ POST https://{project-id}.supabase.co/functions/v1/ad-track
 ### 4.5 計測ロジック
 
 1. **フロントエンド計測**:
-   - **IntersectionObserver**: 閾値≥0.5、連続可視時間≥300msでインプレッション検知
+   - **IntersectionObserver**: 閾値≥0.5、連続可視時間≥1000msでインプレッション検知（IAB標準準拠）
    - **クリックハンドラー**: リンククリック時の即座計測
    - **重複防止**: 同一トークン+セッションでの1回のみ計測保証
    
@@ -632,7 +633,7 @@ interface AdSlotProps {
   enableTracking?: boolean;                // 計測機能の有効/無効（デフォルト: true）
   trackingOptions?: {                      // 計測オプション
     impressionThreshold?: number;          // インプレッション閾値（デフォルト: 0.5）
-    impressionDelay?: number;              // 可視時間閾値（デフォルト: 300ms）
+    impressionDelay?: number;              // 可視時間閾値（デフォルト: 1000ms - IAB標準）
     batchSize?: number;                    // バッチサイズ（デフォルト: 5）
     batchDelay?: number;                   // バッチ送信間隔（デフォルト: 2000ms）
   };
@@ -1351,6 +1352,11 @@ WHERE relname LIKE '%ad_stats%';
 - **自動異常検知**: pg_cron による定期実行とアラート機能
 - **React ダッシュボード**: TypeScript ベースの管理画面コンポーネント
 - **包括的ドキュメント**: 計測・分析・運用に関する詳細仕様追加
+
+### v2.1 (2025-09-07) - IAB Standard Compliance
+- **インプレッション計測基準**: 300ms → 1000ms に変更（IAB/MRC標準準拠）
+- **業界標準準拠**: 広告ビューアビリティの国際基準への対応
+- **計測精度向上**: より厳格な「実際に見られた広告」の定義を採用
 
 ### v1.0 (2025-08-23) - Simple Ad System Foundation  
 - **重み付き広告システム**: placement assignment 廃止による簡素化

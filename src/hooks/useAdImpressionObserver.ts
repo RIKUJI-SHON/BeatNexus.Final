@@ -1,5 +1,5 @@
 // useAdImpressionObserver.ts
-// 目的: DOM要素が 50% 以上 300ms 連続可視になったら impression を一度送信する。 (要件 FR-1)
+// 目的: DOM要素が 50% 以上 1000ms 連続可視になったら impression を一度送信する。 (要件 FR-1, IAB標準準拠)
 // シンプル化: 要素が外れたらタイマーリセット。複雑な部分 (部分的な断続) は MVP では扱わない。
 
 import { useEffect, useRef } from 'react';
@@ -78,7 +78,7 @@ export function useAdImpressionObserver(params: Params) {
       dbg('observe', { ratio });
       
       if (ratio >= 0.5) {
-        // 開始: まだタイマーが無ければセット (300ms)
+        // 開始: まだタイマーが無ければセット (1000ms - 業界標準準拠)
         if (timerRef.current == null) {
           dbg('>=0.5 start timer');
           timerRef.current = window.setTimeout(() => {
@@ -92,7 +92,7 @@ export function useAdImpressionObserver(params: Params) {
               sentRef.current = true;
               onSent?.();
             }
-          }, 300);
+          }, 1000);
         }
       } else {
         // 50% 未満に落ちたらタイマー解除
