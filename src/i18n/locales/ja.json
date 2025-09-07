@@ -350,7 +350,18 @@
     "settingsCard": {
       "title": "Super Tip受け取り設定",
       "description": "Super Tip（応援チップ）を受け取るための設定やダッシュボードの確認ができます。",
-      "openSettings": "設定ページを開く"
+      "openSettings": "設定ページを開く",
+      "status": {
+        "ready": "受け取り準備完了",
+        "needSetup": "設定が必要です",
+        "checking": "確認中...",
+        "error": "確認できませんでした"
+      },
+      "statusDescription": {
+        "ready": "Super Tipの受け取りが可能な状態です。",
+        "needSetup": "Stripe Connectの設定を完了してください。",
+        "error": "設定状況を確認できませんでした。設定ページで詳細をご確認ください。"
+      }
     },
     "connect": {
       "headTitle": "Super Tip 受け取り設定 | BeatNexus",

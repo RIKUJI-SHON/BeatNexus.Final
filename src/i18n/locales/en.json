@@ -59,7 +59,18 @@
     "settingsCard": {
       "title": "Super Tip Receiving Settings",
       "description": "Configure and access your dashboard to receive Super Tips (support tips).",
-      "openSettings": "Open Settings Page"
+      "openSettings": "Open Settings Page",
+      "status": {
+        "ready": "Ready to Receive",
+        "needSetup": "Setup Required",
+        "checking": "Checking...",
+        "error": "Could not verify"
+      },
+      "statusDescription": {
+        "ready": "You can receive Super Tips.",
+        "needSetup": "Please complete Stripe Connect setup.",
+        "error": "Could not check setup status. Please check details on the settings page."
+      }
     },
     "connect": {
       "headTitle": "Super Tip Receiving Settings | BeatNexus",
