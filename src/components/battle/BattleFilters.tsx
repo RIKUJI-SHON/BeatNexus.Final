@@ -5,14 +5,16 @@ import { useAuthStore } from '../../store/authStore';
 import { useTranslation } from 'react-i18next';
 
 interface BattleFiltersProps {
-  sortBy: 'recent' | 'trending' | 'ending' | 'completed' | null;
-  setSortBy: (sort: 'recent' | 'trending' | 'ending' | 'completed' | null) => void;
+  sortBy: 'recent' | 'trending' | 'ending' | null;
+  setSortBy: (sort: 'recent' | 'trending' | 'ending' | null) => void;
   searchQuery: string;
   setSearchQuery: (query: string) => void;
   showMyBattlesOnly: boolean;
   setShowMyBattlesOnly: (show: boolean) => void;
   showUnvotedOnly: boolean; // 新規: 未投票のみ
   setShowUnvotedOnly: (show: boolean) => void; // 新規 setter
+  showCompletedBattles: boolean; // 新規: 完了済み表示
+  setShowCompletedBattles: (show: boolean) => void; // 新規 setter
   isLoggedIn: boolean;
 }
 
@@ -25,6 +27,8 @@ export const BattleFilters: React.FC<BattleFiltersProps> = ({
   setShowMyBattlesOnly,
   showUnvotedOnly,
   setShowUnvotedOnly,
+  showCompletedBattles,
+  setShowCompletedBattles,
   isLoggedIn,
 }) => {
   const { t } = useTranslation();
@@ -51,12 +55,6 @@ export const BattleFilters: React.FC<BattleFiltersProps> = ({
       label: t('battleFilters.trending'),
       colors: 'from-purple-500 to-pink-500', // 人気を表現する紫ピンク
     },
-    {
-      key: 'completed',
-      icon: <Archive className="h-3 w-3" />,
-      label: t('battleFilters.completed'),
-      colors: 'from-green-500 to-emerald-500',
-    }
   ];
 
   const handleRankingClick = () => {
@@ -75,7 +73,7 @@ export const BattleFilters: React.FC<BattleFiltersProps> = ({
     navigate('/tournament');
   };
 
-  const handleSortClick = (sortKey: 'recent' | 'trending' | 'ending' | 'completed') => {
+  const handleSortClick = (sortKey: 'recent' | 'trending' | 'ending') => {
     setSortBy(sortBy === sortKey ? null : sortKey);
   };
 
@@ -217,7 +215,7 @@ export const BattleFilters: React.FC<BattleFiltersProps> = ({
                   {sortButtons.map((button) => (
                     <button
                       key={button.key}
-                      onClick={() => handleSortClick(button.key as 'recent' | 'trending' | 'ending' | 'completed')}
+                      onClick={() => handleSortClick(button.key as 'recent' | 'trending' | 'ending')}
                       className={`px-2.5 py-1.5 rounded-md text-xs font-medium transition-all duration-300 border flex items-center justify-center gap-1 flex-shrink-0 ${
                         sortBy === button.key
                           ? `bg-gradient-to-r ${button.colors} text-white border-transparent`
@@ -229,13 +227,25 @@ export const BattleFilters: React.FC<BattleFiltersProps> = ({
                       <span className="text-xs">{button.label}</span>
                     </button>
                   ))}
+                  {/* Completed toggle (独立) */}
+                  <button
+                    onClick={() => setShowCompletedBattles(!showCompletedBattles)}
+                    className={`px-2.5 py-1.5 rounded-md text-xs font-medium transition-all duration-300 border flex items-center justify-center gap-1 flex-shrink-0 ${
+                      showCompletedBattles
+                        ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white border-transparent'
+                        : 'bg-gray-800/60 text-gray-300 border-gray-600/50 hover:border-green-500/50 hover:text-white'
+                    }`}
+                  >
+                    <Archive className="h-3 w-3" />
+                    <span className="text-xs">{t('battleFilters.completed')}</span>
+                  </button>
                 </div>
               </div>
             </div>
           </div>
 
                 {/* Active Filters Summary */}
-  {(searchQuery || showMyBattlesOnly || showUnvotedOnly) && (
+  {(searchQuery || showMyBattlesOnly || showUnvotedOnly || showCompletedBattles) && (
             <div className="mt-4 pt-3 border-t border-gray-800/50">
             <div className="flex flex-wrap items-center gap-2">
                 <span className="text-xs text-gray-400">{t('battleFilters.activeFilters')}</span>
@@ -257,6 +267,12 @@ export const BattleFilters: React.FC<BattleFiltersProps> = ({
                 <div className="flex items-center gap-1 px-2 py-1 bg-emerald-500/20 text-emerald-300 rounded-md text-xs border border-emerald-500/30">
                   <Check className="h-3 w-3" />
                   {t('battleFilters.unvoted')}
+                </div>
+              )}
+              {showCompletedBattles && (
+                <div className="flex items-center gap-1 px-2 py-1 bg-green-500/20 text-green-300 rounded-md text-xs border border-green-500/30">
+                  <Archive className="h-3 w-3" />
+                  {t('battleFilters.completed')}
                 </div>
               )}
             </div>

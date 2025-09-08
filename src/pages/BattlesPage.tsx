@@ -24,9 +24,10 @@ const BattlesPage: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
-  const [sortBy, setSortBy] = useState<'recent' | 'trending' | 'ending' | 'completed' | null>('ending');
+  const [sortBy, setSortBy] = useState<'recent' | 'trending' | 'ending' | null>('ending');
   const [showMyBattlesOnly, setShowMyBattlesOnly] = useState(false);
   const [showUnvotedOnly, setShowUnvotedOnly] = useState(false); // 新規: 未投票のみ表示
+  const [showCompletedBattles, setShowCompletedBattles] = useState(false); // 新規: 完了済み表示トグル
 
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   // const { setOnboardingModalOpen } = useOnboardingStore(); // 未使用のため一旦コメントアウト（再利用時に復活）
@@ -73,11 +74,6 @@ const BattlesPage: React.FC = () => {
 
   const filteredBattles = useMemo(() => {
     try {
-      // 完了済みフィルターの場合は空の配列を返す（archived_battlesを使用するため）
-      if (sortBy === 'completed') {
-        return [];
-      }
-
       let battleList = [...(battles || [])];
 
       // MY BATTLES フィルター
@@ -159,29 +155,20 @@ const BattlesPage: React.FC = () => {
         );
       }
 
-  // 完了済みフィルターが選択されている場合のソート
-  if (sortBy === 'completed') {
-        return battleList.sort((a, b) => {
-          const aTime = a.archived_at ? new Date(a.archived_at).getTime() : 0;
-          const bTime = b.archived_at ? new Date(b.archived_at).getTime() : 0;
-          return bTime - aTime; // 新しい順（最近完了した順）
-        });
-      }
-
-      // 通常のアーカイブ表示の場合はそのまま返す（archived_atの降順でソート済み）
+      // 常に最近完了順（新しい順）
       return battleList.sort((a, b) => {
         const aTime = a.archived_at ? new Date(a.archived_at).getTime() : 0;
         const bTime = b.archived_at ? new Date(b.archived_at).getTime() : 0;
-        return bTime - aTime;
+        return bTime - aTime; // 新しい順
       });
     } catch (error) {
       console.error('Error in filteredArchivedBattles:', error);
       return [];
     }
-  }, [archivedBattles, searchQuery, showMyBattlesOnly, user, sortBy, currentSeason]);
+  }, [archivedBattles, searchQuery, showMyBattlesOnly, user, currentSeason]);
 
   // ページネーション用の計算
-  const activeBattlesTotalItems = sortBy === 'completed' ? 0 : filteredBattles.length;
+  const activeBattlesTotalItems = showCompletedBattles ? 0 : filteredBattles.length;
   const archivedBattlesTotalItems = filteredArchivedBattles.length;
   
   const activeBattlesTotalPages = Math.ceil(activeBattlesTotalItems / ITEMS_PER_PAGE);
@@ -191,18 +178,18 @@ const BattlesPage: React.FC = () => {
   const endIndex = startIndex + ITEMS_PER_PAGE;
   
   const paginatedActiveBattles = useMemo(
-    () => (sortBy === 'completed' ? [] : filteredBattles.slice(startIndex, endIndex)),
-    [filteredBattles, startIndex, endIndex, sortBy]
+    () => (showCompletedBattles ? [] : filteredBattles.slice(startIndex, endIndex)),
+    [filteredBattles, startIndex, endIndex, showCompletedBattles]
   );
   // ページ内リストへ広告プレースホルダ挿入 (3件ごと) - 配置キー仕様書 27.1
   const battlesWithAds = useMemo(() => {
-    if (sortBy === 'completed') return [];
+  if (showCompletedBattles) return [];
     
     // 3件ごとに広告を挿入するルールを動的生成 (実際の件数まで)
     const adRules = generateBattleAdRules(paginatedActiveBattles.length);
     
     return injectAdSlots(paginatedActiveBattles, adRules);
-  }, [paginatedActiveBattles, sortBy]);
+  }, [paginatedActiveBattles, showCompletedBattles]);
   const paginatedArchivedBattles = filteredArchivedBattles.slice(startIndex, endIndex);
   const archivedWithAds = useMemo(() => {
     const rules = generateArchivedBattleAdRules(paginatedArchivedBattles.length);
@@ -212,7 +199,7 @@ const BattlesPage: React.FC = () => {
   // フィルターが変更されたときにページを1に戻す
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchQuery, sortBy, showMyBattlesOnly, showUnvotedOnly]);
+  }, [searchQuery, sortBy, showMyBattlesOnly, showUnvotedOnly, showCompletedBattles]);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -248,11 +235,13 @@ const BattlesPage: React.FC = () => {
               setShowMyBattlesOnly={setShowMyBattlesOnly}
               showUnvotedOnly={showUnvotedOnly}
               setShowUnvotedOnly={setShowUnvotedOnly}
+              showCompletedBattles={showCompletedBattles}
+              setShowCompletedBattles={setShowCompletedBattles}
               isLoggedIn={!!user}
             />
             
             <div className="space-y-6 mt-8" role="region" aria-label="Battle results">
-              {sortBy !== 'completed' ? (
+              {!showCompletedBattles ? (
                 loading ? (
                   <div role="status" aria-live="polite">
                     <Card className="bg-gray-900 border border-gray-800 p-8 text-center">
@@ -424,7 +413,7 @@ const BattlesPage: React.FC = () => {
                   )
                 )
               ) : (
-                // アーカイブされたバトルの表示（sortBy === 'completed'の場合）
+                // アーカイブされたバトルの表示（showCompletedBattles === true の場合）
                 archiveLoading ? (
                   <Card className="bg-gray-900 border border-gray-800 p-8 text-center">
                     <div className="animate-spin w-12 h-12 border-4 border-purple-500 border-t-transparent rounded-full mx-auto mb-4" aria-hidden="true"></div>
