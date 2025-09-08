@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { ExternalLink, Loader2, Settings, CheckCircle2, AlertCircle, MessageSquare } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -13,6 +14,8 @@ const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
 
 export default function StripeConnectPage() {
   const { t } = useTranslation();
+  const location = useLocation();
+  const navigate = useNavigate();
   const [user, setUser] = useState<Awaited<ReturnType<typeof supabase.auth.getUser>>['data']['user']>(null);
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -39,6 +42,29 @@ export default function StripeConnectPage() {
     };
     init();
   }, []);
+
+  // URLパラメータ処理（リダイレクトループ対策）
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    
+    // refresh=true や success=true などのパラメータが存在する場合、URLをクリーンアップ
+    if (searchParams.has('refresh') || searchParams.has('success') || searchParams.has('error')) {
+      // パラメータをログに記録（ローカル処理）
+      const timestamp = new Date().toLocaleTimeString();
+      if (searchParams.has('success')) {
+        console.log(`${timestamp} Stripe オンボーディング完了`);
+      }
+      if (searchParams.has('refresh')) {
+        console.log(`${timestamp} Stripe オンボーディング更新`);
+      }
+      if (searchParams.has('error')) {
+        console.log(`${timestamp} Stripe オンボーディングエラー`);
+      }
+      
+      // URLからパラメータを削除してナビゲート（リダイレクトループを防ぐ）
+      navigate('/profile/stripe-connect', { replace: true });
+    }
+  }, [location.search, navigate]);
 
   const isAuthed = !!user && !!accessToken;
 
