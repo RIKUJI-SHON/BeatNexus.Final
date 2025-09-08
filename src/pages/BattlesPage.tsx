@@ -26,6 +26,7 @@ const BattlesPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<'recent' | 'trending' | 'ending' | 'completed' | null>('ending');
   const [showMyBattlesOnly, setShowMyBattlesOnly] = useState(false);
+  const [showUnvotedOnly, setShowUnvotedOnly] = useState(false); // 新規: 未投票のみ表示
 
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   // const { setOnboardingModalOpen } = useOnboardingStore(); // 未使用のため一旦コメントアウト（再利用時に復活）
@@ -86,6 +87,11 @@ const BattlesPage: React.FC = () => {
         );
       }
 
+      // 未投票フィルター（ログイン時のみ有効） current_user_voted が true でないものを残す
+      if (showUnvotedOnly && user) {
+        battleList = battleList.filter(battle => battle.current_user_voted !== true);
+      }
+
       // 検索フィルター
       if (searchQuery) {
         battleList = battleList.filter(battle => 
@@ -125,7 +131,7 @@ const BattlesPage: React.FC = () => {
       console.error('Error in filteredBattles:', error);
       return [];
     }
-  }, [battles, sortBy, searchQuery, showMyBattlesOnly, user]);
+  }, [battles, sortBy, searchQuery, showMyBattlesOnly, showUnvotedOnly, user]);
 
   // アクティブシーズンが無い場合、最新の終了シーズンのアーカイブのみを投票数順で表示する
   const filteredArchivedBattles = useMemo(() => {
@@ -206,7 +212,7 @@ const BattlesPage: React.FC = () => {
   // フィルターが変更されたときにページを1に戻す
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchQuery, sortBy, showMyBattlesOnly]);
+  }, [searchQuery, sortBy, showMyBattlesOnly, showUnvotedOnly]);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -240,6 +246,8 @@ const BattlesPage: React.FC = () => {
               setSearchQuery={setSearchQuery}
               showMyBattlesOnly={showMyBattlesOnly}
               setShowMyBattlesOnly={setShowMyBattlesOnly}
+              showUnvotedOnly={showUnvotedOnly}
+              setShowUnvotedOnly={setShowUnvotedOnly}
               isLoggedIn={!!user}
             />
             

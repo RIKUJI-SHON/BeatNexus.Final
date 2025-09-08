@@ -451,6 +451,8 @@
     "searchTitle": "Username Search",
     "filtersTitle": "Filters & Sort",
     "myBattlesOnly": "My Battles",
+  "unvotedOnly": "Unvoted Only",
+  "unvoted": "Unvoted",
     "activeFilters": "Active Filters:",
     "loading": "Loading...",
     "noRankings": "No Rankings",

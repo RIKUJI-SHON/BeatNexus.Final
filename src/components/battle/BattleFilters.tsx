@@ -1,5 +1,5 @@
 import React from 'react';
-import { Search, SortDesc, Clock, Archive, User, Filter, Play, TrendingUp } from 'lucide-react';
+import { Search, SortDesc, Clock, Archive, User, Filter, Play, TrendingUp, Check } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
 import { useTranslation } from 'react-i18next';
@@ -11,6 +11,8 @@ interface BattleFiltersProps {
   setSearchQuery: (query: string) => void;
   showMyBattlesOnly: boolean;
   setShowMyBattlesOnly: (show: boolean) => void;
+  showUnvotedOnly: boolean; // 新規: 未投票のみ
+  setShowUnvotedOnly: (show: boolean) => void; // 新規 setter
   isLoggedIn: boolean;
 }
 
@@ -21,6 +23,8 @@ export const BattleFilters: React.FC<BattleFiltersProps> = ({
   setSearchQuery,
   showMyBattlesOnly,
   setShowMyBattlesOnly,
+  showUnvotedOnly,
+  setShowUnvotedOnly,
   isLoggedIn,
 }) => {
   const { t } = useTranslation();
@@ -195,6 +199,19 @@ export const BattleFilters: React.FC<BattleFiltersProps> = ({
                       <span className="text-xs">{t('battleFilters.myBattlesOnly')}</span>
                     </button>
                   )}
+                  {isLoggedIn && (
+                    <button
+                      onClick={() => setShowUnvotedOnly(!showUnvotedOnly)}
+                      className={`px-2.5 py-1.5 rounded-md text-xs font-medium transition-all duration-300 border flex items-center justify-center gap-1 flex-shrink-0 ${
+                        showUnvotedOnly
+                          ? 'bg-gradient-to-r from-emerald-500 to-green-500 text-white border-emerald-500/50'
+                          : 'bg-gray-800/60 text-gray-300 border-gray-600/50 hover:border-emerald-500/50 hover:text-white'
+                      }`}
+                    >
+                      <Check className="h-3 w-3" />
+                      <span className="text-xs">{t('battleFilters.unvotedOnly')}</span>
+                    </button>
+                  )}
 
                   {/* Sort Options */}
                   {sortButtons.map((button) => (
@@ -218,7 +235,7 @@ export const BattleFilters: React.FC<BattleFiltersProps> = ({
           </div>
 
                 {/* Active Filters Summary */}
-        {(searchQuery || showMyBattlesOnly) && (
+  {(searchQuery || showMyBattlesOnly || showUnvotedOnly) && (
             <div className="mt-4 pt-3 border-t border-gray-800/50">
             <div className="flex flex-wrap items-center gap-2">
                 <span className="text-xs text-gray-400">{t('battleFilters.activeFilters')}</span>
@@ -234,6 +251,12 @@ export const BattleFilters: React.FC<BattleFiltersProps> = ({
                   <div className="flex items-center gap-1 px-2 py-1 bg-pink-500/20 text-pink-400 rounded-md text-xs border border-pink-500/30">
                   <User className="h-3 w-3" />
                     {t('battleFilters.myBattles')}
+                </div>
+              )}
+              {showUnvotedOnly && (
+                <div className="flex items-center gap-1 px-2 py-1 bg-emerald-500/20 text-emerald-300 rounded-md text-xs border border-emerald-500/30">
+                  <Check className="h-3 w-3" />
+                  {t('battleFilters.unvoted')}
                 </div>
               )}
             </div>
