@@ -136,8 +136,24 @@ const BattlesPage: React.FC = () => {
 
       // アクティブシーズンがない場合は、シーズンに関係なく投票総数の降順で表示
       if (!currentSeason) {
-        battleList.sort((a, b) => ((b.final_votes_a || 0) + (b.final_votes_b || 0)) - ((a.final_votes_a || 0) + (a.final_votes_b || 0)));
-        return battleList;
+        // シーズンなしの場合も sortBy に応じて切替
+        if (sortBy === 'trending') {
+          return battleList.sort((a, b) => ((b.final_votes_a || 0) + (b.final_votes_b || 0)) - ((a.final_votes_a || 0) + (a.final_votes_b || 0)));
+        }
+        if (sortBy === 'ending') {
+          // もっとも古くアーカイブされた順（昇順）
+          return battleList.sort((a, b) => {
+            const aTime = a.archived_at ? new Date(a.archived_at).getTime() : 0;
+            const bTime = b.archived_at ? new Date(b.archived_at).getTime() : 0;
+            return aTime - bTime;
+          });
+        }
+        // recent or default: 新しいアーカイブ順（降順）
+        return battleList.sort((a, b) => {
+          const aTime = a.archived_at ? new Date(a.archived_at).getTime() : 0;
+          const bTime = b.archived_at ? new Date(b.archived_at).getTime() : 0;
+          return bTime - aTime;
+        });
       }
 
       // MY BATTLES フィルター（アーカイブバトル用）
@@ -155,17 +171,28 @@ const BattlesPage: React.FC = () => {
         );
       }
 
-      // 常に最近完了順（新しい順）
+      if (sortBy === 'trending') {
+        return battleList.sort((a, b) => ((b.final_votes_a || 0) + (b.final_votes_b || 0)) - ((a.final_votes_a || 0) + (a.final_votes_b || 0)));
+      }
+      if (sortBy === 'ending') {
+        // もっとも古いアーカイブ（日付昇順）
+        return battleList.sort((a, b) => {
+          const aTime = a.archived_at ? new Date(a.archived_at).getTime() : 0;
+          const bTime = b.archived_at ? new Date(b.archived_at).getTime() : 0;
+          return aTime - bTime;
+        });
+      }
+      // recent or default
       return battleList.sort((a, b) => {
         const aTime = a.archived_at ? new Date(a.archived_at).getTime() : 0;
         const bTime = b.archived_at ? new Date(b.archived_at).getTime() : 0;
-        return bTime - aTime; // 新しい順
+        return bTime - aTime;
       });
     } catch (error) {
       console.error('Error in filteredArchivedBattles:', error);
       return [];
     }
-  }, [archivedBattles, searchQuery, showMyBattlesOnly, user, currentSeason]);
+  }, [archivedBattles, searchQuery, showMyBattlesOnly, user, currentSeason, sortBy]);
 
   // ページネーション用の計算
   const activeBattlesTotalItems = showCompletedBattles ? 0 : filteredBattles.length;
