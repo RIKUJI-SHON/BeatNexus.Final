@@ -252,6 +252,18 @@ const PostPage: React.FC = () => {
         publicUrl = null as unknown as string;
       } catch (e) {
         console.warn('Stream upload failed, falling back to Supabase Storage:', e);
+        // デバッグ用: localStorage.DISABLE_STREAM_FALLBACK === '1' または ?disableStreamFallback=1 でフォールバック抑止
+        let disableFallback = false;
+        try {
+          if (typeof window !== 'undefined') {
+            if (localStorage.getItem('DISABLE_STREAM_FALLBACK') === '1') disableFallback = true;
+            if (window.location.search.includes('disableStreamFallback=1')) disableFallback = true;
+          }
+        } catch { /* noop */ }
+        if (disableFallback) {
+          console.error('[DEBUG] Fallback disabled -> rethrowing original stream upload error');
+          throw e instanceof Error ? e : new Error('Stream upload failed (unknown error)');
+        }
         setSubmissionStage('Falling back to Supabase Storage');
         setSubmissionProgress(10);
 

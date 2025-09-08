@@ -89,6 +89,7 @@ import TokushohoPage from './pages/TokushohoPage';
 import LegalDisclosureEnPage from './pages/LegalDisclosureEnPage';
 import StripeConnectPage from './pages/StripeConnectPage';
 import SuperTipCardPreviewPage from './pages/SuperTipCardPreviewPage';
+import StreamUploadDebugPage from './pages/StreamUploadDebugPage';
 
 // CSS for animations
 import './tailwind.extensions.css';
@@ -151,6 +152,8 @@ function RouterContent() {
             <Route path="/dev/super-tips" element={<DevSuperTipsPage />} />
             <Route path="/dev/super-tips-production-test" element={<SuperTipProductionTestPage />} />
             <Route path="/profile/stripe-connect" element={<StripeConnectPage />} />
+            {/* Debug: Cloudflare Stream upload only (no matchmaking) */}
+            <Route path="/dev/stream-upload-debug" element={<StreamUploadDebugPage />} />
           </Routes>
         </main>
         <Footer />
