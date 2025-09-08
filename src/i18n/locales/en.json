@@ -1349,6 +1349,10 @@
         "performanceTime": {
           "title": "Performance Time: ",
           "value": "1-2 minutes",
+          "mainLabel": "MAIN",
+          "mainValue": "60-120 seconds",
+          "miniLabel": "MINI",
+          "miniValue": "30-60 seconds",
           "description": "Please perform within the specified time frame"
         },
         "performanceFormat": {

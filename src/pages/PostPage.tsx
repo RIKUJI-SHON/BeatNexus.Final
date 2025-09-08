@@ -895,8 +895,34 @@ const PostPage: React.FC = () => {
                         <div className="w-3 h-3 bg-slate-400 rounded-full mt-2 flex-shrink-0"></div>
                         <div>
                           <h4 className="text-lg font-bold text-slate-50 mb-2">
-                            {t('postPage.guidelines.detailed.performanceTime.title')}<span className="text-slate-400">{t('postPage.guidelines.detailed.performanceTime.value')}</span>
+                            {t('postPage.guidelines.detailed.performanceTime.title')}
                           </h4>
+                          {/* MAIN / MINI 形式別時間 */}
+                          {(() => {
+                            const hasSeparated = t('postPage.guidelines.detailed.performanceTime.mainValue', { defaultValue: '' });
+                            if (hasSeparated) {
+                              return (
+                                <div className="mb-2">
+                                  <ul className="text-sm text-slate-300 space-y-1">
+                                    <li>
+                                      <span className="text-cyan-300 font-semibold mr-1">{t('postPage.guidelines.detailed.performanceTime.mainLabel', 'MAIN')}:</span>
+                                      <span className="text-slate-200">{t('postPage.guidelines.detailed.performanceTime.mainValue')}</span>
+                                    </li>
+                                    <li>
+                                      <span className="text-cyan-300 font-semibold mr-1">{t('postPage.guidelines.detailed.performanceTime.miniLabel', 'MINI')}:</span>
+                                      <span className="text-slate-200">{t('postPage.guidelines.detailed.performanceTime.miniValue')}</span>
+                                    </li>
+                                  </ul>
+                                </div>
+                              );
+                            }
+                            // 後方互換（古い value キー）
+                            return (
+                              <div className="mb-2 text-sm text-slate-300">
+                                <span className="text-slate-200">{t('postPage.guidelines.detailed.performanceTime.value')}</span>
+                              </div>
+                            );
+                          })()}
                           <p className="text-sm text-slate-400">{t('postPage.guidelines.detailed.performanceTime.description')}</p>
                         </div>
                       </div>

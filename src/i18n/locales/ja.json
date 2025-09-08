@@ -1418,6 +1418,10 @@
         "performanceTime": {
           "title": "パフォーマンス時間：",
           "value": "1分～2分",
+          "mainLabel": "MAIN",
+          "mainValue": "60〜120秒",
+          "miniLabel": "MINI",
+          "miniValue": "30〜60秒",
           "description": "指定された時間内でパフォーマンスを行ってください"
         },
         "performanceFormat": {
