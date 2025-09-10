@@ -691,7 +691,12 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                 </div>
 
                 {/* Player A Video Preview */}
-                <div ref={playerARef} className="aspect-video bg-black rounded-xl overflow-hidden relative shadow-2xl border-2 z-10" style={{ borderColor: playerColorA }}>
+                <div
+                  ref={playerARef}
+                  data-player="A"
+                  className="aspect-video bg-black rounded-xl overflow-hidden relative shadow-2xl border-2 z-10 isolate"
+                  style={{ borderColor: playerColorA }}
+                >
                   {playerAVideoLoaded ? (
                     <HybridVideoPlayer
                       streamVideoId={battle.stream_video_id_a}
@@ -699,6 +704,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                       controls
                       className="w-full h-full object-contain"
                       muted={isIOSDevice()}
+                      debugTag="A"
                       onError={() => {
                         console.error('Player A video error');
                       }}
@@ -768,7 +774,12 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                 </div>
 
                 {/* Player B Video Preview */}
-                <div ref={playerBRef} className="aspect-video bg-black rounded-xl overflow-hidden relative shadow-2xl border-2 z-10" style={{ borderColor: playerColorB }}>
+                <div
+                  ref={playerBRef}
+                  data-player="B"
+                  className="aspect-video bg-black rounded-xl overflow-hidden relative shadow-2xl border-2 z-10 isolate"
+                  style={{ borderColor: playerColorB }}
+                >
                   {playerBVideoLoaded ? (
                     <HybridVideoPlayer
                       streamVideoId={battle.stream_video_id_b}
@@ -776,6 +787,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                       controls
                       className="w-full h-full object-contain"
                       muted={isIOSDevice()}
+                      debugTag="B"
                       onError={() => {
                         console.error('Player B video error');
                       }}

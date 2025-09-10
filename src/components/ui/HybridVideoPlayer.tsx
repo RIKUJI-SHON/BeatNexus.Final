@@ -20,6 +20,7 @@ interface HybridVideoPlayerProps {
   onPause?: () => void;
   onEnded?: () => void;
   onError?: () => void;
+  debugTag?: string; // 'A' | 'B'
 }
 
 export const HybridVideoPlayer: React.FC<HybridVideoPlayerProps> = ({
@@ -33,6 +34,7 @@ export const HybridVideoPlayer: React.FC<HybridVideoPlayerProps> = ({
   onPause,
   onEnded,
   onError,
+  debugTag,
 }) => {
   // Cloudflare Stream SDK readiness (productionで初回プレイヤーだけコントロールが出ない問題対策)
   const [streamReady, setStreamReady] = useState(!streamVideoId); // 通常動画 or 未指定なら即 ready
@@ -109,6 +111,7 @@ export const HybridVideoPlayer: React.FC<HybridVideoPlayerProps> = ({
         onEnded={onEnded}
         onError={handleStreamError}
         debug={import.meta.env.VITE_DEBUG_STREAM === 'true'}
+  debugTag={debugTag}
       />
     );
   }

@@ -14,6 +14,7 @@ interface StreamVideoPlayerProps {
   onError?: (event: Event) => void;
   className?: string;
   debug?: boolean; // optional debug logging
+  debugTag?: string; // 'A' | 'B' etc.
 }
 
 export const StreamVideoPlayer: React.FC<StreamVideoPlayerProps> = ({
@@ -29,6 +30,7 @@ export const StreamVideoPlayer: React.FC<StreamVideoPlayerProps> = ({
   onError,
   className = '',
   debug = false,
+  debugTag,
 }) => {
   const wrapperRef = useRef<HTMLDivElement | null>(null);
 
@@ -51,6 +53,19 @@ export const StreamVideoPlayer: React.FC<StreamVideoPlayerProps> = ({
     const t2 = setTimeout(() => log('t+1500ms'), 1500);
     return () => { clearTimeout(t1); clearTimeout(t2); };
   }, [debug, videoId]);
+
+  // Attach data attribute to iframe when it appears for easier hit-test diagnostics
+  useEffect(() => {
+    if (!wrapperRef.current) return;
+    const observer = new MutationObserver(() => {
+      const iframe = wrapperRef.current?.querySelector('iframe');
+      if (iframe && debugTag) {
+        iframe.setAttribute('data-player-iframe', debugTag);
+      }
+    });
+    observer.observe(wrapperRef.current, { childList: true, subtree: true });
+    return () => observer.disconnect();
+  }, [debugTag]);
   if (!videoId) {
     return (
       <div className={`flex items-center justify-center bg-gray-900 ${className}`}>
