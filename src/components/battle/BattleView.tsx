@@ -668,7 +668,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                 <div
                   ref={playerARef}
                   data-player="A"
-                  className="aspect-video bg-black rounded-xl overflow-hidden relative shadow-2xl border-2 z-10 isolate"
+                  className="aspect-video bg-black rounded-xl overflow-hidden relative shadow-2xl border-2 z-10 isolate [contain:layout_paint_size]"
                   style={{ borderColor: playerColorA }}
                   onClick={(e) => {
                     if (import.meta.env.VITE_DEBUG_VIDEO_LAYOUT === 'true') {
@@ -749,7 +749,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                 <div
                   ref={playerBRef}
                   data-player="B"
-                  className="aspect-video bg-black rounded-xl overflow-hidden relative shadow-2xl border-2 z-10 isolate"
+                  className="aspect-video bg-black rounded-xl overflow-hidden relative shadow-2xl border-2 z-10 isolate [contain:layout_paint_size]"
                   style={{ borderColor: playerColorB }}
                   onClick={(e) => {
                     if (import.meta.env.VITE_DEBUG_VIDEO_LAYOUT === 'true') {

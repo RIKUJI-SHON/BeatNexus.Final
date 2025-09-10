@@ -43,8 +43,8 @@ export const HybridVideoPlayer: React.FC<HybridVideoPlayerProps> = ({
     return (
       <SimpleCloudflareIframe
         videoId={streamVideoId}
-        autoplay={autoplay}
-        muted={muted}
+        autoplay={false}
+        muted={false}
         controls={controls}
         className={className}
       />
