@@ -509,7 +509,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
     <div className="min-h-screen bg-gradient-to-br from-gray-950 to-gray-900 relative overflow-hidden">
       
       {/* Epic Background Effects */}
-      <div className="absolute inset-0 overflow-hidden">
+  <div className="absolute inset-0 overflow-hidden pointer-events-none select-none">
         {/* Animated Lightning Effects */}
         <div className="absolute top-0 left-1/4 w-1 h-32 bg-gradient-to-b from-cyan-400/50 to-transparent animate-pulse transform rotate-12"></div>
         <div className="absolute top-20 right-1/4 w-1 h-24 bg-gradient-to-b from-pink-400/50 to-transparent animate-pulse transform -rotate-12 delay-500"></div>
@@ -691,7 +691,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                 </div>
 
                 {/* Player A Video Preview */}
-                <div ref={playerARef} className="aspect-video bg-black rounded-xl overflow-hidden relative shadow-2xl border-2" style={{ borderColor: playerColorA }}>
+                <div ref={playerARef} className="aspect-video bg-black rounded-xl overflow-hidden relative shadow-2xl border-2 z-10" style={{ borderColor: playerColorA }}>
                   {playerAVideoLoaded ? (
                     <HybridVideoPlayer
                       streamVideoId={battle.stream_video_id_a}
@@ -768,7 +768,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                 </div>
 
                 {/* Player B Video Preview */}
-                <div ref={playerBRef} className="aspect-video bg-black rounded-xl overflow-hidden relative shadow-2xl border-2" style={{ borderColor: playerColorB }}>
+                <div ref={playerBRef} className="aspect-video bg-black rounded-xl overflow-hidden relative shadow-2xl border-2 z-10" style={{ borderColor: playerColorB }}>
                   {playerBVideoLoaded ? (
                     <HybridVideoPlayer
                       streamVideoId={battle.stream_video_id_b}
