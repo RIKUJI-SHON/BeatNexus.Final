@@ -1,4 +1,10 @@
-import React, { SyntheticEvent } from 'react';
+import React, { SyntheticEvent, useEffect, useRef, useState } from 'react';
+
+// Minimal global interface for Cloudflare Stream SDK detection
+interface CloudflareStreamGlobal {
+  Stream?: unknown; // presence check only
+}
+declare const window: Window & typeof globalThis & CloudflareStreamGlobal;
 import { StreamVideoPlayer } from './StreamVideoPlayer';
 
 interface HybridVideoPlayerProps {
@@ -28,6 +34,48 @@ export const HybridVideoPlayer: React.FC<HybridVideoPlayerProps> = ({
   onEnded,
   onError,
 }) => {
+  // Cloudflare Stream SDK readiness (productionで初回プレイヤーだけコントロールが出ない問題対策)
+  const [streamReady, setStreamReady] = useState(!streamVideoId); // 通常動画 or 未指定なら即 ready
+  const [mountVersion, setMountVersion] = useState(0); // 強制再マウントキー
+  const readyCheckRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (!streamVideoId) return; // Supabase 動画は不要
+
+    // 既に window.Stream があれば即 ready
+  if (typeof window !== 'undefined' && typeof window.Stream !== 'undefined') {
+      setStreamReady(true);
+      return;
+    }
+
+    // ポーリングで SDK ロード完了を検知
+    let elapsed = 0;
+    const interval = 120; // ms
+    const timeoutMs = 4000; // 4秒で諦めて表示 (その後ユーザー interaction で描画されるケースに期待)
+    readyCheckRef.current = window.setInterval(() => {
+      elapsed += interval;
+  if (typeof window.Stream !== 'undefined') {
+        clearInterval(readyCheckRef.current!);
+        readyCheckRef.current = null;
+        setStreamReady(true);
+        // 初回ロード遅延でコントロールが付与されないケースに備えて少し後に強制再マウント
+        setTimeout(() => setMountVersion(v => v + 1), 600);
+      } else if (elapsed >= timeoutMs) {
+        clearInterval(readyCheckRef.current!);
+        readyCheckRef.current = null;
+        setStreamReady(true); // タイムアウト: とりあえず描画
+        // さらに後でもう一度再マウント試行
+        setTimeout(() => setMountVersion(v => v + 1), 1500);
+      }
+    }, interval);
+
+    return () => {
+      if (readyCheckRef.current) {
+        clearInterval(readyCheckRef.current);
+        readyCheckRef.current = null;
+      }
+    };
+  }, [streamVideoId]);
 
   const handleStreamError = (event: Event) => {
     console.error('Stream playback error:', event);
@@ -41,8 +89,16 @@ export const HybridVideoPlayer: React.FC<HybridVideoPlayerProps> = ({
 
   // 新規動画: Stream Player使用
   if (streamVideoId) {
+    if (!streamReady) {
+      return (
+        <div className={`flex items-center justify-center bg-black/60 text-gray-400 text-xs ${className}`}>
+          <span>Loading Player...</span>
+        </div>
+      );
+    }
     return (
       <StreamVideoPlayer
+        key={streamVideoId + ':' + mountVersion}
         videoId={streamVideoId}
         autoplay={autoplay}
         muted={muted}
