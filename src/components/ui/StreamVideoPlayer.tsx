@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import { Stream } from '@cloudflare/stream-react';
 
 interface StreamVideoPlayerProps {
@@ -13,8 +13,6 @@ interface StreamVideoPlayerProps {
   onEnded?: () => void;
   onError?: (event: Event) => void;
   className?: string;
-  debug?: boolean; // optional debug logging
-  debugTag?: string; // 'A' | 'B' etc.
 }
 
 export const StreamVideoPlayer: React.FC<StreamVideoPlayerProps> = ({
@@ -29,43 +27,7 @@ export const StreamVideoPlayer: React.FC<StreamVideoPlayerProps> = ({
   onEnded,
   onError,
   className = '',
-  debug = false,
-  debugTag,
 }) => {
-  const wrapperRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    if (!debug) return;
-    // 遅延して DOM を観測しコントロールが初期化されたか確認
-    const log = (phase: string) => {
-      const el = wrapperRef.current;
-      if (!el) return;
-      const iframe = el.querySelector('iframe');
-      console.debug('[StreamVideoPlayer][debug]', phase, {
-        videoId,
-        hasIframe: !!iframe,
-        iframeSize: iframe ? { w: iframe.clientWidth, h: iframe.clientHeight } : null,
-        children: el.childNodes.length
-      });
-    };
-    log('mount');
-    const t1 = setTimeout(() => log('t+500ms'), 500);
-    const t2 = setTimeout(() => log('t+1500ms'), 1500);
-    return () => { clearTimeout(t1); clearTimeout(t2); };
-  }, [debug, videoId]);
-
-  // Attach data attribute to iframe when it appears for easier hit-test diagnostics
-  useEffect(() => {
-    if (!wrapperRef.current) return;
-    const observer = new MutationObserver(() => {
-      const iframe = wrapperRef.current?.querySelector('iframe');
-      if (iframe && debugTag) {
-        iframe.setAttribute('data-player-iframe', debugTag);
-      }
-    });
-    observer.observe(wrapperRef.current, { childList: true, subtree: true });
-    return () => observer.disconnect();
-  }, [debugTag]);
   if (!videoId) {
     return (
       <div className={`flex items-center justify-center bg-gray-900 ${className}`}>
@@ -73,9 +35,8 @@ export const StreamVideoPlayer: React.FC<StreamVideoPlayerProps> = ({
       </div>
     );
   }
-
   return (
-    <div ref={wrapperRef} className={`relative ${className}`} data-video-id={videoId}>
+    <div className={className} data-video-id={videoId}>
       <Stream
         key={videoId}
         src={videoId}
@@ -90,12 +51,6 @@ export const StreamVideoPlayer: React.FC<StreamVideoPlayerProps> = ({
         onEnded={onEnded}
         onError={onError}
       />
-      {/* Debug overlay (only when debug) */}
-      {debug && (
-        <div className="absolute top-1 left-1 text-[10px] bg-black/60 text-white px-1 rounded pointer-events-none select-none z-20">
-          CF:{videoId.slice(0,8)}
-        </div>
-      )}
     </div>
   );
 };

@@ -1,11 +1,5 @@
-import React, { SyntheticEvent, useEffect, useRef, useState } from 'react';
-
-// Minimal global interface for Cloudflare Stream SDK detection
-interface CloudflareStreamGlobal {
-  Stream?: unknown; // presence check only
-}
-declare const window: Window & typeof globalThis & CloudflareStreamGlobal;
-import { StreamVideoPlayer } from './StreamVideoPlayer';
+import React, { SyntheticEvent } from 'react';
+import { SimpleCloudflareIframe } from './SimpleCloudflareIframe';
 
 interface HybridVideoPlayerProps {
   // 新規: Stream Video ID
@@ -20,7 +14,7 @@ interface HybridVideoPlayerProps {
   onPause?: () => void;
   onEnded?: () => void;
   onError?: () => void;
-  debugTag?: string; // 'A' | 'B'
+  // simplified: removed debugTag / SDK readiness logic
 }
 
 export const HybridVideoPlayer: React.FC<HybridVideoPlayerProps> = ({
@@ -34,86 +28,41 @@ export const HybridVideoPlayer: React.FC<HybridVideoPlayerProps> = ({
   onPause,
   onEnded,
   onError,
-  debugTag,
 }) => {
-  // Cloudflare Stream SDK readiness (productionで初回プレイヤーだけコントロールが出ない問題対策)
-  const [streamReady, setStreamReady] = useState(!streamVideoId); // 通常動画 or 未指定なら即 ready
-  const [mountVersion, setMountVersion] = useState(0); // 強制再マウントキー
-  const readyCheckRef = useRef<number | null>(null);
 
-  useEffect(() => {
-    if (!streamVideoId) return; // Supabase 動画は不要
-
-    // 既に window.Stream があれば即 ready
-  if (typeof window !== 'undefined' && typeof window.Stream !== 'undefined') {
-      setStreamReady(true);
-      return;
-    }
-
-    // ポーリングで SDK ロード完了を検知
-    let elapsed = 0;
-    const interval = 120; // ms
-    const timeoutMs = 4000; // 4秒で諦めて表示 (その後ユーザー interaction で描画されるケースに期待)
-    readyCheckRef.current = window.setInterval(() => {
-      elapsed += interval;
-  if (typeof window.Stream !== 'undefined') {
-        clearInterval(readyCheckRef.current!);
-        readyCheckRef.current = null;
-        setStreamReady(true);
-        // 初回ロード遅延でコントロールが付与されないケースに備えて少し後に強制再マウント
-        setTimeout(() => setMountVersion(v => v + 1), 600);
-      } else if (elapsed >= timeoutMs) {
-        clearInterval(readyCheckRef.current!);
-        readyCheckRef.current = null;
-        setStreamReady(true); // タイムアウト: とりあえず描画
-        // さらに後でもう一度再マウント試行
-        setTimeout(() => setMountVersion(v => v + 1), 1500);
-      }
-    }, interval);
-
-    return () => {
-      if (readyCheckRef.current) {
-        clearInterval(readyCheckRef.current);
-        readyCheckRef.current = null;
-      }
-    };
-  }, [streamVideoId]);
-
-  const handleStreamError = (event: Event) => {
-    console.error('Stream playback error:', event);
-    onError?.();
-  };
+  // （簡略化版ではライブラリプレイヤーを使わないためエラーコールバック簡素化）
 
   const handleVideoError = (event: SyntheticEvent<HTMLVideoElement, Event>) => {
     console.error('Video playback error:', event);
     onError?.();
   };
 
-  // 新規動画: Stream Player使用
+  // Stream video
   if (streamVideoId) {
-    if (!streamReady) {
-      return (
-        <div className={`flex items-center justify-center bg-black/60 text-gray-400 text-xs ${className}`}>
-          <span>Loading Player...</span>
-        </div>
-      );
-    }
+    // ライブラリ版でモバイル端末のタップ伝播問題が出ているため暫定的に iframe 直埋め版を使用
     return (
-      <StreamVideoPlayer
-        key={streamVideoId + ':' + mountVersion}
+      <SimpleCloudflareIframe
         videoId={streamVideoId}
         autoplay={autoplay}
         muted={muted}
         controls={controls}
         className={className}
-        onPlay={onPlay}
-        onPause={onPause}
-        onEnded={onEnded}
-        onError={handleStreamError}
-        debug={import.meta.env.VITE_DEBUG_STREAM === 'true'}
-  debugTag={debugTag}
       />
     );
+    // 元の実装（問題解消後に戻す場合）
+    // return (
+    //   <StreamVideoPlayer
+    //     videoId={streamVideoId}
+    //     autoplay={autoplay}
+    //     muted={muted}
+    //     controls={controls}
+    //     className={className}
+    //     onPlay={onPlay}
+    //     onPause={onPause}
+    //     onEnded={onEnded}
+    //     onError={handleStreamError}
+    //   />
+    // );
   }
 
   // 既存動画: HTML5 video使用

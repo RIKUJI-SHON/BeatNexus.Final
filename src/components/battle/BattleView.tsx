@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Share2, ThumbsUp, MessageCircle, Play, Users, Timer } from 'lucide-react';
+import { Share2, ThumbsUp, MessageCircle, Users, Timer } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 import { VoteCommentModal } from '../ui/VoteCommentModal';
@@ -21,7 +21,7 @@ import { supabase } from '../../lib/supabase';
 import { getDefaultAvatarUrl } from '../../utils';
 import { isIOSDevice } from '../../utils/videoSupport';
 import { HybridVideoPlayer } from '../ui/HybridVideoPlayer';
-import { useIntersectionObserver } from '../../hooks/useIntersectionObserver';
+// (遅延読み込みロジック削除に伴い IntersectionObserver フックは未使用)
 // import { getIOSCompatibleUrl } from '../../utils/iosVideoMapping';
 import { SupportTipModal } from './SupportTipModal';
 import { toast } from '../../store/toastStore';
@@ -56,17 +56,21 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
     playerB: { rating: 1200, loading: true }
   });
   
-  // Phase 3: 遅延読み込み用の状態管理
-  const [playerAVideoLoaded, setPlayerAVideoLoaded] = useState(false);
-  const [playerBVideoLoaded, setPlayerBVideoLoaded] = useState(false);
-  
-  // Intersection Observer用のref
+  // シンプル化: 即時読み込みに変更（遅延ロジック削除）
   const playerARef = useRef<HTMLDivElement>(null);
   const playerBRef = useRef<HTMLDivElement>(null);
-  
-  // ビューポート内にある要素を検知
-  const playerAInView = useIntersectionObserver(playerARef);
-  const playerBInView = useIntersectionObserver(playerBRef);
+  // デバッグ: レイアウト問題調査用 (モバイルでタップがずれる現象)
+  useEffect(() => {
+    if (import.meta.env.VITE_DEBUG_VIDEO_LAYOUT !== 'true') return;
+    const logRects = () => {
+      const a = playerARef.current?.getBoundingClientRect();
+      const b = playerBRef.current?.getBoundingClientRect();
+      console.log('[VIDEO_DEBUG] rect A', a, 'rect B', b, 'viewport', window.innerWidth, window.innerHeight);
+    };
+    logRects();
+    window.addEventListener('resize', logRects);
+    return () => window.removeEventListener('resize', logRects);
+  }, []);
   
 
   
@@ -248,37 +252,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
     fetchBattleComments(battle.id);
   }, [battle.id, getUserVote, fetchBattleComments, isArchived, loadPlayerRatings]);
 
-  // Phase 3: Player A の遅延読み込み制御
-  useEffect(() => {
-    if (playerAInView && !playerAVideoLoaded) {
-      console.log('🎬 Player A is in view, loading video...');
-      setPlayerAVideoLoaded(true);
-    }
-  }, [playerAInView, playerAVideoLoaded]);
-
-  // Phase 3: Player B の遅延読み込み制御（iOS最適化版）
-  useEffect(() => {
-    if (playerBInView && !playerBVideoLoaded) {
-      console.log('🎬 Player B is in view, loading video...');
-      // Cloudflare Stream プレイヤーでは <video> 要素が直接 DOM に存在しない場合があるため
-      // 旧ロジックの readyState ポーリングは機能せず片側が永遠に読み込まれない問題が発生していた。
-      // iOS でも Player A のマウント（playerAVideoLoaded）を確認後、短い遅延で B を解放する簡易方式に変更。
-      if (isIOSDevice()) {
-        if (!playerAVideoLoaded) {
-          console.log('⏳ iOS: waiting Player A mount before loading B...');
-          // Player A がまだなら次のレンダーで再評価
-          return;
-        }
-        setTimeout(() => {
-          console.log('🚀 iOS: loading Player B after short delay');
-          setPlayerBVideoLoaded(true);
-        }, 400); // 体感的に十分な短い遅延
-      } else {
-        console.log('🚀 Non-iOS device detected, loading Player B immediately...');
-        setPlayerBVideoLoaded(true);
-      }
-    }
-  }, [playerBInView, playerBVideoLoaded, playerAVideoLoaded]);
+  // 遅延ロジック削除のため関連 useEffect も削除
 
   // 投票状態を更新（Webhook反映の遅延を考慮して短時間ポーリング）
   const refreshVoteStatus = useCallback(async () => {
@@ -696,27 +670,25 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                   data-player="A"
                   className="aspect-video bg-black rounded-xl overflow-hidden relative shadow-2xl border-2 z-10 isolate"
                   style={{ borderColor: playerColorA }}
+                  onClick={(e) => {
+                    if (import.meta.env.VITE_DEBUG_VIDEO_LAYOUT === 'true') {
+                      console.log('[VIDEO_DEBUG] wrapper click A', { x: e.clientX, y: e.clientY });
+                    }
+                  }}
                 >
-                  {playerAVideoLoaded ? (
-                    <HybridVideoPlayer
-                      streamVideoId={battle.stream_video_id_a}
-                      videoUrl={battle.video_url_a}
-                      controls
-                      className="w-full h-full object-contain"
-                      muted={isIOSDevice()}
-                      debugTag="A"
-                      onError={() => {
-                        console.error('Player A video error');
-                      }}
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-800 to-gray-900">
-                      <div className="text-center text-gray-400">
-                        <Play className="h-16 w-16 mx-auto mb-3 opacity-70" />
-                        <p className="text-sm">Player A 動画読み込み中...</p>
-                      </div>
-                    </div>
+                  {import.meta.env.VITE_DEBUG_VIDEO_LAYOUT === 'true' && (
+                    <div className="absolute top-1 left-1 bg-cyan-600 text-white text-[10px] px-1 z-50 rounded pointer-events-none">A</div>
                   )}
+                  <HybridVideoPlayer
+                    streamVideoId={battle.stream_video_id_a}
+                    videoUrl={battle.video_url_a}
+                    controls
+                    className="w-full h-full object-contain"
+                    muted={isIOSDevice()}
+                    onError={() => {
+                      console.error('Player A video error');
+                    }}
+                  />
                 </div>
               </div>
 
@@ -779,32 +751,25 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                   data-player="B"
                   className="aspect-video bg-black rounded-xl overflow-hidden relative shadow-2xl border-2 z-10 isolate"
                   style={{ borderColor: playerColorB }}
+                  onClick={(e) => {
+                    if (import.meta.env.VITE_DEBUG_VIDEO_LAYOUT === 'true') {
+                      console.log('[VIDEO_DEBUG] wrapper click B', { x: e.clientX, y: e.clientY });
+                    }
+                  }}
                 >
-                  {playerBVideoLoaded ? (
-                    <HybridVideoPlayer
-                      streamVideoId={battle.stream_video_id_b}
-                      videoUrl={battle.video_url_b}
-                      controls
-                      className="w-full h-full object-contain"
-                      muted={isIOSDevice()}
-                      debugTag="B"
-                      onError={() => {
-                        console.error('Player B video error');
-                      }}
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-800 to-gray-900">
-                      <div className="text-center text-gray-400">
-                        <Play className="h-16 w-16 mx-auto mb-3 opacity-70" />
-                        <p className="text-sm">Player B 動画読み込み中...</p>
-                        {isIOSDevice() && (
-                          <p className="text-xs mt-1 text-blue-400">
-                            iOS最適化: Player A読み込み完了後に開始
-                          </p>
-                        )}
-                      </div>
-                    </div>
+                  {import.meta.env.VITE_DEBUG_VIDEO_LAYOUT === 'true' && (
+                    <div className="absolute top-1 left-1 bg-pink-600 text-white text-[10px] px-1 z-50 rounded pointer-events-none">B</div>
                   )}
+                  <HybridVideoPlayer
+                    streamVideoId={battle.stream_video_id_b}
+                    videoUrl={battle.video_url_b}
+                    controls
+                    className="w-full h-full object-contain"
+                    muted={isIOSDevice()}
+                    onError={() => {
+                      console.error('Player B video error');
+                    }}
+                  />
                 </div>
 
                 {/* Player B Name - Below Video on Mobile */}
