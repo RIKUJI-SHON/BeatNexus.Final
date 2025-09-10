@@ -260,32 +260,25 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
   useEffect(() => {
     if (playerBInView && !playerBVideoLoaded) {
       console.log('🎬 Player B is in view, loading video...');
-      
+      // Cloudflare Stream プレイヤーでは <video> 要素が直接 DOM に存在しない場合があるため
+      // 旧ロジックの readyState ポーリングは機能せず片側が永遠に読み込まれない問題が発生していた。
+      // iOS でも Player A のマウント（playerAVideoLoaded）を確認後、短い遅延で B を解放する簡易方式に変更。
       if (isIOSDevice()) {
-        // iOSの場合、Player Aの動画が準備できているか確認
-        const checkPlayerAReady = () => {
-          const playerAVideo = playerARef.current?.querySelector('video');
-          if (playerAVideo && playerAVideo.readyState >= 2) {
-            console.log('✅ Player A is ready (readyState: ' + playerAVideo.readyState + '), loading Player B after 2s delay...');
-            // Player Aが再生可能になってから2秒待つ
-            setTimeout(() => {
-              console.log('🎬 Starting Player B video load...');
-              setPlayerBVideoLoaded(true);
-            }, 2000);
-          } else {
-            console.log('⏳ Player A not ready yet (readyState: ' + (playerAVideo?.readyState || 'N/A') + '), rechecking in 500ms...');
-            // まだ準備できていない場合は再チェック
-            setTimeout(checkPlayerAReady, 500);
-          }
-        };
-        checkPlayerAReady();
+        if (!playerAVideoLoaded) {
+          console.log('⏳ iOS: waiting Player A mount before loading B...');
+          // Player A がまだなら次のレンダーで再評価
+          return;
+        }
+        setTimeout(() => {
+          console.log('🚀 iOS: loading Player B after short delay');
+          setPlayerBVideoLoaded(true);
+        }, 400); // 体感的に十分な短い遅延
       } else {
-        // iOS以外は即座に読み込み
         console.log('🚀 Non-iOS device detected, loading Player B immediately...');
         setPlayerBVideoLoaded(true);
       }
     }
-  }, [playerBInView, playerBVideoLoaded]);
+  }, [playerBInView, playerBVideoLoaded, playerAVideoLoaded]);
 
   // 投票状態を更新（Webhook反映の遅延を考慮して短時間ポーリング）
   const refreshVoteStatus = useCallback(async () => {
