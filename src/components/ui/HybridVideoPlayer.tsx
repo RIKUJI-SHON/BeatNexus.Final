@@ -52,6 +52,7 @@ export const HybridVideoPlayer: React.FC<HybridVideoPlayerProps> = ({
         onPause={onPause}
         onEnded={onEnded}
         onError={handleStreamError}
+        debug={import.meta.env.VITE_DEBUG_STREAM === 'true'}
       />
     );
   }
