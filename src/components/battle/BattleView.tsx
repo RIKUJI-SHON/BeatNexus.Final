@@ -49,11 +49,11 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
   const [scoreEntries, setScoreEntries] = useState<ScoreBreakdownEntry[]>([]);
   const [scoreLoading, setScoreLoading] = useState(false);
   const [playerRatings, setPlayerRatings] = useState<{
-    playerA: { rating: number; loading: boolean };
-    playerB: { rating: number; loading: boolean };
+  playerA: { rating: number; rank: number | null; loading: boolean };
+  playerB: { rating: number; rank: number | null; loading: boolean };
   }>({
-    playerA: { rating: 1200, loading: true },
-    playerB: { rating: 1200, loading: true }
+  playerA: { rating: 1200, rank: null, loading: true },
+  playerB: { rating: 1200, rank: null, loading: true }
   });
   
   // シンプル化: 即時読み込みに変更（遅延ロジック削除）
@@ -197,14 +197,26 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
         .select('season_points')
         .eq('id', battle.player2_user_id)
         .single();
+      const ratingA = typeof playerAData?.season_points === 'number' ? playerAData.season_points : 1200;
+      const ratingB = typeof playerBData?.season_points === 'number' ? playerBData.season_points : 1200;
+
+      // ランキング取得: season_points がそれより大きいユーザー数 + 1
+      const [rankARes, rankBRes] = await Promise.all([
+        supabase.from('profiles').select('id', { count: 'exact', head: true }).gt('season_points', ratingA),
+        supabase.from('profiles').select('id', { count: 'exact', head: true }).gt('season_points', ratingB)
+      ]);
+      const rankA = typeof rankARes.count === 'number' ? rankARes.count + 1 : null;
+      const rankB = typeof rankBRes.count === 'number' ? rankBRes.count + 1 : null;
 
       setPlayerRatings({
         playerA: { 
-          rating: playerAData?.season_points || 1200, 
+          rating: ratingA, 
+          rank: rankA,
           loading: false 
         },
         playerB: { 
-          rating: playerBData?.season_points || 1200, 
+          rating: ratingB, 
+          rank: rankB,
           loading: false 
         }
       });
@@ -214,8 +226,8 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
     } catch (error) {
       console.error('❌ Failed to load player season points:', error);
       setPlayerRatings({
-        playerA: { rating: 1200, loading: false },
-        playerB: { rating: 1200, loading: false }
+        playerA: { rating: 1200, rank: null, loading: false },
+        playerB: { rating: 1200, rank: null, loading: false }
       });
     }
   }, [battle.player1_user_id, battle.player2_user_id]);
@@ -612,8 +624,11 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                       {playerRatings.playerA.loading ? (
                         <div className="text-sm text-gray-400">読み込み中...</div>
                       ) : (
-                        <div className="text-sm font-medium text-white">
-                          {playerRatings.playerA.rating}
+                        <div className="text-sm font-medium text-white flex items-center gap-2">
+                          <span>{playerRatings.playerA.rating}</span>
+                          {playerRatings.playerA.rank && (
+                            <span className="text-xs text-cyan-300 font-semibold">#{playerRatings.playerA.rank}</span>
+                          )}
                         </div>
                       )}
                     </div>
@@ -656,8 +671,11 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                       {playerRatings.playerA.loading ? (
                         <div className="text-sm text-gray-400">読み込み中...</div>
                       ) : (
-                        <div className="text-sm font-medium text-white">
-                          {playerRatings.playerA.rating}
+                        <div className="text-sm font-medium text-white flex items-center gap-2">
+                          <span>{playerRatings.playerA.rating}</span>
+                          {playerRatings.playerA.rank && (
+                            <span className="text-xs text-cyan-300 font-semibold">#{playerRatings.playerA.rank}</span>
+                          )}
                         </div>
                       )}
                     </div>
@@ -726,8 +744,11 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                       {playerRatings.playerB.loading ? (
                         <div className="text-sm text-gray-400">読み込み中...</div>
                       ) : (
-                        <div className="text-sm font-medium text-white">
-                          {playerRatings.playerB.rating}
+                        <div className="text-sm font-medium text-white flex items-center gap-2">
+                          <span>{playerRatings.playerB.rating}</span>
+                          {playerRatings.playerB.rank && (
+                            <span className="text-xs text-pink-300 font-semibold">#{playerRatings.playerB.rank}</span>
+                          )}
                         </div>
                       )}
                     </div>
@@ -797,8 +818,11 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                       {playerRatings.playerB.loading ? (
                         <div className="text-sm text-gray-400">読み込み中...</div>
                       ) : (
-                        <div className="text-sm font-medium text-white">
-                          {playerRatings.playerB.rating}
+                        <div className="text-sm font-medium text-white flex items-center gap-2">
+                          <span>{playerRatings.playerB.rating}</span>
+                          {playerRatings.playerB.rank && (
+                            <span className="text-xs text-pink-300 font-semibold">#{playerRatings.playerB.rank}</span>
+                          )}
                         </div>
                       )}
                     </div>
