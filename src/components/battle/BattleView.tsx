@@ -626,7 +626,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                       ) : (
                         <div className="text-sm font-medium text-white flex items-center gap-2">
                           <span>{playerRatings.playerA.rating}</span>
-                          {playerRatings.playerA.rank && (
+                          {playerRatings.playerA.rank && playerRatings.playerA.rating !== 1200 && (
                             <span className="text-xs text-cyan-300 font-semibold">#{playerRatings.playerA.rank}</span>
                           )}
                         </div>
@@ -673,7 +673,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                       ) : (
                         <div className="text-sm font-medium text-white flex items-center gap-2">
                           <span>{playerRatings.playerA.rating}</span>
-                          {playerRatings.playerA.rank && (
+                          {playerRatings.playerA.rank && playerRatings.playerA.rating !== 1200 && (
                             <span className="text-xs text-cyan-300 font-semibold">#{playerRatings.playerA.rank}</span>
                           )}
                         </div>
@@ -746,7 +746,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                       ) : (
                         <div className="text-sm font-medium text-white flex items-center gap-2">
                           <span>{playerRatings.playerB.rating}</span>
-                          {playerRatings.playerB.rank && (
+                          {playerRatings.playerB.rank && playerRatings.playerB.rating !== 1200 && (
                             <span className="text-xs text-pink-300 font-semibold">#{playerRatings.playerB.rank}</span>
                           )}
                         </div>
@@ -820,7 +820,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                       ) : (
                         <div className="text-sm font-medium text-white flex items-center gap-2">
                           <span>{playerRatings.playerB.rating}</span>
-                          {playerRatings.playerB.rank && (
+                          {playerRatings.playerB.rank && playerRatings.playerB.rating !== 1200 && (
                             <span className="text-xs text-pink-300 font-semibold">#{playerRatings.playerB.rank}</span>
                           )}
                         </div>
