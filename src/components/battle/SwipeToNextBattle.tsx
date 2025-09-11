@@ -1,14 +1,16 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useBattleStore } from '../../store/battleStore';
 import { useTranslation } from 'react-i18next';
+import { VSIcon } from '../ui/VSIcon';
 
 interface SwipeToNextBattleProps {
   currentBattleId: string;
+  renderVs?: boolean; // VSをこのコンポーネント内に表示し、スワイプでスライド
 }
 
 // シンプルなスワイプ検知（左右）で未投票バトルへランダム遷移
-export const SwipeToNextBattle: React.FC<SwipeToNextBattleProps> = ({ currentBattleId }) => {
+export const SwipeToNextBattle: React.FC<SwipeToNextBattleProps> = ({ currentBattleId, renderVs = false }) => {
   const navigate = useNavigate();
   const { activeBattles, fetchActiveBattles } = useBattleStore();
   const { t } = useTranslation();
@@ -17,6 +19,16 @@ export const SwipeToNextBattle: React.FC<SwipeToNextBattleProps> = ({ currentBat
   const startX = useRef<number | null>(null);
   const startY = useRef<number | null>(null);
   const isDragging = useRef<boolean>(false);
+  const animating = useRef<boolean>(false);
+  const [dragX, setDragX] = useState<number>(0);
+  const [isSwiping, setIsSwiping] = useState<boolean>(false);
+  // 軽いスワイプでも遷移: 小さめの閾値と短い追従距離
+  const threshold = 18;
+  const maxFollow = 28;
+  const pushDistance = 18; // 確定時に軽く押し出す距離
+  const backDelay = 120;   // 押し出し後に戻し始めるまでの遅延
+  const navDelay = 260;    // 戻し始めからナビ開始までの合計遅延
+  const timers = useRef<number[]>([]);
 
   useEffect(() => {
     if (!activeBattles || activeBattles.length === 0) {
@@ -35,11 +47,44 @@ export const SwipeToNextBattle: React.FC<SwipeToNextBattleProps> = ({ currentBat
   const goToRandomBattle = useCallback(() => {
     const target = pickRandomUnvotedBattle();
     if (!target) {
-    setHint(t('battleView.noUnvotedBattles', 'No unvoted battles'));
+      setHint(t('battleView.noUnvotedBattles', 'No unvoted battles'));
       return;
     }
     // 既存の遷移慣習に合わせて /battle/:id で遷移
     navigate(`/battle/${target.id}`);
+  }, [navigate, pickRandomUnvotedBattle, t]);
+
+  // モバイル用：アニメ表示後に遷移（爽快感フィードバック）
+  const goWithSwipeFeedback = useCallback((dir: 'left' | 'right') => {
+    if (animating.current) return;
+    const target = pickRandomUnvotedBattle();
+    if (!target) {
+      setHint(t('battleView.noUnvotedBattles', 'No unvoted battles'));
+      // 候補がない時も必ず原点へスナップバック
+      setDragX(0);
+      return;
+    }
+    animating.current = true;
+    try {
+      const nav = navigator as Navigator & { vibrate?: (pattern: number | number[]) => boolean };
+      if (typeof nav.vibrate === 'function') {
+        // 軽い触覚フィードバック（対応端末のみ）
+        nav.vibrate([10, 20, 10]);
+      }
+  } catch {
+      // no-op: 触覚フィードバック非対応端末や権限エラーなどは無視
+    }
+    // 1) 方向へ軽く押し出し
+    setDragX(dir === 'left' ? -pushDistance : pushDistance);
+    // 2) 少し待ってから原点にスナップバック
+    timers.current.push(window.setTimeout(() => {
+      setDragX(0);
+    }, backDelay));
+    // 3) 戻りアニメの体感後に遷移
+    timers.current.push(window.setTimeout(() => {
+      animating.current = false;
+      navigate(`/battle/${target.id}`);
+    }, navDelay));
   }, [navigate, pickRandomUnvotedBattle, t]);
 
   const handleTouchStart: React.TouchEventHandler<HTMLDivElement> = (e) => {
@@ -47,6 +92,18 @@ export const SwipeToNextBattle: React.FC<SwipeToNextBattleProps> = ({ currentBat
     startX.current = t.clientX;
     startY.current = t.clientY;
     isDragging.current = true;
+    setIsSwiping(true);
+  };
+
+  const handleTouchMove: React.TouchEventHandler<HTMLDivElement> = (e) => {
+    if (!isDragging.current || startX.current == null || startY.current == null) return;
+    const t = e.touches[0];
+    const dx = t.clientX - startX.current;
+    const dy = t.clientY - startY.current;
+    // 垂直移動が大きすぎる場合は無視
+    if (Math.abs(dy) > 60) return;
+    const clamped = Math.max(-maxFollow, Math.min(maxFollow, dx));
+    setDragX(clamped);
   };
 
   const handleTouchEnd: React.TouchEventHandler<HTMLDivElement> = (e) => {
@@ -57,10 +114,18 @@ export const SwipeToNextBattle: React.FC<SwipeToNextBattleProps> = ({ currentBat
     isDragging.current = false;
     startX.current = null;
     startY.current = null;
+    setIsSwiping(false);
 
     // 水平スワイプを判定（閾値 60px、縦の移動が過大でないこと）
-    if (Math.abs(dx) >= 60 && Math.abs(dy) <= 40) {
-      goToRandomBattle();
+    if (Math.abs(dx) >= threshold && Math.abs(dy) <= 40) {
+      // VSを指の方向に軽くスライド -> スナップバック -> 遷移
+  const dir = dx < 0 ? 'left' : 'right';
+      // 今いる位置から押し出す距離だけ動かす
+      setDragX(dir === 'left' ? -pushDistance : pushDistance);
+      goWithSwipeFeedback(dir);
+    } else {
+      // 必ず元の位置へスナップバック
+      setDragX(0);
     }
   };
 
@@ -84,23 +149,42 @@ export const SwipeToNextBattle: React.FC<SwipeToNextBattleProps> = ({ currentBat
     setHint(t('battleView.swipeHint', 'Swipe to explore new battles'));
   }, [t]);
 
+  const vsStyle = useMemo<React.CSSProperties>(() => ({
+    transform: `translateX(${dragX}px)`,
+    transition: isSwiping ? 'none' : 'transform 180ms cubic-bezier(0.22, 1, 0.36, 1)',
+    willChange: 'transform',
+  }), [dragX, isSwiping]);
+
   return (
     <div className="w-full select-none">
       {/* Mobile: スワイプUI */}
       <div
-        className="w-full md:hidden"
+        className={`w-full md:hidden relative`}
         onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
         onMouseDown={onMouseDown}
         onMouseUp={onMouseUp}
       >
+        {renderVs && (
+          <div className="flex items-center justify-center">
+            <div style={vsStyle} aria-hidden>
+              <VSIcon className="w-20 h-20" />
+            </div>
+          </div>
+        )}
         <div className="text-xs text-gray-400 text-center">{hint}</div>
         <div className="mt-1 text-[10px] text-gray-500 text-center">{t('battleView.swipeLabel', '⇠⇢ swipe')}</div>
       </div>
 
       {/* Desktop: 指定デザインのボタンUI */}
       <div className="hidden md:flex items-center justify-center">
-    <div className="btn-conteiner">
+        {renderVs && (
+          <div className="mr-3">
+            <VSIcon className="w-24 h-24" />
+          </div>
+        )}
+        <div className="btn-conteiner">
           <button
             type="button"
             onClick={goToRandomBattle}
