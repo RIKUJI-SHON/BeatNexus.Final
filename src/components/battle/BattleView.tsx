@@ -9,6 +9,7 @@ import { useAuthModal } from '../auth/AuthProvider';
 import { Battle } from '../../types';
 import { useTranslation } from 'react-i18next';
 import { VSIcon } from '../ui/VSIcon';
+import { SwipeToNextBattle } from './SwipeToNextBattle';
 import { VotingTips } from '../ui/VotingTips';
 import { trackBeatNexusEvents } from '../../utils/analytics';
 import { ShareModal } from '../ui/ShareModal';
@@ -712,8 +713,10 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
 
               {/* VS Separator */}
               <div className="flex items-center justify-center lg:px-6">
-                <div className="flex flex-col items-center gap-4">
+                <div className="flex flex-col items-center gap-2">
                   <VSIcon className="w-20 h-20 md:w-24 md:h-24" />
+                  {/* スワイプで未投票バトルへ遷移 */}
+                  <SwipeToNextBattle currentBattleId={battle.id} />
                 </div>
               </div>
 

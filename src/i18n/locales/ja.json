@@ -282,7 +282,13 @@
     "tipsNote": "これらの項目を参考に、より良い判断を行いましょう",
     "notSet": "未設定",
     "totalScores": "合計点数",
-    "unsetItems": "{{count}}項目が未設定です"
+  "unsetItems": "{{count}}項目が未設定です",
+  "swipeHint": "スワイプして新しいバトルへ",
+  "swipeLabel": "⇠⇢ スワイプ",
+  "navigateNext": "次のバトルへ",
+  "navigateNextTitle": "未投票のバトルへランダムに移動",
+  "randomFromUnvoted": "未投票からランダム",
+  "noUnvotedBattles": "未投票のバトルはありません"
   },
   "battleCard": {
     "votingEndsIn": "残り{{days}}日 {{hours}}時間",

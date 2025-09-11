@@ -397,7 +397,13 @@
     "tipsNote": "Use these criteria as reference for better judgment",
     "notSet": "Not Set",
     "totalScores": "Total Scores",
-    "unsetItems": "{{count}} items not set"
+  "unsetItems": "{{count}} items not set",
+  "swipeHint": "Swipe to explore new battles",
+  "swipeLabel": "⇠⇢ swipe",
+  "navigateNext": "Next battle",
+  "navigateNextTitle": "Jump to a random unvoted battle",
+  "randomFromUnvoted": "Random from unvoted",
+  "noUnvotedBattles": "No unvoted battles"
   },
   "battleCard": {
     "votingEndsIn": "{{days}}d {{hours}}h left",
