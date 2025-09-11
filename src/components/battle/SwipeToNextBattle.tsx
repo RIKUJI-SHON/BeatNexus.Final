@@ -177,10 +177,10 @@ export const SwipeToNextBattle: React.FC<SwipeToNextBattleProps> = ({ currentBat
         <div className="mt-1 text-[10px] text-gray-500 text-center">{t('battleView.swipeLabel', '⇠⇢ swipe')}</div>
       </div>
 
-      {/* Desktop: 指定デザインのボタンUI */}
-      <div className="hidden md:flex items-center justify-center">
+      {/* Desktop: VSの下にNEXTボタン */}
+      <div className="hidden md:flex flex-col items-center justify-center">
         {renderVs && (
-          <div className="mr-3">
+          <div className="mb-2">
             <VSIcon className="w-24 h-24" />
           </div>
         )}
@@ -188,7 +188,7 @@ export const SwipeToNextBattle: React.FC<SwipeToNextBattleProps> = ({ currentBat
           <button
             type="button"
             onClick={goToRandomBattle}
-      className="btn-content btn-content--sm"
+            className="btn-content btn-content--sm"
             aria-label={t('battleView.navigateNext', 'Next battle')}
             title={t('battleView.navigateNextTitle', 'Jump to a random unvoted battle')}
             disabled={(activeBattles || []).filter(b => !b.current_user_voted && b.id !== currentBattleId).length === 0}
