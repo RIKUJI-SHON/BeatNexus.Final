@@ -400,6 +400,95 @@ video {
   animation: color_anim 1s infinite 0.4s;
 }
 
+/* ===== Uiverse-inspired Glowing Checkbox (scoped) ===== */
+.bnx-checkbox {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.bnx-checkbox input[type="checkbox"] {
+  /* Visually hidden but accessible */
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+}
+
+.bnx-checkbox .checkmark {
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  background: #0f172a; /* slate-900 */
+  border: 1.5px solid #334155; /* slate-700/600 */
+  display: grid;
+  place-items: center;
+  position: relative;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
+  transition: border-color 180ms ease, box-shadow 180ms ease, background 180ms ease;
+  margin-top: 2px; /* align with text */
+}
+
+.bnx-checkbox .checkmark svg {
+  width: 14px;
+  height: 14px;
+  color: transparent;
+  opacity: 0;
+  transform: scale(0.8);
+  transition: opacity 160ms ease, transform 160ms ease, color 160ms ease;
+}
+
+.bnx-checkbox input[type="checkbox"]:checked + .checkmark {
+  border-color: #22d3ee; /* cyan-400 */
+  box-shadow:
+    0 0 10px rgba(34, 211, 238, 0.35),
+    inset 0 0 8px rgba(34, 211, 238, 0.15);
+}
+
+.bnx-checkbox input[type="checkbox"]:checked + .checkmark svg {
+  color: #22d3ee; /* cyan-400 */
+  opacity: 1;
+  transform: scale(1);
+}
+
+.bnx-checkbox input[type="checkbox"]:focus-visible + .checkmark {
+  outline: 2px solid #06b6d4; /* cyan-500 */
+  outline-offset: 2px;
+}
+
+.bnx-checkbox .label-text {
+  font-size: 0.875rem; /* text-sm */
+  color: #cbd5e1; /* slate-300 */
+  line-height: 1.5;
+  transition: color 160ms ease;
+}
+
+.bnx-checkbox:hover .label-text {
+  color: #f8fafc; /* slate-50 */
+}
+
+/* Subtle pulse effect on check */
+.bnx-checkbox input[type="checkbox"]:checked + .checkmark::after {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border-radius: 10px;
+  background: radial-gradient(
+    35% 35% at 50% 50%,
+    rgba(34, 211, 238, 0.25) 0%,
+    rgba(34, 211, 238, 0) 100%
+  );
+  animation: bnx-pulse 600ms ease-out;
+  pointer-events: none;
+}
+
+@keyframes bnx-pulse {
+  from { opacity: 0.9; transform: scale(0.95); }
+  to { opacity: 0; transform: scale(1.1); }
+}
+
 .btn-content:disabled {
   opacity: 0.6;
   cursor: not-allowed;

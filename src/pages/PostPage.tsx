@@ -707,66 +707,80 @@ const PostPage: React.FC = () => {
                       </ul>
 
                       <div className="space-y-4">
-                        <label className="flex items-start gap-3 cursor-pointer group">
+                        <label className="bnx-checkbox">
                           <input
                             type="checkbox"
                             checked={acceptedGuidelines}
                             onChange={(e) => setAcceptedGuidelines(e.target.checked)}
-                            className="mt-1 rounded border-slate-600 text-cyan-500 focus:ring-cyan-500/30 bg-slate-700"
                             required
                           />
-                          <span className="text-sm text-slate-300 group-hover:text-slate-50 transition-colors">
-                            {t('postPage.submissionGuidelines.agreeGuidelines')}
+                          <span className="checkmark" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                              <polyline points="20 6 9 17 4 12" />
+                            </svg>
                           </span>
+                          <span className="label-text">{t('postPage.submissionGuidelines.agreeGuidelines')}</span>
                         </label>
-                        <label className="flex items-start gap-3 cursor-pointer group">
+
+                        <label className="bnx-checkbox">
                           <input
                             type="checkbox"
                             checked={acceptedFacePolicy}
                             onChange={(e) => setAcceptedFacePolicy(e.target.checked)}
-                            className="mt-1 rounded border-slate-600 text-cyan-500 focus:ring-cyan-500/30 bg-slate-700"
                             required
                           />
-                          <span className="text-sm text-slate-300 group-hover:text-slate-50 transition-colors">
-                            {t('postPage.submissionGuidelines.understandFacePolicy')}
+                          <span className="checkmark" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                              <polyline points="20 6 9 17 4 12" />
+                            </svg>
                           </span>
+                          <span className="label-text">{t('postPage.submissionGuidelines.understandFacePolicy')}</span>
                         </label>
-                        <label className="flex items-start gap-3 cursor-pointer group">
+
+                        <label className="bnx-checkbox">
                           <input
                             type="checkbox"
                             checked={acceptedGreeting}
                             onChange={(e) => setAcceptedGreeting(e.target.checked)}
-                            className="mt-1 rounded border-slate-600 text-cyan-500 focus:ring-cyan-500/30 bg-slate-700"
                             required
                           />
-                          <span className="text-sm text-slate-300 group-hover:text-slate-50 transition-colors">
-                            {t('postPage.submissionGuidelines.confirmGreeting')}
+                          <span className="checkmark" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                              <polyline points="20 6 9 17 4 12" />
+                            </svg>
                           </span>
+                          <span className="label-text">{t('postPage.submissionGuidelines.confirmGreeting')}</span>
                         </label>
-                        <label className="flex items-start gap-3 cursor-pointer group">
+
+                        <label className="bnx-checkbox">
                           <input
                             type="checkbox"
                             checked={acceptedContent}
                             onChange={(e) => setAcceptedContent(e.target.checked)}
-                            className="mt-1 rounded border-slate-600 text-cyan-500 focus:ring-cyan-500/30 bg-slate-700"
                             required
                           />
-                          <span className="text-sm text-slate-300 group-hover:text-slate-50 transition-colors">
-                            {t('postPage.submissionGuidelines.confirmOwnPerformance')}
+                          <span className="checkmark" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                              <polyline points="20 6 9 17 4 12" />
+                            </svg>
                           </span>
+                          <span className="label-text">{t('postPage.submissionGuidelines.confirmOwnPerformance')}</span>
                         </label>
+
                         {/* 追加: SNS/YouTube等での利用に関する同意 */}
-                        <label className="flex items-start gap-3 cursor-pointer group">
+                        <label className="bnx-checkbox">
                           <input
                             type="checkbox"
                             checked={acceptedUsageConsent}
                             onChange={(e) => setAcceptedUsageConsent(e.target.checked)}
-                            className="mt-1 rounded border-slate-600 text-cyan-500 focus:ring-cyan-500/30 bg-slate-700"
                             required
                           />
-                          <span className="text-sm text-slate-300 group-hover:text-slate-50 transition-colors">
-                            {t('postPage.submissionGuidelines.allowSNSUsage')}
+                          <span className="checkmark" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                              <polyline points="20 6 9 17 4 12" />
+                            </svg>
                           </span>
+                          <span className="label-text">{t('postPage.submissionGuidelines.allowSNSUsage')}</span>
                         </label>
                       </div>
                     </div>
