@@ -101,17 +101,17 @@ const handleSeasonEndNotification = async (notificationData: Notification) => {
   }
 };
 
-// Helper function to handle SuperTip received notifications
+// Helper function to handle SuperTip received notifications (no auto redirect)
 const handleSuperTipReceivedNotification = async (notificationData: Notification) => {
   console.log('💰 [SuperTipReceived] handleSuperTipReceivedNotification called:', notificationData);
-  
   try {
-    // Stripe受け取り設定ページにリダイレクト
-    window.location.href = '/profile/stripe-connect';
-    
-    // 通知をDBから削除
+    // 以前はここで即リダイレクトしていたが UX 問題のため削除。
+    // 代わりにフラグを立て、UI 側で「Super Tip を受け取る設定を完了しましょう」バナー/モーダルを表示させる。
+    useNotificationStore.setState({ hasPendingSuperTipSetupPrompt: true });
+
+    // 通知は消しておく（重複誘導防止）
     if (notificationData.id) {
-      console.log('🗑️ [NotificationStore] Deleting super tip received notification from database');
+      console.log('🗑️ [NotificationStore] Deleting super tip received notification from database (no redirect)');
       const { deleteNotification } = useNotificationStore.getState();
       await deleteNotification(notificationData.id);
       console.log('✅ [NotificationStore] Super tip received notification deleted from database');
@@ -343,6 +343,8 @@ interface NotificationState {
   unreadCount: number;
   loading: boolean;
   error: string | null;
+  // SuperTip受信後にStripe設定ページへ強制遷移せず、バナー表示を行うための一時フラグ
+  hasPendingSuperTipSetupPrompt?: boolean;
   
   // Zustand Actions (メモリのみ - 後方互換性のため)
   addNotification: (notification: Omit<Notification, 'id' | 'isRead' | 'createdAt' | 'updatedAt'>) => void;
@@ -368,6 +370,7 @@ export const useNotificationStore = create<NotificationState>()(
       unreadCount: 0,
       loading: false,
       error: null,
+  hasPendingSuperTipSetupPrompt: false,
 
       // Zustand Actions (メモリのみ)
       addNotification: (notificationData) => {
@@ -585,7 +588,7 @@ export const useNotificationStore = create<NotificationState>()(
           );
 
           if (pendingSuperTipReceived) {
-            console.log('💰 [NotificationStore] Pending super tip received found on initial fetch, redirecting to Stripe settings');
+            console.log('💰 [NotificationStore] Pending super tip received found on initial fetch, setting prompt flag (no auto redirect)');
             await handleSuperTipReceivedNotification(pendingSuperTipReceived);
           }
 

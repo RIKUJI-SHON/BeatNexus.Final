@@ -1116,16 +1116,7 @@ export const useBattleStore = create<BattleState>((set, get) => ({
       // 2) 異なる内容なら両方表示。
       // 3) 表示順: 先頭 SuperTip (上で sort 済) → 通常コメント(created_at DESC)。
       // 4) パフォーマンス: 大量表示を避けるため各カテゴリ最大 150 件まで。
-
-      const superTipByUser = new Map<string, BattleComment[]>(
-        commentsFromSuperTipsSorted.reduce<[string, BattleComment[]][]>((acc, c) => {
-          const arr = superTipByUser.get(c.user_id) ?? [];
-          arr.push(c);
-          return acc;
-        }, [])
-      );
-      // 上の reduce で Map を直接参照できないので再構築
-      // 修正: 直接生成
+      // NOTE: 以前ここに self-reference する superTipByUser 初期化バグがあり SuperTip 部分で例外→全コメント表示失敗していたため除去。
       const superTipMap = new Map<string, BattleComment[]>();
       for (const st of commentsFromSuperTipsSorted) {
         const list = superTipMap.get(st.user_id) || [];
