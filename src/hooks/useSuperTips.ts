@@ -38,7 +38,9 @@ export const useSuperTips = () => {
         return;
       }
 
-      const { data, error: fetchError } = await supabase
+  interface RawReceived { id: string; battle_id: string | null; sender_user_id: string; vote: 'A'|'B'|null; comment: string; amount_jpy: number; payment_status: string; created_at: string; sender?: { username: string; avatar_url: string | null } | { username: string; avatar_url: string | null }[] | null }
+      let data: RawReceived[] | null = null;
+      const { data: primary, error: primaryErr } = await supabase
         .from('super_tips')
         .select(`
           id,
@@ -56,25 +58,41 @@ export const useSuperTips = () => {
         .order('created_at', { ascending: false })
         .limit(50);
 
-      if (fetchError) {
-        setError(fetchError.message);
-        return;
+      if (primaryErr) {
+        // フォールバック: 埋め込み無し + まとめてプロフィール取得
+        console.warn('[SuperTipReceivedDebug] primary fetch failed, fallback:', primaryErr.message || primaryErr);
+        const { data: fbRows, error: fbErr } = await supabase
+          .from('super_tips')
+          .select('id, battle_id, sender_user_id, vote, comment, amount_jpy, payment_status, created_at')
+          .eq('recipient_user_id', user.user.id)
+          .eq('payment_status', 'succeeded')
+          .order('created_at', { ascending: false })
+          .limit(50);
+        if (fbErr) {
+          setError(fbErr.message);
+          return;
+        }
+        data = fbRows as RawReceived[];
+        const senderIds = Array.from(new Set((data || []).map(r => r.sender_user_id)));
+        if (senderIds.length) {
+          const { data: profs, error: profErr } = await supabase
+            .from('profiles')
+            .select('id, username, avatar_url')
+            .in('id', senderIds);
+          if (!profErr && profs) {
+            const map = new Map<string, { username: string; avatar_url: string | null }>();
+            profs.forEach(p => map.set(p.id, { username: p.username, avatar_url: p.avatar_url }));
+            data = (data || []).map(r => ({ ...r, sender: map.get(r.sender_user_id) || null }));
+          }
+        }
+      } else {
+        data = primary as RawReceived[];
       }
 
       // バトル情報を別途取得（存在する場合のみ）
-      type RawTip = {
-        id: string;
-        battle_id: string | null;
-        sender_user_id: string;
-        vote: 'A' | 'B' | null;
-        comment: string;
-        amount_jpy: number;
-        payment_status: string;
-        created_at: string;
-        sender?: { username: string; avatar_url: string | null } | { username: string; avatar_url: string | null }[];
-      };
+      type RawTip = RawReceived;
       const tipsWithBattles = await Promise.all(
-        (data || []).map(async (tip: RawTip) => {
+  (data || []).map(async (tip: RawTip) => {
           // sender は埋め込み alias (単体または配列) 想定
           const senderRaw = tip.sender;
           const sender_profile = Array.isArray(senderRaw)

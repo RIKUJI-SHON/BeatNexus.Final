@@ -1036,7 +1036,12 @@ export const useBattleStore = create<BattleState>((set, get) => ({
       }
 
       // 取得するフィールド: id, sender_user_id, recipient_user_id, vote, comment, created_at, amount_jpy, profiles(username, avatar_url)
-      const { data: superTips, error: tipErr } = await supabase
+  interface RawSuperTipEmbedded { id: string; sender_user_id: string; recipient_user_id: string; vote: 'A' | 'B' | null; comment: string; amount_jpy: number; created_at: string; payment_status: string; sender?: { username: string; avatar_url: string | null } | null | { username: string; avatar_url: string | null }[] }
+  type RawSuperTipFallback = Omit<RawSuperTipEmbedded, 'sender'>;
+  let superTips: RawSuperTipEmbedded[] | null = null;
+  // tipErr は PostgREST エラー型をざっくり保持
+  let tipErr: { message?: string } | null = null;
+      const { data: superTipsPrimary, error: tipErrPrimary } = await supabase
         .from('super_tips')
         .select(`
           id,
@@ -1052,16 +1057,54 @@ export const useBattleStore = create<BattleState>((set, get) => ({
         .eq('battle_id', effectiveBattleId)
         .eq('payment_status', 'succeeded')
         .order('created_at', { ascending: false });
+      if (tipErrPrimary) {
+        // PGRST201（曖昧リレーション）等で失敗した場合フォールバック: 埋め込み除去→後でまとめてプロファイル取得
+        tipErr = tipErrPrimary;
+        console.warn('[SuperTipDebug] primary fetch failed, fallback to two-step fetch:', tipErrPrimary.message || tipErrPrimary);
+        const { data: superTipsFallback, error: tipErrFallback } = await supabase
+          .from('super_tips')
+          .select('id, sender_user_id, recipient_user_id, vote, comment, amount_jpy, created_at, payment_status')
+          .eq('battle_id', effectiveBattleId)
+          .eq('payment_status', 'succeeded')
+          .order('created_at', { ascending: false });
+        if (tipErrFallback) {
+          console.error('❌ SuperTip fallback fetch also failed:', tipErrFallback);
+          tipErr = tipErrFallback;
+        } else {
+          superTips = superTipsFallback;
+          // 送信者プロフィール一括取得
+          const senderIds = Array.from(new Set((superTipsFallback || []).map((r: RawSuperTipFallback) => r.sender_user_id).filter(Boolean)));
+          if (senderIds.length > 0) {
+            const { data: profs, error: profErr } = await supabase
+              .from('profiles')
+              .select('id, username, avatar_url')
+              .in('id', senderIds);
+            if (profErr) {
+              console.warn('[SuperTipDebug] profiles fetch in fallback failed:', profErr.message || profErr);
+            } else {
+              const profMap = new Map<string, { username: string; avatar_url: string | null }>();
+              (profs || []).forEach(p => profMap.set(p.id, { username: p.username, avatar_url: p.avatar_url }));
+              // 擬似 sender 埋め込みへ変換
+              superTips = (superTipsFallback || []).map((r: RawSuperTipFallback) => ({
+                ...r,
+                sender: profMap.get(r.sender_user_id) || null
+              }));
+            }
+          }
+        }
+      } else {
+        superTips = superTipsPrimary;
+      }
 
       if (tipErr) {
-        console.error('❌ Error fetching super tip comments:', tipErr);
+        console.error('❌ Error (final) fetching super tip comments:', tipErr);
         // SuperTip取得に失敗しても致命的ではないため、投票コメントのみで継続
       }
       console.log('[SuperTipDebug] raw query result:', {
         effectiveBattleId,
         count: superTips?.length || 0,
         firstIds: (superTips || []).slice(0,3).map((r => (r as { id?: string }).id)),
-        tipErr
+        tipErr: tipErr || null
       });
 
       type RawSuperTip = {
