@@ -23,7 +23,6 @@ import { isIOSDevice } from '../../utils/videoSupport';
 import { HybridVideoPlayer } from '../ui/HybridVideoPlayer';
 // (遅延読み込みロジック削除に伴い IntersectionObserver フックは未使用)
 // import { getIOSCompatibleUrl } from '../../utils/iosVideoMapping';
-import { SupportTipModal } from './SupportTipModal';
 import { toast } from '../../store/toastStore';
 
 interface BattleViewProps {
@@ -42,8 +41,6 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
   const [showPaymentResult, setShowPaymentResult] = useState<'succeeded' | 'failed' | 'processing' | null>(null);
   const [isVoting, setIsVoting] = useState(false);
   const [showVoteModal, setShowVoteModal] = useState<'A' | 'B' | null>(null);
-  const [supportModalOpen, setSupportModalOpen] = useState(false);
-  const [supportTarget, setSupportTarget] = useState<{ userId: string; name?: string } | null>(null);
   const [openVoteSupportOn, setOpenVoteSupportOn] = useState(false);
   const [scoreModalOpen, setScoreModalOpen] = useState(false);
   const [scoreEntries, setScoreEntries] = useState<ScoreBreakdownEntry[]>([]);
@@ -117,7 +114,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
   }, [battle.id, isArchived, isUserParticipant, getBattleScoreBreakdown, getArchivedBattleScoreBreakdown]);
 
   // 単独支援モーダルを開く（受け取り設定チェック付き）
-  const openSupportModalFor = async (userId: string, name?: string) => {
+  const openSupportModalFor = async (userId: string) => {
     if (!user) {
       openAuthModal('login');
       return;
@@ -148,31 +145,16 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
       return;
     }
 
-    setSupportTarget({ userId, name });
-    setSupportModalOpen(true);
+  // 仕様変更: 単独支援は一旦停止し、コメント投票モーダルを Super Tip 強制ON で開く
+  setOpenVoteSupportOn(true); // Super Tip ON
+  // どちらのサイドか推定
+  const side: 'A' | 'B' | null = String(userId) === String(player1Id) ? 'A' : (String(userId) === String(player2Id) ? 'B' : null);
+  setShowVoteModal(side || 'A');
+  // メッセージ表示のためサポートターゲットも保持（forceMessage 内で使うかもしれない）
+  // supportTarget は強制モードでは保持不要
+  // SupportTipModal は開かない（廃止挙動）
   };
 
-  const closeSupportModal = () => {
-    setSupportModalOpen(false);
-    setSupportTarget(null);
-  };
-
-  // 単独支援モーダルから「投票しながら支援」を選択したとき
-  const openVoteSupportFromSupportModal = useCallback(() => {
-    // どちらのプレイヤーに対する支援か分からないため、受取人と一致する側を推定
-    if (!supportTarget) return;
-    const targetUserId = supportTarget.userId;
-    const side: 'A' | 'B' | null = String(targetUserId) === String(player1Id) ? 'A' : (String(targetUserId) === String(player2Id) ? 'B' : null);
-  setOpenVoteSupportOn(true);
-    if (!side) {
-      // サイドが特定できない場合はA側で開く（安全なフォールバック）
-      setShowVoteModal('A');
-    } else {
-      setShowVoteModal(side);
-    }
-    // 支援ONで開くため、一旦閉じてVoteCommentModal側のpropsで制御
-    setSupportModalOpen(false);
-  }, [player1Id, player2Id, supportTarget]);
 
   // プロフィールページへの遷移関数
   const navigateToProfile = (userId: string) => {
@@ -380,7 +362,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
       }
       
       // Refresh comments to show the new vote/comment
-      await fetchBattleComments(battle.id);
+  await fetchBattleComments(battle.id);
       
       // Close modal
       setShowVoteModal(null);
@@ -612,7 +594,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                       </div>
                       <button
                         type="button"
-                        onClick={() => openSupportModalFor(battle.player1_user_id, battle.contestant_a?.username || 'Player A')}
+                        onClick={() => openSupportModalFor(battle.player1_user_id)}
                         className="support-gradient-button text-sm"
                         aria-label={t('superTip.supportButton')}
                       >
@@ -659,7 +641,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                       </div>
                       <button
                         type="button"
-                        onClick={() => openSupportModalFor(battle.player1_user_id, battle.contestant_a?.username || 'Player A')}
+                        onClick={() => openSupportModalFor(battle.player1_user_id)}
                         className="support-gradient-button text-sm"
                         aria-label={t('superTip.supportButton')}
                       >
@@ -733,7 +715,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                       </div>
                       <button
                         type="button"
-                        onClick={() => openSupportModalFor(battle.player2_user_id, battle.contestant_b?.username || 'Player B')}
+                        onClick={() => openSupportModalFor(battle.player2_user_id)}
                         className="support-gradient-button text-sm"
                         aria-label={t('superTip.supportButton')}
                       >
@@ -807,7 +789,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                       </div>
                       <button
                         type="button"
-                        onClick={() => openSupportModalFor(battle.player2_user_id, battle.contestant_b?.username || 'Player B')}
+                        onClick={() => openSupportModalFor(battle.player2_user_id)}
                         className="support-gradient-button text-sm"
                         aria-label={t('superTip.supportButton')}
                       >
@@ -1243,36 +1225,38 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                         </div>
                       </div>
                     ) : (
-                      <div key={comment.id} className="flex items-start gap-4 p-4 bg-gray-800 rounded-xl border border-gray-700/50">
-                        <div className="relative">
-                          <img
-                            src={comment.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${comment.user_id}`}
-                            alt={comment.username}
-                            className="w-10 h-10 rounded-full border-2 border-gray-600"
-                          />
-                          {(hasVoted || isArchived || isUserParticipant) && (
-                            <div className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center ${
-                              comment.vote === 'A' ? 'bg-gradient-to-r from-cyan-500 to-cyan-400' : 'bg-gradient-to-r from-pink-500 to-pink-400'
-                            }`}>
-                              <span className="text-white font-bold text-xs">{comment.vote}</span>
-                            </div>
-                          )}
-                        </div>
-                        
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className="font-semibold text-white">{comment.username}</span>
-                            <span className="text-xs text-gray-500">
-                              {new Date(comment.created_at).toLocaleDateString('ja-JP')}
-                            </span>
+                      comment.duplicateSuppressed ? null : (
+                        <div key={comment.id} className="flex items-start gap-4 p-4 bg-gray-800 rounded-xl border border-gray-700/50">
+                          <div className="relative">
+                            <img
+                              src={comment.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${comment.user_id}`}
+                              alt={comment.username}
+                              className="w-10 h-10 rounded-full border-2 border-gray-600"
+                            />
+                            {(hasVoted || isArchived || isUserParticipant) && (
+                              <div className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center ${
+                                comment.vote === 'A' ? 'bg-gradient-to-r from-cyan-500 to-cyan-400' : 'bg-gradient-to-r from-pink-500 to-pink-400'
+                              }`}>
+                                <span className="text-white font-bold text-xs">{comment.vote}</span>
+                              </div>
+                            )}
                           </div>
-                          {comment.comment ? (
-                            <p className="text-gray-300 text-sm">{comment.comment}</p>
-                          ) : (
-                            <p className="text-gray-500 text-sm italic">{t('battleView.voteOnly')}</p>
-                          )}
+                          
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="font-semibold text-white">{comment.username}</span>
+                              <span className="text-xs text-gray-500">
+                                {new Date(comment.created_at).toLocaleDateString('ja-JP')}
+                              </span>
+                            </div>
+                            {comment.comment ? (
+                              <p className="text-gray-300 text-sm">{comment.comment}</p>
+                            ) : (
+                              <p className="text-gray-500 text-sm italic">{t('battleView.voteOnly')}</p>
+                            )}
+                          </div>
                         </div>
-                      </div>
+                      )
                     )
                   ))}
                 </div>
@@ -1306,28 +1290,12 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
           recipientUserId={showVoteModal === 'A' ? (battle.player1_user_id || battle.contestant_a_id || undefined) : (battle.player2_user_id || battle.contestant_b_id || undefined)}
           onRefreshVoteStatus={refreshVoteStatus}
           initialSupportOn={openVoteSupportOn}
+          forcedSuperTip={openVoteSupportOn}
+          forceMessage={openVoteSupportOn ? t('superTip.forceMessage','現在はコメント投票と同時の支援のみ利用可能です。金額とコメントを入力し決済を完了してください。') : undefined}
         />
       )}
 
-      {/* Support Tip Modal */}
-      {supportModalOpen && supportTarget && (
-        <SupportTipModal
-          isOpen={supportModalOpen}
-          onClose={closeSupportModal}
-          battleId={battle.id}
-          recipientUserId={supportTarget.userId}
-          recipientName={supportTarget.name}
-          onRequestVoteSupport={openVoteSupportFromSupportModal}
-          onSuccess={async () => {
-            try {
-              // 決済成功後にコメントを再取得（webhookで反映された後に一覧へ）
-              await fetchBattleComments(battle.id);
-            } finally {
-              closeSupportModal();
-            }
-          }}
-        />
-      )}
+      {/* SupportTipModal は一時的に無効化（仕様変更: 単独支援停止） */}
 
       {/* Score Breakdown Modal (participants only) */}
       {isUserParticipant && (

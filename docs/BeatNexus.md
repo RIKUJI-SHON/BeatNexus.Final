@@ -10,11 +10,9 @@ alwaysApply: true
 - **投稿型バトル**: 動画投稿 → 自動マッチング → コミュニティ投票 → 勝者決定
 - **レーティングシステム**: 戦績ベースの個人レーティングとシーズンランキング
 - **投票者ランキング**: コミュニティ貢献度を評価する投票数ベースのランキング
-- **コミュニティシステム**: コミュニティ作成・参加、リアルタイムチャット、メンバー管理機能
 - **フォーラム機能**: リアルタイム通知、コメント、投稿機能
 - **シーズン報酬システム**: バッジ・アイコンフレーム付与による成果表彰制度
 - **ニュースカルーセル**: お知らせ・重要情報の動的表示システム
-- **事前登録制**: 限定ユーザーのみアクセス可能な先行リリース期間
 - **多言語対応**: 日本語・英語完全対応・その他翻訳ファイルに入っている言語
 
 ## 🛠️ 技術スタック
@@ -96,7 +94,7 @@ docs/
    - **ルート**: `/` （メインエントリーポイント）
    - **構成**: ランディングページ形式、長いスクロール構造
    - **セクション**: ワードマーク → ヒーロー → 課題提起 → How It Works → 社会的証明 → ビジョン → FAQ → クロージング
-   - **特徴**: 事前登録制向けの詳細説明、完全なマーケティングページ
+   - **特徴**: 完全なマーケティングページ
 
 2. **HomePage** ✅ **旧バージョン**
    - **ルート**: `/old-homepage`
@@ -219,17 +217,6 @@ archived_battles (
   season_id uuid -- ✅ シーズンID
 )
 
--- フォーラム投稿
-posts (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id uuid NOT NULL REFERENCES profiles(id),
-  content text NOT NULL,
-  likes integer DEFAULT 0,
-  liked_by uuid[] DEFAULT ARRAY[]::uuid[],
-  comments_count integer DEFAULT 0,
-  created_at timestamptz DEFAULT now(),
-  updated_at timestamptz DEFAULT now()
-)
 
 -- コメント
 comments (
@@ -255,13 +242,6 @@ notifications (
   updated_at timestamptz DEFAULT now()
 )
 
--- ✅ 事前登録システム（本番適用済み）
--- 事前登録ユーザー
-pre_registered_users (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  email text UNIQUE NOT NULL,
-  created_at timestamptz DEFAULT now()
-)
 
 -- ✅ プッシュ通知システム
 -- プッシュ通知購読
@@ -306,38 +286,8 @@ security_audit_log (
   created_at timestamptz DEFAULT now()
 )
 
--- ✅ コミュニティシステム（実装完了）
--- コミュニティ
-communities (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  name text NOT NULL,
-  description text,
-  owner_user_id uuid NOT NULL REFERENCES profiles(id),
-  member_count integer DEFAULT 1,
-  average_rating integer DEFAULT 1200,
-  password_hash text,
-  created_at timestamptz DEFAULT now(),
-  updated_at timestamptz DEFAULT now()
-)
 
--- コミュニティメンバー（✅ 1ユーザー1コミュニティ制限）
-community_members (
-  community_id uuid NOT NULL REFERENCES communities(id),
-  user_id uuid NOT NULL REFERENCES profiles(id) UNIQUE,  -- ✅ ユニーク制約追加
-  role community_role DEFAULT 'member',
-  joined_at timestamptz DEFAULT now(),
-  PRIMARY KEY (community_id, user_id),
-  CONSTRAINT unique_user_community UNIQUE (user_id)  -- ✅ 1ユーザー1コミュニティ制限
-)
 
--- コミュニティチャット
-community_chat_messages (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  community_id uuid NOT NULL REFERENCES communities(id),
-  user_id uuid NOT NULL REFERENCES profiles(id),
-  content text NOT NULL,
-  created_at timestamptz DEFAULT now()
-)
 
 -- ✅ シーズンシステム (実装完了)
 -- シーズン
@@ -441,13 +391,8 @@ community_role: 'owner', 'admin', 'member'
 
 ### レーティングシステム
 5. **`calculate_elo_rating_with_format(winner_rating, loser_rating, battle_format)`**
-   - 形式別Kファクター: MAIN_BATTLE(32), MINI_BATTLE(24), THEME_CHALLENGE(20)
+   - 形式別Kファクター: MAIN_BATTLE(32), MINI_BATTLE(24), 
    
-6. **`get_rank_from_rating(rating)`**
-   - ランク判定: Grandmaster(1800+), Master(1600+), Expert(1400+), Advanced(1300+), Intermediate(1200+), Beginner(1100+)
-   
-7. **`get_rank_color_from_rating(rating)`**
-   - ランク色取得: ランクに応じた色コード返却
    
 8. **`update_battle_ratings_safe(p_battle_id, p_winner_id)`** ✅ **実際の主要関数**
    - **削除ユーザー対応**: `is_deleted`フラグをチェックし、削除済みユーザーはレーティング更新をスキップ
@@ -494,7 +439,7 @@ community_role: 'owner', 'admin', 'member'
     - **自動統合**: フロントエンドの投稿フローと完全統合
 
 28. **`can_submit_video()` & `get_submission_status()`**
-    - **シーズン制限チェック**: シーズン終了3日前からの投稿制限（2025年8月23日実装）
+    - **シーズン制限チェック**: シーズン終了1日前からの投稿制限（2025年8月23日実装）
     - **統合判定**: 24時間制限とシーズン制限の両方をチェック
     - **UI連携**: フロントエンドでの制限状況表示と適切なエラーメッセージ
 
@@ -561,7 +506,7 @@ community_role: 'owner', 'admin', 'member'
 
 ### ヘルパー関数 ✅ **2025-07-14修正完了**
 23. **`get_k_factor_by_format(battle_format text)`** ✅ **TEXT版**
-    - **形式別Kファクター**: MAIN_BATTLE(32), MINI_BATTLE(24), THEME_CHALLENGE(20)
+    - **形式別Kファクター**: MAIN_BATTLE(32), MINI_BATTLE(24), 
     - **デフォルト値**: 不明な形式の場合は32を返却
     
 24. **`get_k_factor_by_format(battle_format battle_format)`** ✅ **ENUM版**
@@ -589,56 +534,6 @@ community_role: 'owner', 'admin', 'member'
 29. **`get_active_season()`**
     - 現在アクティブなシーズン情報を取得する。
 
-## 🏘️ コミュニティシステム関数（実装済み） ✅
-
-### コミュニティ基本操作
-28. **`create_community(p_name, p_description, p_password)`** ✅ **コミュニティ作成**
-    - **機能**: 新規コミュニティ作成（パスワード保護対応）
-    - **パラメータ**: 名前（必須）、説明（任意）、パスワード（任意）
-    - **戻り値**: 成功フラグ、メッセージ、コミュニティID
-    - **セキュリティ**: 認証済みユーザーのみ、オーナー権限自動付与
-
-29. **`join_community(p_community_id, p_password)`** ✅ **コミュニティ参加**
-    - **機能**: 既存コミュニティへの参加
-    - **パスワード認証**: プライベートコミュニティ対応
-    - **自動統計更新**: メンバー数、平均レーティング自動更新
-    - **重複チェック**: 既存メンバーのエラーハンドリング
-
-30. **`leave_community(p_community_id)`** ✅ **コミュニティ退出**
-    - **機能**: コミュニティからの退出
-    - **制限**: オーナーは退出不可（譲渡または削除が必要）
-    - **自動統計更新**: メンバー数、平均レーティング自動更新
-    - **データ整合性**: 退出後のデータクリーンアップ
-
-### コミュニティ管理機能
-31. **`kick_member_from_community(p_community_id, p_target_user_id)`** ✅ **メンバーキック**
-    - **権限**: オーナー（全メンバー）、管理者（一般メンバーのみ）
-    - **制限**: 自分自身はキック不可
-    - **自動統計更新**: メンバー数、平均レーティング更新
-    - **セキュリティ**: 権限チェック、RLS適用
-
-32. **`update_member_role(p_community_id, p_target_user_id, p_new_role)`** ✅ **役割変更**
-    - **権限**: オーナーのみ実行可能
-    - **役割**: 'admin' ↔ 'member' の昇格・降格
-    - **制限**: オーナー役割の変更は不可
-    - **ログ**: 役割変更の履歴追跡
-
-### 1コミュニティ制限システム ✅ **v2更新**
-33. **`get_user_current_community(p_user_id)`** ✅ **現在のコミュニティ取得**
-    - **機能**: ユーザーが現在所属しているコミュニティ情報を取得
-    - **レスポンス**: コミュニティ詳細（ID、名前、説明、役割等）
-    - **用途**: 自動リダイレクト判定、現在の所属状況確認
-
-34. **`join_community(p_community_id, p_password)` (更新版)** ✅ **自動退出機能**
-    - **新機能**: 既存コミュニティから自動退出→新コミュニティに参加
-    - **制限**: 1ユーザー1コミュニティのみ
-    - **統計更新**: 両方のコミュニティの統計を自動更新
-    - **seamless移行**: ユーザーは意識せずにコミュニティを切り替え
-
-35. **`sync_user_community()`** ✅ **同期トリガー関数**
-    - **機能**: community_membersテーブルの変更をprofiles.current_community_idに同期
-    - **トリガー**: INSERT/DELETE時に自動実行
-    - **一貫性**: データベースレベルでの整合性保証
 
 ## 🔧 Edge Functions（実装済み）
 ### `/submission-webhook` ✅ **マッチング処理の中核**
@@ -677,16 +572,6 @@ community_role: 'owner', 'admin', 'member'
 - **スケジュール**: pg_cronで定期実行（日次）
 - **エラーハンドリング**: API制限・ネットワークエラー対応
 
-### 事前登録システム関連 ✅ **新規実装**
-### `/pre-register` ✅ **事前登録処理**
-- **機能**: サービス公開前の事前登録受付
-- **処理**:
-  1. メールアドレス・電話番号の重複チェック
-  2. `pre_registered_users`テーブルに保存
-  3. 登録完了メール自動送信（HTML/テキスト両対応）
-  4. 統計情報の更新
-- **バリデーション**: メール形式・電話番号形式チェック
-- **セキュリティ**: スパム対策・レート制限
 
 ### 管理者システム関連 ✅
 ### `/admin-news` ✅ **ニュース管理**
@@ -695,13 +580,6 @@ community_role: 'owner', 'admin', 'member'
 - **処理**: CRUD操作（作成・読取・更新・削除）
 - **フィールド**: タイトル・内容・画像URL・公開状態
 
-### `/admin-pre-registration` ✅ **事前登録管理**
-- **機能**: 事前登録データの管理・エクスポート
-- **権限**: 管理者権限チェック必須
-- **処理**: 
-  1. 登録者一覧取得（フィルタリング・ソート対応）
-  2. CSV/JSON形式でのデータエクスポート
-  3. 登録統計の生成
 
 ### マッチメイキング戦略（二段階システム）
 ```javascript
@@ -736,11 +614,6 @@ community_role: 'owner', 'admin', 'member'
 ### プライバシー保護ビュー
 - **`public_active_battles`** - アクティブバトル（削除ユーザー匿名化）
 - **`public_archived_battles`** - アーカイブバトル（削除ユーザー匿名化）
-
-### コミュニティビュー ✅ **実装済み**
-- **`global_community_rankings_view`** - 全コミュニティランキング（平均レート・メンバー数順）
-- **`community_rankings_view`** - コミュニティ内メンバーランキング（レート順）
-- **`user_communities_view`** - ユーザー参加コミュニティ一覧（参加日順）
 
 ## 🔧 MCP Supabase Tools 活用
 ### プロジェクト情報
@@ -794,34 +667,6 @@ mcp_supabase_get_logs(project_id, service)
 - **自動トリガー**: `AuthProvider.tsx`で新規登録時（SIGNED_UP）のみ実行
 - **プロフィール設定**: アバター・バイオの2段階ガイド統合
 - **レスポンシブ**: PC/モバイル対応のモーダルサイズ調整
-
-### コミュニティシステム ✅ **完全実装（v2: 1コミュニティ制限）**
-- **CommunityPage**: コミュニティ一覧・作成・検索機能
-  - **デザイン統一**: BattlesPageと同じダークテーマ・グラデーション
-  - **ヒーローセクション**: BeatNexusロゴ・背景画像
-  - **作成モーダル**: フル機能フォーム（名前・説明・プライベート設定）
-  - **検索機能**: コミュニティ名・説明・オーナー名でリアルタイム検索
-  - **✅ 自動リダイレクト**: 既存所属ユーザーは詳細ページに自動転送
-
-- **CommunityDetailPage**: コミュニティ詳細・管理機能
-  - **3タブシステム**: メンバーランキング・チャット・管理
-  - **✅ リアルタイムチャット**: Supabase Realtime連携（RLS無効化で正常動作）
-  - **メンバー管理**: 役割表示・キック・昇格/降格機能
-  - **権限制御**: オーナー・管理者・メンバーの役割ベースアクセス
-
-- **CommunityStore**: Zustand状態管理
-  - **完全CRUD**: 作成・参加・退出・管理操作
-  - **✅ 1コミュニティ制限**: `fetchUserCurrentCommunity()`で現在の所属確認
-  - **リアルタイム同期**: チャットメッセージの自動受信
-  - **エラーハンドリング**: 適切なトーストメッセージ
-  - **データ整合性**: 操作後の自動データ再取得
-
-### ✅ **1コミュニティ制限システムの特徴**
-- **データベース制約**: `unique_user_community`制約でデータレベルでの制限
-- **自動退出**: 新しいコミュニティ参加時に既存から自動退出
-- **シームレス移行**: ユーザーは意識せずにコミュニティを切り替え
-- **リダイレクト**: 既存所属ユーザーは一覧ページから詳細ページに自動転送
-- **データ同期**: トリガー関数による`profiles.current_community_id`の自動同期
 
 ### 最新機能の実装状況 ✅ **全て実装完了**
 

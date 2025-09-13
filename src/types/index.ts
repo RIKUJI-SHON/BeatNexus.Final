@@ -231,6 +231,10 @@ export interface BattleComment {
   superTipVote?: 'A' | 'B';
   // SuperTipの受取ユーザーID（サイド判定用）
   superTipRecipientUserId?: string;
+  // 通常投票コメントが SuperTip コメントと内容重複し抑制された場合 true
+  duplicateSuppressed?: boolean;
+  // 重複抑制された通常コメントが参照する SuperTip コメント ID
+  suppressedBySuperTipId?: string;
 }
 
 export interface ArchivedBattleVote {

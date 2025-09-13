@@ -1110,18 +1110,51 @@ export const useBattleStore = create<BattleState>((set, get) => ({
         return timeB - timeA;
       });
 
-  // 2.5) 重複排除（仕様優先）:
-  //     同一ユーザーが Super Tip コメントを投稿している場合は、
-  //     そのユーザーの「通常の投票コメント」を一覧から除外し、Super Tip 側のみ表示する。
-  //     （テキスト一致に依存せず、ユーザーID基準で排除することで重複を確実に防止）
-  const superTipUserSet = new Set(commentsFromSuperTips.map((c) => c.user_id));
-  const dedupedVoteComments = commentsFromVotes.filter((c) => !superTipUserSet.has(c.user_id));
+      // === 改良仕様: ユーザー単位で通常コメントを全面排除しない ===
+      // 1) 同一ユーザーが Super Tip と 通常コメントを両方持つ場合、
+      //    テキスト(空白trim)が完全一致する通常コメントは非表示(duplicateSuppressed)にする。
+      // 2) 異なる内容なら両方表示。
+      // 3) 表示順: 先頭 SuperTip (上で sort 済) → 通常コメント(created_at DESC)。
+      // 4) パフォーマンス: 大量表示を避けるため各カテゴリ最大 150 件まで。
 
-      // 3) マージ：SuperTipコメントを先頭に並べ、その後に投票コメント（双方とも作成日時の降順を保つ）
-      // 既に個別で降順にしているので、単純連結でOK
+      const superTipByUser = new Map<string, BattleComment[]>(
+        commentsFromSuperTipsSorted.reduce<[string, BattleComment[]][]>((acc, c) => {
+          const arr = superTipByUser.get(c.user_id) ?? [];
+          arr.push(c);
+          return acc;
+        }, [])
+      );
+      // 上の reduce で Map を直接参照できないので再構築
+      // 修正: 直接生成
+      const superTipMap = new Map<string, BattleComment[]>();
+      for (const st of commentsFromSuperTipsSorted) {
+        const list = superTipMap.get(st.user_id) || [];
+        list.push(st);
+        superTipMap.set(st.user_id, list);
+      }
+
+      const processedVoteComments: BattleComment[] = commentsFromVotes.map(vc => {
+        const relatedSuperTips = superTipMap.get(vc.user_id) || [];
+        if (relatedSuperTips.length === 0) return vc; // そのまま
+        const vcText = (vc.comment || vc.content || '').trim();
+        // いずれかの Super Tip コメントとテキスト一致なら抑制
+        const matched = relatedSuperTips.some(st => (st.comment || st.content || '').trim() === vcText && vcText.length > 0);
+        if (matched) {
+          return { ...vc, duplicateSuppressed: true, suppressedBySuperTipId: relatedSuperTips[0].id } as BattleComment;
+        }
+        return vc;
+      });
+
+      // 通常コメントの並べ替え (作成日時 DESC)
+      const normalSorted = [...processedVoteComments].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+
+      // 件数制限
+      const limitedSuperTips = commentsFromSuperTipsSorted.slice(0, 150);
+      const limitedNormals = normalSorted.filter(c => !c.duplicateSuppressed).slice(0, 150);
+
       const merged: BattleComment[] = [
-        ...commentsFromSuperTipsSorted,
-        ...dedupedVoteComments,
+        ...limitedSuperTips,
+        ...limitedNormals,
       ];
 
       set(state => ({

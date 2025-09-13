@@ -17,6 +17,8 @@ interface VoteCommentModalProps {
   recipientUserId?: string; // 決済時の受け取り先
   onRefreshVoteStatus?: () => Promise<void>;
   initialSupportOn?: boolean; // 追加: 初期状態で支援ONにする
+  forcedSuperTip?: boolean; // 追加: Super Tip を強制ONにしトグル禁止
+  forceMessage?: string; // 追加: 上部に表示する案内メッセージ
 }
 
 export const VoteCommentModal: React.FC<VoteCommentModalProps> = ({
@@ -30,6 +32,8 @@ export const VoteCommentModal: React.FC<VoteCommentModalProps> = ({
   recipientUserId,
   onRefreshVoteStatus,
   initialSupportOn = false,
+  forcedSuperTip = false,
+  forceMessage,
 }) => {
   const { t } = useTranslation();
   const [comment, setComment] = useState('');
@@ -37,7 +41,7 @@ export const VoteCommentModal: React.FC<VoteCommentModalProps> = ({
   // const [showSuperTipModal, setShowSuperTipModal] = useState(false);
 
   // --- Super Tip (opt-in) ---
-  const [superTipOn, setSuperTipOn] = useState(initialSupportOn);
+  const [superTipOn, setSuperTipOn] = useState(initialSupportOn || forcedSuperTip);
   const [amount, setAmount] = useState<number>(300);
   const [piClientSecret, setPiClientSecret] = useState<string | null>(null);
   const [returnUrl, setReturnUrl] = useState<string | null>(null);
@@ -256,6 +260,11 @@ export const VoteCommentModal: React.FC<VoteCommentModalProps> = ({
             <div className="flex items-center gap-3">
               <div className={`w-4 h-4 rounded-full ${player === 'A' ? 'bg-cyan-400' : 'bg-pink-400'}`}></div>
               <h2 className="text-xl font-bold text-white">{t('voteCommentModal.title')}</h2>
+              {forceMessage && (
+                <div className="mt-2 text-xs w-full rounded border border-amber-500/40 bg-amber-900/30 px-3 py-2 text-amber-200">
+                  {forceMessage}
+                </div>
+              )}
             </div>
             <button
               onClick={onClose}
@@ -274,13 +283,19 @@ export const VoteCommentModal: React.FC<VoteCommentModalProps> = ({
                 <button
                   type="button"
                   onClick={() => {
+                    if (forcedSuperTip) return; // 強制時は無効化
                     setSuperTipOn((v) => !v);
                     setTipError(null);
                     setPiClientSecret(null);
                     setShowTipCommentError(false);
+                    if (!superTipOn && !comment.trim()) {
+                      setComment(t('superTip.modal.defaultComment'));
+                    }
                   }}
-                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition ${superTipOn ? 'bg-amber-500' : 'bg-gray-600'}`}
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition ${superTipOn ? 'bg-amber-500' : 'bg-gray-600'} ${forcedSuperTip ? 'opacity-60 cursor-not-allowed' : ''}`}
                   aria-pressed={superTipOn}
+                  aria-disabled={forcedSuperTip}
+                  disabled={forcedSuperTip}
                 >
                   <span
                     className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${superTipOn ? 'translate-x-6' : 'translate-x-1'}`}
