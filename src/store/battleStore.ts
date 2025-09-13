@@ -1047,10 +1047,7 @@ export const useBattleStore = create<BattleState>((set, get) => ({
       amount_jpy,
           created_at,
           payment_status,
-          profiles:sender_user_id (
-            username,
-            avatar_url
-          )
+          sender:sender_user_id ( username, avatar_url )
         `)
         .eq('battle_id', effectiveBattleId)
         .eq('payment_status', 'succeeded')
@@ -1070,24 +1067,21 @@ export const useBattleStore = create<BattleState>((set, get) => ({
       type RawSuperTip = {
         id: string;
         sender_user_id: string;
-  recipient_user_id: string;
-  vote: 'A' | 'B' | null;
+        recipient_user_id: string;
+        vote: 'A' | 'B' | null;
         comment: string;
-  amount_jpy: number;
+        amount_jpy: number;
         created_at: string;
         payment_status: string;
-        profiles?: (
-          { username: string; avatar_url: string | null } |
-          { username: string; avatar_url: string | null }[]
-        ) | null;
+        sender?: { username: string; avatar_url: string | null } | { username: string; avatar_url: string | null }[] | null;
       };
 
       const rawTips: RawSuperTip[] = ((superTips ?? []) as unknown as RawSuperTip[]);
 
       const commentsFromSuperTips: BattleComment[] = rawTips
-        .filter((t) => ((t.comment ?? '').trim().length > 0)) // 空文字は除外
+        .filter((t) => ((t.comment ?? '').trim().length > 0))
         .map((t) => {
-          const prof = Array.isArray(t.profiles) ? (t.profiles[0] ?? null) : (t.profiles ?? null);
+          const prof = Array.isArray(t.sender) ? (t.sender[0] ?? null) : (t.sender ?? null);
           return {
             id: t.id,
             post_id: '',

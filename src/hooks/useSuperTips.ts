@@ -49,10 +49,7 @@ export const useSuperTips = () => {
           amount_jpy,
           payment_status,
           created_at,
-          profiles!sender_user_id (
-            username,
-            avatar_url
-          )
+          sender:sender_user_id ( username, avatar_url )
         `)
         .eq('recipient_user_id', user.user.id)
         .eq('payment_status', 'succeeded')
@@ -65,17 +62,38 @@ export const useSuperTips = () => {
       }
 
       // バトル情報を別途取得（存在する場合のみ）
+      type RawTip = {
+        id: string;
+        battle_id: string | null;
+        sender_user_id: string;
+        vote: 'A' | 'B' | null;
+        comment: string;
+        amount_jpy: number;
+        payment_status: string;
+        created_at: string;
+        sender?: { username: string; avatar_url: string | null } | { username: string; avatar_url: string | null }[];
+      };
       const tipsWithBattles = await Promise.all(
-        (data || []).map(async (tip) => {
+        (data || []).map(async (tip: RawTip) => {
+          // sender は埋め込み alias (単体または配列) 想定
+          const senderRaw = tip.sender;
+          const sender_profile = Array.isArray(senderRaw)
+            ? (senderRaw[0] || { username: 'Unknown User', avatar_url: null })
+            : (senderRaw || { username: 'Unknown User', avatar_url: null });
           const tipWithCorrectProfile = {
-            ...tip,
-            sender_profile: Array.isArray(tip.profiles) && tip.profiles.length > 0 
-              ? tip.profiles[0] 
-              : { username: 'Unknown User', avatar_url: null }
+            id: tip.id as string,
+            battle_id: tip.battle_id as string | null,
+            sender_user_id: tip.sender_user_id as string,
+            vote: tip.vote as ('A'|'B'|null),
+            comment: tip.comment as string,
+            amount_jpy: tip.amount_jpy as number,
+            payment_status: tip.payment_status as string,
+            created_at: tip.created_at as string,
+            sender_profile,
           };
 
           if (!tip.battle_id) {
-            return { ...tipWithCorrectProfile, battle: null };
+            return { ...tipWithCorrectProfile, battle: null } as SuperTipReceived;
           }
 
           try {
@@ -100,10 +118,10 @@ export const useSuperTips = () => {
                 : { username: 'Unknown Player' }
             } : null;
 
-            return { ...tipWithCorrectProfile, battle: battleWithProfiles };
+            return { ...tipWithCorrectProfile, battle: battleWithProfiles } as SuperTipReceived;
           } catch (battleError) {
             console.warn(`Battle ${tip.battle_id} not found or error:`, battleError);
-            return { ...tipWithCorrectProfile, battle: null };
+            return { ...tipWithCorrectProfile, battle: null } as SuperTipReceived;
           }
         })
       );
