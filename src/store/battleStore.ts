@@ -1060,6 +1060,12 @@ export const useBattleStore = create<BattleState>((set, get) => ({
         console.error('❌ Error fetching super tip comments:', tipErr);
         // SuperTip取得に失敗しても致命的ではないため、投票コメントのみで継続
       }
+      console.log('[SuperTipDebug] raw query result:', {
+        effectiveBattleId,
+        count: superTips?.length || 0,
+        firstIds: (superTips || []).slice(0,3).map((r => (r as { id?: string }).id)),
+        tipErr
+      });
 
       type RawSuperTip = {
         id: string;
@@ -1079,7 +1085,7 @@ export const useBattleStore = create<BattleState>((set, get) => ({
       const rawTips: RawSuperTip[] = ((superTips ?? []) as unknown as RawSuperTip[]);
 
       const commentsFromSuperTips: BattleComment[] = rawTips
-        .filter((t) => ((t.comment ?? '').trim().length > 0))
+        .filter((t) => ((t.comment ?? '').trim().length > 0)) // 空文字は除外
         .map((t) => {
           const prof = Array.isArray(t.profiles) ? (t.profiles[0] ?? null) : (t.profiles ?? null);
           return {
@@ -1100,15 +1106,11 @@ export const useBattleStore = create<BattleState>((set, get) => ({
           } as BattleComment;
         });
 
-      // 2.4) Super Tip を金額降順（同額は作成日時の新しい順）で並べ替え
-      const commentsFromSuperTipsSorted = [...commentsFromSuperTips].sort((a, b) => {
-        const amtA = a.superTipAmountJpy ?? 0;
-        const amtB = b.superTipAmountJpy ?? 0;
-        if (amtB !== amtA) return amtB - amtA;
-        const timeA = new Date(a.created_at).getTime();
-        const timeB = new Date(b.created_at).getTime();
-        return timeB - timeA;
-      });
+      console.log('[SuperTipDebug] mapped (after filter) count:', commentsFromSuperTips.length);
+
+      // 2.4) Super Tip 並び順: 仕様 v1.1 -> 作成日時 DESC 優先（将来ランキング表示を別UIに分離）
+      const commentsFromSuperTipsSorted = [...commentsFromSuperTips].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+      console.log('[SuperTipDebug] sorted order first 3:', commentsFromSuperTipsSorted.slice(0,3).map(c=>({id:c.id, created_at:c.created_at, amt:c.superTipAmountJpy})));
 
       // === 改良仕様: ユーザー単位で通常コメントを全面排除しない ===
       // 1) 同一ユーザーが Super Tip と 通常コメントを両方持つ場合、
@@ -1124,14 +1126,28 @@ export const useBattleStore = create<BattleState>((set, get) => ({
         superTipMap.set(st.user_id, list);
       }
 
+      // デバッグフラグ: 抑制ロジックを無効化（.env: VITE_DISABLE_SUPERTIP_SUPPRESSION=true）
+  // 型安全に環境変数へアクセス（Vite想定）
+  interface EnvMeta { VITE_DISABLE_SUPERTIP_SUPPRESSION?: string }
+  const disableSuppression = (import.meta as unknown as { env: EnvMeta }).env?.VITE_DISABLE_SUPERTIP_SUPPRESSION === 'true';
+      if (disableSuppression) {
+        console.log('[SuperTipDebug] suppression disabled via VITE_DISABLE_SUPERTIP_SUPPRESSION');
+      }
+
       // 仕様変更: 「普通のvoteとsupertipどちらもある場合はsupertipのみ表示」
       //   -> 同一ユーザーが1件以上のSuperTipコメント(支払い成功)を持つ場合、そのユーザーの通常voteコメントは全て抑制する。
       //   旧実装ではテキストが完全一致する場合のみ抑制していたが要件に合わせて条件を拡張。
       const processedVoteComments: BattleComment[] = commentsFromVotes.map(vc => {
+        if (disableSuppression) return vc;
         const relatedSuperTips = superTipMap.get(vc.user_id) || [];
         if (relatedSuperTips.length === 0) return vc; // SuperTipなし → 表示
         // 一件でもSuperTipがあればそのユーザーの通常コメントは非表示
         return { ...vc, duplicateSuppressed: true, suppressedBySuperTipId: relatedSuperTips[0].id } as BattleComment;
+      });
+      console.log('[SuperTipDebug] stats:', {
+        voteComments: commentsFromVotes.length,
+        superTipVisible: commentsFromSuperTipsSorted.length,
+        suppressedNormals: processedVoteComments.filter(c=>c.duplicateSuppressed).length
       });
 
       // 通常コメントの並べ替え (作成日時 DESC)
@@ -1145,6 +1161,10 @@ export const useBattleStore = create<BattleState>((set, get) => ({
         ...limitedSuperTips,
         ...limitedNormals,
       ];
+
+      if (merged.filter(c=>c.isSuperTip).length === 0) {
+        console.log('[SuperTipDebug] No visible super tips in merged list. Check RLS, payment_status, battle_id, or env flag.');
+      }
 
       set(state => ({
         battleComments: {
