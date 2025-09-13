@@ -1124,16 +1124,14 @@ export const useBattleStore = create<BattleState>((set, get) => ({
         superTipMap.set(st.user_id, list);
       }
 
+      // 仕様変更: 「普通のvoteとsupertipどちらもある場合はsupertipのみ表示」
+      //   -> 同一ユーザーが1件以上のSuperTipコメント(支払い成功)を持つ場合、そのユーザーの通常voteコメントは全て抑制する。
+      //   旧実装ではテキストが完全一致する場合のみ抑制していたが要件に合わせて条件を拡張。
       const processedVoteComments: BattleComment[] = commentsFromVotes.map(vc => {
         const relatedSuperTips = superTipMap.get(vc.user_id) || [];
-        if (relatedSuperTips.length === 0) return vc; // そのまま
-        const vcText = (vc.comment || vc.content || '').trim();
-        // いずれかの Super Tip コメントとテキスト一致なら抑制
-        const matched = relatedSuperTips.some(st => (st.comment || st.content || '').trim() === vcText && vcText.length > 0);
-        if (matched) {
-          return { ...vc, duplicateSuppressed: true, suppressedBySuperTipId: relatedSuperTips[0].id } as BattleComment;
-        }
-        return vc;
+        if (relatedSuperTips.length === 0) return vc; // SuperTipなし → 表示
+        // 一件でもSuperTipがあればそのユーザーの通常コメントは非表示
+        return { ...vc, duplicateSuppressed: true, suppressedBySuperTipId: relatedSuperTips[0].id } as BattleComment;
       });
 
       // 通常コメントの並べ替え (作成日時 DESC)
