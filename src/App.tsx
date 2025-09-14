@@ -96,6 +96,7 @@ import './tailwind.extensions.css';
 import { useNotificationStore } from './store/notificationStore';
 import { I18nextProvider } from 'react-i18next';
 import i18n from './i18n';
+import { BottomNav } from './components/layout/BottomNav';
 
 // Router内で使用するコンポーネント（useLocationが使える）
 function RouterContent() {
@@ -108,7 +109,7 @@ function RouterContent() {
 
   return (
     <>
-      <div className="min-h-screen">
+      <div className="min-h-screen pb-24 md:pb-0">{/* pb for bottom nav space on mobile */}
         <Header />
         <main id="main-content" className="w-full pt-16" role="main">
           <Routes>
@@ -157,6 +158,8 @@ function RouterContent() {
           </Routes>
         </main>
         <Footer />
+        {/* Mobile Bottom Navigation */}
+        <BottomNav />
       </div>
     </>
   );

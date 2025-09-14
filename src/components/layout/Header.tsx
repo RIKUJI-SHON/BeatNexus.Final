@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu, X, Bell, ShoppingCart, Plus, User, Crown, Settings, LogOut, Check, Swords, Clock, CheckCircle, Trophy, Award, Handshake, RefreshCw, Palette } from 'lucide-react';
-import { Button } from '../ui/Button';
+import { Menu, X, Bell, Plus, Swords, Clock, CheckCircle, Trophy, Award, Handshake, RefreshCw } from 'lucide-react';
 import { HoverCard } from '../ui/HoverCard';
 import { NotificationDropdown } from '../ui/NotificationDropdown';
 import { useTranslation } from 'react-i18next';
@@ -30,9 +29,9 @@ export const Header: React.FC = () => {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, signOut } = useAuthStore();
+  const { user } = useAuthStore();
   const { openAuthModal } = useAuthModal();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const {
     notifications,
     unreadCount,
@@ -49,7 +48,8 @@ export const Header: React.FC = () => {
     } else {
       setUserProfile(null);
     }
-  }, [user]);
+    // fetchUserProfile は安定した参照 (コンポーネント内に定義) のため依存に追加
+  }, [user, /* eslint-disable-line react-hooks/exhaustive-deps */]);
 
   // プロフィールドロップダウンの外側クリックで閉じる
   useEffect(() => {
@@ -457,94 +457,7 @@ export const Header: React.FC = () => {
               </div>
             )}
 
-            {/* Mobile Profile Icon - ログインユーザーのみ表示 */}
-            {user && (
-              <div className="relative profile-dropdown-container">
-                <button 
-                  className="w-8 h-8 rounded-lg overflow-hidden border border-gray-700 hover:border-cyan-500/50 transition-colors"
-                  onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
-                >
-                  <img
-                    src={avatarUrl}
-                    alt="Profile"
-                    className="w-full h-full object-cover"
-                  />
-                </button>
-                
-                {/* Mobile Profile Dropdown */}
-                {isProfileDropdownOpen && (
-                  <div className="fixed right-4 top-16 w-72 z-50">
-                    <div className="bg-gray-900 rounded-lg border border-cyan-500/20 shadow-xl overflow-hidden">
-                      {/* User Info Section */}
-                      <div className="p-4 bg-gradient-to-r from-gray-800 to-gray-900">
-                        <div className="flex items-center gap-3 mb-3">
-                          <div className="relative">
-                            <img
-                              src={avatarUrl}
-                              alt="Profile"
-                              className="w-16 h-16 rounded-lg border-2 border-cyan-500/30"
-                            />
-                          </div>
-                          <div>
-                            <h3 className="text-lg font-bold text-white">{userProfile?.username || user.email}</h3>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Menu Items */}
-                      <div className="p-2">
-                        <Link 
-                          to="/profile"
-                          className="flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-gray-800 rounded-lg transition-colors"
-                          onClick={() => setIsProfileDropdownOpen(false)}
-                        >
-                          <User className="h-5 w-5" />
-                          {t('hoverCard.profile')}
-                        </Link>
-                        <Link 
-                          to="/my-battles"
-                          className="flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-gray-800 rounded-lg transition-colors"
-                          onClick={() => setIsProfileDropdownOpen(false)}
-                        >
-                          <Crown className="h-5 w-5" />
-                          {t('hoverCard.myBattles')}
-                        </Link>
-                        <Link 
-                          to="/settings"
-                          className="flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-gray-800 rounded-lg transition-colors"
-                          onClick={() => setIsProfileDropdownOpen(false)}
-                        >
-                          <Settings className="h-5 w-5" />
-                          {t('hoverCard.settings')}
-                        </Link>
-                        {/* 開発/デザイン確認用リンク */}
-                        {import.meta.env.DEV && (
-                          <Link 
-                            to="/ad-preview"
-                            className="flex items-center gap-3 px-3 py-2 text-yellow-300 hover:text-yellow-100 hover:bg-yellow-800/20 rounded-lg transition-colors"
-                            onClick={() => setIsProfileDropdownOpen(false)}
-                          >
-                            <Palette className="h-5 w-5" />
-                            広告プレビュー
-                          </Link>
-                        )}
-                        <button 
-                          className="w-full flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-gray-800 rounded-lg transition-colors"
-                          onClick={async () => {
-                            await signOut();
-                            navigate('/');
-                            setIsProfileDropdownOpen(false);
-                          }}
-                        >
-                          <LogOut className="h-5 w-5" />
-                          {t('hoverCard.logout')}
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
+            {/* Mobile Profile Icon は BottomNav に統合済み。ここでは非表示 (コード削除)。 */}
             
             {/* Mobile menu button */}
           <button 
