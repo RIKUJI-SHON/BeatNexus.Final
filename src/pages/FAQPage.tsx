@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ChevronDown, ChevronUp, HelpCircle, MessageCircle, Trophy, Users, Settings } from 'lucide-react';
+import JsonLd from '../components/seo/JsonLd';
 import { useOnboardingStore } from '../store/onboardingStore';
 import { Card } from '../components/ui/Card';
 
@@ -46,7 +47,7 @@ const FAQPage: React.FC = () => {
     }
   ];
 
-  const faqs: FAQItem[] = [
+  const faqs: FAQItem[] = React.useMemo<FAQItem[]>(() => [
     // Getting Started
     {
       category: t('faq.categories.gettingStarted'),
@@ -119,7 +120,7 @@ const FAQPage: React.FC = () => {
       question: t('faq.items.prohibited.question'),
       answer: t('faq.items.prohibited.answer')
     }
-  ];
+  ], [t]);
 
   const getCategoryIcon = (categoryName: string) => {
     const category = categories.find(cat => cat.name === categoryName);
@@ -132,8 +133,19 @@ const FAQPage: React.FC = () => {
     return category?.color || 'text-gray-500';
   };
 
+  const faqJsonLd = useMemo(() => ({
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    'mainEntity': faqs.slice(0, 10).map(f => ({
+      '@type': 'Question',
+      'name': f.question,
+      'acceptedAnswer': { '@type': 'Answer', 'text': f.answer }
+    }))
+  }), [faqs]);
+
   return (
     <div className="min-h-screen bg-slate-950 py-6 sm:py-10">
+      <JsonLd data={faqJsonLd} />
       <div className="container-ultra-wide">
         {/* Hero Section */}
         <div className="text-center mb-8 sm:mb-12">

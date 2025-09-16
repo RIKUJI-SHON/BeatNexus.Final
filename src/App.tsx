@@ -54,6 +54,8 @@ import { SeasonEndModal } from './components/ui/SeasonEndModal';
 // Pages
 import HomePage from './pages/HomePage';
 import HomepageTestPage from './pages/HomepageTestPage';
+import AboutPage from './pages/AboutPage';
+import FeaturesPage from './pages/FeaturesPage';
 import BattlesPage from './pages/BattlesPage';
 import BattleViewPage from './pages/BattleViewPage';
 import BattleReplayPage from './pages/BattleReplayPage';
@@ -124,6 +126,8 @@ function RouterContent() {
             <Route path="/profile/:userId" element={<ProfilePage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/ranking" element={<RankingPage />} />
+            <Route path="/about" element={<AboutPage />} />
+            <Route path="/features" element={<FeaturesPage />} />
             <Route path="/rating-test" element={<RatingTestPage />} />
             <Route path="/community" element={<CommunityComingSoonPage />} />
             <Route path="/community/:id" element={<CommunityDetailPage />} />
