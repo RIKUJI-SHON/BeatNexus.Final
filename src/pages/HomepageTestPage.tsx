@@ -345,24 +345,6 @@ const HomepageTestPage: React.FC = () => {
       {/* Season Announcement & Beta Stats (moved below Hero) */}
       <section className="py-16 bg-gradient-to-b from-gray-900 to-black">
         <div className="max-w-6xl mx-auto px-4">
-          {/* 独自価値/プラットフォーム説明セクション (AdSense対策: 長文コンテンツ) */}
-          <div className="mb-20 text-left space-y-10 leading-relaxed">
-            <article className="prose prose-invert max-w-none">
-              <h2 className="text-3xl font-bold mb-4 bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">BeatNexusが解決する課題</h2>
-              <p>ビートボックスのオンライン競技は、従来「イベント待ち」「生配信依存」「エントリー審査」などの摩擦が多く、継続的な成長サイクルを阻害していました。BeatNexusは<strong>常時参加可能な非同期バトル</strong>と<strong>コミュニティ駆動の投票</strong>を軸に、誰もが任意のタイミングで腕試しと改善ループを回せる環境を提供します。</p>
-              <h3 className="text-2xl mt-10 font-semibold">段階的レーティングマッチング</h3>
-              <p>投稿直後は近い実力（±50レート）を強く優先し、時間経過に応じて許容差を段階拡張 (±100 → ±200 → 無制限) する独自アルゴリズムを採用。これにより<strong>公平性</strong>と<strong>マッチ成立率</strong>の両立を図ります。待機が長期化して無意味なキャンセルが発生しないよう、pg_cronによる自動処理で定期的に再評価します。</p>
-              <h3 className="text-2xl mt-10 font-semibold">シーズン & 報酬エコシステム</h3>
-              <p>単なる Elo の積み上げではなく、シーズン毎にポイントをスナップショット化し、<strong>期間限定のバッジ/フレーム</strong>を付与。視覚的モチベーションを継続的に再生成し、過去の参加者も新規参入者も同じスタートラインに立てる循環設計です。</p>
-              <h3 className="text-2xl mt-10 font-semibold">不正対策と公正性</h3>
-              <p>電話番号による本人性検証、RLS (Row Level Security) に基づく投票制御、監査ログ <code>security_audit_log</code> による行動トレースでマルチアカウントやボット的投票を抑止。さらにバトル結果確定は専用関数 <code>complete_battle_with_video_archiving</code> に集約し、集計の一貫性と再現性を保証します。</p>
-              <h3 className="text-2xl mt-10 font-semibold">アーカイブと学習循環</h3>
-              <p>完了したバトルは動画URL・最終レート変動・投票分布とともにアーカイブ化。ユーザーは過去対戦を俯瞰し「どの形式で勝率が高いか」などの自己分析が可能になります。将来的にはメタデータ（ジャンルタグなど）を加え、リコメンド精度向上と練習計画最適化を支援予定です。</p>
-              <h3 className="text-2xl mt-10 font-semibold">透明性の高い進化ロードマップ</h3>
-              <p>今後はテーマチャレンジ・リアルタイムイベント連携・生成AIを活用したフィードバック案内など、<strong>「継続的に上達できる世界標準のデジタル競技空間」</strong>を目指して段階的に公開していきます。更新情報は News セクションおよび公式SNSで発信します。</p>
-              <p className="mt-8 text-sm text-gray-400">(本説明は審査・透明性向上のための概要公開文です。技術仕様の詳細は適宜アップデートされます)</p>
-            </article>
-          </div>
           <div className="text-center mb-10">
             <span className="inline-block px-3 py-1 text-xs font-semibold rounded-full bg-cyan-500/10 text-cyan-300 border border-cyan-400/30 mb-4">
               {t('home.landingPage.announcement.badge')}

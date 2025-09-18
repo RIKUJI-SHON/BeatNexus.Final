@@ -5,6 +5,7 @@ import { useAuthStore } from '../../store/authStore';
 import { Button } from '../ui/Button';
 import { Modal } from '../ui/Modal';
 import { PasswordStrengthMeter } from '../ui/PasswordStrengthMeter';
+import PhoneNumberInput from './PhoneNumberInput';
 import { useTranslation, Trans } from 'react-i18next';
 import { validatePasswordStrength, PasswordStrength } from '../../utils/passwordSecurity';
 import { supabase } from '../../lib/supabase';
@@ -54,7 +55,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   const [passwordStrength, setPasswordStrength] = useState<PasswordStrength | null>(null);
   const [resetEmailSent, setResetEmailSent] = useState(false);
   const [sendingResetEmail, setSendingResetEmail] = useState(false);
-  const countryOptions = [
+  const countryOptions = React.useMemo(() => ([
     { code: 'JP', name: 'Japan', dial: '+81', flag: '🇯🇵' },
     { code: 'US', name: 'United States', dial: '+1', flag: '🇺🇸' },
     { code: 'GB', name: 'United Kingdom', dial: '+44', flag: '🇬🇧' },
@@ -76,7 +77,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     { code: 'LA', name: 'Laos', dial: '+856', flag: '🇱🇦' },
     { code: 'SG', name: 'Singapore', dial: '+65', flag: '🇸🇬' },
     // ... add more as needed
-  ];
+  ]), []);
+  // アルファベット順（name昇順）に並び替えた派生配列
+  const sortedCountryOptions = React.useMemo(
+    () => [...countryOptions].sort((a, b) => (a.name ?? a.code).localeCompare(b.name ?? b.code)),
+    [countryOptions]
+  );
   
   const { signIn, signUp } = useAuthStore();
   const navigate = useNavigate();
@@ -732,28 +738,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     <label htmlFor="phone" className="block text-sm font-medium text-gray-300 mb-2">
                       {t('auth.phoneNumber')}
                     </label>
-                    <div className="flex w-full">
-                      <select
-                        id="country"
-                        value={selectedCountry.code}
-                        onChange={(e) => {
-                          const opt = countryOptions.find((c) => c.code === e.target.value);
-                          if (opt) setSelectedCountry({ code: opt.code, dial: opt.dial });
-                        }}
-                        className="px-3 py-3 bg-gray-800/50 border border-r-0 border-gray-600 rounded-l-lg text-white focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition-colors w-28 truncate"
-                      >
-                        {countryOptions.map((c) => (
-                          <option key={c.code} value={c.code}>{`${c.flag ?? c.code} ${c.dial}`}</option>
-                        ))}
-                      </select>
-                      <input
-                        type="tel"
-                        id="phone"
-                        value={phoneNumber}
-                        onChange={(e) => {
-                          const v = e.target.value;
+                    <div className="w-full">
+                      <PhoneNumberInput
+                        countries={sortedCountryOptions}
+                        selected={selectedCountry}
+                        onSelect={(c) => setSelectedCountry({ code: c.code, dial: c.dial })}
+                        phone={phoneNumber}
+                        onChangePhone={(v) => {
                           setPhoneNumber(v);
-                          // 先頭0ガード: 国番号選択制 + E.164 前提。ユーザーが 0 から入力した場合に警告を表示。
                           if (v.startsWith('0')) {
                             if (selectedCountry.code === 'LA') {
                               setPhoneInputWarning(t('auth.phoneWarning.laTrunkZero'));
@@ -766,9 +758,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                             setPhoneInputWarning(null);
                           }
                         }}
-                        placeholder="00 1234 5678"
-                        className="flex-1 px-4 py-3 bg-gray-800/50 border border-gray-600 rounded-r-lg text-white placeholder-gray-400 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition-colors"
-                        required
+                        inputId="phone"
                       />
                     </div>
                     {phoneInputWarning && (

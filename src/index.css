@@ -400,6 +400,135 @@ video {
   animation: color_anim 1s infinite 0.4s;
 }
 
+/* ===== Phone number custom UI (scoped under .bnx-phone) ===== */
+.bnx-phone .ui-wrapper {
+  --width: 100%;
+  --height: 50px;
+  --background: #1f2937; /* match bg-gray-800 */
+  --text-color: #e5e7eb; /* text-gray-200 */
+  --border-color: #4b5563; /* border-gray-600 */
+  --border-focus-color: rgb(34, 211, 238); /* cyan-400 */
+  --shadow-color: rgba(34, 60, 80, 0.2);
+  --shadow-focus-color: rgba(34, 211, 238, 0.2);
+  --dropdown-button-color: #374151; /* gray-700 */
+  --dropdown-button-hover-color: #4b5563; /* gray-600 */
+}
+
+.bnx-phone .ui-wrapper *,
+.bnx-phone .ui-wrapper *::before,
+.bnx-phone .ui-wrapper *::after {
+  box-sizing: border-box;
+  color: var(--text-color);
+}
+
+.bnx-phone .ui-wrapper {
+  width: var(--width);
+  height: var(--height);
+  display: inline-flex;
+  border-radius: 10px;
+  position: relative;
+  border: 1px solid var(--border-color);
+  background-color: var(--background);
+  justify-content: space-between;
+  padding-right: 10px;
+  box-shadow: 0px 2px 5px 0px var(--shadow-color);
+  transition: .2s;
+  user-select: none;
+}
+
+.bnx-phone .dropdown-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 10px;
+  cursor: pointer;
+  border-radius: 9px 0 0 9px;
+  background-color: var(--dropdown-button-color);
+  border-right: 1px solid var(--border-color);
+}
+
+.bnx-phone .dropdown-container .flag { font-size: 18px; margin-right: 6px; }
+
+.bnx-phone .dropdown-container::after {
+  content: "";
+  background-image: url("data:image/svg+xml;base64,PHN2ZyBmaWxsPSIjZTVlN2ViIiB3aWR0aD0iMTIiIGhlaWdodD0iMTIiIHZpZXdCb3g9IjAgMCA3MDAgNzAwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Im0zODAuMzkgNDg0Ljc5IDMwNy4wNC0zMDUuOTljMTYuNzY2LTE3LjgxMiAxNi43NjYtNDUuMDU5IDAtNjEuODI4LTE2Ljc2Ni0xNi43NjYtNDUuMDU5LTE2Ljc2Ni02MS44MjggMGwtMjc1LjYgMjc1LjYtMjc1LjYtMjc1LjZjLTE3LjgxMi0xNi43NjYtNDUuMDU5LTE2Ljc2Ni02MS44MjggMC0xNi43NjYgMTYuNzY2LTE2Ljc2NiA0NC4wMTIgMCA2MS44MjhsMzA1Ljk5IDMwNS45OWMxNy44MTIgMTYuNzY2IDQ1LjA1OSAxNi43NjYgNjEuODI4IDAiLz48L3N2Zz4=");
+  width: 12px;
+  height: 12px;
+  background-position: center;
+  background-size: cover;
+  margin-left: 6px;
+  transition: .2s;
+}
+
+.bnx-phone .is-open .dropdown-container::after { transform: rotate(180deg) translateY(-2px); }
+.bnx-phone .dropdown-container:hover { background-color: var(--dropdown-button-hover-color); }
+
+.bnx-phone .select-wrapper {
+  width: 100%;
+  position: absolute;
+  top: calc(var(--height) + 5px);
+  left: 0;
+  opacity: 0;
+  visibility: hidden;
+  transition: .2s;
+  z-index: 20;
+}
+.bnx-phone .select-wrapper.open { opacity: 1; visibility: visible; }
+.bnx-phone .select-wrapper ul {
+  width: 100%;
+  background-color: #111827; /* gray-900 */
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 10px;
+  margin: 0;
+  list-style: none;
+  max-height: 300px;
+  display: inline-flex;
+  flex-direction: column;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  overflow-y: auto;
+  white-space: nowrap;
+}
+.bnx-phone .select-wrapper ul li {
+  display: flex;
+  align-items: center;
+  padding: 6px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.bnx-phone .select-wrapper ul li.active,
+.bnx-phone .select-wrapper ul li:hover { background: #374151; }
+.bnx-phone .select-wrapper ul li span { display: inline-block; margin-right: 10px; }
+
+.bnx-phone .input-wrapper { width: 100%; padding-left: 10px; display: flex; flex-direction: column; justify-content: center; row-gap: 2px; }
+.bnx-phone .input-wrapper legend { font-size: 11px; }
+.bnx-phone .textfield { width: 100%; display: flex; align-items: center; }
+.bnx-phone .textfield .dial-prefix { display:inline-block; margin-right: 6px; opacity: .9; }
+.bnx-phone .textfield input { width: 100%; font-size: 16px; outline: none; border: none; background: none; color: var(--text-color); }
+.bnx-phone .invalid-msg { font-size: 12px; position: absolute; color: #f87171; top: 115%; left: 0; opacity: 0; visibility: hidden; transition: .2s; }
+.bnx-phone .ui-wrapper:focus-within { border-color: var(--border-focus-color); box-shadow: 0px 2px 5px 0px var(--shadow-focus-color); }
+
+/* Search UI inside country dropdown */
+.bnx-phone .country-search { display: flex; align-items: center; position: sticky; top: 0; background: #111827; padding: 8px; z-index: 1; }
+.bnx-phone .country-search .input {
+  font-family: "Montserrat", system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  width: 100%;
+  height: 40px;
+  padding-left: 2.2rem;
+  box-shadow: 0 0 0 1px #2b2c37, 0 0 25px -17px #000;
+  border: 0;
+  border-radius: 10px;
+  background-color: #16171d;
+  outline: none;
+  color: #bdbecb;
+  transition: all .2s ease;
+}
+.bnx-phone .country-search .input::placeholder { color: #bdbecb; }
+.bnx-phone .country-search .input:hover { box-shadow: 0 0 0 2px #2f303d, 0 0 25px -15px #000; }
+.bnx-phone .country-search .input:focus { box-shadow: 0 0 0 2px #2f303d; }
+.bnx-phone .country-search .search-icon { position: absolute; left: 1.25rem; fill: #bdbecb; width: 1rem; height: 1rem; pointer-events: none; }
+
+
 /* ===== Uiverse-inspired Glowing Checkbox (scoped) ===== */
 .bnx-checkbox {
   display: flex;
