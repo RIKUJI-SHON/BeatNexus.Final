@@ -614,11 +614,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                         </div>
                       )}
                     </div>
-                    {battle.one_line_comment_a && (
-                      <div className="mt-1 text-xs text-gray-300 break-words max-w-[220px] md:max-w-[260px]" title={battle.one_line_comment_a || undefined}>
-                        “{battle.one_line_comment_a}”
-                      </div>
-                    )}
+                    {/* 一言コメントは動画直下へ移動 */}
                   </div>
                 </div>
 
@@ -666,11 +662,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                         </div>
                       )}
                     </div>
-                    {battle.one_line_comment_a && (
-                      <div className="mt-1 text-xs text-gray-300 break-words max-w-[220px] md:max-w-[260px]" title={battle.one_line_comment_a || undefined}>
-                        “{battle.one_line_comment_a}”
-                      </div>
-                    )}
+                    {/* 一言コメントは動画直下へ移動 */}
                   </div>
                 </div>
 
@@ -700,6 +692,11 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                     }}
                   />
                 </div>
+                {battle.one_line_comment_a && (
+                  <div className="mt-2 text-sm text-gray-200 font-semibold break-words" title={battle.one_line_comment_a || undefined}>
+                    {battle.one_line_comment_a}
+                  </div>
+                )}
               </div>
 
               {/* VS Separator + スワイプUI（VSが追従） */}
@@ -745,11 +742,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                         </div>
                       )}
                     </div>
-                    {battle.one_line_comment_b && (
-                      <div className="mt-1 text-xs text-gray-300 break-words lg:text-right max-w-[220px] md:max-w-[260px]" title={battle.one_line_comment_b || undefined}>
-                        “{battle.one_line_comment_b}”
-                      </div>
-                    )}
+                    {/* 一言コメントは動画直下へ移動 */}
                   </div>
                   <div 
                     className="w-16 h-16 rounded-full p-1 flex-shrink-0 cursor-pointer hover:scale-105 transition-transform"
@@ -790,6 +783,11 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                     }}
                   />
                 </div>
+                {battle.one_line_comment_b && (
+                  <div className="mt-2 text-sm text-gray-200 font-semibold break-words text-right" title={battle.one_line_comment_b || undefined}>
+                    {battle.one_line_comment_b}
+                  </div>
+                )}
 
                 {/* Player B Name - Below Video on Mobile */}
                 <div className="flex items-center gap-3 mt-4 lg:hidden justify-end">
@@ -824,11 +822,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                         </div>
                       )}
                     </div>
-                    {battle.one_line_comment_b && (
-                      <div className="mt-1 text-xs text-gray-300 break-words text-right max-w-[220px] md:max-w-[260px] ml-auto" title={battle.one_line_comment_b || undefined}>
-                        “{battle.one_line_comment_b}”
-                      </div>
-                    )}
+                    {/* 一言コメントは動画直下へ移動 */}
                   </div>
                   <div 
                     className="w-16 h-16 rounded-full p-1 flex-shrink-0 cursor-pointer hover:scale-105 transition-transform"
