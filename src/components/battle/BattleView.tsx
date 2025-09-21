@@ -614,6 +614,11 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                         </div>
                       )}
                     </div>
+                    {battle.one_line_comment_a && (
+                      <div className="mt-1 text-xs text-gray-300 break-words max-w-[220px] md:max-w-[260px]" title={battle.one_line_comment_a || undefined}>
+                        “{battle.one_line_comment_a}”
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -661,6 +666,11 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                         </div>
                       )}
                     </div>
+                    {battle.one_line_comment_a && (
+                      <div className="mt-1 text-xs text-gray-300 break-words max-w-[220px] md:max-w-[260px]" title={battle.one_line_comment_a || undefined}>
+                        “{battle.one_line_comment_a}”
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -735,6 +745,11 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                         </div>
                       )}
                     </div>
+                    {battle.one_line_comment_b && (
+                      <div className="mt-1 text-xs text-gray-300 break-words lg:text-right max-w-[220px] md:max-w-[260px]" title={battle.one_line_comment_b || undefined}>
+                        “{battle.one_line_comment_b}”
+                      </div>
+                    )}
                   </div>
                   <div 
                     className="w-16 h-16 rounded-full p-1 flex-shrink-0 cursor-pointer hover:scale-105 transition-transform"
@@ -809,6 +824,11 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                         </div>
                       )}
                     </div>
+                    {battle.one_line_comment_b && (
+                      <div className="mt-1 text-xs text-gray-300 break-words text-right max-w-[220px] md:max-w-[260px] ml-auto" title={battle.one_line_comment_b || undefined}>
+                        “{battle.one_line_comment_b}”
+                      </div>
+                    )}
                   </div>
                   <div 
                     className="w-16 h-16 rounded-full p-1 flex-shrink-0 cursor-pointer hover:scale-105 transition-transform"

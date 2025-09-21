@@ -116,6 +116,8 @@ const PostPage: React.FC = () => {
   const [submissionStage, setSubmissionStage] = useState<string>('');
   const [submissionError, setSubmissionError] = useState<string | null>(null);
   const [isSubmissionProcessing, setIsSubmissionProcessing] = useState(false);
+  // 一言コメント（任意・最大140文字）
+  const [oneLineComment, setOneLineComment] = useState<string>('');
   
   // アップロード進捗を監視
   useEffect(() => {
@@ -203,6 +205,13 @@ const PostPage: React.FC = () => {
       setError(cooldownInfo?.message || t('postPage.submission.error.cooldownActive'));
       return;
     }
+
+    // コメント長チェック（クライアント側）
+    const trimmed = oneLineComment.trim();
+    if (trimmed.length > 140) {
+      setError(t('submission.error.commentTooLong', { max: 140 }));
+      return;
+    }
     
     // モーダルを開いて投稿処理を開始
     setIsSubmissionModalOpen(true);
@@ -288,15 +297,26 @@ const PostPage: React.FC = () => {
       setSubmissionStage(t('submissionModal.creating'));
       setSubmissionProgress(80);
 
-      // Create submission record with cooldown check
-    const { data: submissionResult, error: submissionError } = await supabase
-        .rpc('create_submission_with_cooldown_check', {
-          p_user_id: user.id,
-      // Stream成功時はnull（直リンク未使用）
-      p_video_url: publicUrl ?? null,
-          p_battle_format: battleFormat,
-          p_stream_video_id: streamVideoId
-        });
+      // Create submission record with cooldown check (with optional one-line comment)
+      const trimmedComment = oneLineComment.trim();
+      const useCommentRpc = trimmedComment.length > 0;
+      const { data: submissionResult, error: submissionError } = await supabase
+        .rpc(useCommentRpc ? 'create_submission_with_comment' : 'create_submission_with_cooldown_check',
+          useCommentRpc
+            ? {
+                p_user_id: user.id,
+                p_video_url: publicUrl ?? null,
+                p_battle_format: battleFormat,
+                p_stream_video_id: streamVideoId,
+                p_comment: trimmedComment
+              }
+            : {
+                p_user_id: user.id,
+                p_video_url: publicUrl ?? null,
+                p_battle_format: battleFormat,
+                p_stream_video_id: streamVideoId
+              }
+        );
 
       if (submissionError) {
         console.error('❌ Submission creation error:', submissionError);
@@ -635,6 +655,26 @@ const PostPage: React.FC = () => {
                       <div className="flex items-center mt-3 text-sm text-slate-400">
                         <Video className="h-4 w-4 mr-2" />
                         {videoFile?.name} ({Math.round((videoFile?.size || 0) / 1024 / 1024 * 10) / 10} MB)
+                      </div>
+                    </div>
+
+                    {/* 一言コメント入力 */}
+                    <div className="bg-slate-900/80 backdrop-blur-sm rounded-xl p-4 border border-slate-700">
+                      <label className="block text-sm font-medium text-slate-200 mb-2">{t('postPage.oneLineComment.label', '一言コメント（任意）')}</label>
+                      <textarea
+                        value={oneLineComment}
+                        onChange={(e) => {
+                          const v = e.target.value;
+                          if (v.length <= 200) setOneLineComment(v); // 入力緩め（改行含む）
+                        }}
+                        maxLength={200}
+                        placeholder={t('postPage.oneLineComment.placeholder', '例: 初投稿です！よろしくお願いします。')}
+                        className="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-600"
+                        rows={3}
+                      />
+                      <div className="mt-1 text-xs text-slate-400 flex items-center justify-between">
+                        <span>{t('postPage.oneLineComment.note', '140文字以内。ルールやマナーに反する内容は削除される場合があります。')}</span>
+                        <span>{oneLineComment.trim().length}/140</span>
                       </div>
                     </div>
 

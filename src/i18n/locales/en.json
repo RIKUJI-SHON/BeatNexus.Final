@@ -216,6 +216,11 @@
     "genericError": "Submission failed",
     "largeFileNotice": "This is a large file, compression may take a while. Please keep the browser open."
   },
+  "submission": {
+    "error": {
+      "commentTooLong": "One-line comment must be at most {{max}} characters"
+    }
+  },
   "subscription": {
     "title": "Choose Your Plan",
     "subtitle": "Select the perfect plan to support your beatbox journey",
@@ -1326,6 +1331,11 @@
       "title": "Video Preview",
       "duration": "Duration",
       "size": "Size"
+    },
+    "oneLineComment": {
+      "label": "One-line comment (optional)",
+      "placeholder": "e.g., This is my first post! Nice to meet you.",
+      "note": "Up to 140 characters. Content violating rules or manners may be removed."
     },
     "format": {
       "mainBattle": "Main Battle"

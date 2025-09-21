@@ -5,7 +5,7 @@ import type { ScoreBreakdownEntry } from '../types/scoreBreakdown';
 
 // 内部利用のRaw型定義（DBクエリ結果簡易形）
 interface RawBattle { id: string; player1_submission_id: string; player2_submission_id: string; battle_format: BattleFormat; status: string; votes_a: number | null; votes_b: number | null; end_voting_at: string; created_at: string; updated_at?: string; }
-interface RawSubmission { id: string; user_id: string; video_url: string | null; stream_video_id?: string | null; }
+interface RawSubmission { id: string; user_id: string; video_url: string | null; stream_video_id?: string | null; one_line_comment?: string | null; }
 interface RawProfile { id: string; username: string; avatar_url: string | null; }
 import { supabase } from '../lib/supabase';
 import { toast } from './toastStore';
@@ -189,7 +189,7 @@ export const useBattleStore = create<BattleState>((set, get) => ({
       // Step 3: submissionsデータを取得
       const { data: submissionsData, error: submissionsError } = await supabase
         .from('submissions')
-        .select('id, user_id, video_url, stream_video_id')
+        .select('id, user_id, video_url, stream_video_id, one_line_comment')
         .in('id', submissionIds);
 
       if (submissionsError) {
@@ -260,6 +260,8 @@ export const useBattleStore = create<BattleState>((set, get) => ({
           video_url_b: player2Submission?.video_url || undefined,
           stream_video_id_a: (player1Submission as RawSubmission | undefined)?.stream_video_id || undefined,
           stream_video_id_b: (player2Submission as RawSubmission | undefined)?.stream_video_id || undefined,
+          one_line_comment_a: (player1Submission as RawSubmission | undefined)?.one_line_comment ?? null,
+          one_line_comment_b: (player2Submission as RawSubmission | undefined)?.one_line_comment ?? null,
           current_user_voted: votedBattleIds.has(battle.id)
         };
 
@@ -369,7 +371,7 @@ export const useBattleStore = create<BattleState>((set, get) => ({
       // Step 3: Fetch submissions
       const { data: submissionsData, error: submissionsError } = await supabase
         .from('submissions')
-        .select('id, user_id, video_url, stream_video_id')
+        .select('id, user_id, video_url, stream_video_id, one_line_comment')
         .in('id', submissionIds);
 
       if (submissionsError) {
@@ -420,6 +422,8 @@ export const useBattleStore = create<BattleState>((set, get) => ({
           video_url_b: player2Submission?.video_url || undefined,
           stream_video_id_a: player1Submission?.stream_video_id || undefined,
           stream_video_id_b: player2Submission?.stream_video_id || undefined,
+          one_line_comment_a: (player1Submission as RawSubmission | undefined)?.one_line_comment ?? null,
+          one_line_comment_b: (player2Submission as RawSubmission | undefined)?.one_line_comment ?? null,
           current_user_voted: votedBattleIds2.has(battle.id)
         };
         if (player1) obj.contestant_a = { username: player1.username, avatar_url: player1.avatar_url };

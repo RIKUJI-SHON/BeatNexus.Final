@@ -98,6 +98,12 @@
     "genericError": "投稿に失敗しました",
     "largeFileNotice": "大容量ファイルのため圧縮に時間がかかります。ブラウザを閉じずにお待ちください。"
   },
+  "submission": {
+    "error": {
+      "commentTooLong": "一言コメントは{{max}}文字以内で入力してください"
+    }
+  },
+  
   "subscription": {
     "title": "プランを選択",
     "subtitle": "あなたのビートボックスの旅をサポートする最適なプランをお選びください",
@@ -1373,6 +1379,11 @@
       "duration": "再生時間",
       "size": "ファイルサイズ"
     },
+    "oneLineComment": {
+      "label": "一言コメント（任意）",
+      "placeholder": "例: 初投稿です！よろしくお願いします。",
+      "note": "140文字以内。ルールやマナーに反する内容は削除される場合があります。"
+    },
     "rules": {
       "length": "動画の長さ",
       "rateChange": "レート変動",
@@ -1604,6 +1615,7 @@
   "videoQuality": "動画の画質はなるべく下げて撮影してください"
     }
   },
+  
   "comingSoon": {
     "title": "Coming Soon",
     "subtitle": "素晴らしいHow-toガイドを準備中です！BeatNexusの全ての機能を分かりやすく説明します。",

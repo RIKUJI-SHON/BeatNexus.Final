@@ -45,6 +45,9 @@ export interface Battle {
   // Stream 再生用（新規）
   stream_video_id_a?: string;
   stream_video_id_b?: string;
+  // 一言コメント（投稿時に任意）
+  one_line_comment_a?: string | null;
+  one_line_comment_b?: string | null;
   is_archived?: boolean;
   winner_id?: string | null;
   player1_rating_change?: number | null;
