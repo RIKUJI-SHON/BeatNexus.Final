@@ -693,7 +693,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                   />
                 </div>
                 {battle.one_line_comment_a && (
-                  <div className="mt-2 text-sm text-gray-200 font-semibold break-words" title={battle.one_line_comment_a || undefined}>
+                  <div className="mt-2 text-sm text-gray-200 font-bold break-words" title={battle.one_line_comment_a || undefined}>
                     {battle.one_line_comment_a}
                   </div>
                 )}
@@ -784,7 +784,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                   />
                 </div>
                 {battle.one_line_comment_b && (
-                  <div className="mt-2 text-sm text-gray-200 font-semibold break-words text-right" title={battle.one_line_comment_b || undefined}>
+                  <div className="mt-2 text-sm text-gray-200 font-bold break-words text-right" title={battle.one_line_comment_b || undefined}>
                     {battle.one_line_comment_b}
                   </div>
                 )}
