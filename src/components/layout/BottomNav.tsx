@@ -51,7 +51,10 @@ export const BottomNav: React.FC = () => {
 
   const isActive = (path: string) => location.pathname === path;
 
-  const avatarUrl = user?.user_metadata?.avatar_url || getDefaultAvatarUrl();
+  // Prefer profile.avatar_url -> auth.user_metadata.avatar_url -> default
+  const avatarUrl = (userProfile?.avatar_url && userProfile.avatar_url.trim() !== '')
+    ? userProfile.avatar_url
+    : (user?.user_metadata?.avatar_url || getDefaultAvatarUrl());
 
   // Hide on desktop
   // We also add bottom padding to body main content elsewhere to avoid overlap (handled when integrating)
