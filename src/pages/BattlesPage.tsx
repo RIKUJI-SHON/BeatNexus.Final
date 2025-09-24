@@ -546,7 +546,7 @@ const BattlesPage: React.FC = () => {
 
             {/* Weekly Pickup Section */}
             {weeklyPickupBattle && (
-              <section className="mt-6 sm:mt-8" aria-label="Weekly pickup battle">
+              <section className="mt-6 sm:mt-8 hidden lg:block" aria-label="Weekly pickup battle">
                 <h2 className="text-lg sm:text-xl font-semibold text-white mb-3 sm:mb-4">
                   {t('battlesPage.weeklyPickup.title', '今週のピックアップバトル')}
                 </h2>
