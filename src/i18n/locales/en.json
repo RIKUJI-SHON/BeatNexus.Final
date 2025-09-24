@@ -467,6 +467,8 @@
     "activeFilters": "Active Filters:",
     "loading": "Loading...",
     "noRankings": "No Rankings",
+    "activeBattles": "Active battles",
+    "pastBattles": "Past battles",
     "buttons": {
       "profile": "Profile",
       "ranking": "Ranking",

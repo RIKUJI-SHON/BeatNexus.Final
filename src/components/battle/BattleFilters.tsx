@@ -156,7 +156,7 @@ export const BattleFilters: React.FC<BattleFiltersProps> = ({
                           onChange={() => setShowCompletedBattles(false)}
                         />
                         <span className="radio-custom" aria-hidden="true"></span>
-                        <span className="radio-text">開催中のバトル</span>
+                        <span className="radio-text">{t('battleFilters.activeBattles')}</span>
                       </label>
                       <label className="radio-label">
                         <input
@@ -167,7 +167,7 @@ export const BattleFilters: React.FC<BattleFiltersProps> = ({
                           onChange={() => setShowCompletedBattles(true)}
                         />
                         <span className="radio-custom" aria-hidden="true"></span>
-                        <span className="radio-text">過去のバトル</span>
+                        <span className="radio-text">{t('battleFilters.pastBattles')}</span>
                       </label>
                     </div>
                   </div>
