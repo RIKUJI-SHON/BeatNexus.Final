@@ -5,9 +5,17 @@ import { SpecialBattleCard } from './SpecialBattleCard';
 
 interface BattleCardProps {
   battle: Battle;
+  /**
+   * 過去バトルでもアクティブと同一の見た目に強制する（アーカイブ専用UIを抑止）
+   */
+  forceActiveStyle?: boolean;
+  /**
+   * クリック時の遷移先を上書き（アーカイブでも /battle-replay を指定など）
+   */
+  destinationOverride?: string;
 }
 
-export const BattleCard: React.FC<BattleCardProps> = ({ battle }) => {
+export const BattleCard: React.FC<BattleCardProps> = ({ battle, forceActiveStyle, destinationOverride }) => {
   // 投票数の合計を計算
   const totalVotes = (battle.votes_a || 0) + (battle.votes_b || 0);
   
@@ -20,5 +28,5 @@ export const BattleCard: React.FC<BattleCardProps> = ({ battle }) => {
   const shouldUseSpecialCard = totalVotes >= 5 || isEndingSoon;
   const CardComponent = shouldUseSpecialCard ? SpecialBattleCard : SimpleBattleCard;
   
-  return <CardComponent battle={battle} />;
+  return <CardComponent battle={battle} forceActiveStyle={forceActiveStyle} destinationOverride={destinationOverride} />;
 }; 

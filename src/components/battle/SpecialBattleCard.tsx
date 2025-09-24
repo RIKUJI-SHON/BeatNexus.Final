@@ -16,11 +16,15 @@ import { getBattleUrlFromBattle } from '../../utils/battleUrl';
 
 interface SpecialBattleCardProps {
   battle: Battle;
+  /** アーカイブ専用UIを抑止し、アクティブ風表示を強制 */
+  forceActiveStyle?: boolean;
+  /** リンク遷移先の上書き */
+  destinationOverride?: string;
 }
 
 // 色の固定化のため、colorPairs配列は不要になりました
 
-export const SpecialBattleCard: React.FC<SpecialBattleCardProps> = ({ battle }) => {
+export const SpecialBattleCard: React.FC<SpecialBattleCardProps> = ({ battle, forceActiveStyle, destinationOverride }) => {
   const { t, i18n } = useTranslation();
   const [isCommentsModalOpen, setIsCommentsModalOpen] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState<string>('');
@@ -38,7 +42,7 @@ export const SpecialBattleCard: React.FC<SpecialBattleCardProps> = ({ battle }) 
     if (battle.is_archived) {
       const currentLocale = i18n.language === 'ja' ? ja : enUS;
       setTimeRemaining(t('battleCard.archivedOn', { date: format(new Date(battle.end_voting_at), 'yyyy/MM/dd', { locale: currentLocale }) }));
-      setIsExpired(true);
+      setIsExpired(!forceActiveStyle ? true : false);
       return;
     }
     const total = new Date(battle.end_voting_at).getTime() - new Date().getTime();
@@ -62,7 +66,7 @@ export const SpecialBattleCard: React.FC<SpecialBattleCardProps> = ({ battle }) 
       setTimeRemaining(`${seconds} SECONDS LEFT`);
     }
     setIsExpired(false);
-  }, [battle.end_voting_at, battle.is_archived, i18n.language, t]);
+  }, [battle.end_voting_at, battle.is_archived, i18n.language, t, forceActiveStyle]);
 
   // Load player ratings (now season_points)
   const loadPlayerRatings = useCallback(async () => {
@@ -122,7 +126,9 @@ export const SpecialBattleCard: React.FC<SpecialBattleCardProps> = ({ battle }) 
   const handleCardClick = (e: React.MouseEvent) => {
     e.preventDefault();
     const battleUrl = getBattleUrlFromBattle(battle);
-    const destination = battle.is_archived ? `/battle-replay/${battleUrl}` : `/battle/${battleUrl}`;
+    const destination = destinationOverride
+      ? destinationOverride
+      : (battle.is_archived && !forceActiveStyle ? `/battle-replay/${battleUrl}` : `/battle/${battleUrl}`);
     navigate(destination);
   };
 
@@ -151,7 +157,7 @@ export const SpecialBattleCard: React.FC<SpecialBattleCardProps> = ({ battle }) 
   }) => (
     <div className="text-center">
       <div className="relative inline-block mb-4">
-        {battle.is_archived && isWinner && (
+  {!forceActiveStyle && battle.is_archived && isWinner && (
           <Crown className="absolute -top-5 -right-5 h-10 w-10 text-yellow-400 transform rotate-12 animate-pulse" style={{ filter: 'drop-shadow(0 0 10px #facc15)' }}/>
         )}
         <div className="w-24 h-24 md:w-28 md:h-28 rounded-full p-1 shadow-lg transition-all duration-300 group-hover:scale-105" style={{ background: `linear-gradient(135deg, ${color}, ${color}80)` }}>
@@ -177,7 +183,7 @@ export const SpecialBattleCard: React.FC<SpecialBattleCardProps> = ({ battle }) 
           </div>
         )}
       </div>
-      {battle.is_archived && (
+  {!forceActiveStyle && battle.is_archived && (
         <>
       <div className={cn("text-2xl font-extrabold transition-all duration-300", isWinner ? "text-emerald-400 scale-110" : "text-gray-300")}>
         {votes || 0}
@@ -185,7 +191,7 @@ export const SpecialBattleCard: React.FC<SpecialBattleCardProps> = ({ battle }) 
       <div className="text-xs text-gray-400 font-medium">{t('battleCard.votes')}</div>
         </>
       )}
-      {battle.is_archived && (
+  {!forceActiveStyle && battle.is_archived && (
         <div className="mt-1 text-xs font-semibold text-emerald-300">
           {(() => {
             const isDraw = !battle.winner_id;
@@ -262,7 +268,7 @@ export const SpecialBattleCard: React.FC<SpecialBattleCardProps> = ({ battle }) 
                 />
               </div>
 
-              {battle.is_archived && (
+              {!forceActiveStyle && battle.is_archived && (
               <div className="mb-6">
                 <div className="h-2 bg-gray-800/50 rounded-full overflow-hidden shadow-inner">
                   <div className="h-full flex">
@@ -273,7 +279,7 @@ export const SpecialBattleCard: React.FC<SpecialBattleCardProps> = ({ battle }) 
               </div>
               )}
                 
-                {battle.is_archived && (
+                {!forceActiveStyle && battle.is_archived && (
                 <div className="flex justify-center">
                   <VoteButton onClick={handleCommentsClick} className="max-w-xs bg-gray-700 hover:bg-gray-600 border-gray-800">
                     <div className="flex items-center gap-2">
