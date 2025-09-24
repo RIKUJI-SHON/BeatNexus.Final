@@ -223,6 +223,33 @@ const BattlesPage: React.FC = () => {
     return injectAdSlots(paginatedArchivedBattles, rules);
   }, [paginatedArchivedBattles]);
 
+  // 今週のピックアップ（過去7日間のアーカイブから最多投票1件）
+  const weeklyPickupBattle = useMemo(() => {
+    try {
+      if (!archivedBattles || archivedBattles.length === 0) return null;
+      const now = Date.now();
+      const sevenDaysMs = 7 * 24 * 60 * 60 * 1000;
+      const cutoff = now - sevenDaysMs;
+      const recent = archivedBattles.filter((b) => {
+        const ts = b.archived_at ? new Date(b.archived_at).getTime() : 0;
+        return ts >= cutoff;
+      });
+      if (recent.length === 0) return null;
+      const sorted = recent.sort((a, b) => {
+        const aVotes = (a.final_votes_a || 0) + (a.final_votes_b || 0);
+        const bVotes = (b.final_votes_a || 0) + (b.final_votes_b || 0);
+        if (bVotes !== aVotes) return bVotes - aVotes; // 投票数降順
+        const aTime = a.archived_at ? new Date(a.archived_at).getTime() : 0;
+        const bTime = b.archived_at ? new Date(b.archived_at).getTime() : 0;
+        return bTime - aTime; // タイブレーク: 新しい方
+      });
+      return sorted[0] ?? null;
+    } catch (e) {
+      console.error('Error computing weeklyPickupBattle:', e);
+      return null;
+    }
+  }, [archivedBattles]);
+
   // フィルターが変更されたときにページを1に戻す
   useEffect(() => {
     setCurrentPage(1);
@@ -516,6 +543,16 @@ const BattlesPage: React.FC = () => {
                 )
               )}
             </div>
+
+            {/* Weekly Pickup Section */}
+            {weeklyPickupBattle && (
+              <section className="mt-6 sm:mt-8" aria-label="Weekly pickup battle">
+                <h2 className="text-lg sm:text-xl font-semibold text-white mb-3 sm:mb-4">
+                  {t('battlesPage.weeklyPickup.title', '今週のピックアップバトル')}
+                </h2>
+                <ArchivedBattleCard battle={weeklyPickupBattle} />
+              </section>
+            )}
           </section>
 
           {/* Right Sidebar */}
@@ -532,6 +569,18 @@ const BattlesPage: React.FC = () => {
 
       </div>
       
+      {/* Weekly Pickup - Mobile only between list and rankings */}
+      {weeklyPickupBattle && (
+        <section className="lg:hidden mt-6 w-full" aria-label="Weekly pickup battle (mobile)">
+          <div className="w-full px-4 sm:px-6">
+            <h2 className="text-lg sm:text-xl font-semibold text-white mb-3 sm:mb-4">
+              {t('battlesPage.weeklyPickup.title', '今週のピックアップバトル')}
+            </h2>
+            <ArchivedBattleCard battle={weeklyPickupBattle} />
+          </div>
+        </section>
+      )}
+
       {/* Mobile Rankings - モバイル版でのみ表示 */}
       <section className="lg:hidden mt-8 w-full" aria-label="Mobile rankings">
         <div className="w-full px-4 sm:px-6">
