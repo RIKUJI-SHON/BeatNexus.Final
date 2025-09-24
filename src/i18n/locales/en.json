@@ -1040,6 +1040,12 @@
         "bp": "BP"
       }
     },
+    "weeklyPickup": {
+      "mostAttention": "Most talked-about battle this week"
+    },
+    "pastSeasons": {
+      "title": "Play back past seasons"
+    },
     "communityStats": {
       "title": "Community Stats",
       "submissions": "Total Submissions",

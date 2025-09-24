@@ -5,6 +5,8 @@ import { BattleCard } from '../components/battle/BattleCard';
 import { AdSlot } from '../components/ads/AdSlot';
 import { injectAdSlots, isAdSlotPlaceholder, generateBattleAdRules, generateArchivedBattleAdRules } from '../utils/injectAdSlots';
 import { ArchivedBattleCard } from '../components/battle/ArchivedBattleCard';
+import { SimpleBattleCard } from '../components/battle/SimpleBattleCard';
+import { getBattleUrlFromBattle } from '../utils/battleUrl';
 import { BattleFilters } from '../components/battle/BattleFilters';
 import { Pagination } from '../components/ui/Pagination';
 import { Card } from '../components/ui/Card';
@@ -222,6 +224,29 @@ const BattlesPage: React.FC = () => {
     const rules = generateArchivedBattleAdRules(paginatedArchivedBattles.length);
     return injectAdSlots(paginatedArchivedBattles, rules);
   }, [paginatedArchivedBattles]);
+
+  // 過去シーズン（現在シーズン以外）の中で投票数が多い順に最大5件
+  const pastSeasonsTopArchived = useMemo(() => {
+    try {
+      let list = [...(archivedBattles || [])];
+      if (currentSeason?.id) {
+        list = list.filter(b => b.season_id && b.season_id !== currentSeason.id);
+      }
+      // 投票数合計の降順、同票は新しいアーカイブ順
+      list.sort((a, b) => {
+        const av = (a.final_votes_a || 0) + (a.final_votes_b || 0);
+        const bv = (b.final_votes_a || 0) + (b.final_votes_b || 0);
+        if (bv !== av) return bv - av;
+        const at = a.archived_at ? new Date(a.archived_at).getTime() : 0;
+        const bt = b.archived_at ? new Date(b.archived_at).getTime() : 0;
+        return bt - at;
+      });
+      return list.slice(0, 5);
+    } catch (e) {
+      console.error('Error computing pastSeasonsTopArchived:', e);
+      return [];
+    }
+  }, [archivedBattles, currentSeason?.id]);
 
   // 今週のピックアップ（過去7日間のアーカイブから最多投票1件）
   const weeklyPickupBattle = useMemo(() => {
@@ -548,9 +573,52 @@ const BattlesPage: React.FC = () => {
             {weeklyPickupBattle && (
               <section className="mt-6 sm:mt-8 hidden lg:block" aria-label="Weekly pickup battle">
                 <h2 className="text-lg sm:text-xl font-semibold text-white mb-3 sm:mb-4">
-                  {t('battlesPage.weeklyPickup.title', '今週のピックアップバトル')}
+                  {t('battlesPage.weeklyPickup.mostAttention', '今週最も注目を集めたバトル')}
                 </h2>
                 <ArchivedBattleCard battle={weeklyPickupBattle} />
+              </section>
+            )}
+
+            {/* Past Seasons Playback - Desktop only below weekly pickup */}
+            {pastSeasonsTopArchived.length > 0 && (
+              <section className="mt-6 sm:mt-8 hidden lg:block" aria-label="Past seasons playback">
+                <h2 className="text-lg sm:text-xl font-semibold text-white mb-3 sm:mb-4">
+                  {t('battlesPage.pastSeasons.title', '過去シーズンをプレイバック')}
+                </h2>
+                <div className="grid grid-cols-1 gap-4">
+                  {pastSeasonsTopArchived.map((battle) => {
+                    const mapped = {
+                      id: battle.original_battle_id,
+                      created_at: battle.created_at,
+                      end_voting_at: battle.archived_at,
+                      player1_submission_id: battle.player1_submission_id,
+                      player2_submission_id: battle.player2_submission_id,
+                      player1_user_id: battle.player1_user_id,
+                      player2_user_id: battle.player2_user_id,
+                      contestant_a_id: battle.player1_user_id,
+                      contestant_b_id: battle.player2_user_id,
+                      status: 'COMPLETED' as const,
+                      votes_a: battle.final_votes_a,
+                      votes_b: battle.final_votes_b,
+                      battle_format: battle.battle_format,
+                      updated_at: battle.updated_at,
+                      contestant_a: battle.contestant_a,
+                      contestant_b: battle.contestant_b,
+                      is_archived: true,
+                      winner_id: battle.winner_id,
+                      player1_rating_change: battle.player1_rating_change,
+                      player2_rating_change: battle.player2_rating_change,
+                      player1_final_rating: battle.player1_final_rating,
+                      player2_final_rating: battle.player2_final_rating,
+                      video_url_a: battle.player1_video_url ?? undefined,
+                      video_url_b: battle.player2_video_url ?? undefined,
+                    };
+                    const friendly = getBattleUrlFromBattle({ id: mapped.id, contestant_a: mapped.contestant_a, contestant_b: mapped.contestant_b });
+                    return (
+                      <SimpleBattleCard key={battle.id} battle={mapped} forceActiveStyle destinationOverride={`/battle-replay/${friendly}`} />
+                    );
+                  })}
+                </div>
               </section>
             )}
           </section>
@@ -574,9 +642,54 @@ const BattlesPage: React.FC = () => {
         <section className="lg:hidden mt-6 w-full" aria-label="Weekly pickup battle (mobile)">
           <div className="w-full px-4 sm:px-6">
             <h2 className="text-lg sm:text-xl font-semibold text-white mb-3 sm:mb-4">
-              {t('battlesPage.weeklyPickup.title', '今週のピックアップバトル')}
+              {t('battlesPage.weeklyPickup.mostAttention', '今週最も注目を集めたバトル')}
             </h2>
             <ArchivedBattleCard battle={weeklyPickupBattle} />
+          </div>
+        </section>
+      )}
+
+      {/* Past Seasons - Mobile only between list and rankings */}
+      {pastSeasonsTopArchived.length > 0 && (
+        <section className="lg:hidden mt-6 w-full" aria-label="Past seasons playback (mobile)">
+          <div className="w-full px-4 sm:px-6">
+            <h2 className="text-lg sm:text-xl font-semibold text-white mb-3 sm:mb-4">
+              {t('battlesPage.pastSeasons.title', '過去シーズンをプレイバック')}
+            </h2>
+            <div className="grid grid-cols-1 gap-4">
+              {pastSeasonsTopArchived.map((battle) => {
+                const mapped = {
+                  id: battle.original_battle_id,
+                  created_at: battle.created_at,
+                  end_voting_at: battle.archived_at,
+                  player1_submission_id: battle.player1_submission_id,
+                  player2_submission_id: battle.player2_submission_id,
+                  player1_user_id: battle.player1_user_id,
+                  player2_user_id: battle.player2_user_id,
+                  contestant_a_id: battle.player1_user_id,
+                  contestant_b_id: battle.player2_user_id,
+                  status: 'COMPLETED' as const,
+                  votes_a: battle.final_votes_a,
+                  votes_b: battle.final_votes_b,
+                  battle_format: battle.battle_format,
+                  updated_at: battle.updated_at,
+                  contestant_a: battle.contestant_a,
+                  contestant_b: battle.contestant_b,
+                  is_archived: true,
+                  winner_id: battle.winner_id,
+                  player1_rating_change: battle.player1_rating_change,
+                  player2_rating_change: battle.player2_rating_change,
+                  player1_final_rating: battle.player1_final_rating,
+                  player2_final_rating: battle.player2_final_rating,
+                  video_url_a: battle.player1_video_url ?? undefined,
+                  video_url_b: battle.player2_video_url ?? undefined,
+                };
+                const friendly = getBattleUrlFromBattle({ id: mapped.id, contestant_a: mapped.contestant_a, contestant_b: mapped.contestant_b });
+                return (
+                  <SimpleBattleCard key={battle.id} battle={mapped} forceActiveStyle destinationOverride={`/battle-replay/${friendly}`} />
+                );
+              })}
+            </div>
           </div>
         </section>
       )}
