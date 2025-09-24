@@ -235,7 +235,7 @@ const BattlesPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-950 py-10">
+    <div className="min-h-screen bg-gray-950 py-6 sm:py-8 md:py-10">
       <div className="container-ultra-wide">
         {/* News Carousel - Enhanced Design */}
         <NewsCarousel />
@@ -267,7 +267,7 @@ const BattlesPage: React.FC = () => {
               isLoggedIn={!!user}
             />
             
-            <div className="space-y-6 mt-8" role="region" aria-label="Battle results">
+            <div className="space-y-4 sm:space-y-6 mt-4 sm:mt-6 md:mt-8" role="region" aria-label="Battle results">
               {!showCompletedBattles ? (
                 loading ? (
                   <div role="status" aria-live="polite">
@@ -321,14 +321,14 @@ const BattlesPage: React.FC = () => {
                     </div>
                     
                     {/* アクティブバトル用のページネーション */}
-                    <nav aria-label="Battle pagination" className="mt-8">
+                    <nav aria-label="Battle pagination" className="mt-6 sm:mt-8">
                       <Pagination
                         currentPage={currentPage}
                         totalPages={activeBattlesTotalPages}
                         onPageChange={handlePageChange}
                         showingCount={ITEMS_PER_PAGE}
                         totalCount={activeBattlesTotalItems}
-                        className="mt-8"
+                        className="mt-4 sm:mt-6"
                       />
                     </nav>
                   </>
@@ -364,7 +364,7 @@ const BattlesPage: React.FC = () => {
                           onPageChange={handlePageChange}
                           showingCount={ITEMS_PER_PAGE}
                           totalCount={archivedBattlesTotalItems}
-                          className="mt-8"
+                          className="mt-6 sm:mt-8"
                         />
                       </>
                     ) : (
@@ -472,7 +472,7 @@ const BattlesPage: React.FC = () => {
                       onPageChange={handlePageChange}
                       showingCount={ITEMS_PER_PAGE}
                       totalCount={archivedBattlesTotalItems}
-                      className="mt-8"
+                      className="mt-6 sm:mt-8"
                     />
                   </>
                 ) : (

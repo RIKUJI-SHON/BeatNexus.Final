@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, forwardRef, useImperativeHandle, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '../../../store/authStore';
 import { AvatarUpload } from '../../profile/AvatarUpload';
@@ -8,7 +8,11 @@ import { Textarea } from '../../ui/Textarea';
 import { supabase } from '../../../lib/supabase';
 import { toast } from '../../../store/toastStore';
 
-export default function ProfileSetupSlide() {
+export type ProfileSetupHandle = {
+  saveBio: () => Promise<boolean>;
+};
+
+const ProfileSetupSlide = forwardRef<ProfileSetupHandle>(function ProfileSetupSlide(_, ref) {
   const { t } = useTranslation();
   const { user } = useAuthStore();
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
@@ -53,8 +57,8 @@ export default function ProfileSetupSlide() {
   };
 
   // バイオ保存
-  const handleSaveBio = async () => {
-    if (!user) return;
+  const handleSaveBio = useCallback(async (): Promise<boolean> => {
+    if (!user) return false;
 
     setIsUpdatingBio(true);
     try {
@@ -70,13 +74,20 @@ export default function ProfileSetupSlide() {
       
       // 成功表示を2秒後にリセット
       setTimeout(() => setSaveSuccess(false), 2000);
+      return true;
     } catch (error) {
       console.error('Error updating bio:', error);
       toast.error('更新に失敗しました');
+      return false;
     } finally {
       setIsUpdatingBio(false);
     }
-  };
+  }, [user, bio]);
+
+  // 親（OnboardingModal）に保存関数を公開
+  useImperativeHandle(ref, () => ({
+    saveBio: handleSaveBio,
+  }), [handleSaveBio]);
 
   return (
     <div className="onboarding-card md:w-96 md:h-[500px] w-[340px] h-[440px]">
@@ -128,17 +139,22 @@ export default function ProfileSetupSlide() {
               {t('onboarding.slide4.bio.characterCount', { count: bio.length })}
             </span>
             
-            <Button3D
-              onClick={handleSaveBio}
-              disabled={isUpdatingBio}
-              variant="primary"
-              className="px-3 py-1 text-xs"
-            >
-              {isUpdatingBio ? t('onboarding.slide4.bio.saving') : t('onboarding.slide4.bio.saveButton')}
-            </Button3D>
+            {/* モバイルでは保存ボタンを非表示（Nextボタンで保存） */}
+            <div className="hidden md:block">
+              <Button3D
+                onClick={handleSaveBio}
+                disabled={isUpdatingBio}
+                variant="primary"
+                className="px-3 py-1 text-xs"
+              >
+                {isUpdatingBio ? t('onboarding.slide4.bio.saving') : t('onboarding.slide4.bio.saveButton')}
+              </Button3D>
+            </div>
           </div>
         </div>
       </div>
     </div>
   );
-}
+});
+
+export default ProfileSetupSlide;

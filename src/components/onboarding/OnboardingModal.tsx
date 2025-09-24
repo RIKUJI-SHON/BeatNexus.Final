@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useOnboardingStore } from '../../store/onboardingStore';
@@ -8,12 +8,13 @@ import WelcomeSlide from './slides/WelcomeSlide';
 import BattleGuideSlide from './slides/BattleGuideSlide';
 // 新しいVotingSlideコンポーネントを使用 - Updated 2025-01-27
 import VotingSlideNew from './slides/VotingSlideNew';
-import ProfileSetupSlide from './slides/ProfileSetupSlide';
+import ProfileSetupSlide, { ProfileSetupHandle } from './slides/ProfileSetupSlide';
 import GetStartedSlide from './slides/GetStartedSlide';
 
 const OnboardingModal: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { user } = useAuthStore();
+  const profileSetupRef = useRef<ProfileSetupHandle | null>(null);
   const {
     isOnboardingModalOpen,
     currentSlide,
@@ -61,7 +62,7 @@ const OnboardingModal: React.FC = () => {
         console.log('[OnboardingModal] Rendering VotingSlideNew');
         return <VotingSlideNew />;
       case 3:
-        return <ProfileSetupSlide />;
+        return <ProfileSetupSlide ref={profileSetupRef} />;
       case 4:
         return <GetStartedSlide />;
       default:
@@ -76,6 +77,20 @@ const OnboardingModal: React.FC = () => {
     } else {
       nextSlide();
     }
+  };
+
+  // モバイル用 次へ（スライド3では保存してから遷移）
+  const handleNextMobile = async () => {
+    if (currentSlide === 3) {
+      const ok = await profileSetupRef.current?.saveBio?.();
+      if (ok) nextSlide();
+      return;
+    }
+    if (currentSlide === 4) {
+      await handleComplete();
+      return;
+    }
+    nextSlide();
   };
 
   // 特別なサイズ調整は不要（全スライド統一）
@@ -216,11 +231,15 @@ const OnboardingModal: React.FC = () => {
           {/* 次へボタン */}
           <div className="flex-1 flex justify-end">
             <Button3D
-              onClick={handleNext}
+              onClick={handleNextMobile}
               variant="primary"
               className="px-6 py-2"
             >
-              {currentSlide === 5 ? t('onboarding.getStarted') : `${t('common.next')} ❯`}
+              {currentSlide === 3
+                ? `${t('onboarding.slide4.bio.saveAndNext', { defaultValue: i18n.language?.startsWith('ja') ? '保存して次へ' : 'Save & Next' })} ❯`
+                : currentSlide === 5
+                ? t('onboarding.getStarted')
+                : `${t('common.next')} ❯`}
             </Button3D>
           </div>
         </div>
