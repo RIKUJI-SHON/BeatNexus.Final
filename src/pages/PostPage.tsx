@@ -485,30 +485,125 @@ const PostPage: React.FC = () => {
                     {/* バトル形式選択 */}
                     <div className="mb-6">
                       <label className="block text-slate-200 font-semibold mb-2">{t('postPage.battleFormat.label', 'バトル形式')}</label>
-                      <div className="flex flex-wrap gap-3 items-start">
-                        <button
-                          type="button"
-                          onClick={() => setBattleFormat('MAIN_BATTLE')}
-                          className={`px-4 py-2 rounded-lg border transition-all ${battleFormat === 'MAIN_BATTLE' ? 'bg-cyan-600 text-white border-cyan-500' : 'bg-slate-800 text-slate-200 border-slate-600 hover:bg-slate-700'}`}
-                        >
-                          {t('postPage.battleFormat.main', 'MAIN BATTLE')}
-                        </button>
-                        <div className="relative inline-block">
-                          <div className="absolute -top-3 left-1/2 -translate-x-1/2 select-none">
-                            <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-pink-600 text-white shadow">
-                              {t('postPage.battleFormat.new', 'New!!')}
-                            </span>
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() => setBattleFormat('MINI_BATTLE')}
-                            className={`px-4 py-2 rounded-lg border transition-all ${battleFormat === 'MINI_BATTLE' ? 'bg-cyan-600 text-white border-cyan-500' : 'bg-slate-800 text-slate-200 border-slate-600 hover:bg-slate-700'}`}
-                            aria-label={t('postPage.battleFormat.mini', 'MINI BATTLE')}
-                            title={t('postPage.battleFormat.mini', 'MINI BATTLE')}
-                          >
-                            {t('postPage.battleFormat.mini', 'MINI BATTLE')}
-                          </button>
-                        </div>
+                      {/* Toggle Switch Styles (scoped) */}
+                      <style
+                        dangerouslySetInnerHTML={{
+                          __html: `
+                          .switch {
+                            --_switch-bg-clr: linear-gradient(135deg, rgba(8, 145, 178, 0.25), rgba(2, 6, 23, 0.5));
+                            --_switch-padding: 4px; /* padding around button */
+                            --_slider-bg-clr: rgba(8, 145, 178, 0.45); /* slider color unchecked */
+                            --_slider-bg-clr-on: rgba(8, 145, 178, 0.95); /* slider color checked */
+                            --_slider-txt-clr: #ffffff;
+                            --_label-padding: 0.75rem 1.25rem; /* global width/height */
+                            --_switch-easing: cubic-bezier(0.47, 1.64, 0.41, 0.8); /* easing on toggle switch */
+                            color: white;
+                            width: fit-content;
+                            display: grid;
+                            grid-template-columns: repeat(2, minmax(0, 1fr));
+                            justify-content: center;
+                            position: relative;
+                            border-radius: 9999px;
+                            cursor: pointer;
+                            isolation: isolate;
+                            backdrop-filter: blur(6px);
+                            background: rgba(15, 23, 42, 0.35); /* slate-900/35 */
+                            border: 1px solid rgba(8, 145, 178, 0.25); /* cyan-600/25 */
+                            box-shadow:
+                              0 0 12px rgba(8, 145, 178, 0.18),
+                              inset 0 1px 0 rgba(255, 255, 255, 0.04);
+                          }
+                          .switch input[type="checkbox"] {
+                            position: absolute;
+                            width: 1px;
+                            height: 1px;
+                            padding: 0;
+                            margin: -1px;
+                            overflow: hidden;
+                            clip: rect(0, 0, 0, 0);
+                            white-space: nowrap;
+                            border-width: 0;
+                          }
+                          .switch > span {
+                            display: grid;
+                            place-content: center;
+                            transition: opacity 300ms ease-in-out 150ms;
+                            padding: var(--_label-padding);
+                            font-weight: 600;
+                            color: var(--_slider-txt-clr);
+                            text-shadow: 0 0 6px rgba(255, 255, 255, 0.25);
+                          }
+                          .switch::before,
+                          .switch::after {
+                            content: "";
+                            position: absolute;
+                            border-radius: inherit;
+                            transition: inset 150ms ease-in-out;
+                          }
+                          /* switch slider */
+                          .switch::before {
+                            background-color: var(--_slider-bg-clr);
+                            inset: var(--_switch-padding) 50% var(--_switch-padding) var(--_switch-padding);
+                            transition:
+                              inset 500ms var(--_switch-easing),
+                              background-color 500ms ease-in-out,
+                              box-shadow 500ms ease-in-out;
+                            z-index: -1;
+                            box-shadow:
+                              inset 0 2px 4px rgba(0, 0, 0, 0.3),
+                              0 0 12px rgba(8, 145, 178, 0.3);
+                          }
+                          /* switch bg color */
+                          .switch::after {
+                            background: var(--_switch-bg-clr);
+                            inset: 0;
+                            z-index: -2;
+                          }
+                          /* switch hover & focus */
+                          .switch:focus-within::after {
+                            inset: -0.25rem;
+                          }
+                          .switch:has(input:checked):hover > span:first-of-type,
+                          .switch:has(input:not(:checked)):hover > span:last-of-type {
+                            opacity: 1;
+                            transition-delay: 0ms;
+                            transition-duration: 100ms;
+                          }
+                          /* switch hover */
+                          .switch:has(input:checked):hover::before {
+                            inset: var(--_switch-padding) var(--_switch-padding) var(--_switch-padding) 45%;
+                          }
+                          .switch:has(input:not(:checked)):hover::before {
+                            inset: var(--_switch-padding) 45% var(--_switch-padding) var(--_switch-padding);
+                          }
+                          /* checked - move slider to right */
+                          .switch:has(input:checked)::before {
+                            background-color: var(--_slider-bg-clr-on);
+                            inset: var(--_switch-padding) var(--_switch-padding) var(--_switch-padding) 50%;
+                          }
+                          /* checked - set opacity */
+                          .switch > span:last-of-type,
+                          .switch > input:checked + span:first-of-type {
+                            opacity: 0.75;
+                          }
+                          .switch > input:checked ~ span:last-of-type {
+                            opacity: 1;
+                          }
+                        `,
+                        }}
+                      />
+
+                      {/* トグルスイッチ */}
+                      <div className="flex flex-wrap items-start gap-3">
+                        <label className="switch" aria-label={t('postPage.battleFormat.label', 'バトル形式')}>
+                          <input
+                            type="checkbox"
+                            checked={battleFormat === 'MINI_BATTLE'}
+                            onChange={(e) => setBattleFormat(e.target.checked ? 'MINI_BATTLE' : 'MAIN_BATTLE')}
+                          />
+                          <span>{t('postPage.battleFormat.main', 'MAIN BATTLE')}</span>
+                          <span>{t('postPage.battleFormat.mini', 'MINI BATTLE')}</span>
+                        </label>
                       </div>
                       {/* MINI タグライン（選択時のみ） */}
                       {battleFormat === 'MINI_BATTLE' && (

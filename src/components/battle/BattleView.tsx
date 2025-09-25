@@ -1113,11 +1113,17 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
 
               </div>
 
-              {/* Bottom Share Button */}
-              <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-cyan-600 to-purple-600 px-4 py-1.5 rounded-full border border-purple-400 flex items-center gap-2 shadow-md cursor-pointer select-none hover:scale-105 transition-transform z-50" onClick={handleShareBattle}>
+              {/* Bottom Share Button (unified style) */}
+              <button
+                type="button"
+                aria-label="Share this battle"
+                title="Share this battle"
+                className="absolute -bottom-4 left-1/2 -translate-x-1/2 bn-share-button flex items-center gap-2 select-none z-50 hover:scale-105 transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500/50 active:scale-95"
+                onClick={handleShareBattle}
+              >
                 <Share2 className="h-4 w-4 text-white" />
                 <span className="text-xs font-semibold text-white">SHARE</span>
-              </div>
+              </button>
 
               {/* Bottom Ventilation Grilles */}
               <div className="absolute -bottom-2 left-6 right-6 h-3 bg-gradient-to-r from-transparent via-gray-600 to-transparent opacity-50">

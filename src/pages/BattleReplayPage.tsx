@@ -12,7 +12,10 @@ import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '../store/authStore';
 import { HybridVideoPlayer } from '../components/ui/HybridVideoPlayer';
 import { VSIcon } from '../components/ui/VSIcon';
-import { ShareBattleButton } from '../components/ui/ShareBattleButton';
+import { ShareModal } from '../components/ui/ShareModal';
+import { buildBattleShareText } from '../utils/share';
+import { generateBattleUrl } from '../utils/battleUrl';
+import { Share2 } from 'lucide-react';
 import { trackBeatNexusEvents } from '../utils/analytics';
 import { getDefaultAvatarUrl } from '../utils';
 import { Helmet } from 'react-helmet-async';
@@ -38,6 +41,8 @@ const BattleReplayPage: React.FC = () => {
   const [scoreModalOpen, setScoreModalOpen] = useState(false);
   const [scoreEntries, setScoreEntries] = useState<ScoreBreakdownEntry[]>([]);
   const [scoreLoading, setScoreLoading] = useState(false);
+  // Share modal state (must be before early returns)
+  const [shareOpen, setShareOpen] = useState(false);
   
   // URL パスからバトルIDを抽出（新旧両形式に対応）
   const id = useMemo(() => {
@@ -304,6 +309,19 @@ const BattleReplayPage: React.FC = () => {
   const isDraw = battle.winner_id === null;
   const isParticipant = user && (battle.player1_user_id === user.id || battle.player2_user_id === user.id);
   const currentLocale = i18n.language === 'ja' ? ja : enUS;
+  // Share payload (Archive page: place Share UI at the same position as active battle voting console)
+  const player1Name = battle.contestant_a?.username || 'Player 1';
+  const player2Name = battle.contestant_b?.username || 'Player 2';
+  const opponentUsername = isParticipant ? (user?.id === battle.player1_user_id ? player2Name : player1Name) : undefined;
+  const isJa = i18n.language.startsWith('ja');
+  const shareText = buildBattleShareText({
+    isParticipant: !!isParticipant,
+    isJa,
+    opponentUsername,
+    player1Name,
+    player2Name
+  });
+  const battleUrlSlug = `${typeof window !== 'undefined' ? window.location.origin : ''}/battle-replay/${generateBattleUrl(player1Name, player2Name, battle.original_battle_id)}`;
   
   // 固定色テーマ（BattleViewと統一）
   // playerColorA, playerColorB, gradientBgは上で定義済み
@@ -329,22 +347,17 @@ const BattleReplayPage: React.FC = () => {
       ? (battle.contestant_a?.username || t('archivedBattleCard.playerA'))
       : (battle.contestant_b?.username || t('archivedBattleCard.playerB'));
 
-    // 自分が勝者かどうかでバッジ色を変える（勝者:緑、敗者:赤、観戦者:グレー）
-    if (isUserWinner) {
-      return {
-        icon: <ShieldCheck className="h-4 w-4" />,
-        text: `${winnerName}の${t('archivedBattleCard.result.win')}`, // 例: "○○の勝利"
-        className: 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30',
-      };
-    }
+    // バッジの色は「勝者側のプレイヤーカラー」に固定（A=Blue, B=Red）
+    const winnerIsA = battle.winner_id === battle.player1_user_id;
+    const colorClass = winnerIsA
+      ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
+      : 'bg-red-500/20 text-red-300 border border-red-500/30';
 
-    // 参加していない or 敗者
     return {
-      icon: isParticipant ? <ShieldX className="h-4 w-4" /> : <Trophy className="h-4 w-4" />,
+      // アイコンは既存のロジック（参加者視点での見え方）は維持
+      icon: isParticipant ? (isUserWinner ? <ShieldCheck className="h-4 w-4" /> : <ShieldX className="h-4 w-4" />) : <Trophy className="h-4 w-4" />,
       text: `${winnerName}の${t('archivedBattleCard.result.win')}`,
-      className: isParticipant
-        ? 'bg-red-500/20 text-red-400 border border-red-500/30' // 敗者
-        : 'bg-gray-500/20 text-gray-400 border border-gray-500/30', // 観戦者
+      className: colorClass,
     };
   };
 
@@ -419,9 +432,7 @@ const BattleReplayPage: React.FC = () => {
             </Button>
             
             <div className="flex-1">
-              <h1 className="text-3xl md:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-white to-pink-400 mb-3 drop-shadow-lg">
-                {t('battleReplay.title')}
-              </h1>
+              {/* Battle Replay タイトルは非表示にする（削除依頼対応） */}
               <div className="flex flex-wrap items-center gap-4">
                 <div className={cn("px-4 py-2 rounded-xl text-sm font-medium flex items-center gap-2 backdrop-blur-sm", resultBadge.className)}>
                   {resultBadge.icon}
@@ -475,27 +486,19 @@ const BattleReplayPage: React.FC = () => {
                 <span className="font-medium">{battle.final_votes_a + battle.final_votes_b} votes</span>
               </div>
             </div>
-            {/* Share Button */}
-            <div className="mt-4 flex justify-center">
-              <ShareBattleButton
-                battleId={battle.original_battle_id}
-                player1Name={battle.contestant_a?.username || 'Player 1'}
-                player2Name={battle.contestant_b?.username || 'Player 2'}
-                player1UserId={battle.player1_user_id}
-                player2UserId={battle.player2_user_id}
-              />
-            </div>
+            {/* Share Button (removed per request; will add Share pill near voting console) */}
           </div>
 
           {/* Battle Result Overview */}
-          <div className="battle-card mb-4 md:mb-6 w-full">
+          <div className="battle-card mb-8">
+            {/* アクティブバトルと同じサイズ感に統一（min-hや余分なマージンを除去） */}
             <div className="battle-card__content relative overflow-hidden">
               {/* Background Pattern */}
               <div className="absolute inset-0 opacity-5">
                 <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white/10 to-transparent transform rotate-45"></div>
               </div>
               
-              <div className="relative p-8">
+              <div className="relative px-6 md:px-8 pt-6 md:pt-8 pb-0 md:pb-1">
                 {/* Battle Arena */}
                 <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto_1fr] gap-6 items-center mb-8">
                   {/* Player A Section */}
@@ -683,7 +686,7 @@ const BattleReplayPage: React.FC = () => {
                 </div>
                 
                 {/* Vote Distribution Bar */}
-                <div className="max-w-2xl mx-auto">
+                <div className="max-w-2xl mx-auto mt-8 md:mt-12">
                   <div className="flex justify-between text-sm text-gray-400 mb-3">
                     <div className="flex items-center gap-2 min-w-0">
                       <div 
@@ -853,6 +856,18 @@ const BattleReplayPage: React.FC = () => {
 
                 </div>
 
+                {/* Bottom Share Button (updated to user-specified style) */}
+                <button
+                  type="button"
+                  aria-label="Share this replay"
+                  title="Share this replay"
+                  className="absolute -bottom-4 left-1/2 -translate-x-1/2 bn-share-button flex items-center gap-2 select-none z-50 hover:scale-105 transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500/50 active:scale-95"
+                  onClick={() => setShareOpen(true)}
+                >
+                  <Share2 className="h-4 w-4 text-white" />
+                  <span className="text-xs font-semibold text-white">SHARE</span>
+                </button>
+
                 {/* Bottom Ventilation Grilles */}
                 <div className="absolute -bottom-2 left-6 right-6 h-3 bg-gradient-to-r from-transparent via-gray-600 to-transparent opacity-50">
                   <div className="flex justify-center items-center h-full gap-0.5">
@@ -969,6 +984,14 @@ const BattleReplayPage: React.FC = () => {
             title={t('battleView.scoreBreakdownTitle', 'スコア内訳')}
           />
         )}
+        {/* Share Modal for Archive page */}
+        <ShareModal
+          isOpen={shareOpen}
+          onClose={() => setShareOpen(false)}
+          baseUrl={battleUrlSlug}
+          text={shareText}
+          hashtags={["BeatNexus", "ビートボックス", "Beatbox"]}
+        />
       </div>
     </>
   );
