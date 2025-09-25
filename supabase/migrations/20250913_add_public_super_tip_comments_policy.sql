@@ -15,3 +15,4 @@ CREATE POLICY "Public can view battle super tip comments" ON public.super_tips
 -- - バトルに紐づく（battle_id IS NOT NULL）かつ支払い成功の場合のみ公開
 -- - 単独支援（battle_id IS NULL）は引き続き関係者のみ閲覧可能
 -- - これによりバトルコメントフィードでSuper Tipコメントが表示されるようになる
+
