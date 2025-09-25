@@ -99,9 +99,15 @@ export default function StripeConnectPage() {
             typeof v === 'object' && v !== null && 'onboarding_url' in v &&
             typeof (v as Record<string, unknown>).onboarding_url === 'string';
           if (hasOnboarding(json)) {
-            setOnboardingUrl(json.onboarding_url);
-            window.open(json.onboarding_url, '_blank');
-            appendLog('onboarding_url を受信（fetch）');
+            const url = json.onboarding_url;
+            setOnboardingUrl(url);
+            // iOS Safari のポップアップブロック回避のため、同一タブ遷移
+            try {
+              window.location.assign(url);
+            } catch {
+              window.location.href = url;
+            }
+            appendLog('onboarding_url を受信（fetch）しリダイレクト開始');
           }
           setStatus(json);
         } catch {
@@ -110,9 +116,15 @@ export default function StripeConnectPage() {
         return;
       }
       if (data?.onboarding_url) {
-        setOnboardingUrl(data.onboarding_url as string);
-        window.open(data.onboarding_url as string, '_blank');
-        appendLog('onboarding_url を受信');
+        const url = data.onboarding_url as string;
+        setOnboardingUrl(url);
+        // iOS Safari のポップアップブロック回避のため、同一タブ遷移
+        try {
+          window.location.assign(url);
+        } catch {
+          window.location.href = url;
+        }
+        appendLog('onboarding_url を受信しリダイレクト開始');
       } else {
         appendLog('レスポンスに onboarding_url が見つかりません');
       }
