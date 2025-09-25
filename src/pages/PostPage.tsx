@@ -116,8 +116,10 @@ const PostPage: React.FC = () => {
   const [submissionStage, setSubmissionStage] = useState<string>('');
   const [submissionError, setSubmissionError] = useState<string | null>(null);
   const [isSubmissionProcessing, setIsSubmissionProcessing] = useState(false);
-  // 一言コメント（任意・最大140文字）
+  // 一言コメント（必須・最大140文字）
   const [oneLineComment, setOneLineComment] = useState<string>('');
+  const [commentTouched, setCommentTouched] = useState<boolean>(false);
+  const [commentInlineError, setCommentInlineError] = useState<string | null>(null);
   
   // アップロード進捗を監視
   useEffect(() => {
@@ -206,8 +208,13 @@ const PostPage: React.FC = () => {
       return;
     }
 
-    // コメント長チェック（クライアント側）
+    // コメント必須・長さチェック（クライアント側）
     const trimmed = oneLineComment.trim();
+    if (trimmed.length === 0) {
+      setCommentTouched(true);
+      setCommentInlineError(t('postPage.oneLineComment.required', '一言コメントは必須です'));
+      return;
+    }
     if (trimmed.length > 140) {
       setError(t('submission.error.commentTooLong', { max: 140 }));
       return;
@@ -753,24 +760,44 @@ const PostPage: React.FC = () => {
                       </div>
                     </div>
 
-                    {/* 一言コメント入力 */}
-                    <div className="bg-slate-900/80 backdrop-blur-sm rounded-xl p-4 border border-slate-700">
-                      <label className="block text-sm font-medium text-slate-200 mb-2">{t('postPage.oneLineComment.label', '一言コメント（任意）')}</label>
+                    {/* 一言コメント入力（必須） */}
+                    <div className={`bg-slate-900/80 backdrop-blur-sm rounded-xl p-4 border ${commentTouched && oneLineComment.trim().length === 0 ? 'border-red-500/70' : 'border-slate-700'}`}>
+                      <label className="block text-sm font-medium text-slate-200 mb-2">
+                        {t('postPage.oneLineComment.labelBase', '一言コメント')}
+                        <span className="ml-1 text-red-400 font-semibold">（{t('common.required', '必須')}）</span>
+                      </label>
                       <textarea
                         value={oneLineComment}
                         onChange={(e) => {
                           const v = e.target.value;
-                          if (v.length <= 200) setOneLineComment(v); // 入力緩め（改行含む）
+                          // 最大140文字に統一
+                          if (v.length <= 140) {
+                            setOneLineComment(v);
+                            if (commentTouched) {
+                              const trimmed = v.trim();
+                              setCommentInlineError(trimmed.length === 0 ? t('postPage.oneLineComment.required', '一言コメントは必須です') : null);
+                            }
+                          }
                         }}
-                        maxLength={200}
+                        onBlur={() => {
+                          setCommentTouched(true);
+                          const trimmed = oneLineComment.trim();
+                          setCommentInlineError(trimmed.length === 0 ? t('postPage.oneLineComment.required', '一言コメントは必須です') : null);
+                        }}
+                        maxLength={140}
                         placeholder={t('postPage.oneLineComment.placeholder', '例: 初投稿です！よろしくお願いします。')}
-                        className="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-600"
+                        className={`w-full bg-slate-800 rounded-lg px-3 py-2 text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 ${commentTouched && oneLineComment.trim().length === 0 ? 'border border-red-500 focus:ring-red-600' : 'border border-slate-600 focus:ring-cyan-600'}`}
                         rows={3}
+                        aria-invalid={commentTouched && oneLineComment.trim().length === 0}
+                        aria-describedby={commentTouched && oneLineComment.trim().length === 0 ? 'oneLineComment-error' : undefined}
                       />
-                      <div className="mt-1 text-xs text-slate-400 flex items-center justify-between">
-                        <span>{t('postPage.oneLineComment.note', '140文字以内。ルールやマナーに反する内容は削除される場合があります。')}</span>
-                        <span>{oneLineComment.trim().length}/140</span>
+                      <div className="mt-1 text-xs flex items-start justify-between">
+                        <span className="text-slate-400">{t('postPage.oneLineComment.note', '140文字以内。ルールやマナーに反する内容は削除される場合があります。')}</span>
+                        <span className={`ml-2 ${oneLineComment.trim().length > 140 ? 'text-red-400' : 'text-slate-400'}`}>{oneLineComment.trim().length}/140</span>
                       </div>
+                      {commentTouched && commentInlineError && (
+                        <p id="oneLineComment-error" className="mt-2 text-xs text-red-400">{commentInlineError}</p>
+                      )}
                     </div>
 
                     {/* エラー表示（プレビューステップ） */}
@@ -937,7 +964,7 @@ const PostPage: React.FC = () => {
                         size="lg"
                         className="flex-1 bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600 shadow-lg hover:shadow-xl transition-all"
                         isLoading={isSubmissionProcessing}
-                        disabled={!acceptedGuidelines || !acceptedFacePolicy || !acceptedContent || !acceptedGreeting || !acceptedUsageConsent || isSubmissionProcessing || !canSubmit}
+                        disabled={!acceptedGuidelines || !acceptedFacePolicy || !acceptedContent || !acceptedGreeting || !acceptedUsageConsent || isSubmissionProcessing || !canSubmit || oneLineComment.trim().length === 0}
                         leftIcon={<Mic className="h-5 w-5" />}
                       >
                         {t('postPage.buttons.submitToBattlePool')}

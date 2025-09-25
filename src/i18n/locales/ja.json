@@ -45,7 +45,8 @@
     "allRightsReserved": "All rights reserved.",
     "contactUs": "お問い合わせ",
     "contactMessage": "ご質問やご提案はこちらまで。",
-    "lastUpdated": "最終更新日"
+    "lastUpdated": "最終更新日",
+    "required": "必須"
   },
   "contactPage": {
     "title": "お問い合わせ",
@@ -1389,6 +1390,8 @@
     },
     "oneLineComment": {
       "label": "一言コメント（任意）",
+      "labelBase": "一言コメント",
+      "required": "一言コメントは必須です",
       "placeholder": "例: 初投稿です！よろしくお願いします。",
       "note": "140文字以内。ルールやマナーに反する内容は削除される場合があります。"
     },

@@ -29,7 +29,8 @@
     "enterPassword": "Enter password",
     "noDescription": "No description available",
     "termsOfService": "Terms of Service",
-    "privacyPolicy": "Privacy Policy"
+    "privacyPolicy": "Privacy Policy",
+    "required": "Required"
   },
   "contactPage": {
     "title": "Contact",
@@ -1342,6 +1343,8 @@
     },
     "oneLineComment": {
       "label": "One-line comment (optional)",
+      "labelBase": "One-line comment",
+      "required": "One-line comment is required",
       "placeholder": "e.g., This is my first post! Nice to meet you.",
       "note": "Up to 140 characters. Content violating rules or manners may be removed."
     },
