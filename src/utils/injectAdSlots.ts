@@ -61,6 +61,15 @@ export function generatePeriodicAdRules(
  * @returns InjectRule配列
  */
 export function generateBattleAdRules(maxItems: number): InjectRule[] {
+  // 仕様追加: バトルが4件未満の場合でも、3件目の下(不足している場合は末尾)に1つ広告を表示する。
+  // ただし 0件時は広告のみ表示を避けるため非表示とする。
+  if (maxItems === 0) return [];
+  if (maxItems < 4) {
+    // index=3 を指定。injectAdSlots 内で index >= items.length の場合は末尾に挿入されるため
+    // 1件/2件の場合は最後のバトル直後、3件の場合は3件目直後となる。
+    return [{ index: 3, placementKey: 'battles.list.after-3.infeed' }];
+  }
+  // 従来通り 3件ごと
   return generatePeriodicAdRules(3, maxItems, 'battles.list.after-{position}.infeed');
 }
 
