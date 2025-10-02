@@ -7,7 +7,7 @@ import { injectAdSlots, isAdSlotPlaceholder, generateBattleAdRules, generateArch
 import { ArchivedBattleCard } from '../components/battle/ArchivedBattleCard';
 import { SimpleBattleCard } from '../components/battle/SimpleBattleCard';
 import { getBattleUrlFromBattle } from '../utils/battleUrl';
-import { BattleFilters } from '../components/battle/BattleFilters';
+import { BattleFilters, BattleFilterActions, BattleFilterControls } from '../components/battle/BattleFilters';
 import { Pagination } from '../components/ui/Pagination';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
@@ -30,6 +30,7 @@ const BattlesPage: React.FC = () => {
   const [showMyBattlesOnly, setShowMyBattlesOnly] = useState(false);
   const [showUnvotedOnly, setShowUnvotedOnly] = useState(false); // 新規: 未投票のみ表示
   const [showCompletedBattles, setShowCompletedBattles] = useState(false); // 新規: 完了済み表示トグル
+  const [isSwitchingBattleType, setIsSwitchingBattleType] = useState(false); // バトルタイプ切り替え時のローディング
 
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   // const { setOnboardingModalOpen } = useOnboardingStore(); // 未使用のため一旦コメントアウト（再利用時に復活）
@@ -280,6 +281,16 @@ const BattlesPage: React.FC = () => {
     setCurrentPage(1);
   }, [searchQuery, sortBy, showMyBattlesOnly, showUnvotedOnly, showCompletedBattles]);
 
+  // Active/Past battles切り替え時に一時的にローディング状態を表示
+  useEffect(() => {
+    if (isSwitchingBattleType) {
+      const timer = setTimeout(() => {
+        setIsSwitchingBattleType(false);
+      }, 300); // 300msのローディングアニメーション
+      return () => clearTimeout(timer);
+    }
+  }, [isSwitchingBattleType]);
+
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
     // ページ変更時に上部にスクロール
@@ -294,34 +305,58 @@ const BattlesPage: React.FC = () => {
 
         <main className="grid grid-cols-1 gap-6 lg:grid-cols-5" role="main">
           {/* Left Sidebar - User Actions */}
-          <aside className="lg:col-span-1 space-y-6 sticky-sidebar hidden lg:block" aria-label="User status and quick actions">
-            {user ? (
-              <>
-                {/* ユーザー情報 */}
-                <UserInfoCard />
-              </>
-            ) : null}
+          <aside className="lg:col-span-1 hidden lg:block" aria-label="Battle filters">
+            <div className="filter-sticky">
+              <BattleFilterControls
+                sortBy={sortBy}
+                setSortBy={setSortBy}
+                searchQuery={searchQuery}
+                setSearchQuery={setSearchQuery}
+                showMyBattlesOnly={showMyBattlesOnly}
+                setShowMyBattlesOnly={setShowMyBattlesOnly}
+                showUnvotedOnly={showUnvotedOnly}
+                setShowUnvotedOnly={setShowUnvotedOnly}
+                showCompletedBattles={showCompletedBattles}
+                setShowCompletedBattles={(value) => {
+                  setShowCompletedBattles(value);
+                  setIsSwitchingBattleType(true);
+                }}
+                isLoggedIn={!!user}
+                className="mb-0"
+                radioName="battle-range-pc"
+              />
+            </div>
           </aside>
 
           {/* Main Content */}
           <section className={user ? 'lg:col-span-3' : 'lg:col-span-3'} aria-label="Battle listings">
-            <BattleFilters
-              sortBy={sortBy}
-              setSortBy={setSortBy}
-              searchQuery={searchQuery}
-              setSearchQuery={setSearchQuery}
-              showMyBattlesOnly={showMyBattlesOnly}
-              setShowMyBattlesOnly={setShowMyBattlesOnly}
-              showUnvotedOnly={showUnvotedOnly}
-              setShowUnvotedOnly={setShowUnvotedOnly}
-              showCompletedBattles={showCompletedBattles}
-              setShowCompletedBattles={setShowCompletedBattles}
-              isLoggedIn={!!user}
-            />
+            <div className="lg:hidden filter-sticky mb-6">
+              <BattleFilters
+                sortBy={sortBy}
+                setSortBy={setSortBy}
+                searchQuery={searchQuery}
+                setSearchQuery={setSearchQuery}
+                showMyBattlesOnly={showMyBattlesOnly}
+                setShowMyBattlesOnly={setShowMyBattlesOnly}
+                showUnvotedOnly={showUnvotedOnly}
+                setShowUnvotedOnly={setShowUnvotedOnly}
+                showCompletedBattles={showCompletedBattles}
+                setShowCompletedBattles={(value) => {
+                  setShowCompletedBattles(value);
+                  setIsSwitchingBattleType(true);
+                }}
+                isLoggedIn={!!user}
+                radioName="battle-range-mobile"
+              />
+            </div>
+
+            <div className="hidden lg:block mb-6">
+              <BattleFilterActions />
+            </div>
             
             <div className="space-y-4 sm:space-y-6 mt-4 sm:mt-6 md:mt-8" role="region" aria-label="Battle results">
               {!showCompletedBattles ? (
-                loading ? (
+                (loading || isSwitchingBattleType) ? (
                   <div role="status" aria-live="polite">
                     <Card className="bg-gray-900 border border-gray-800 p-8 text-center">
                       <div
@@ -493,7 +528,7 @@ const BattlesPage: React.FC = () => {
                 )
               ) : (
                 // アーカイブされたバトルの表示（showCompletedBattles === true の場合）
-                archiveLoading ? (
+                (archiveLoading || isSwitchingBattleType) ? (
                   <Card className="bg-gray-900 border border-gray-800 p-8 text-center">
                     <div className="animate-spin w-12 h-12 border-4 border-purple-500 border-t-transparent rounded-full mx-auto mb-4" aria-hidden="true"></div>
                     <p className="text-gray-400">{t('battlesPage.status.loadingCompletedBattles')}</p>

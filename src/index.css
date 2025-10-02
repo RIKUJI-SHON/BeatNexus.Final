@@ -125,6 +125,13 @@ aside {
   overflow: visible !important;
 }
 
+.filter-sticky {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 5rem;
+  z-index: 20;
+}
+
 /* スクロールバー関連のスタイルは不要（overflow: visible のため） */
 
 @media (max-width: 1024px) {
@@ -138,6 +145,10 @@ aside {
     position: static !important;
     max-height: none !important;
     overflow-y: visible !important;
+  }
+
+  .filter-sticky {
+    top: 4.5rem;
   }
 }
 
