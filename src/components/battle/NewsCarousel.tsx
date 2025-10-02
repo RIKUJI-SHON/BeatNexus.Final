@@ -136,7 +136,7 @@ const NewsCarousel: React.FC<NewsCarouselProps> = ({ className = '' }) => {
             {/* Content */}
             <div className="relative z-10 h-full flex flex-col items-center justify-between text-center px-6 py-8">
               <div />
-              <div className="group-hover:scale-105 transition-transform duration-300 relative">
+              <div className="group-hover:scale-105 transition-transform duration-300 relative -ml-2 sm:-ml-3">
                 {/* Top layer onboarding image replacing wordmark */}
                 <img
                   src="/images/onboarding/Slide1.png"
