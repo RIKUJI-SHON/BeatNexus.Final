@@ -292,7 +292,13 @@ export const SpecialBattleCard: React.FC<SpecialBattleCardProps> = ({ battle, fo
 
               {/* フォーマットタグ（カード下部中央） */}
               <div className="mt-4 flex justify-center">
-                <div className="px-3 py-1 rounded-full text-xs font-medium border backdrop-blur-sm bg-indigo-500/15 text-indigo-200 border-indigo-400/30">
+                <div className={`px-3 py-1 rounded-full text-xs font-medium border backdrop-blur-sm ${
+                  battle.battle_format === 'MINI_BATTLE' 
+                    ? 'bg-blue-500/15 text-blue-200 border-blue-400/30'
+                    : battle.battle_format === 'MAIN_BATTLE'
+                    ? 'bg-red-500/15 text-red-200 border-red-400/30'
+                    : 'bg-indigo-500/15 text-indigo-200 border-indigo-400/30'
+                }`}>
                   {battle.battle_format === 'MINI_BATTLE' ? 'MINI BATTLE' : (battle.battle_format === 'MAIN_BATTLE' ? 'MAIN BATTLE' : 'THEME')}
                 </div>
               </div>
