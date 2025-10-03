@@ -92,7 +92,7 @@ const PostPage: React.FC = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [step, setStep] = useState<'upload' | 'preview' | 'success'>('upload');
   // バトル形式選択（MAIN または MINI）
-  const [battleFormat, setBattleFormat] = useState<BattleFormat>('MAIN_BATTLE');
+  const [battleFormat, setBattleFormat] = useState<BattleFormat>('MINI_BATTLE');
   const [acceptedGuidelines, setAcceptedGuidelines] = useState(false);
   const [acceptedFacePolicy, setAcceptedFacePolicy] = useState(false);
   const [acceptedContent, setAcceptedContent] = useState(false);
