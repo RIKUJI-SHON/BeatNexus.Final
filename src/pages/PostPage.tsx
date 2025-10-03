@@ -605,11 +605,11 @@ const PostPage: React.FC = () => {
                         <label className="switch" aria-label={t('postPage.battleFormat.label', 'バトル形式')}>
                           <input
                             type="checkbox"
-                            checked={battleFormat === 'MINI_BATTLE'}
-                            onChange={(e) => setBattleFormat(e.target.checked ? 'MINI_BATTLE' : 'MAIN_BATTLE')}
+                            checked={battleFormat === 'MAIN_BATTLE'}
+                            onChange={(e) => setBattleFormat(e.target.checked ? 'MAIN_BATTLE' : 'MINI_BATTLE')}
                           />
-                          <span>{t('postPage.battleFormat.main', 'MAIN BATTLE')}</span>
                           <span>{t('postPage.battleFormat.mini', 'MINI BATTLE')}</span>
+                          <span>{t('postPage.battleFormat.main', 'MAIN BATTLE')}</span>
                         </label>
                       </div>
                       {/* MINI タグライン（選択時のみ） */}
