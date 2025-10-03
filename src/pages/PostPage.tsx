@@ -499,8 +499,8 @@ const PostPage: React.FC = () => {
                           .switch {
                             --_switch-bg-clr: linear-gradient(135deg, rgba(8, 145, 178, 0.25), rgba(2, 6, 23, 0.5));
                             --_switch-padding: 4px; /* padding around button */
-                            --_slider-bg-clr: rgba(8, 145, 178, 0.45); /* slider color unchecked */
-                            --_slider-bg-clr-on: rgba(8, 145, 178, 0.95); /* slider color checked */
+                            --_slider-bg-clr: rgba(59, 130, 246, 0.35); /* slider color unchecked (MINI blue) */
+                            --_slider-bg-clr-on: rgba(239, 68, 68, 0.45); /* slider color checked (MAIN red) */
                             --_slider-txt-clr: #ffffff;
                             --_label-padding: 0.75rem 1.25rem; /* global width/height */
                             --_switch-easing: cubic-bezier(0.47, 1.64, 0.41, 0.8); /* easing on toggle switch */
@@ -540,6 +540,14 @@ const PostPage: React.FC = () => {
                             color: var(--_slider-txt-clr);
                             text-shadow: 0 0 6px rgba(255, 255, 255, 0.25);
                           }
+                          /* MINI BATTLE (first span) color hint */
+                          .switch > span:first-of-type {
+                            text-shadow: 0 0 8px rgba(59, 130, 246, 0.4);
+                          }
+                          /* MAIN BATTLE (last span) color hint */
+                          .switch > span:last-of-type {
+                            text-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
+                          }
                           .switch::before,
                           .switch::after {
                             content: "";
@@ -558,7 +566,7 @@ const PostPage: React.FC = () => {
                             z-index: -1;
                             box-shadow:
                               inset 0 2px 4px rgba(0, 0, 0, 0.3),
-                              0 0 12px rgba(8, 145, 178, 0.3);
+                              0 0 12px rgba(59, 130, 246, 0.3);
                           }
                           /* switch bg color */
                           .switch::after {
@@ -587,6 +595,9 @@ const PostPage: React.FC = () => {
                           .switch:has(input:checked)::before {
                             background-color: var(--_slider-bg-clr-on);
                             inset: var(--_switch-padding) var(--_switch-padding) var(--_switch-padding) 50%;
+                            box-shadow:
+                              inset 0 2px 4px rgba(0, 0, 0, 0.3),
+                              0 0 12px rgba(239, 68, 68, 0.3);
                           }
                           /* checked - set opacity */
                           .switch > span:last-of-type,
@@ -624,13 +635,11 @@ const PostPage: React.FC = () => {
                         {battleFormat === 'MAIN_BATTLE' ? (
                           <>
                             <div>• {t('postPage.rules.length')}: {t('postPage.rules.values.main.length')}</div>
-                            <div>• {t('postPage.rules.rateChange')}: {t('postPage.rules.values.main.rateChange')}</div>
                             <div>• {t('postPage.rules.seasonPoints')}: {t('postPage.rules.values.main.seasonPoints')}</div>
                           </>
                         ) : (
                           <>
                             <div>• {t('postPage.rules.length')}: {t('postPage.rules.values.mini.length')}</div>
-                            <div>• {t('postPage.rules.rateChange')}: {t('postPage.rules.values.mini.rateChange')}</div>
                             <div>• {t('postPage.rules.seasonPoints')}: {t('postPage.rules.values.mini.seasonPoints')}</div>
                           </>
                         )}
