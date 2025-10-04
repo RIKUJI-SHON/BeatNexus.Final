@@ -2225,6 +2225,13 @@
       "usernamePlaceholder": "ユーザー名を入力",
       "bio": "自己紹介",
       "bioPlaceholder": "自己紹介を入力してください",
+      "instagramLabel": "Instagram",
+      "instagramPlaceholder": "@your_instagram",
+      "instagramDescription": "Instagramのユーザー名（例: @beatboxer）",
+      "instagramError": {
+        "invalidFormat": "無効な形式です。英数字、ピリオド、アンダースコアのみ使用できます。",
+        "tooLong": "Instagramのユーザー名は30文字以内にしてください"
+      },
       "cancel": "キャンセル",
       "saveChanges": "変更を保存",
       "saving": "保存中..."

@@ -2431,6 +2431,13 @@
       "usernamePlaceholder": "Enter username",
       "bio": "Bio",
       "bioPlaceholder": "Tell us about yourself...",
+      "instagramLabel": "Instagram",
+      "instagramPlaceholder": "@your_instagram",
+      "instagramDescription": "Your Instagram username (e.g., @beatboxer)",
+      "instagramError": {
+        "invalidFormat": "Invalid format. Use only letters, numbers, periods, and underscores.",
+        "tooLong": "Instagram username must be 30 characters or less"
+      },
       "cancel": "Cancel",
       "saveChanges": "Save Changes",
       "saving": "Saving..."

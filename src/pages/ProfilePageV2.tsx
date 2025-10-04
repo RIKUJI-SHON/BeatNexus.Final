@@ -6,7 +6,6 @@ import {
   Zap, 
   Play, 
   Loader,
-  Calendar,
   Instagram,
   Edit,
   X,
@@ -24,10 +23,10 @@ import { Textarea } from '../components/ui/Textarea';
 import { Button } from '../components/ui/Button';
 import { getDefaultAvatarUrl } from '../utils';
 import { Battle, ArchivedBattle } from '../types';
-import { format } from 'date-fns';
 import { toast } from '../store/toastStore';
 import { trackBeatNexusEvents } from '../utils/analytics';
 import { useTranslation } from 'react-i18next';
+import { normalizeInstagramHandle, validateInstagramHandle } from '../utils/instagram';
 
 interface UserProfile {
   id: string;
@@ -76,6 +75,8 @@ const ProfilePageV2: React.FC = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editUsername, setEditUsername] = useState('');
   const [editBio, setEditBio] = useState('');
+  const [editInstagramId, setEditInstagramId] = useState('');
+  const [instagramError, setInstagramError] = useState<string | null>(null);
   const [isPhotoEditorOpen, setIsPhotoEditorOpen] = useState(false);
   const [selectedPhotoFile, setSelectedPhotoFile] = useState<File | null>(null);
   const [isEditingAvatar, setIsEditingAvatar] = useState(false);
@@ -105,6 +106,7 @@ const ProfilePageV2: React.FC = () => {
       if (isOwnProfile && data) {
         setEditUsername(data.username || '');
         setEditBio(data.bio || '');
+        setEditInstagramId(data.instagram_id || '');
       }
     } catch (error) {
       console.error('Error fetching user profile:', error);
@@ -243,6 +245,8 @@ const ProfilePageV2: React.FC = () => {
     setIsEditModalOpen(false);
     setEditUsername(userProfile.username);
     setEditBio(userProfile.bio || '');
+    setEditInstagramId(userProfile.instagram_id || '');
+    setInstagramError(null);
     setIsEditingAvatar(false);
   };
 
@@ -298,12 +302,24 @@ const ProfilePageV2: React.FC = () => {
 
   const handleSaveProfile = async () => {
     if (!authUser || !userProfile || !isOwnProfile) return;
+    
+    // Validate Instagram ID before saving
+    const normalizedInstagram = normalizeInstagramHandle(editInstagramId);
+    const validation = validateInstagramHandle(normalizedInstagram);
+    
+    if (!validation.isValid) {
+      setInstagramError(validation.error || 'Invalid Instagram handle');
+      return;
+    }
+    
+    setInstagramError(null);
     setIsSaving(true);
     try {
       const { data, error } = await supabase.rpc('update_user_profile_details', {
         p_user_id: displayedUserId,
         p_username: editUsername,
         p_bio: editBio,
+        p_instagram_id: normalizedInstagram || null,
       });
 
       if (error || (data && data.success === false)) {
@@ -393,33 +409,9 @@ const ProfilePageV2: React.FC = () => {
               </div>
 
               {/* ユーザー名 */}
-              <div className="text-center mb-2">
+              <div className="text-center mb-4">
                 <h1 className="text-2xl font-bold text-white">{userProfile.username}</h1>
               </div>
-
-              {/* ユーザーハンドル */}
-              <div className="text-center mb-4">
-                <span className="text-sm text-gray-500">@{userProfile.username}</span>
-              </div>
-
-              {/* Member since */}
-              <div className="flex items-center justify-center gap-2 text-sm text-gray-400 mb-4">
-                <Calendar className="h-4 w-4" />
-                <span>{t('profilePageV2.memberSince')} {format(new Date(userProfile.created_at), 'MMMM d, yyyy')}</span>
-              </div>
-
-              {/* Edit Profile Button */}
-              {isOwnProfile && (
-                <div className="mb-4">
-                  <button
-                    onClick={handleEditProfile}
-                    className="w-full px-4 py-2.5 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 rounded-lg text-sm font-semibold flex items-center justify-center gap-2 transition-all"
-                  >
-                    <Edit className="h-4 w-4" />
-                    {t('profilePageV2.editProfile')}
-                  </button>
-                </div>
-              )}
 
               {/* Instagram */}
               {userProfile.instagram_id && (
@@ -433,6 +425,19 @@ const ProfilePageV2: React.FC = () => {
                     <Instagram className="h-4 w-4" />
                     <span>@{userProfile.instagram_id}</span>
                   </a>
+                </div>
+              )}
+
+              {/* Edit Profile Button */}
+              {isOwnProfile && (
+                <div className="mb-4">
+                  <button
+                    onClick={handleEditProfile}
+                    className="w-full px-4 py-2.5 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 rounded-lg text-sm font-semibold flex items-center justify-center gap-2 transition-all"
+                  >
+                    <Edit className="h-4 w-4" />
+                    {t('profilePageV2.editProfile')}
+                  </button>
                 </div>
               )}
             </div>
@@ -705,6 +710,32 @@ const ProfilePageV2: React.FC = () => {
                       rows={4}
                       className="bg-[#1a1f2e] border-slate-600 text-white placeholder-gray-500 focus:border-purple-500 focus:ring-purple-500 resize-none"
                     />
+                  </div>
+
+                  {/* Instagram ID */}
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-300 mb-2">
+                      <Instagram className="h-4 w-4 inline mr-1" />
+                      {t('profilePageV2.editModal.instagramLabel')}
+                    </label>
+                    <Input
+                      value={editInstagramId}
+                      onChange={(e) => {
+                        setEditInstagramId(e.target.value);
+                        // Clear error when user starts typing
+                        if (instagramError) setInstagramError(null);
+                      }}
+                      placeholder={t('profilePageV2.editModal.instagramPlaceholder')}
+                      className={`bg-[#1a1f2e] border-slate-600 text-white placeholder-gray-500 focus:border-purple-500 focus:ring-purple-500 ${
+                        instagramError ? 'border-red-500' : ''
+                      }`}
+                    />
+                    <p className="text-xs text-gray-400 mt-1">
+                      {t('profilePageV2.editModal.instagramDescription')}
+                    </p>
+                    {instagramError && (
+                      <p className="text-xs text-red-400 mt-1">{instagramError}</p>
+                    )}
                   </div>
                 </div>
               </div>
