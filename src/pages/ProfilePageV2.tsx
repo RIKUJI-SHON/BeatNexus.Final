@@ -459,7 +459,7 @@ const ProfilePageV2: React.FC = () => {
               <div className="grid grid-cols-2 gap-4">
                 
                 {/* WINS */}
-                <div className="bg-gradient-to-br from-teal-900/40 to-teal-800/20 rounded-xl p-5 border border-teal-700/30">
+                <div className="bg-gradient-to-br from-teal-900/40 to-teal-800/20 rounded-xl p-5 border border-teal-700/30 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-teal-500/20 hover:border-teal-500/50 cursor-pointer">
                   <div className="text-xs text-gray-400 uppercase mb-2 font-semibold tracking-wide">{t('profilePageV2.stats.wins')}</div>
                   <div className="flex items-center gap-3">
                     <img src="/images/win.png" alt="Wins" className="h-6 w-6" />
@@ -468,7 +468,7 @@ const ProfilePageV2: React.FC = () => {
                 </div>
 
                 {/* CURRENT WIN STREAK */}
-                <div className="bg-gradient-to-br from-orange-900/40 to-orange-800/20 rounded-xl p-5 border border-orange-700/30">
+                <div className="bg-gradient-to-br from-orange-900/40 to-orange-800/20 rounded-xl p-5 border border-orange-700/30 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-orange-500/20 hover:border-orange-500/50 cursor-pointer">
                   <div className="text-xs text-gray-400 uppercase mb-2 font-semibold tracking-wide">{t('profilePageV2.stats.currentWinStreak')}</div>
                   <div className="flex items-center gap-3">
                     <Zap className="h-6 w-6 text-orange-400" />
@@ -477,7 +477,7 @@ const ProfilePageV2: React.FC = () => {
                 </div>
 
                 {/* HIGHEST WIN STREAK */}
-                <div className="bg-gradient-to-br from-amber-900/40 to-amber-800/20 rounded-xl p-5 border border-amber-700/30">
+                <div className="bg-gradient-to-br from-amber-900/40 to-amber-800/20 rounded-xl p-5 border border-amber-700/30 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-amber-500/20 hover:border-amber-500/50 cursor-pointer">
                   <div className="text-xs text-gray-400 uppercase mb-2 font-semibold tracking-wide">{t('profilePageV2.stats.highestWinStreak')}</div>
                   <div className="flex items-center gap-3">
                     <Zap className="h-6 w-6 text-amber-400" />
@@ -486,7 +486,7 @@ const ProfilePageV2: React.FC = () => {
                 </div>
 
                 {/* PLAYS */}
-                <div className="bg-gradient-to-br from-violet-900/40 to-violet-800/20 rounded-xl p-5 border border-violet-700/30">
+                <div className="bg-gradient-to-br from-violet-900/40 to-violet-800/20 rounded-xl p-5 border border-violet-700/30 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-violet-500/20 hover:border-violet-500/50 cursor-pointer">
                   <div className="text-xs text-gray-400 uppercase mb-2 font-semibold tracking-wide">{t('profilePageV2.stats.plays')}</div>
                   <div className="flex items-center gap-3">
                     <img src="/images/VS.png" alt="Plays" className="h-6 w-6" />
@@ -571,7 +571,7 @@ const ProfilePageV2: React.FC = () => {
                   {userBadges.map((badge) => (
                     <div
                       key={badge.id}
-                      className="bg-[#181818] rounded-lg p-4 text-center hover:bg-[#282828] transition-colors cursor-pointer"
+                      className="bg-[#181818] rounded-lg p-4 text-center hover:bg-[#282828] transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-purple-500/20 cursor-pointer"
                     >
                       <img
                         src={badge.image_url}
