@@ -2392,4 +2392,57 @@
       "step3": "Reload the page"
     }
   }
+,
+  "profilePageV2": {
+    "userNotFound": "User not found",
+    "backToHome": "Back to Home",
+    "noBio": "No bio yet",
+    "memberSince": "Member since",
+    "editProfile": "Edit Profile",
+    "stats": {
+      "wins": "WINS",
+      "currentWinStreak": "CURRENT WIN STREAK",
+      "highestWinStreak": "HIGHEST WIN STREAK",
+      "plays": "PLAYS"
+    },
+    "sections": {
+      "pastBattles": "Past Battles",
+      "achievements": "Achievements"
+    },
+    "battles": {
+      "noBattles": "No battles yet",
+      "viewAll": "View All",
+      "loadMore": "🔥 LOAD MORE BATTLES"
+    },
+    "badges": {
+      "noBadges": "No badges earned yet",
+      "totalBadges": "Total Badges",
+      "diamondBadges": "Diamond Badges",
+      "platinumBadges": "Platinum Badges"
+    },
+    "editModal": {
+      "title": "Edit Profile",
+      "profilePhoto": "Profile Photo",
+      "changePhoto": "Change Photo",
+      "photoLimit": "JPG, PNG or GIF. Max 5MB.",
+      "profileInfo": "Profile Information",
+      "displayName": "Display Name",
+      "username": "Username",
+      "usernamePlaceholder": "Enter username",
+      "bio": "Bio",
+      "bioPlaceholder": "Tell us about yourself...",
+      "cancel": "Cancel",
+      "saveChanges": "Save Changes",
+      "saving": "Saving..."
+    },
+    "toast": {
+      "success": "Success",
+      "error": "Error",
+      "avatarUpdated": "Avatar updated successfully",
+      "profileUpdated": "Profile updated successfully",
+      "uploadFailed": "Failed to upload avatar",
+      "updateFailed": "Failed to update profile",
+      "fileSizeError": "File size must be less than 5MB"
+    }
+  }
 }

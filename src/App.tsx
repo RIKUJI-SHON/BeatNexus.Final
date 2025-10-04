@@ -61,6 +61,7 @@ import BattleViewPage from './pages/BattleViewPage';
 import BattleReplayPage from './pages/BattleReplayPage';
 import PostPage from './pages/PostPage';
 import ProfilePage from './pages/ProfilePage';
+import ProfilePageV2 from './pages/ProfilePageV2';
 import RankingPage from './pages/RankingPage';
 import RatingTestPage from './pages/RatingTestPage';
 import CommunityComingSoonPage from './pages/CommunityComingSoonPage';
@@ -123,8 +124,10 @@ function RouterContent() {
             <Route path="/battle-replay/:battlePath" element={<BattleReplayPage />} />
             <Route path="/ad-preview" element={<AdPreviewPage />} />
             <Route path="/dev/supertip-card-preview" element={<SuperTipCardPreviewPage />} />
-            <Route path="/profile/:userId" element={<ProfilePage />} />
-            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/profile/:userId" element={<ProfilePageV2 />} />
+            <Route path="/profile" element={<ProfilePageV2 />} />
+            <Route path="/old-profile/:userId" element={<ProfilePage />} />
+            <Route path="/old-profile" element={<ProfilePage />} />
             <Route path="/ranking" element={<RankingPage />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/features" element={<FeaturesPage />} />

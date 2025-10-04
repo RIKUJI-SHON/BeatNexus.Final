@@ -2186,4 +2186,57 @@
       "step3": "ページを再読み込み"
     }
   }
+,
+  "profilePageV2": {
+    "userNotFound": "ユーザーが見つかりません",
+    "backToHome": "ホームに戻る",
+    "noBio": "プロフィールがまだありません",
+    "memberSince": "メンバー登録日",
+    "editProfile": "プロフィールを編集",
+    "stats": {
+      "wins": "勝利",
+      "currentWinStreak": "現在の連勝",
+      "highestWinStreak": "最高連勝",
+      "plays": "投稿数"
+    },
+    "sections": {
+      "pastBattles": "過去のバトル",
+      "achievements": "獲得バッジ"
+    },
+    "battles": {
+      "noBattles": "まだバトルがありません",
+      "viewAll": "すべて表示",
+      "loadMore": "🔥 もっと読み込む"
+    },
+    "badges": {
+      "noBadges": "まだバッジを獲得していません",
+      "totalBadges": "合計バッジ",
+      "diamondBadges": "ダイヤモンドバッジ",
+      "platinumBadges": "プラチナバッジ"
+    },
+    "editModal": {
+      "title": "プロフィールを編集",
+      "profilePhoto": "プロフィール写真",
+      "changePhoto": "写真を変更",
+      "photoLimit": "JPG, PNG or GIF. Max 5MB.",
+      "profileInfo": "プロフィール情報",
+      "displayName": "表示名",
+      "username": "ユーザー名",
+      "usernamePlaceholder": "ユーザー名を入力",
+      "bio": "自己紹介",
+      "bioPlaceholder": "自己紹介を入力してください",
+      "cancel": "キャンセル",
+      "saveChanges": "変更を保存",
+      "saving": "保存中..."
+    },
+    "toast": {
+      "success": "成功",
+      "error": "エラー",
+      "avatarUpdated": "プロフィール写真を更新しました",
+      "profileUpdated": "プロフィールを更新しました",
+      "uploadFailed": "アップロードに失敗しました",
+      "updateFailed": "更新に失敗しました",
+      "fileSizeError": "ファイルサイズは5MB以下にしてください"
+    }
+  }
 }
