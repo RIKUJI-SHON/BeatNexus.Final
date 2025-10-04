@@ -1,10 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { 
-  Trophy, 
-  Target, 
   Zap, 
-  Play, 
   Loader,
   Instagram,
   Edit,
@@ -465,7 +462,7 @@ const ProfilePageV2: React.FC = () => {
                 <div className="bg-gradient-to-br from-teal-900/40 to-teal-800/20 rounded-xl p-5 border border-teal-700/30">
                   <div className="text-xs text-gray-400 uppercase mb-2 font-semibold tracking-wide">{t('profilePageV2.stats.wins')}</div>
                   <div className="flex items-center gap-3">
-                    <Trophy className="h-6 w-6 text-yellow-400" />
+                    <img src="/images/win.png" alt="Wins" className="h-6 w-6" />
                     <span className="text-3xl font-bold text-white">{userStats.wins}</span>
                   </div>
                 </div>
@@ -492,7 +489,7 @@ const ProfilePageV2: React.FC = () => {
                 <div className="bg-gradient-to-br from-violet-900/40 to-violet-800/20 rounded-xl p-5 border border-violet-700/30">
                   <div className="text-xs text-gray-400 uppercase mb-2 font-semibold tracking-wide">{t('profilePageV2.stats.plays')}</div>
                   <div className="flex items-center gap-3">
-                    <Play className="h-6 w-6 text-violet-400" />
+                    <img src="/images/VS.png" alt="Plays" className="h-6 w-6" />
                     <span className="text-3xl font-bold text-white">{userStats.plays}</span>
                   </div>
                 </div>
@@ -518,7 +515,7 @@ const ProfilePageV2: React.FC = () => {
               {/* 左カラム: 過去のバトル */}
               <div>
                 <div className="flex items-center gap-2 mb-4">
-                  <Target className="h-5 w-5 text-cyan-400" />
+                  <img src="/images/VS.png" alt="Past Battles" className="h-5 w-5" />
                   <h2 className="text-xl font-bold uppercase">{t('profilePageV2.sections.pastBattles')}</h2>
                 </div>
 
@@ -542,7 +539,7 @@ const ProfilePageV2: React.FC = () => {
                         ))
                       ) : (
                         <div className="bg-[#181818] rounded-lg p-8 text-center text-gray-400">
-                          <Target className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                          <img src="/images/VS.png" alt="No battles" className="h-12 w-12 mx-auto mb-3 opacity-50" />
                           <p>{t('profilePageV2.battles.noBattles')}</p>
                         </div>
                       )}
@@ -564,7 +561,7 @@ const ProfilePageV2: React.FC = () => {
               {/* 右カラム: Achievements */}
               <div>
                 <div className="flex items-center gap-2 mb-4">
-                  <Trophy className="h-5 w-5 text-cyan-400" />
+                  <img src="/images/Tournaments.png" alt="Achievements" className="h-5 w-5" />
                   <h2 className="text-xl font-bold uppercase">{t('profilePageV2.sections.achievements')}</h2>
                   <span className="text-sm text-gray-500 uppercase">{t('profilePageV2.sections.achievements')}</span>
                 </div>
@@ -588,7 +585,7 @@ const ProfilePageV2: React.FC = () => {
 
                   {userBadges.length === 0 && (
                     <div className="col-span-2 bg-[#181818] rounded-lg p-8 text-center text-gray-400">
-                      <Trophy className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                      <img src="/images/Tournaments.png" alt="No badges" className="h-12 w-12 mx-auto mb-3 opacity-50" />
                       <p className="text-sm">{t('profilePageV2.badges.noBadges')}</p>
                     </div>
                   )}
