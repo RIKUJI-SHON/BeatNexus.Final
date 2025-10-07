@@ -19,6 +19,7 @@ import { Input } from '../components/ui/Input';
 import { Textarea } from '../components/ui/Textarea';
 import { Button } from '../components/ui/Button';
 import { getDefaultAvatarUrl } from '../utils';
+import { useCircularAvatar } from '../hooks/useCircularAvatar';
 import { Battle, ArchivedBattle } from '../types';
 import { toast } from '../store/toastStore';
 import { trackBeatNexusEvents } from '../utils/analytics';
@@ -81,6 +82,7 @@ const ProfilePageV2: React.FC = () => {
 
   const displayedUserId = routeUserId || authUser?.id;
   const isOwnProfile = !routeUserId || (authUser?.id === routeUserId);
+  const circularAvatarUrl = useCircularAvatar(userProfile?.avatar_url);
 
   // プロフィール取得
   const fetchUserProfile = useCallback(async () => {
@@ -397,9 +399,9 @@ const ProfilePageV2: React.FC = () => {
                 <div className="relative mx-auto w-40 h-40">
                   <div className="rounded-full overflow-hidden border-2 border-slate-700">
                     <img
-                      src={userProfile.avatar_url || getDefaultAvatarUrl()}
+                      src={circularAvatarUrl || getDefaultAvatarUrl()}
                       alt={userProfile.username}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover object-center"
                     />
                   </div>
                 </div>
@@ -623,9 +625,9 @@ const ProfilePageV2: React.FC = () => {
                   <div className="relative flex-shrink-0">
                     <div className="w-20 h-20 rounded-full overflow-hidden bg-[#1a1f2e] border border-slate-700">
                       <img
-                        src={userProfile.avatar_url || getDefaultAvatarUrl()}
+                        src={circularAvatarUrl || getDefaultAvatarUrl()}
                         alt={userProfile.username}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover object-center"
                       />
                     </div>
                     {/* 小さい紫のカメラアイコン */}
