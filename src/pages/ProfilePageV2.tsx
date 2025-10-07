@@ -602,7 +602,7 @@ const ProfilePageV2: React.FC = () => {
 
       {/* プロフィール編集モーダル */}
       {isEditModalOpen && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-[70] p-4">
           <div className="bg-[#2a3441] rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             {/* モーダルヘッダー */}
             <div className="sticky top-0 bg-[#2a3441] border-b border-slate-700/50 p-6 flex items-center justify-between">

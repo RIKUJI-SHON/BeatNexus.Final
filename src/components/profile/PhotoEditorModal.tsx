@@ -21,10 +21,22 @@ export const PhotoEditorModal: React.FC<PhotoEditorModalProps> = ({
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const [isMobile, setIsMobile] = useState(false);
   
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const imageRef = useRef<HTMLImageElement | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const [canvasSize, setCanvasSize] = useState(500);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   useEffect(() => {
     if (imageFile) {
@@ -42,7 +54,7 @@ export const PhotoEditorModal: React.FC<PhotoEditorModalProps> = ({
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const size = 500;
+    const size = canvasSize;
     canvas.width = size;
     canvas.height = size;
 
@@ -102,7 +114,20 @@ export const PhotoEditorModal: React.FC<PhotoEditorModalProps> = ({
     ctx.arc(centerX, centerY, size / 2 - 3, 0, Math.PI * 2);
     ctx.stroke();
     ctx.restore();
-  }, [zoom, rotation, position]);
+  }, [zoom, rotation, position, canvasSize]);
+
+  useEffect(() => {
+    const updateCanvasSize = () => {
+      if (containerRef.current) {
+        const containerWidth = containerRef.current.offsetWidth;
+        setCanvasSize(containerWidth);
+      }
+    };
+
+    updateCanvasSize();
+    window.addEventListener('resize', updateCanvasSize);
+    return () => window.removeEventListener('resize', updateCanvasSize);
+  }, []);
 
   useEffect(() => {
     if (!imageUrl) return;
@@ -217,6 +242,109 @@ export const PhotoEditorModal: React.FC<PhotoEditorModalProps> = ({
 
   if (!isOpen) return null;
 
+  // モバイル用レイアウト
+  if (isMobile) {
+    return (
+      <div className="fixed inset-0 bg-black/95 z-[10000] flex flex-col">
+        {/* ヘッダー */}
+        <div className="flex items-center justify-between p-4 border-b border-slate-700 bg-gradient-to-r from-purple-600 to-pink-600 flex-shrink-0">
+          <h2 className="text-lg font-bold text-white">Update Profile Photo</h2>
+          <button
+            onClick={onClose}
+            className="text-white hover:text-gray-200 transition-colors p-1 hover:bg-white/10 rounded"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+
+        {/* キャンバスエリア - 画面中央に正方形で配置 */}
+        <div className="flex-1 flex items-center justify-center p-4">
+          <div
+            ref={containerRef}
+            className="relative bg-[#2a2a2a] rounded-lg overflow-hidden cursor-move w-full aspect-square max-w-[90vw] max-h-[50vh]"
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+            onMouseLeave={handleMouseUp}
+            onTouchStart={(e) => {
+              const touch = e.touches[0];
+              handleMouseDown({ clientX: touch.clientX, clientY: touch.clientY } as React.MouseEvent);
+            }}
+            onTouchMove={(e) => {
+              const touch = e.touches[0];
+              handleMouseMove({ clientX: touch.clientX, clientY: touch.clientY } as React.MouseEvent);
+            }}
+            onTouchEnd={handleMouseUp}
+          >
+            <canvas
+              ref={canvasRef}
+              width={canvasSize}
+              height={canvasSize}
+              className="w-full h-full"
+            />
+            
+            <div className="absolute bottom-2 right-2 w-6 h-6 bg-white/20 rounded-full flex items-center justify-center">
+              <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        {/* コントロール */}
+        <div className="flex-shrink-0 p-4 space-y-4 bg-slate-900/50">
+          <div className="flex justify-center gap-2">
+            <button
+              onClick={handleZoomOut}
+              className="p-2.5 bg-slate-700 hover:bg-slate-600 rounded-lg text-white transition-colors"
+              aria-label="Zoom Out"
+            >
+              <ZoomOut className="h-4 w-4" />
+            </button>
+            <button
+              onClick={handleZoomIn}
+              className="p-2.5 bg-slate-700 hover:bg-slate-600 rounded-lg text-white transition-colors"
+              aria-label="Zoom In"
+            >
+              <ZoomIn className="h-4 w-4" />
+            </button>
+            <button
+              onClick={() => setPosition({ x: 0, y: 0 })}
+              className="p-2.5 bg-slate-700 hover:bg-slate-600 rounded-lg text-white transition-colors"
+              aria-label="Reset Position"
+            >
+              <Move className="h-4 w-4" />
+            </button>
+            <button
+              onClick={handleRotate}
+              className="p-2.5 bg-slate-700 hover:bg-slate-600 rounded-lg text-white transition-colors"
+              aria-label="Rotate"
+            >
+              <RotateCw className="h-4 w-4" />
+            </button>
+          </div>
+
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              onClick={onClose}
+              className="flex-1 border-slate-600 text-slate-300 hover:bg-slate-700"
+            >
+              Choose Different
+            </Button>
+            <Button
+              onClick={handleSave}
+              className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+            >
+              Save Photo
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // デスクトップ用レイアウト
   return (
     <div className="fixed inset-0 bg-black/95 backdrop-blur-sm flex items-center justify-center z-[10000] p-4">
       <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl border border-slate-700 w-full max-w-2xl overflow-hidden shadow-2xl">
@@ -234,8 +362,7 @@ export const PhotoEditorModal: React.FC<PhotoEditorModalProps> = ({
           <div className="flex justify-center">
             <div
               ref={containerRef}
-              className="relative bg-[#2a2a2a] rounded-lg overflow-hidden cursor-move"
-              style={{ width: 500, height: 500 }}
+              className="relative bg-[#2a2a2a] rounded-lg overflow-hidden cursor-move w-full max-w-[500px] aspect-square"
               onMouseDown={handleMouseDown}
               onMouseMove={handleMouseMove}
               onMouseUp={handleMouseUp}
@@ -243,6 +370,8 @@ export const PhotoEditorModal: React.FC<PhotoEditorModalProps> = ({
             >
               <canvas
                 ref={canvasRef}
+                width={canvasSize}
+                height={canvasSize}
                 className="w-full h-full"
               />
               
