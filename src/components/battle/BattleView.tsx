@@ -405,8 +405,9 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
     const diffMinutes = Math.floor((diffTime % (1000 * 60 * 60)) / (1000 * 60));
     
     if (diffDays > 0) {
-      const totalHours = diffDays * 24 + diffHours;
-      return `${totalHours} HOURS LEFT`;
+      const dayLabel = diffDays === 1 ? 'DAY' : 'DAYS';
+      const hourLabel = diffHours === 1 ? 'HOUR' : 'HOURS';
+      return `${diffDays} ${dayLabel} ${diffHours} ${hourLabel} LEFT`;
     } else if (diffHours > 0) {
       return `${diffHours} HOURS LEFT`;
     } else {

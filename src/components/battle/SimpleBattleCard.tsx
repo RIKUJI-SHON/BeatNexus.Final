@@ -57,8 +57,9 @@ export const SimpleBattleCard: React.FC<SimpleBattleCardProps> = ({ battle, forc
     const hours = Math.floor((total % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
     const minutes = Math.floor((total % (1000 * 60 * 60)) / (1000 * 60));
     if (days > 0) {
-      const totalHours = days * 24 + hours;
-      setTimeRemaining(`${totalHours} HOURS LEFT`);
+      const dayLabel = days === 1 ? 'DAY' : 'DAYS';
+      const hourLabel = hours === 1 ? 'HOUR' : 'HOURS';
+      setTimeRemaining(`${days} ${dayLabel} ${hours} ${hourLabel} LEFT`);
     } else if (hours > 0) {
       setTimeRemaining(`${hours} HOURS LEFT`);
     } else if (minutes > 0) {

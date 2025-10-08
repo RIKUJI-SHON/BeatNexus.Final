@@ -56,8 +56,9 @@ export const SpecialBattleCard: React.FC<SpecialBattleCardProps> = ({ battle, fo
     const minutes = Math.floor((total % (1000 * 60 * 60)) / (1000 * 60));
     const seconds = Math.floor((total % (1000 * 60)) / 1000);
     if (days > 0) {
-      const totalHours = days * 24 + hours;
-      setTimeRemaining(`${totalHours} HOURS LEFT`);
+      const dayLabel = days === 1 ? 'DAY' : 'DAYS';
+      const hourLabel = hours === 1 ? 'HOUR' : 'HOURS';
+      setTimeRemaining(`${days} ${dayLabel} ${hours} ${hourLabel} LEFT`);
     } else if (hours > 0) {
       setTimeRemaining(`${hours} HOURS LEFT`);
     } else if (minutes > 0) {
