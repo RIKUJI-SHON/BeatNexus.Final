@@ -18,6 +18,7 @@ interface UserProfile {
   avatar_url?: string;
   bio?: string;
   rating: number;
+  season_points: number;
   created_at: string;
   updated_at: string;
 }
@@ -181,14 +182,185 @@ export const Header: React.FC = () => {
   };
 
   return (
-    <header className="bg-gray-950/95 backdrop-blur-md text-white border-b border-gray-800 fixed top-0 w-full z-50">
+    <>
+      {/* Mobile Sidebar Menu - ヘッダーの外に配置 */}
+      {/* Overlay - メニューが開いている時に背景を暗くする */}
+      {isMenuOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-[70] md:hidden"
+          onClick={() => setIsMenuOpen(false)}
+          aria-hidden="true"
+        />
+      )}
+
+      {/* Sidebar Menu */}
+      <div 
+        className={`fixed top-0 left-0 h-full w-72 bg-gray-900 border-r border-gray-800 z-[80] transform transition-transform duration-300 ease-in-out md:hidden ${
+          isMenuOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
+      >
+        {/* Menu Header */}
+        <div className="flex items-center justify-between p-4 border-b border-gray-800">
+          <Link to="/" className="flex items-center space-x-2" onClick={() => setIsMenuOpen(false)}>
+            <img src="/images/ICON.png" alt="BeatNexus" className="h-8 w-8" />
+            <span className="font-bold text-xl tracking-tight text-white">BeatNexus</span>
+          </Link>
+          <button
+            onClick={() => setIsMenuOpen(false)}
+            className="text-gray-400 hover:text-white p-2"
+            aria-label={t('common.closeMenu')}
+          >
+            <X className="h-6 w-6" />
+          </button>
+        </div>
+
+        {/* Menu Content */}
+        <div className="overflow-y-auto h-[calc(100%-73px)]">
+          <nav className="p-4 space-y-1">
+            <Link 
+              to="/" 
+              className={`flex items-center px-4 py-3 rounded-lg font-medium transition-colors ${
+                isActive('/') 
+                  ? 'bg-cyan-500/20 text-cyan-400' 
+                  : 'text-gray-300 hover:text-white hover:bg-gray-800'
+              }`}
+              onClick={() => setIsMenuOpen(false)}
+              aria-current={isActive('/') ? 'page' : undefined}
+            >
+              {t('common.home')}
+            </Link>
+            <Link 
+              to="/battles" 
+              className={`flex items-center px-4 py-3 rounded-lg font-medium transition-colors ${
+                isActive('/battles') 
+                  ? 'bg-cyan-500/20 text-cyan-400' 
+                  : 'text-gray-300 hover:text-white hover:bg-gray-800'
+              }`}
+              onClick={() => setIsMenuOpen(false)}
+              aria-current={isActive('/battles') ? 'page' : undefined}
+            >
+              {t('common.battles')}
+            </Link>
+            <Link 
+              to="/ranking" 
+              className={`flex items-center px-4 py-3 rounded-lg font-medium transition-colors ${
+                isActive('/ranking') 
+                  ? 'bg-cyan-500/20 text-cyan-400' 
+                  : 'text-gray-300 hover:text-white hover:bg-gray-800'
+              }`}
+              onClick={() => setIsMenuOpen(false)}
+              aria-current={isActive('/ranking') ? 'page' : undefined}
+            >
+              {t('common.ranking')}
+            </Link>
+            <Link 
+              to="/community" 
+              className={`flex items-center px-4 py-3 rounded-lg font-medium transition-colors ${
+                isActive('/community') 
+                  ? 'bg-cyan-500/20 text-cyan-400' 
+                  : 'text-gray-300 hover:text-white hover:bg-gray-800'
+              }`}
+              onClick={() => setIsMenuOpen(false)}
+              aria-current={isActive('/community') ? 'page' : undefined}
+            >
+              {t('common.community')}
+            </Link>
+            
+            {/* Upgrade Button */}
+            <button
+              className="w-full mt-4"
+              onClick={() => {
+                handleUpgradeClick();
+                setIsMenuOpen(false);
+              }}
+              style={{
+                alignItems: 'center',
+                backgroundImage: 'linear-gradient(144deg, #af40ff, #5b42f3 50%, #00ddeb)',
+                border: '0',
+                borderRadius: '8px',
+                boxShadow: 'rgba(151, 65, 252, 0.2) 0 15px 30px -5px',
+                boxSizing: 'border-box',
+                color: '#ffffff',
+                display: 'flex',
+                fontSize: '16px',
+                justifyContent: 'center',
+                lineHeight: '1em',
+                padding: '3px',
+                textDecoration: 'none',
+                cursor: 'pointer',
+                transition: 'all 0.3s',
+              }}
+            >
+              <span
+                style={{
+                  backgroundColor: 'rgb(5, 6, 45)',
+                  padding: '16px 24px',
+                  borderRadius: '6px',
+                  width: '100%',
+                  height: '100%',
+                  transition: '300ms',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontWeight: '600',
+                }}
+              >
+                {t('common.upgrade')}
+              </span>
+            </button>
+          </nav>
+
+          {/* Auth Buttons - 非ログイン時のみ表示 */}
+          {!user && (
+            <div className="p-4 border-t border-gray-800 space-y-3">
+              <button
+                className="w-full py-3 px-4 bg-gray-800 hover:bg-gray-700 text-white rounded-lg font-medium transition-colors"
+                onClick={() => {
+                  handleAuthClick('login');
+                  setIsMenuOpen(false);
+                }}
+              >
+                {t('common.login')}
+              </button>
+              <button
+                className="w-full py-3 px-4 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white rounded-lg font-medium transition-colors"
+                onClick={() => {
+                  handleAuthClick('signup');
+                  setIsMenuOpen(false);
+                }}
+              >
+                {t('common.signup')}
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      <header className="bg-gray-950/95 backdrop-blur-md text-white border-b border-gray-800 fixed top-0 w-full z-50">
       <div className="container-ultra-wide">
         <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2" aria-label={t('common.home')}>
-            <img src="/images/ICON.png" alt="BeatNexus" className="h-8 w-8" />
-            <span className="font-bold text-xl tracking-tight">BeatNexus</span>
-          </Link>
+          {/* Left Side - Mobile menu button + Logo */}
+          <div className="flex items-center space-x-3">
+            {/* Mobile menu button - 左側に配置 */}
+            <button 
+              className="md:hidden text-gray-400 hover:text-white"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              aria-label={isMenuOpen ? t('common.closeMenu') : t('common.openMenu')}
+              aria-expanded={isMenuOpen}
+            >
+              {isMenuOpen ? (
+                <X className="h-6 w-6" aria-hidden="true" />
+              ) : (
+                <Menu className="h-6 w-6" aria-hidden="true" />
+              )}
+            </button>
+
+            {/* Logo */}
+            <Link to="/" className="flex items-center space-x-2" aria-label={t('common.home')}>
+              <img src="/images/ICON.png" alt="BeatNexus" className="h-8 w-8" />
+              <span className="font-bold text-xl tracking-tight">BeatNexus</span>
+            </Link>
+          </div>
 
           {/* Main Navigation - Desktop */}
           <nav className="hidden md:flex items-center space-x-1 flex-1 justify-center">
@@ -475,178 +647,11 @@ export const Header: React.FC = () => {
             )}
 
             {/* Mobile Profile Icon は BottomNav に統合済み。ここでは非表示 (コード削除)。 */}
-            
-            {/* Mobile menu button */}
-          <button 
-              className="text-gray-400 hover:text-white"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            aria-label={isMenuOpen ? t('common.closeMenu') : t('common.openMenu')}
-            aria-expanded={isMenuOpen}
-          >
-            {isMenuOpen ? (
-              <X className="h-6 w-6" aria-hidden="true" />
-            ) : (
-              <Menu className="h-6 w-6" aria-hidden="true" />
-            )}
-          </button>
           </div>
         </div>
       </div>
 
-      {/* Mobile menu */}
-      {isMenuOpen && (
-        <div className="md:hidden bg-gray-900 border-t border-gray-800">
-          <div className="container mx-auto px-4 py-3">
-            <nav className="flex flex-col space-y-1">
-              <Link 
-                to="/" 
-                className={`px-4 py-2 rounded-lg font-medium ${
-                  isActive('/') 
-                    ? 'bg-cyan-500/20 text-cyan-400' 
-                    : 'text-gray-400 hover:text-white hover:bg-gray-800'
-                }`}
-                onClick={() => setIsMenuOpen(false)}
-                aria-current={isActive('/') ? 'page' : undefined}
-              >
-                {t('common.home')}
-              </Link>
-              <Link 
-                to="/battles" 
-                className={`px-4 py-2 rounded-lg font-medium ${
-                  isActive('/battles') 
-                    ? 'bg-cyan-500/20 text-cyan-400' 
-                    : 'text-gray-400 hover:text-white hover:bg-gray-800'
-                }`}
-                onClick={() => setIsMenuOpen(false)}
-                aria-current={isActive('/battles') ? 'page' : undefined}
-              >
-                {t('common.battles')}
-              </Link>
-              <Link 
-                to="/ranking" 
-                className={`px-4 py-2 rounded-lg font-medium ${
-                  isActive('/ranking') 
-                    ? 'bg-cyan-500/20 text-cyan-400' 
-                    : 'text-gray-400 hover:text-white hover:bg-gray-800'
-                }`}
-                onClick={() => setIsMenuOpen(false)}
-                aria-current={isActive('/ranking') ? 'page' : undefined}
-              >
-                {t('common.ranking')}
-              </Link>
-              <Link 
-                to="/community" 
-                className={`px-4 py-2 rounded-lg font-medium ${
-                  isActive('/community') 
-                    ? 'bg-cyan-500/20 text-cyan-400' 
-                    : 'text-gray-400 hover:text-white hover:bg-gray-800'
-                }`}
-                onClick={() => setIsMenuOpen(false)}
-                aria-current={isActive('/community') ? 'page' : undefined}
-              >
-                {t('common.community')}
-              </Link>
-              <button
-                className="upgrade-button-mobile"
-                onClick={() => {
-                  handleUpgradeClick();
-                  setIsMenuOpen(false);
-                }}
-                style={{
-                  alignItems: 'center',
-                  backgroundImage: 'linear-gradient(144deg, #af40ff, #5b42f3 50%, #00ddeb)',
-                  border: '0',
-                  borderRadius: '8px',
-                  boxShadow: 'rgba(151, 65, 252, 0.2) 0 15px 30px -5px',
-                  boxSizing: 'border-box',
-                  color: '#ffffff',
-                  display: 'flex',
-                  fontSize: '16px',
-                  justifyContent: 'center',
-                  lineHeight: '1em',
-                  maxWidth: '100%',
-                  width: '100%',
-                  marginTop: '8px',
-                  padding: '3px',
-                  textDecoration: 'none',
-                  userSelect: 'none',
-                  WebkitUserSelect: 'none',
-                  touchAction: 'manipulation',
-                  whiteSpace: 'nowrap',
-                  cursor: 'pointer',
-                  transition: 'all 0.3s',
-                }}
-                onTouchStart={(e) => {
-                  e.currentTarget.style.transform = 'scale(0.9)';
-                }}
-                onTouchEnd={(e) => {
-                  e.currentTarget.style.transform = 'scale(1)';
-                }}
-                onMouseDown={(e) => {
-                  e.currentTarget.style.transform = 'scale(0.9)';
-                }}
-                onMouseUp={(e) => {
-                  e.currentTarget.style.transform = 'scale(1)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = 'scale(1)';
-                }}
-              >
-                <span
-                  style={{
-                    backgroundColor: 'rgb(5, 6, 45)',
-                    padding: '16px 24px',
-                    borderRadius: '6px',
-                    width: '100%',
-                    height: '100%',
-                    transition: '300ms',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontWeight: '600',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background = 'none';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = 'rgb(5, 6, 45)';
-                  }}
-                >
-                  {t('common.upgrade')}
-                </span>
-              </button>
-            </nav>
-
-            {!user && (
-              <div className="mt-4 pt-4 border-t border-gray-800 space-y-3 flex flex-col items-center">
-                <button
-                  className="header-auth-button"
-                  onClick={() => {
-                    handleAuthClick('login');
-                    setIsMenuOpen(false);
-                  }}
-                >
-                  <div className="header-auth-button-inner">
-                    {t('common.login')}
-                  </div>
-                </button>
-                <button
-                  className="header-auth-button"
-                  onClick={() => {
-                    handleAuthClick('signup');
-                    setIsMenuOpen(false);
-                  }}
-                >
-                  <div className="header-auth-button-inner">
-                    {t('common.signup')}
-                  </div>
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
     </header>
+    </>
   );
 };

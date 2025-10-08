@@ -26,7 +26,7 @@ export const BottomNav: React.FC = () => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const { t } = useTranslation();
 
-  interface UserProfile { id: string; username?: string; avatar_url?: string; }
+  interface UserProfile { id: string; username?: string; avatar_url?: string; season_points?: number; }
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
 
   useEffect(() => {
@@ -35,7 +35,7 @@ export const BottomNav: React.FC = () => {
         try {
           const { data } = await supabase
             .from('profiles')
-            .select('id, username, avatar_url')
+            .select('id, username, avatar_url, season_points')
             .eq('id', user.id)
             .single();
           if (data) setUserProfile(data);
@@ -60,7 +60,7 @@ export const BottomNav: React.FC = () => {
   // We also add bottom padding to body main content elsewhere to avoid overlap (handled when integrating)
   return (
     <nav
-      className="md:hidden fixed bottom-0 left-0 right-0 z-50 backdrop-blur-xl border-t border-cyan-500/20 safe-area-inset-b bg-gradient-to-tr from-gray-800/90 via-gray-750/80 to-gray-700/75 supports-[backdrop-filter]:bg-gray-800/65"
+      className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-gray-950/95 backdrop-blur-md border-t border-gray-800 safe-area-inset-b"
       aria-label="Bottom navigation"
     >
       <div className="relative flex items-center justify-between px-4 pt-2 pb-[calc(env(safe-area-inset-bottom)_+_0.5rem)]">
@@ -126,7 +126,7 @@ export const BottomNav: React.FC = () => {
             aria-expanded={isProfileOpen}
             aria-label="Profile"
           >
-            <span className={`w-10 h-10 flex items-center justify-center rounded-xl overflow-hidden ${(isActive('/profile') || isProfileOpen) ? 'ring-1 ring-cyan-400/50 bg-cyan-500/20 shadow-cyan-500/20' : 'bg-gray-800/40'} shadow-inner`}> 
+            <span className={`w-10 h-10 flex items-center justify-center rounded-full overflow-hidden ${(isActive('/profile') || isProfileOpen) ? 'ring-1 ring-cyan-400/50 bg-cyan-500/20 shadow-cyan-500/20' : 'bg-gray-800/40'} shadow-inner`}> 
               <img src={avatarUrl} alt={user?.user_metadata?.username ? `${user.user_metadata.username}のプロフィール画像` : 'プロフィール画像'} className="w-full h-full object-cover" />
             </span>
             <span className="leading-none">Profile</span>
@@ -141,11 +141,17 @@ export const BottomNav: React.FC = () => {
                       <img
                         src={avatarUrl}
                         alt="Profile"
-                        className="w-16 h-16 rounded-lg border-2 border-cyan-500/30"
+                        className="w-16 h-16 rounded-full border-2 border-cyan-500/30"
                       />
                     </div>
                     <div>
                       <h3 className="text-lg font-bold text-white">{userProfile?.username || user.email}</h3>
+                      <div className="flex items-center gap-1.5 mt-1">
+                        <span className="text-sm text-cyan-400 font-semibold">
+                          {userProfile?.season_points ?? 1200}
+                        </span>
+                        <span className="text-xs text-gray-400">SP</span>
+                      </div>
                     </div>
                   </div>
                 </div>

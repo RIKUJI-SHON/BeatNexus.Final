@@ -12,6 +12,7 @@ interface UserProfile {
   avatar_url?: string;
   bio?: string;
   rating: number;
+  season_points: number;
   created_at: string;
   updated_at: string;
 }
@@ -54,7 +55,7 @@ export const HoverCard: React.FC<HoverCardProps> = ({ children, className, userP
                 <img
                   src={avatarUrl}
                   alt="Profile"
-                  className="w-16 h-16 rounded-lg border-2 border-cyan-500/30"
+                  className="w-16 h-16 rounded-full border-2 border-cyan-500/30"
                 />
                 <button className="absolute -bottom-1 -right-1 p-1 bg-gray-900/80 rounded-md border border-gray-700 text-gray-400 hover:text-white">
                   <ExternalLink className="h-4 w-4" />
@@ -62,6 +63,12 @@ export const HoverCard: React.FC<HoverCardProps> = ({ children, className, userP
               </div>
               <div>
                 <h3 className="text-lg font-bold text-white">{displayName}</h3>
+                <div className="flex items-center gap-1.5 mt-1">
+                  <span className="text-sm text-cyan-400 font-semibold">
+                    {userProfile?.season_points ?? 1200}
+                  </span>
+                  <span className="text-xs text-gray-400">SP</span>
+                </div>
               </div>
             </div>
           </div>
