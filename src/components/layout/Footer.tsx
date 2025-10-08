@@ -132,26 +132,26 @@ export const Footer: React.FC = () => {
         </div>
 
         <div className="border-t border-gray-800 mt-10 pt-6 flex flex-col md:flex-row justify-between items-center">
-          <p className="text-gray-500 text-sm">
+          <p className="text-gray-400 text-sm">
             © {new Date().getFullYear()} BeatNexus. {t('footer.allRightsReserved')}
           </p>
           <div className="flex space-x-6 mt-4 md:mt-0 items-center">
-            <Link to="/terms" className="text-gray-500 hover:text-white text-sm">
+            <Link to="/terms" className="text-gray-400 hover:text-white text-sm">
               {t('footer.termsOfService')}
             </Link>
-            <Link to="/privacy" className="text-gray-500 hover:text-white text-sm">
+            <Link to="/privacy" className="text-gray-400 hover:text-white text-sm">
               {t('footer.privacyPolicy')}
             </Link>
-            <Link to="/legal/tokushoho" className="text-gray-500 hover:text-white text-sm">
+            <Link to="/legal/tokushoho" className="text-gray-400 hover:text-white text-sm">
               特定商取引法に基づく表記
             </Link>
-            <button onClick={() => openManager()} className="text-gray-500 hover:text-white text-sm underline underline-offset-2">
+            <button onClick={() => openManager()} className="text-gray-400 hover:text-white text-sm underline underline-offset-2">
               {t('footer.cookieSettings', 'Cookie設定')}
             </button>
-            <Link to="/guidelines" className="text-gray-500 hover:text-white text-sm">
+            <Link to="/guidelines" className="text-gray-400 hover:text-white text-sm">
               Guidelines
             </Link>
-            <Link to="/contact" className="text-gray-500 hover:text-white text-sm">
+            <Link to="/contact" className="text-gray-400 hover:text-white text-sm">
               Contact
             </Link>
           </div>
