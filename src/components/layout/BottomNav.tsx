@@ -18,7 +18,7 @@ import { supabase } from '../../lib/supabase';
  * 
  * Display: only < md (Tailwind breakpoint) and when not on certain pages (optional future refinement)
  */
-export const BottomNav: React.FC = () => {
+const BottomNav: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, signOut } = useAuthStore();
