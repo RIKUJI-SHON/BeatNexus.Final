@@ -458,7 +458,7 @@ const ProfilePageV2: React.FC = () => {
                 <div className="bg-gradient-to-br from-teal-900/40 to-teal-800/20 rounded-xl p-5 border border-teal-700/30 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-teal-500/20 hover:border-teal-500/50 cursor-pointer">
                   <div className="text-xs text-gray-400 uppercase mb-2 font-semibold tracking-wide">{t('profilePageV2.stats.wins')}</div>
                   <div className="flex items-center gap-3">
-                    <img src="/images/win.png" alt="Wins" className="h-6 w-6" />
+                    <img src="/images/win.png" alt="" className="h-6 w-6" aria-hidden="true" />
                     <span className="text-3xl font-bold text-white">{userStats.wins}</span>
                   </div>
                 </div>
@@ -485,7 +485,7 @@ const ProfilePageV2: React.FC = () => {
                 <div className="bg-gradient-to-br from-violet-900/40 to-violet-800/20 rounded-xl p-5 border border-violet-700/30 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-violet-500/20 hover:border-violet-500/50 cursor-pointer">
                   <div className="text-xs text-gray-400 uppercase mb-2 font-semibold tracking-wide">{t('profilePageV2.stats.plays')}</div>
                   <div className="flex items-center gap-3">
-                    <img src="/images/VS.png" alt="Plays" className="h-6 w-6" />
+                    <img src="/images/VS.png" alt="" className="h-6 w-6" aria-hidden="true" />
                     <span className="text-3xl font-bold text-white">{userStats.plays}</span>
                   </div>
                 </div>
@@ -511,7 +511,7 @@ const ProfilePageV2: React.FC = () => {
               {/* 左カラム: 過去のバトル */}
               <div className="order-2 lg:order-1">
                 <div className="flex items-center gap-2 mb-4">
-                  <img src="/images/VS.png" alt="Past Battles" className="h-5 w-5" />
+                  <img src="/images/VS.png" alt="" className="h-5 w-5" aria-hidden="true" />
                   <h2 className="text-xl font-bold uppercase">{t('profilePageV2.sections.pastBattles')}</h2>
                 </div>
 
@@ -535,7 +535,7 @@ const ProfilePageV2: React.FC = () => {
                         ))
                       ) : (
                         <div className="bg-[#181818] rounded-lg p-8 text-center text-gray-400">
-                          <img src="/images/VS.png" alt="No battles" className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                          <img src="/images/VS.png" alt="" className="h-12 w-12 mx-auto mb-3 opacity-50" aria-hidden="true" />
                           <p>{t('profilePageV2.battles.noBattles')}</p>
                         </div>
                       )}
@@ -557,7 +557,7 @@ const ProfilePageV2: React.FC = () => {
               {/* 右カラム: Achievements */}
               <div className="order-1 lg:order-2">
                 <div className="flex items-center gap-2 mb-4">
-                  <img src="/images/Tournaments.png" alt="Achievements" className="h-5 w-5" />
+                  <img src="/images/Tournaments.png" alt="" className="h-5 w-5" aria-hidden="true" />
                   <h2 className="text-xl font-bold uppercase">{t('profilePageV2.sections.achievements')}</h2>
                   <span className="text-sm text-gray-500 uppercase">{t('profilePageV2.sections.achievements')}</span>
                 </div>
@@ -581,7 +581,7 @@ const ProfilePageV2: React.FC = () => {
 
                   {userBadges.length === 0 && (
                     <div className="col-span-2 bg-[#181818] rounded-lg p-8 text-center text-gray-400">
-                      <img src="/images/Tournaments.png" alt="No badges" className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                      <img src="/images/Tournaments.png" alt="" className="h-12 w-12 mx-auto mb-3 opacity-50" aria-hidden="true" />
                       <p className="text-sm">{t('profilePageV2.badges.noBadges')}</p>
                     </div>
                   )}

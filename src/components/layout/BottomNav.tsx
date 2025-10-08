@@ -68,9 +68,10 @@ export const BottomNav: React.FC = () => {
         <button
           onClick={() => navigate('/')}
           className={`flex flex-col items-center gap-1 text-xs font-medium transition-colors ${isActive('/') ? 'text-cyan-400' : 'text-gray-400 hover:text-gray-200'}`}
+          aria-label="Home"
         >
           <span className={`w-10 h-10 flex items-center justify-center rounded-xl ${isActive('/') ? 'bg-cyan-500/20 ring-1 ring-cyan-400/50 shadow-cyan-500/20' : 'bg-gray-800/40'} shadow-inner`}> 
-            <img src="/images/home.png" alt="Home" className="w-6 h-6 object-contain" />
+            <img src="/images/home.png" alt="" className="w-6 h-6 object-contain" aria-hidden="true" />
           </span>
           <span className="leading-none">Home</span>
         </button>
@@ -79,9 +80,10 @@ export const BottomNav: React.FC = () => {
         <button
           onClick={() => navigate('/ranking')}
           className={`flex flex-col items-center gap-1 text-xs font-medium transition-colors ${isActive('/ranking') ? 'text-cyan-400' : 'text-gray-400 hover:text-gray-200'}`}
+          aria-label="Ranking"
         >
           <span className={`w-10 h-10 flex items-center justify-center rounded-xl ${isActive('/ranking') ? 'bg-cyan-500/20 ring-1 ring-cyan-400/50 shadow-cyan-500/20' : 'bg-gray-800/40'} shadow-inner`}> 
-            <img src="/images/Ranking_icon.png" alt="Ranking" className="w-6 h-6 object-contain" />
+            <img src="/images/Ranking_icon.png" alt="" className="w-6 h-6 object-contain" aria-hidden="true" />
           </span>
           <span className="leading-none">Ranking</span>
         </button>
@@ -94,7 +96,7 @@ export const BottomNav: React.FC = () => {
             aria-label="Start Battle"
           >
             <div className="rounded-full w-16 h-16 flex items-center justify-center group-active:scale-95 transition-transform bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700 dark:from-gray-900 dark:via-gray-800 dark:to-gray-700">
-              <img src="/images/VS.png" alt="VS" className="w-10 h-10 object-contain drop-shadow-[0_0_6px_rgba(255,255,255,0.4)]" />
+              <img src="/images/VS.png" alt="" className="w-10 h-10 object-contain drop-shadow-[0_0_6px_rgba(255,255,255,0.4)]" aria-hidden="true" />
             </div>
             {/* Glow ring */}
             <div className="absolute inset-0 rounded-full animate-pulse bg-cyan-500/10 blur-xl" aria-hidden="true" />
@@ -106,6 +108,7 @@ export const BottomNav: React.FC = () => {
         <button
           onClick={() => navigate('/subscription')}
           className={`flex flex-col items-center gap-1 text-xs font-medium transition-colors ${isActive('/subscription') ? 'text-cyan-400' : 'text-gray-400 hover:text-gray-200'}`}
+          aria-label="Shop"
         >
           <span className={`w-10 h-10 flex items-center justify-center rounded-xl ${isActive('/subscription') ? 'bg-cyan-500/20 ring-1 ring-cyan-400/50 shadow-cyan-500/20' : 'bg-gray-800/40'} shadow-inner`}>🛒</span>
           <span className="leading-none">Shop</span>
@@ -121,9 +124,10 @@ export const BottomNav: React.FC = () => {
             className={`flex flex-col items-center gap-1 text-xs font-medium transition-colors ${(isActive('/profile') || isProfileOpen) ? 'text-cyan-400' : 'text-gray-400 hover:text-gray-200'}`}
             aria-haspopup="menu"
             aria-expanded={isProfileOpen}
+            aria-label="Profile"
           >
             <span className={`w-10 h-10 flex items-center justify-center rounded-xl overflow-hidden ${(isActive('/profile') || isProfileOpen) ? 'ring-1 ring-cyan-400/50 bg-cyan-500/20 shadow-cyan-500/20' : 'bg-gray-800/40'} shadow-inner`}> 
-              <img src={avatarUrl} alt="Profile" className="w-full h-full object-cover" />
+              <img src={avatarUrl} alt={user?.user_metadata?.username ? `${user.user_metadata.username}のプロフィール画像` : 'プロフィール画像'} className="w-full h-full object-cover" />
             </span>
             <span className="leading-none">Profile</span>
           </button>
