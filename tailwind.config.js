@@ -1,9 +1,15 @@
+import defaultTheme from 'tailwindcss/defaultTheme';
 /** @type {import('tailwindcss').Config} */
 export default {
     darkMode: ['class'],
     content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
   	extend: {
+		fontFamily: {
+			sans: ['Rajdhani', 'Noto Sans JP', ...defaultTheme.fontFamily.sans],
+			display: ['Rajdhani', 'Noto Sans JP', ...defaultTheme.fontFamily.sans],
+			body: ['Rajdhani', 'Noto Sans JP', ...defaultTheme.fontFamily.sans]
+		},
   		animation: {
   			'fade-in': 'fadeIn 0.2s ease-in-out'
   		},
