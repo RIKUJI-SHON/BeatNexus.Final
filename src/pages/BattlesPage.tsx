@@ -298,7 +298,7 @@ const BattlesPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-950 py-6 sm:py-8 md:py-10">
+    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black py-6 sm:py-8 md:py-10">
       <div className="container-ultra-wide">
         {/* News Carousel - Enhanced Design */}
         <NewsCarousel />
