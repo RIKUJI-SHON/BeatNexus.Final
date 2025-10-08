@@ -52,6 +52,15 @@ interface UserBadge {
   rarity: string;
 }
 
+interface PublicUserReward {
+  id: string;
+  reward?: {
+    name?: string;
+    image_url?: string;
+    rarity?: string;
+  } | null;
+}
+
 const ProfilePageV2: React.FC = () => {
   const { t } = useTranslation();
   const { user: authUser } = useAuthStore();
@@ -134,34 +143,19 @@ const ProfilePageV2: React.FC = () => {
   const fetchUserBadges = useCallback(async () => {
     if (!displayedUserId) return;
     try {
-      const { data, error } = await supabase
-        .from('user_rewards')
-        .select(`
-          id,
-          reward:rewards(
-            name,
-            image_url
-          )
-        `)
-        .eq('user_id', displayedUserId);
+      const { data, error } = await supabase.rpc('get_public_user_rewards', {
+        p_user_id: displayedUserId,
+      });
 
       if (error) throw error;
 
-      interface RewardItem {
-        id: string;
-        reward?: {
-          name?: string;
-          image_url?: string;
-        };
-      }
-
-      const typedData = data as unknown as RewardItem[];
+      const typedData = (data || []) as PublicUserReward[];
 
       const badges = typedData?.map((item) => ({
         id: item.id,
         name: item.reward?.name || 'Badge',
         image_url: item.reward?.image_url || '',
-        rarity: 'COMMON'
+        rarity: item.reward?.rarity?.toUpperCase() || 'COMMON'
       })) || [];
 
       setUserBadges(badges);
@@ -515,7 +509,7 @@ const ProfilePageV2: React.FC = () => {
             <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-6">
               
               {/* 左カラム: 過去のバトル */}
-              <div>
+              <div className="order-2 lg:order-1">
                 <div className="flex items-center gap-2 mb-4">
                   <img src="/images/VS.png" alt="Past Battles" className="h-5 w-5" />
                   <h2 className="text-xl font-bold uppercase">{t('profilePageV2.sections.pastBattles')}</h2>
@@ -561,7 +555,7 @@ const ProfilePageV2: React.FC = () => {
               </div>
 
               {/* 右カラム: Achievements */}
-              <div>
+              <div className="order-1 lg:order-2">
                 <div className="flex items-center gap-2 mb-4">
                   <img src="/images/Tournaments.png" alt="Achievements" className="h-5 w-5" />
                   <h2 className="text-xl font-bold uppercase">{t('profilePageV2.sections.achievements')}</h2>
