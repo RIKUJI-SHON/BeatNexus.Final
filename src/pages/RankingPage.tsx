@@ -498,7 +498,7 @@ const RankingPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-950 py-6 sm:py-10">
+    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black py-6 sm:py-10">
       <div className="container mx-auto px-4 max-w-4xl relative">
         {/* 背景デコレーション */}
         <div className="pointer-events-none absolute -top-24 -left-20 h-72 w-72 rounded-full blur-3xl opacity-25 hidden sm:block 

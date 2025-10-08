@@ -137,7 +137,7 @@ const MyBattlesPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black flex items-center justify-center">
         <div className="animate-spin w-12 h-12 border-4 border-cyan-500 border-t-transparent rounded-full"></div>
       </div>
     );
@@ -145,7 +145,7 @@ const MyBattlesPage: React.FC = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-950 py-10">
+      <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black py-10">
         <div className="container-ultra-wide">
           <Card className="bg-gray-900 border border-red-500/20 p-8 text-center">
             <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-red-500/20 flex items-center justify-center">
@@ -170,7 +170,7 @@ const MyBattlesPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-950 py-10">
+    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black py-10">
       <div className="container-ultra-wide">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">

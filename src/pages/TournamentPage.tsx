@@ -6,7 +6,7 @@ const TournamentPage: React.FC = () => {
   const { t } = useTranslation();
 
   return (
-    <div className="min-h-screen bg-gray-950 flex items-center justify-center">
+    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black flex items-center justify-center">
       <div className="text-center max-w-md mx-auto p-8">
         <div className="mb-8">
           <div className="p-4 bg-gradient-to-r from-yellow-500/20 to-orange-500/20 rounded-full w-24 h-24 mx-auto flex items-center justify-center mb-6">

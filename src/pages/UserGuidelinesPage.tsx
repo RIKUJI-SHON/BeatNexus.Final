@@ -69,7 +69,7 @@ const UserGuidelinesPage: React.FC = () => {
         <title>{lang === 'ja' ? 'ガイドライン | BeatNexus' : 'Guidelines | BeatNexus'}</title>
         <meta name="description" content="BeatNexus ユーザー投稿・コミュニティガイドライン" />
       </Helmet>
-      <div className="min-h-screen bg-gray-950 text-white">
+      <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black text-white">
         <div className="container mx-auto px-4 py-8 max-w-4xl">
           <Button
             variant="ghost"

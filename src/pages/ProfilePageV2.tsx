@@ -355,7 +355,7 @@ const ProfilePageV2: React.FC = () => {
 
   if (profileLoading) {
     return (
-      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black flex items-center justify-center">
         <Loader className="h-16 w-16 text-cyan-500 animate-spin" />
       </div>
     );
@@ -363,7 +363,7 @@ const ProfilePageV2: React.FC = () => {
 
   if (!userProfile) {
     return (
-      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center text-white">
+      <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black flex items-center justify-center text-white">
         <div className="text-center">
           <h2 className="text-2xl font-bold mb-4">{t('profilePageV2.userNotFound')}</h2>
           <button
@@ -378,7 +378,7 @@ const ProfilePageV2: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#1a1f2e] text-white">
+    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black text-white">
       {/* コンテナ全体 */}
       <div className="max-w-[1400px] mx-auto px-4 py-8">
         

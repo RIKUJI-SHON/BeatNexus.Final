@@ -16,7 +16,7 @@ const AboutPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white">
+    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black text-white">
       <Helmet>
         <title>About | BeatNexus</title>
         <meta name="description" content="BeatNexusの使命、課題認識、公平性と成長ループを実現するシステム設計。" />

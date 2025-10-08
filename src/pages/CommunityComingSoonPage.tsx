@@ -8,7 +8,7 @@ const CommunityComingSoonPage: React.FC = () => {
   const { t } = useTranslation();
 
   return (
-    <div className="min-h-screen bg-gray-950 flex items-center justify-center">
+    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black flex items-center justify-center">
       <div className="text-center max-w-md mx-auto p-8">
         <div className="mb-8">
           {/* 円形のグラデーション背景付きアイコン */}

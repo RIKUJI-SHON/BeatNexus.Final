@@ -217,7 +217,7 @@ const BattleReplayPage: React.FC = () => {
           <meta property="twitter:description" content={description} />
           <meta property="twitter:image" content={ogImageUrl} />
         </Helmet>
-        <div className="min-h-screen bg-gradient-to-br from-gray-950 to-gray-900 relative overflow-hidden">
+        <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black relative overflow-hidden">
           {/* Epic Background Effects */}
           <div className="absolute inset-0 overflow-hidden">
             {/* Animated Lightning Effects */}
@@ -259,7 +259,7 @@ const BattleReplayPage: React.FC = () => {
           <meta property="twitter:description" content={description} />
           <meta property="twitter:image" content={ogImageUrl} />
         </Helmet>
-        <div className="min-h-screen bg-gradient-to-br from-gray-950 to-gray-900 relative overflow-hidden">
+        <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black relative overflow-hidden">
           {/* Epic Background Effects */}
           <div className="absolute inset-0 overflow-hidden">
             <div className="absolute top-20 left-10 w-72 h-72 bg-red-500/5 rounded-full blur-3xl"></div>
@@ -404,7 +404,7 @@ const BattleReplayPage: React.FC = () => {
         <meta property="twitter:description" content={description} />
         <meta property="twitter:image" content={ogImageUrl} />
       </Helmet>
-      <div className="min-h-screen bg-gradient-to-br from-gray-950 to-gray-900 relative overflow-hidden">
+      <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black relative overflow-hidden">
         
         {/* Epic Background Effects */}
         <div className="absolute inset-0 overflow-hidden">

@@ -58,7 +58,7 @@ const FeaturesPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white">
+    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black text-white">
       <Helmet>
         <title>Features | BeatNexus</title>
         <meta name="description" content="BeatNexusの段階的マッチング・投票システム・シーズン機構・不正対策・アーカイブ基盤など主要機能一覧" />
