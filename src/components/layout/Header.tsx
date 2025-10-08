@@ -146,19 +146,19 @@ export const Header: React.FC = () => {
   const getNotificationIcon = (type: Notification['type']) => {
     switch (type) {
       case 'battle_matched':
-        return <Swords className="h-4 w-4 text-purple-400" />;
+        return <Swords className="h-4 w-4 text-purple-400" aria-hidden="true" />;
       case 'battle_win':
-        return <Trophy className="h-4 w-4 text-yellow-400" />;
+        return <Trophy className="h-4 w-4 text-yellow-400" aria-hidden="true" />;
       case 'battle_lose':
-        return <Award className="h-4 w-4 text-red-400" />;
+        return <Award className="h-4 w-4 text-red-400" aria-hidden="true" />;
       case 'battle_draw':
-        return <Handshake className="h-4 w-4 text-blue-400" />;
+        return <Handshake className="h-4 w-4 text-blue-400" aria-hidden="true" />;
       case 'success':
-        return <CheckCircle className="h-4 w-4 text-green-400" />;
+        return <CheckCircle className="h-4 w-4 text-green-400" aria-hidden="true" />;
       case 'warning':
-        return <Clock className="h-4 w-4 text-yellow-400" />;
+        return <Clock className="h-4 w-4 text-yellow-400" aria-hidden="true" />;
       default:
-        return <Bell className="h-4 w-4 text-blue-400" />;
+        return <Bell className="h-4 w-4 text-blue-400" aria-hidden="true" />;
     }
   };
 
@@ -185,8 +185,8 @@ export const Header: React.FC = () => {
       <div className="container-ultra-wide">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2">
-            <img src="/images/ICON.png" alt="BeatNexus Icon" className="h-8 w-8" />
+          <Link to="/" className="flex items-center space-x-2" aria-label={t('common.home')}>
+            <img src="/images/ICON.png" alt="BeatNexus" className="h-8 w-8" />
             <span className="font-bold text-xl tracking-tight">BeatNexus</span>
           </Link>
 
@@ -199,6 +199,7 @@ export const Header: React.FC = () => {
                   ? 'bg-cyan-500/20 text-cyan-400' 
                   : 'text-gray-400 hover:text-white hover:bg-gray-800'
               }`}
+              aria-current={isActive('/') ? 'page' : undefined}
             >
               {t('common.home')}
             </Link>
@@ -209,6 +210,7 @@ export const Header: React.FC = () => {
                   ? 'bg-cyan-500/20 text-cyan-400' 
                   : 'text-gray-400 hover:text-white hover:bg-gray-800'
               }`}
+              aria-current={isActive('/battles') ? 'page' : undefined}
             >
               {t('common.battles')}
             </Link>
@@ -219,6 +221,7 @@ export const Header: React.FC = () => {
                   ? 'bg-cyan-500/20 text-cyan-400' 
                   : 'text-gray-400 hover:text-white hover:bg-gray-800'
               }`}
+              aria-current={isActive('/ranking') ? 'page' : undefined}
             >
               {t('common.ranking')}
             </Link>
@@ -229,6 +232,7 @@ export const Header: React.FC = () => {
                   ? 'bg-cyan-500/20 text-cyan-400' 
                   : 'text-gray-400 hover:text-white hover:bg-gray-800'
               }`}
+              aria-current={isActive('/community') ? 'page' : undefined}
             >
               {t('common.community')}
             </Link>
@@ -300,18 +304,20 @@ export const Header: React.FC = () => {
                 <Link 
                   to="/post"
                   className="p-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition-colors"
+                  aria-label={t('common.post')}
                 >
-                  <Plus className="h-5 w-5" />
+                  <Plus className="h-5 w-5" aria-hidden="true" />
                 </Link>
                 <NotificationDropdown />
                 <HoverCard userProfile={userProfile}>
                   <Link 
                     to="/profile"
                     className="block w-10 h-10 rounded-lg overflow-hidden border border-gray-700 hover:border-cyan-500/50 transition-colors"
+                    aria-label={t('common.profile')}
                   >
                     <img
                       src={avatarUrl}
-                      alt="Profile"
+                      alt={userProfile?.username ? `${userProfile.username}のプロフィール画像` : t('common.profile')}
                       className="w-full h-full object-cover"
                     />
                   </Link>
@@ -347,10 +353,16 @@ export const Header: React.FC = () => {
                 <button
                   onClick={() => setIsNotificationDropdownOpen(!isNotificationDropdownOpen)}
                   className="relative p-2 text-gray-400 hover:text-white transition-colors"
+                  aria-label={t('notifications.title')}
+                  aria-expanded={isNotificationDropdownOpen}
                 >
-                  <Bell className="h-6 w-6" />
+                  <Bell className="h-6 w-6" aria-hidden="true" />
                   {unreadCount > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                    <span 
+                      className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center"
+                      role="status"
+                      aria-label={t('notifications.unreadCount', { count: unreadCount })}
+                    >
                       {unreadCount > 99 ? '99+' : unreadCount}
                     </span>
                   )}
@@ -367,9 +379,9 @@ export const Header: React.FC = () => {
                           onClick={fetchNotifications}
                           disabled={loading}
                           className="p-1 text-gray-400 hover:text-cyan-300 transition-colors disabled:opacity-50"
-                          title="手動更新"
+                          aria-label={t('notifications.refresh')}
                         >
-                          <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+                          <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} aria-hidden="true" />
                         </button>
                         {unreadCount > 0 && (
                           <button
@@ -386,7 +398,7 @@ export const Header: React.FC = () => {
                     <div className="max-h-80 overflow-y-auto">
                       {notifications.length === 0 ? (
                         <div className="p-4 text-center text-gray-400">
-                          <Bell className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                          <Bell className="h-8 w-8 mx-auto mb-2 opacity-50" aria-hidden="true" />
                           <p>{t('notifications.empty')}</p>
                         </div>
                       ) : (
@@ -421,13 +433,18 @@ export const Header: React.FC = () => {
                                   
                                   <div className="flex items-center gap-1 ml-2">
                                     {!notification.isRead && (
-                                      <div className="w-2 h-2 bg-cyan-400 rounded-full flex-shrink-0"></div>
+                                      <div 
+                                        className="w-2 h-2 bg-cyan-400 rounded-full flex-shrink-0" 
+                                        role="status" 
+                                        aria-label={t('notifications.unread')}
+                                      />
                                     )}
                                     <button
                                       onClick={(e) => handleRemoveNotification(e, notification.id)}
                                       className="p-1 text-gray-500 hover:text-white transition-colors"
+                                      aria-label={t('notifications.remove')}
                                     >
-                                      <X className="h-3 w-3" />
+                                      <X className="h-3 w-3" aria-hidden="true" />
                                     </button>
                                   </div>
                                 </div>
@@ -463,11 +480,13 @@ export const Header: React.FC = () => {
           <button 
               className="text-gray-400 hover:text-white"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
+            aria-label={isMenuOpen ? t('common.closeMenu') : t('common.openMenu')}
+            aria-expanded={isMenuOpen}
           >
             {isMenuOpen ? (
-              <X className="h-6 w-6" />
+              <X className="h-6 w-6" aria-hidden="true" />
             ) : (
-              <Menu className="h-6 w-6" />
+              <Menu className="h-6 w-6" aria-hidden="true" />
             )}
           </button>
           </div>
@@ -487,6 +506,7 @@ export const Header: React.FC = () => {
                     : 'text-gray-400 hover:text-white hover:bg-gray-800'
                 }`}
                 onClick={() => setIsMenuOpen(false)}
+                aria-current={isActive('/') ? 'page' : undefined}
               >
                 {t('common.home')}
               </Link>
@@ -498,6 +518,7 @@ export const Header: React.FC = () => {
                     : 'text-gray-400 hover:text-white hover:bg-gray-800'
                 }`}
                 onClick={() => setIsMenuOpen(false)}
+                aria-current={isActive('/battles') ? 'page' : undefined}
               >
                 {t('common.battles')}
               </Link>
@@ -509,6 +530,7 @@ export const Header: React.FC = () => {
                     : 'text-gray-400 hover:text-white hover:bg-gray-800'
                 }`}
                 onClick={() => setIsMenuOpen(false)}
+                aria-current={isActive('/ranking') ? 'page' : undefined}
               >
                 {t('common.ranking')}
               </Link>
@@ -520,6 +542,7 @@ export const Header: React.FC = () => {
                     : 'text-gray-400 hover:text-white hover:bg-gray-800'
                 }`}
                 onClick={() => setIsMenuOpen(false)}
+                aria-current={isActive('/community') ? 'page' : undefined}
               >
                 {t('common.community')}
               </Link>

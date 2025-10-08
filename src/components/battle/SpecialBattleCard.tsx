@@ -159,10 +159,18 @@ export const SpecialBattleCard: React.FC<SpecialBattleCardProps> = ({ battle, fo
     <div className="text-center">
       <div className="relative inline-block mb-4">
   {!forceActiveStyle && battle.is_archived && isWinner && (
-          <Crown className="absolute -top-5 -right-5 h-10 w-10 text-yellow-400 transform rotate-12 animate-pulse" style={{ filter: 'drop-shadow(0 0 10px #facc15)' }}/>
+          <Crown 
+            className="absolute -top-5 -right-5 h-10 w-10 text-yellow-400 transform rotate-12 animate-pulse" 
+            style={{ filter: 'drop-shadow(0 0 10px #facc15)' }}
+            aria-hidden="true"
+          />
         )}
         <div className="w-24 h-24 md:w-28 md:h-28 rounded-full p-1 shadow-lg transition-all duration-300 group-hover:scale-105" style={{ background: `linear-gradient(135deg, ${color}, ${color}80)` }}>
-          <img src={player?.avatar_url || getDefaultAvatarUrl()} alt={player?.username || t(defaultNameKey)} className="w-full h-full rounded-full object-cover border-2 border-gray-900"/>
+          <img 
+            src={player?.avatar_url || getDefaultAvatarUrl()} 
+            alt={player?.username ? `${player.username}のプロフィール画像` : t(defaultNameKey)}
+            className="w-full h-full rounded-full object-cover border-2 border-gray-900"
+          />
         </div>
       </div>
       <h3 
@@ -215,10 +223,15 @@ export const SpecialBattleCard: React.FC<SpecialBattleCardProps> = ({ battle, fo
           <div className="battle-card__content text-white relative">
             <div className="relative p-6">
               <div className="flex justify-center items-start mb-6">
-                <div className={cn('flex items-center gap-2 px-3 py-1 rounded-full backdrop-blur-sm', 
-                  isExpired ? 'bg-gray-700/50 text-gray-300 border border-gray-600/30' : 
-                  'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30')}>
-                  <Clock className="h-3 w-3" />
+                <div 
+                  className={cn('flex items-center gap-2 px-3 py-1 rounded-full backdrop-blur-sm', 
+                    isExpired ? 'bg-gray-700/50 text-gray-300 border border-gray-600/30' : 
+                    'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
+                  )}
+                  role="status"
+                  aria-live="polite"
+                >
+                  <Clock className="h-3 w-3" aria-hidden="true" />
                   <span className="text-xs font-medium">{timeRemaining}</span>
                 </div>
               </div>
@@ -236,10 +249,14 @@ export const SpecialBattleCard: React.FC<SpecialBattleCardProps> = ({ battle, fo
                 
                 {/* VS Icon with Total Votes */}
                 <div className="flex flex-col items-center gap-3">
-                  <VSIcon className="w-16 h-16 md:w-20 md:h-20" />
+                  <VSIcon className="w-16 h-16 md:w-20 md:h-20" aria-hidden="true" />
 
                   {/* Total Votes Display - Special Battle Style */}
-                  <div className="bg-cyan-500/10 backdrop-blur-sm border border-cyan-500/30 rounded-xl px-3 py-2 shadow-lg">
+                  <div 
+                    className="bg-cyan-500/10 backdrop-blur-sm border border-cyan-500/30 rounded-xl px-3 py-2 shadow-lg"
+                    role="status"
+                    aria-label={`合計投票数: ${totalVotes}`}
+                  >
                     <div className="text-center">
                       <div className="text-xl font-bold text-cyan-300">{totalVotes}</div>
                       <div className="text-xs font-medium text-cyan-400/80 uppercase tracking-wide">VOTES</div>
@@ -282,9 +299,13 @@ export const SpecialBattleCard: React.FC<SpecialBattleCardProps> = ({ battle, fo
                 
                 {!forceActiveStyle && battle.is_archived && (
                 <div className="flex justify-center">
-                  <VoteButton onClick={handleCommentsClick} className="max-w-xs bg-gray-700 hover:bg-gray-600 border-gray-800">
+                  <VoteButton 
+                    onClick={handleCommentsClick} 
+                    className="max-w-xs bg-gray-700 hover:bg-gray-600 border-gray-800"
+                    aria-label={t('battleCard.viewComments')}
+                  >
                     <div className="flex items-center gap-2">
-                      <MessageSquare className="h-4 w-4" />
+                      <MessageSquare className="h-4 w-4" aria-hidden="true" />
                       {t('battleCard.viewComments')}
                     </div>
                   </VoteButton>

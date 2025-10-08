@@ -46,7 +46,11 @@
     "contactUs": "お問い合わせ",
     "contactMessage": "ご質問やご提案はこちらまで。",
     "lastUpdated": "最終更新日",
-    "required": "必須"
+    "required": "必須",
+    "post": "投稿",
+    "profile": "プロフィール",
+    "openMenu": "メニューを開く",
+    "closeMenu": "メニューを閉じる"
   },
   "contactPage": {
     "title": "お問い合わせ",
@@ -329,7 +333,8 @@
       "loading": "コメントを読み込み中...",
       "playerA": "Player A",
       "playerB": "Player B",
-      "close": "閉じる"
+      "close": "閉じる",
+      "userAvatar": "ユーザーのプロフィール画像"
     },
     "timeLeft": {
       "minutes": "残り{{count}}分{{seconds}}秒",
@@ -671,6 +676,7 @@
     "faq": "よくある質問",
     "contactUs": "お問い合わせ",
     "contactMessage": "ご質問やフィードバックがありますか？私たちのチームにご連絡ください！",
+    "emailContact": "メールでお問い合わせ",
     "allRightsReserved": "All rights reserved.",
     "termsOfService": "利用規約",
     "privacyPolicy": "プライバシーポリシー"
@@ -1842,6 +1848,10 @@
     "empty": "新しいお知らせはありません",
     "markAllRead": "すべて削除",
     "viewAll": "すべて表示",
+    "refresh": "更新",
+    "unread": "未読",
+    "remove": "削除",
+    "unreadCount": "未読 {{count}} 件",
     "timeAgo": {
       "justNow": "たった今",
       "minutes": "{{count}}分前",

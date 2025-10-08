@@ -1,6 +1,7 @@
 import React from 'react';
 import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
+import { useFocusTrap } from '../../hooks/useFocusTrap';
 
 interface ModalProps {
   isOpen: boolean;
@@ -23,6 +24,8 @@ export const Modal: React.FC<ModalProps> = ({
   backgroundOpacity = 'normal',
   plain = false,
 }) => {
+  const containerRef = useFocusTrap(isOpen, onClose);
+
   if (!isOpen) return null;
 
   const sizeClasses: Record<typeof size, string> = {
@@ -43,8 +46,12 @@ export const Modal: React.FC<ModalProps> = ({
 
   const modalContent = (
     <div 
+      ref={containerRef}
       className={`fixed inset-0 ${backgroundClasses[backgroundOpacity]} flex items-center justify-center ${zIndexClass} p-4 transition-opacity duration-300 ease-in-out`}
       onClick={onClose} // Overlay click to close
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby={title ? "modal-title" : undefined}
     >
       <div 
         className={`relative transform transition-all duration-300 ease-in-out w-full ${sizeClasses[size]} ${plain ? '' : 'bg-gray-900 rounded-lg shadow-2xl p-6'}`}
@@ -54,12 +61,13 @@ export const Modal: React.FC<ModalProps> = ({
           <button 
             onClick={onClose} 
             className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors p-1 rounded-full hover:bg-gray-700"
+            aria-label="Close"
           >
-            <X className="h-5 w-5" />
+            <X className="h-5 w-5" aria-hidden="true" />
           </button>
         )}
         {title && (
-          <h2 className="text-xl font-semibold text-white mb-4 pr-8">{title}</h2>
+          <h2 id="modal-title" className="text-xl font-semibold text-white mb-4 pr-8">{title}</h2>
         )}
         <div className={plain ? '' : 'text-gray-300'}>
           {children}

@@ -136,10 +136,15 @@ export const SimpleBattleCard: React.FC<SimpleBattleCardProps> = ({ battle, forc
             <div className="absolute inset-0 bg-gradient-to-br from-blue-900/10 via-transparent to-red-900/10 opacity-60 group-hover:opacity-80 transition-opacity duration-300"></div>
             <div className="relative p-6 border border-gray-600/30 group-hover:border-gray-500/50 rounded-xl transition-colors duration-300">
               <div className="flex justify-center items-start mb-6">
-                <div className={cn('flex items-center gap-2 px-3 py-1 rounded-full backdrop-blur-sm transition-all duration-300 group-hover:shadow-md', 
-                  isExpired ? 'bg-gray-700/60 text-gray-300 border border-gray-600/40 group-hover:bg-gray-700/80' : 
-                  'bg-gradient-to-r from-gray-800/70 to-gray-700/70 text-gray-200 border border-gray-600/50 group-hover:border-gray-500/70 group-hover:from-gray-700/80 group-hover:to-gray-600/80')}>
-                  <Clock className="h-3 w-3" />
+                <div 
+                  className={cn('flex items-center gap-2 px-3 py-1 rounded-full backdrop-blur-sm transition-all duration-300 group-hover:shadow-md', 
+                    isExpired ? 'bg-gray-700/60 text-gray-300 border border-gray-600/40 group-hover:bg-gray-700/80' : 
+                    'bg-gradient-to-r from-gray-800/70 to-gray-700/70 text-gray-200 border border-gray-600/50 group-hover:border-gray-500/70 group-hover:from-gray-700/80 group-hover:to-gray-600/80'
+                  )}
+                  role="status"
+                  aria-live="polite"
+                >
+                  <Clock className="h-3 w-3" aria-hidden="true" />
                   <span className="text-xs font-medium">{timeRemaining}</span>
                 </div>
               </div>
@@ -149,10 +154,14 @@ export const SimpleBattleCard: React.FC<SimpleBattleCardProps> = ({ battle, forc
                 <div className="text-center">
                   <div className="relative inline-block mb-4">
                     {!forceActiveStyle && battle.is_archived && battle.winner_id === battle.player1_user_id && (
-                      <Crown className="absolute -top-4 -right-4 h-8 w-8 text-yellow-400 transform rotate-12" />
+                      <Crown className="absolute -top-4 -right-4 h-8 w-8 text-yellow-400 transform rotate-12" aria-hidden="true" />
                     )}
                     <div className="w-24 h-24 md:w-28 md:h-28 rounded-full p-1 shadow-lg transition-all duration-300 group-hover:scale-105 group-hover:shadow-blue-500/20" style={{ background: `linear-gradient(135deg, ${colorA}, ${colorA}80)` }}>
-                      <img src={battle.contestant_a?.avatar_url || getDefaultAvatarUrl()} alt={battle.contestant_a?.username || t('battleCard.contestantA')} className="w-full h-full rounded-full object-cover border-2 border-gray-900"/>
+                      <img 
+                        src={battle.contestant_a?.avatar_url || getDefaultAvatarUrl()} 
+                        alt={battle.contestant_a?.username ? `${battle.contestant_a.username}のプロフィール画像` : t('battleCard.contestantA')}
+                        className="w-full h-full rounded-full object-cover border-2 border-gray-900"
+                      />
                     </div>
                   </div>
                   <h3 
@@ -198,10 +207,14 @@ export const SimpleBattleCard: React.FC<SimpleBattleCardProps> = ({ battle, forc
 
                 {/* VS Icon with Total Votes */}
                 <div className="flex flex-col items-center gap-3">
-                  <VSIcon className="w-16 h-16 md:w-20 md:h-20 transition-transform duration-300 group-hover:scale-110" />
+                  <VSIcon className="w-16 h-16 md:w-20 md:h-20 transition-transform duration-300 group-hover:scale-110" aria-hidden="true" />
 
                   {/* Total Votes Display */}
-                  <div className="bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-sm border border-gray-600/50 group-hover:border-gray-500/70 rounded-xl px-3 py-2 shadow-lg group-hover:shadow-xl transition-all duration-300">
+                  <div 
+                    className="bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-sm border border-gray-600/50 group-hover:border-gray-500/70 rounded-xl px-3 py-2 shadow-lg group-hover:shadow-xl transition-all duration-300"
+                    role="status"
+                    aria-label={`合計投票数: ${totalVotes}`}
+                  >
                     <div className="text-center">
                       <div className="text-xl font-bold text-white group-hover:text-gray-100 transition-colors duration-300">{totalVotes}</div>
                       <div className="text-xs font-medium text-gray-400 group-hover:text-gray-300 uppercase tracking-wide transition-colors duration-300">VOTES</div>
@@ -224,10 +237,14 @@ export const SimpleBattleCard: React.FC<SimpleBattleCardProps> = ({ battle, forc
                 <div className="text-center">
                   <div className="relative inline-block mb-4">
                     {!forceActiveStyle && battle.is_archived && battle.winner_id === battle.player2_user_id && (
-                      <Crown className="absolute -top-4 -right-4 h-8 w-8 text-yellow-400 transform rotate-12" />
+                      <Crown className="absolute -top-4 -right-4 h-8 w-8 text-yellow-400 transform rotate-12" aria-hidden="true" />
                     )}
                     <div className="w-24 h-24 md:w-28 md:h-28 rounded-full p-1 shadow-lg transition-all duration-300 group-hover:scale-105 group-hover:shadow-red-500/20" style={{ background: `linear-gradient(135deg, ${colorB}, ${colorB}80)` }}>
-                      <img src={battle.contestant_b?.avatar_url || getDefaultAvatarUrl()} alt={battle.contestant_b?.username || t('battleCard.contestantB')} className="w-full h-full rounded-full object-cover border-2 border-gray-900"/>
+                      <img 
+                        src={battle.contestant_b?.avatar_url || getDefaultAvatarUrl()} 
+                        alt={battle.contestant_b?.username ? `${battle.contestant_b.username}のプロフィール画像` : t('battleCard.contestantB')}
+                        className="w-full h-full rounded-full object-cover border-2 border-gray-900"
+                      />
                     </div>
                   </div>
                   <h3 
@@ -285,9 +302,13 @@ export const SimpleBattleCard: React.FC<SimpleBattleCardProps> = ({ battle, forc
                 
                 {!forceActiveStyle && battle.is_archived && (
                 <div className="flex justify-center">
-                  <VoteButton onClick={handleCommentsClick} className="max-w-xs bg-gray-700 hover:bg-gray-600 border-gray-800">
+                  <VoteButton 
+                    onClick={handleCommentsClick} 
+                    className="max-w-xs bg-gray-700 hover:bg-gray-600 border-gray-800"
+                    aria-label={t('battleCard.viewComments')}
+                  >
                     <div className="flex items-center gap-2">
-                      <MessageSquare className="h-4 w-4" />
+                      <MessageSquare className="h-4 w-4" aria-hidden="true" />
                       {t('battleCard.viewComments')}
                     </div>
                   </VoteButton>

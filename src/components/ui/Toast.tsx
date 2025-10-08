@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { X, CheckCircle, AlertCircle, Info, AlertTriangle } from 'lucide-react';
 
 export type ToastType = 'success' | 'error' | 'warning' | 'info';
@@ -49,6 +49,13 @@ export const Toast: React.FC<ToastProps> = ({
   const config = typeConfig[type];
   const Icon = config.icon;
 
+  const handleRemove = useCallback(() => {
+    setIsLeaving(true);
+    setTimeout(() => {
+      onRemove(id);
+    }, 300); // Match the transition duration
+  }, [id, onRemove]);
+
   useEffect(() => {
     // Trigger entrance animation
     const showTimer = setTimeout(() => setIsVisible(true), 10);
@@ -62,14 +69,7 @@ export const Toast: React.FC<ToastProps> = ({
       clearTimeout(showTimer);
       clearTimeout(removeTimer);
     };
-  }, [duration]);
-
-  const handleRemove = () => {
-    setIsLeaving(true);
-    setTimeout(() => {
-      onRemove(id);
-    }, 300); // Match the transition duration
-  };
+  }, [duration, handleRemove]);
 
   return (
     <div
@@ -85,9 +85,11 @@ export const Toast: React.FC<ToastProps> = ({
         max-w-md shadow-lg
       `}
       role="alert"
+      aria-live="assertive"
+      aria-atomic="true"
     >
       {/* Icon */}
-      <Icon className={`h-5 w-5 mt-0.5 flex-shrink-0 ${config.iconColors}`} />
+      <Icon className={`h-5 w-5 mt-0.5 flex-shrink-0 ${config.iconColors}`} aria-hidden="true" />
       
       {/* Content */}
       <div className="flex-1 min-w-0">
@@ -107,7 +109,7 @@ export const Toast: React.FC<ToastProps> = ({
         className="flex-shrink-0 text-gray-400 hover:text-white transition-colors"
         aria-label="通知を閉じる"
       >
-        <X className="h-4 w-4" />
+        <X className="h-4 w-4" aria-hidden="true" />
       </button>
     </div>
   );

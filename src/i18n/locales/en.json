@@ -30,7 +30,11 @@
     "noDescription": "No description available",
     "termsOfService": "Terms of Service",
     "privacyPolicy": "Privacy Policy",
-    "required": "Required"
+    "required": "Required",
+    "post": "Post",
+    "profile": "Profile",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu"
   },
   "contactPage": {
     "title": "Contact",
@@ -443,7 +447,8 @@
       "loading": "Loading comments...",
       "playerA": "Player A",
       "playerB": "Player B",
-      "close": "Close"
+      "close": "Close",
+      "userAvatar": "User's profile image"
     },
     "timeLeft": {
       "minutes": "{{count}}m {{seconds}}s left",
@@ -656,6 +661,7 @@
     "faq": "FAQ",
     "contactUs": "Contact Us",
     "contactMessage": "Have a question or feedback? Reach out to our team!",
+    "emailContact": "Email us",
     "allRightsReserved": "All rights reserved.",
     "termsOfService": "Terms of Service",
     "privacyPolicy": "Privacy Policy",
@@ -2072,6 +2078,10 @@
     "empty": "No new notifications",
     "markAllRead": "Delete all",
     "viewAll": "View all",
+    "refresh": "Refresh",
+    "unread": "Unread",
+    "remove": "Remove",
+    "unreadCount": "{{count}} unread",
     "timeAgo": {
       "justNow": "Just now",
       "minutes": "{{count}}m ago",

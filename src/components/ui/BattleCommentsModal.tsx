@@ -1,11 +1,11 @@
 import React, { useEffect } from 'react';
-import { X, MessageSquare, Clock } from 'lucide-react';
+import { X, MessageSquare } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { BattleComment } from '../../types';
 import { useBattleStore } from '../../store/battleStore';
 import { format } from 'date-fns';
 import { ja, enUS } from 'date-fns/locale';
 import { getDefaultAvatarUrl } from '../../utils';
+import { useFocusTrap } from '../../hooks/useFocusTrap';
 
 interface BattleCommentsModalProps {
   isOpen: boolean;
@@ -24,6 +24,7 @@ export const BattleCommentsModal: React.FC<BattleCommentsModalProps> = ({
 }) => {
   const { t, i18n } = useTranslation();
   const { battleComments, commentsLoading, fetchBattleComments } = useBattleStore();
+  const containerRef = useFocusTrap(isOpen, onClose);
   
   const comments = battleComments[battleId] || [];
   const isLoading = commentsLoading[battleId] || false;
@@ -39,23 +40,30 @@ export const BattleCommentsModal: React.FC<BattleCommentsModalProps> = ({
   const currentLocale = i18n.language === 'ja' ? ja : enUS;
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div 
+      ref={containerRef}
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="comments-modal-title"
+    >
       <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl border border-gray-700 shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-700">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-full bg-gradient-to-r from-cyan-500 to-pink-500 flex items-center justify-center">
-              <MessageSquare className="h-4 w-4 text-white" />
+              <MessageSquare className="h-4 w-4 text-white" aria-hidden="true" />
             </div>
-            <h2 className="text-xl font-bold text-white">
+            <h2 id="comments-modal-title" className="text-xl font-bold text-white">
               {t('battleCard.commentsModal.title')}
             </h2>
           </div>
           <button
             onClick={onClose}
             className="text-gray-400 hover:text-white transition-colors p-1 rounded-lg hover:bg-gray-700"
+            aria-label={t('battleCard.commentsModal.close')}
           >
-            <X className="h-5 w-5" />
+            <X className="h-5 w-5" aria-hidden="true" />
           </button>
         </div>
 
@@ -64,13 +72,17 @@ export const BattleCommentsModal: React.FC<BattleCommentsModalProps> = ({
           {isLoading ? (
             <div className="flex items-center justify-center py-8">
               <div className="flex items-center gap-3 text-gray-400">
-                <div className="w-6 h-6 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
+                <div 
+                  className="w-6 h-6 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"
+                  role="status"
+                  aria-label={t('battleCard.commentsModal.loading')}
+                />
                 {t('battleCard.commentsModal.loading')}
               </div>
             </div>
           ) : comments.length === 0 ? (
             <div className="text-center py-8 text-gray-400">
-              <MessageSquare className="h-12 w-12 mx-auto mb-3 opacity-50" />
+              <MessageSquare className="h-12 w-12 mx-auto mb-3 opacity-50" aria-hidden="true" />
               <p>{t('battleCard.commentsModal.noComments')}</p>
             </div>
           ) : (
@@ -80,13 +92,17 @@ export const BattleCommentsModal: React.FC<BattleCommentsModalProps> = ({
                   <div className="relative">
                     <img
                       src={comment.avatar_url || getDefaultAvatarUrl()}
-                      alt={comment.username}
+                      alt={comment.username ? `${comment.username}のプロフィール画像` : t('battleCard.commentsModal.userAvatar')}
                       className="w-10 h-10 rounded-full border-2 border-gray-600 object-cover"
                     />
-                    <div className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center ${
-                      comment.vote === 'A' ? 'bg-gradient-to-r from-cyan-500 to-cyan-400' : 'bg-gradient-to-r from-pink-500 to-pink-400'
-                    }`}>
-                      <span className="text-white font-bold text-xs">{comment.vote}</span>
+                    <div 
+                      className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center ${
+                        comment.vote === 'A' ? 'bg-gradient-to-r from-cyan-500 to-cyan-400' : 'bg-gradient-to-r from-pink-500 to-pink-400'
+                      }`}
+                      role="img"
+                      aria-label={comment.vote === 'A' ? `${playerAName}に投票` : `${playerBName}に投票`}
+                    >
+                      <span className="text-white font-bold text-xs" aria-hidden="true">{comment.vote}</span>
                     </div>
                   </div>
                   

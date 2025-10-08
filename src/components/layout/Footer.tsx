@@ -16,24 +16,46 @@ export const Footer: React.FC = () => {
           {/* Logo and description */}
           <div className="col-span-1 md:col-span-1">
             <div className="flex items-center space-x-2 mb-4">
-              <img src="/images/ICON.png" alt="BeatNexus Icon" className="h-8 w-8" />
+              <img src="/images/ICON.png" alt="BeatNexus" className="h-8 w-8" />
               <span className="font-bold text-xl tracking-tight">BeatNexus</span>
             </div>
             <p className="text-gray-400 mb-4">
               {t('footer.description')}
             </p>
             <div className="flex space-x-4">
-              <a href="https://www.instagram.com/beatnexus_beatbox_global/" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">
-                <Instagram className="h-5 w-5" />
+              <a 
+                href="https://www.instagram.com/beatnexus_beatbox_global/" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="text-gray-400 hover:text-white transition-colors"
+                aria-label="Instagram"
+              >
+                <Instagram className="h-5 w-5" aria-hidden="true" />
               </a>
-              <a href="https://x.com/Beatboxnexus" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">
-                <Twitter className="h-5 w-5" />
+              <a 
+                href="https://x.com/Beatboxnexus" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="text-gray-400 hover:text-white transition-colors"
+                aria-label="Twitter"
+              >
+                <Twitter className="h-5 w-5" aria-hidden="true" />
               </a>
-              <a href="https://www.youtube.com/@BeatNexus_global" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">
-                <Youtube className="h-5 w-5" />
+              <a 
+                href="https://www.youtube.com/@BeatNexus_global" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="text-gray-400 hover:text-white transition-colors"
+                aria-label="YouTube"
+              >
+                <Youtube className="h-5 w-5" aria-hidden="true" />
               </a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                <Facebook className="h-5 w-5" />
+              <a 
+                href="#" 
+                className="text-gray-400 hover:text-white transition-colors"
+                aria-label="Facebook"
+              >
+                <Facebook className="h-5 w-5" aria-hidden="true" />
               </a>
             </div>
           </div>
@@ -97,8 +119,9 @@ export const Footer: React.FC = () => {
               <a 
                 href="mailto:beatnexus.app@gmail.com"
                 className="flex items-center text-gray-400 hover:text-white transition-colors"
+                aria-label={t('footer.emailContact')}
               >
-                <Mail className="h-5 w-5 mr-2" />
+                <Mail className="h-5 w-5 mr-2" aria-hidden="true" />
                 beatnexus.app@gmail.com
               </a>
               <p className="text-gray-400">
