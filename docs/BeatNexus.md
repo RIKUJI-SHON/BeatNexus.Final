@@ -10,7 +10,6 @@ alwaysApply: true
 - **投稿型バトル**: 動画投稿 → 自動マッチング → コミュニティ投票 → 勝者決定
 - **レーティングシステム**: 戦績ベースの個人レーティングとシーズンランキング
 - **投票者ランキング**: コミュニティ貢献度を評価する投票数ベースのランキング
-- **フォーラム機能**: リアルタイム通知、コメント、投稿機能
 - **シーズン報酬システム**: バッジ・アイコンフレーム付与による成果表彰制度
 - **ニュースカルーセル**: お知らせ・重要情報の動的表示システム
 - **多言語対応**: 日本語・英語完全対応・その他翻訳ファイルに入っている言語
@@ -32,127 +31,105 @@ alwaysApply: true
 ## 📁 ディレクトリ構成
 ```
 src/
-├── components/          # UIコンポーネント
-│   ├── auth/           # 認証関連
-│   ├── battle/         # バトル関連（BattleCard, ArchivedBattleCard, NewsCarousel等）
-│   ├── community/      # コミュニティ関連（完全実装済み）
-│   ├── home/           # ホーム画面専用（注意：現在未使用）
-│   ├── layout/         # ヘッダー、フッター、背景
-│   ├── onboarding/     # オンボーディング関連（モーダル、スライド）
-│   └── ui/             # 汎用UI要素（ArticleModal, TopThreePodium等）
-├── hooks/              # カスタムフック（useNews, useSEO, useSubmissionCooldown等）
-├── i18n/               # 国際化設定
-│   └── locales/        # 翻訳ファイル（en.json, ja.json）
-├── lib/                # 外部ライブラリ設定（supabase.ts）
-├── pages/              # ページコンポーネント
-│   ├── HomePage.tsx    # 旧ホームページ（/old-homepage で利用可能）
-│   ├── HomepageTestPage.tsx # **現在使用中のホームページ**（/ ルート）
-│   └── ...             # その他のページ
-├── store/              # Zustand状態管理（battleStore, communityStore, rankingStore等）
-├── types/              # TypeScript型定義（news.ts等）
-└── utils/              # ユーティリティ関数（urlValidation.ts, securityTests.ts等）
+├── assets/             # 画像・アイコン・モーション等の静的アセット
+├── components/         # UIコンポーネント群
+│   ├── admin/         # 管理者向けUI（審査・設定用）
+│   ├── ads/           # 広告コンポーネント（バナー / インフィード）
+│   ├── auth/          # 認証・サインイン関連
+│   ├── battle/        # バトルカード / 集計表示
+│   ├── debug/         # デバッグ・検証用UI
+│   ├── home/          # 旧ホーム画面セクション（現在は主に再利用用）
+│   ├── layout/        # ヘッダー・フッター・背景装飾
+│   ├── onboarding/    # オンボーディングモーダル / スライド
+│   ├── payments/      # 決済・Super Tip UI
+│   ├── privacy/       # プライバシー表示（利用規約等）
+│   ├── profile/       # プロフィール編集・表示
+│   ├── rewards/       # シーズン報酬 / バッジ表示
+│   ├── seo/           # メタデータ / OG表現
+│   └── ui/            # 汎用UI（モーダル / カード / 表示部品）
+├── config/             # 設定ファイル（広告設定・環境依存の構成）
+├── data/               # UI表示用のスタティックデータ
+├── edge-functions/     # フロントエンド内で使用するEdge Functionクライアント
+│   └── ads/           # 広告用ヘルパー（プリフェッチ等）
+├── hooks/              # カスタムフック（投稿制限・SEO・通知等）
+├── i18n/               # 国際化設定（初期化ロジック）
+│   └── locales/        # 翻訳ファイル（`en.json`, `ja.json`ほか）
+├── lib/                # Supabaseクライアント / APIラッパー
+├── pages/              # ルーティング対象のページコンポーネント
+│   ├── HomepageTestPage.tsx  # **現在使用中のホームページ**（/）
+│   ├── HomePage.tsx          # 旧ホームページ（/old-homepage）
+│   └── ...                   # BattlesPage.tsx, RankingPage.tsx など
+├── store/              # Zustandストア（バトル / ランキング / 通知 等）
+├── types/              # TypeScript型定義（広告・バトル・報酬など）
+└── utils/              # ヘルパー関数（URL検証・フォーマッタ 等）
 
 supabase/
-├── migrations/         # SQL マイグレーションファイル（180+ migrations）
+├── migrations/         # SQLマイグレーション（180本以上）
 ├── functions/          # Edge Functions (Deno + TypeScript)
-│   ├── submission-webhook/     # マッチング処理
-│   ├── delete-user-account/    # アカウント削除
+│   ├── ad-*            # 広告配信 / トラッキング / 計測
+│   ├── create-*        # Stripe / Super Tip作成ワークフロー
+│   ├── notify-*        # バトル・投票通知
+│   ├── ogp-*           # OGP生成（バトルカード / 汎用ページ）
+│   ├── phone-verification-* # 電話番号認証関連
+│   ├── submission-webhook/  # マッチング処理
+│   ├── delete-user-account/ # アカウント削除
 │   └── validate-preregistration/ # 事前登録検証
-└── _shared/           # 共有設定（import_map.json）
+└── _shared/            # 共有設定（`import_map.json` 等）
 
 docs/
 ├── BeatNexus.md                           # プロジェクト概要（このファイル）
-├── シーズン報酬システム仕様書.md             # 報酬システム仕様
-├── 重複バトル防止システム要件定義書.md       # 重複防止システム
-├── バトル終了・結果集計・レーティング計算システム仕様書.md
-├── マッチング・投稿機能仕様書.md
-├── 通知システム仕様書.md
-├── 電話番号認証システム改善仕様書.md
+├── design-specification.md                # UI/UX設計全般
+├── BeatNexus_広告配信システム完全仕様書.md      # 広告配信の完全仕様
+├── BattleCard_VotedBadge_仕様書.md          # 投票済みバッジ仕様
+├── AuthModalパスワード変更機能実装仕様書.md    # 認証モーダル仕様
+├── ...                                    # 各種仕様書・分析ドキュメント
 └── dev-rules/                           # 実装ログディレクトリ（180+ files）
 ```
-
-## 🎨 バトルカードシステム
-### 2種類のバトルカード
-1. **SimpleBattleCard** ✅ **デフォルト**
-   - **デザイン**: シンプルな暗い背景（`#181818`）、控えめな白い枠線
-   - **適用条件**: 投票数が5未満のバトル
-   - **特徴**: ミニマルデザイン、軽いホバーエフェクト
-
-2. **SpecialBattleCard** ✅ **人気バトル用**
-   - **デザイン**: カラフルなグラデーション枠（ピンク→青）、グローエフェクト
-   - **適用条件**: 投票数が5以上のバトル
-   - **特徴**: 派手なアニメーション、目立つビジュアルエフェクト
-
-### 自動選択システム
-- **BattleCard**: 投票数に基づいて自動的にSimpleBattleCardまたはSpecialBattleCardを選択
-- **閾値**: 総投票数5以上でSpecialBattleCardに昇格
-- **統一インターフェース**: 全ページで`<BattleCard>`を使用、内部で自動判定
-
-## 🏠 ホームページシステム
-### 2つのホームページ
-1. **HomepageTestPage** ✅ **現在使用中**
-   - **ルート**: `/` （メインエントリーポイント）
-   - **構成**: ランディングページ形式、長いスクロール構造
-   - **セクション**: ワードマーク → ヒーロー → 課題提起 → How It Works → 社会的証明 → ビジョン → FAQ → クロージング
-   - **特徴**: 完全なマーケティングページ
-
-2. **HomePage** ✅ **旧バージョン**
-   - **ルート**: `/old-homepage`
-   - **構成**: シンプルなホーム画面、コンポーネント化されたセクション
-   - **セクション**: HeroBanner → FeatureSection → LatestBattles → CTASection
-   - **特徴**: 既存ユーザー向け、よりシンプルな構造
-
-### ルーティング設定
-```tsx
-<Route path="/" element={<HomepageTestPage />} />
-<Route path="/old-homepage" element={<HomePage />} />
-```
-
-### 広告配置場所（現在のホームページ用）
-- `home.wordmark.section.after.banner`: ワードマークセクション後（ヒーローセクション前）の横長バナー
-- `home.features.section.after.inline`: 主要機能詳細セクション後（社会的証明セクション前）のインライン広告
-- `home.stats.section.after.infeed`: 統計・ランキングセクション後（ビジョンセクション前）のインフィード広告
-
-## 🗂️ データベースマイグレーション
-### 基本ルール
-- **必須**: 全てのスキーマ変更はマイグレーションファイルで管理
-- **命名**: `YYYYMMDDHHMMSS_description.sql`
-- **適用**: MCP Supabase toolsを使用（`npx supabase db push`は非推奨）
-- **RLS**: 全テーブルでRow Level Security有効化
-
-### 主要テーブル（実際の構造）
+### 主要テーブル（最新スキーマ）
 ```sql
 -- ユーザープロフィール
 profiles (
   id uuid PRIMARY KEY,
   username text UNIQUE NOT NULL,
   avatar_url text,
-  bio text,
   created_at timestamptz DEFAULT now(),
   updated_at timestamptz DEFAULT now(),
+  email text NOT NULL,
+  bio text,
   rating integer DEFAULT 1200,
-  language varchar CHECK (language IN ('en', 'ja')),
+  language varchar DEFAULT 'ja',
   vote_count integer DEFAULT 0,
   is_deleted boolean DEFAULT false,
   deleted_at timestamptz,
   has_seen_onboarding boolean DEFAULT false,
-  current_community_id uuid REFERENCES communities(id) ON DELETE SET NULL,  -- ✅ 1コミュニティ制限システム
-  season_points integer DEFAULT 1200, -- ✅ シーズン専用ポイント
-  season_vote_points integer DEFAULT 0 -- ✅ シーズン専用投票ポイント
+  current_community_id uuid REFERENCES communities(id) ON DELETE SET NULL,
+  season_points integer DEFAULT 1200,
+  season_vote_points integer DEFAULT 0,
+  phone_number varchar,
+  phone_verified boolean DEFAULT false,
+  stripe_account_id text,
+  stripe_charges_enabled boolean DEFAULT false,
+  stripe_connect_account_id text,
+  instagram_id varchar
 )
 
 -- 投稿動画
 submissions (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id uuid NOT NULL REFERENCES profiles(id),
-  video_url text NOT NULL,
+  video_url text,
   status submission_status DEFAULT 'WAITING_OPPONENT',
   rank_at_submission integer,
   active_battle_id uuid,
   created_at timestamptz DEFAULT now(),
   updated_at timestamptz DEFAULT now(),
   battle_format battle_format,
-  season_id uuid -- ✅ シーズンID
+  stream_video_id text,
+  stream_status text DEFAULT 'pending',
+  stream_thumbnail_url text,
+  stream_preview_url text,
+  stream_error_message text,
+  one_line_comment text
 )
 
 -- アクティブバトル
@@ -160,16 +137,16 @@ active_battles (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   player1_submission_id uuid NOT NULL,
   player2_submission_id uuid NOT NULL,
-  player1_user_id uuid NOT NULL REFERENCES profiles(id),
-  player2_user_id uuid NOT NULL REFERENCES profiles(id),
-  battle_format battle_format NOT NULL,
   status battle_status DEFAULT 'ACTIVE',
   votes_a integer DEFAULT 0,
   votes_b integer DEFAULT 0,
   end_voting_at timestamptz DEFAULT (now() + INTERVAL '5 days'),
   created_at timestamptz DEFAULT now(),
   updated_at timestamptz DEFAULT now(),
-  season_id uuid -- ✅ シーズンID
+  player1_user_id uuid NOT NULL REFERENCES profiles(id),
+  player2_user_id uuid NOT NULL REFERENCES profiles(id),
+  battle_format battle_format NOT NULL,
+  season_id uuid
 )
 
 -- 投票
@@ -178,19 +155,30 @@ battle_votes (
   battle_id uuid NOT NULL REFERENCES active_battles(id),
   user_id uuid REFERENCES profiles(id),
   vote char(1) CHECK (vote IN ('A', 'B')),
-  comment text,
   created_at timestamptz DEFAULT now(),
-  season_id uuid -- ✅ シーズンID
+  comment text,
+  season_id uuid,
+  super_tip_amount integer,
+  stripe_payment_intent_id text,
+  payment_status text,
+  super_tip_id uuid,
+  is_super_tip_vote boolean DEFAULT false,
+  score_sheet jsonb
 )
 
--- アーカイブ投票（保存機能） ✅ NEW
+-- アーカイブ投票（保存機能）
 archived_battle_votes (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   archived_battle_id uuid NOT NULL REFERENCES archived_battles(id),
   user_id uuid REFERENCES profiles(id),
   vote char(1) CHECK (vote IN ('A', 'B')),
   comment text,
-  created_at timestamptz DEFAULT now()
+  created_at timestamptz DEFAULT now(),
+  super_tip_amount integer,
+  stripe_payment_intent_id text,
+  payment_status text,
+  has_super_tip boolean DEFAULT false,
+  score_sheet jsonb
 )
 
 -- アーカイブバトル（完了済み）
@@ -212,11 +200,10 @@ archived_battles (
   player2_rating_change integer DEFAULT 0,
   player1_final_rating integer,
   player2_final_rating integer,
-  player1_video_url text, -- ✅ 永続保存動画URL
-  player2_video_url text, -- ✅ 永続保存動画URL
-  season_id uuid -- ✅ シーズンID
+  player1_video_url text,
+  player2_video_url text,
+  season_id uuid
 )
-
 
 -- コメント
 comments (
@@ -234,19 +221,20 @@ notifications (
   user_id uuid NOT NULL REFERENCES profiles(id),
   title text NOT NULL,
   message text NOT NULL,
-  type varchar CHECK (type IN ('info', 'success', 'warning', 'battle_matched', 'battle_win', 'battle_lose', 'battle_draw', 'season_start')),
+  type varchar NOT NULL,
   is_read boolean DEFAULT false,
   related_battle_id uuid,
-  related_season_id uuid, -- ✅ シーズン関連通知
   created_at timestamptz DEFAULT now(),
-  updated_at timestamptz DEFAULT now()
+  updated_at timestamptz DEFAULT now(),
+  related_season_id uuid,
+  related_site_news_id uuid,
+  related_reward_id uuid,
+  related_super_tip_id uuid
 )
 
-
--- ✅ プッシュ通知システム
 -- プッシュ通知購読
 push_subscriptions (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
   user_id uuid NOT NULL REFERENCES auth.users(id),
   subscription jsonb NOT NULL,
   user_agent text,
@@ -254,7 +242,6 @@ push_subscriptions (
   updated_at timestamptz DEFAULT now()
 )
 
--- ✅ サイトニュース・お知らせシステム（実装完了）
 -- サイトニュース
 site_news (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -262,40 +249,95 @@ site_news (
   body text NOT NULL,
   image_url text,
   link_url text,
-  content_type text DEFAULT 'article' CHECK (content_type = 'article'),
+  published_at timestamptz DEFAULT now(),
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now(),
+  content_type text DEFAULT 'article',
   article_content text,
   meta_description text,
   tags text[],
   is_featured boolean DEFAULT false,
   is_published boolean DEFAULT true,
   display_order integer DEFAULT 0,
-  published_at timestamptz DEFAULT now(),
-  created_at timestamptz DEFAULT now(),
-  updated_at timestamptz DEFAULT now()
+  language varchar DEFAULT 'en'
 )
 
--- ✅ セキュリティ監査ログ
 -- セキュリティ監査ログ
 security_audit_log (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   event_type text NOT NULL,
   user_id uuid REFERENCES auth.users(id),
+  phone_number_hash text,
+  event_data jsonb NOT NULL,
+  severity_level integer DEFAULT 1,
   ip_address inet,
   user_agent text,
-  event_data jsonb,
-  created_at timestamptz DEFAULT now()
+  request_id text,
+  is_blocked boolean DEFAULT false,
+  admin_reviewed boolean DEFAULT false,
+  admin_notes text,
+  created_at timestamptz DEFAULT now(),
+  reviewed_at timestamptz
 )
 
-
-
-
--- ✅ シーズンシステム (実装完了)
--- シーズン
+-- シーズンマスタ
 seasons (
-  id uuid PRIMARY KEY,
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   name text NOT NULL,
   start_at timestamptz NOT NULL,
   end_at timestamptz NOT NULL,
+  status text DEFAULT 'upcoming',
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now()
+)
+
+-- シーズンランキング（スナップショット）
+season_rankings (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  season_id uuid NOT NULL REFERENCES seasons(id),
+  user_id uuid NOT NULL REFERENCES profiles(id),
+  rank integer NOT NULL,
+  points integer NOT NULL,
+  created_at timestamptz DEFAULT now()
+)
+
+-- シーズン投票者ランキング（スナップショット）
+season_voter_rankings (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  season_id uuid NOT NULL REFERENCES seasons(id),
+  user_id uuid NOT NULL REFERENCES profiles(id),
+  rank integer NOT NULL,
+  votes integer NOT NULL,
+  created_at timestamptz DEFAULT now()
+)
+
+-- 報酬マスタ
+rewards (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  name text NOT NULL,
+  description text,
+  type text NOT NULL,
+  image_url text NOT NULL,
+  season_id uuid REFERENCES seasons(id),
+  rank_requirement integer,
+  min_battles integer DEFAULT 0,
+  is_limited boolean DEFAULT true,
+  is_active boolean DEFAULT true,
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now(),
+  description_en text,
+  description_ja text
+)
+
+-- ユーザー報酬所有
+user_rewards (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id uuid NOT NULL REFERENCES profiles(id),
+  reward_id uuid NOT NULL REFERENCES rewards(id),
+  earned_at timestamptz DEFAULT now(),
+  earned_season_id uuid REFERENCES seasons(id)
+)
+```
   status text CHECK (status IN ('upcoming', 'active', 'ended')),
   created_at timestamptz DEFAULT now(),
   updated_at timestamptz DEFAULT now()
@@ -881,10 +923,6 @@ mcp_supabase_get_logs(project_id, service)
 - **投票ポイント加算**: 投票時に`season_vote_points`が加算されるロジックを`vote_battle`関数に実装済み。
 - **シーズンポイント更新**: バトル完了時にシーズンポイントを更新する`update_season_points_after_battle`関数を実装済み。
 
-### 🚧 未実装・今後のタスク
-- **自動シーズン切替**: pg_cronによる終了・順位確定・リセット処理の自動化。
-- **フロントエンド改修**: ランキングページに「今シーズン」「通算」のタブを追加するなど、UIの全体的な対応。
-- **テスト**: シーズン切り替えを想定した結合テスト。
 
 ---
 
