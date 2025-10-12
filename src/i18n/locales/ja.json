@@ -1040,9 +1040,6 @@
     "weeklyPickup": {
       "mostAttention": "今週最も注目を集めたバトル"
     },
-    "pastSeasons": {
-      "title": "過去シーズンをプレイバック"
-    },
     "userInfoCard": {
       "loading": "プロフィール情報を読み込み中...",
       "memberSince": "{{date}}から参加",
