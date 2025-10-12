@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu, X, Bell, Plus, Swords, Clock, CheckCircle, Trophy, Award, Handshake, RefreshCw } from 'lucide-react';
+import { Menu, X, Bell, Plus, Swords, Clock, CheckCircle, Trophy, Award, Handshake, RefreshCw, Download } from 'lucide-react';
 import { HoverCard } from '../ui/HoverCard';
 import { NotificationDropdown } from '../ui/NotificationDropdown';
 import { useTranslation } from 'react-i18next';
@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '../../store/authStore';
 import { useAuthModal } from '../auth/AuthProvider';
 import { useNotificationStore, type Notification } from '../../store/notificationStore';
+import { usePWAInstall } from '../../hooks/usePWAInstall';
 import { supabase } from '../../lib/supabase';
 import { getDefaultAvatarUrl } from '../../utils';
 
@@ -42,6 +43,7 @@ export const Header: React.FC = () => {
     removeNotification,
     fetchNotifications,
   } = useNotificationStore();
+  const { isInstallable, handleInstallClick } = usePWAInstall();
 
   useEffect(() => {
     if (user) {
@@ -481,6 +483,16 @@ export const Header: React.FC = () => {
                   <Plus className="h-5 w-5" aria-hidden="true" />
                 </Link>
                 <NotificationDropdown />
+                {isInstallable && (
+                  <button
+                    onClick={handleInstallClick}
+                    className="p-2 text-gray-400 hover:text-cyan-400 hover:bg-gray-800 rounded-lg transition-colors"
+                    aria-label="アプリをインストール"
+                    title="ホーム画面に追加"
+                  >
+                    <Download className="h-5 w-5" aria-hidden="true" />
+                  </button>
+                )}
                 <HoverCard userProfile={userProfile}>
                   <Link 
                     to="/profile"
@@ -497,6 +509,16 @@ export const Header: React.FC = () => {
               </>
             ) : (
               <>
+                {isInstallable && (
+                  <button
+                    onClick={handleInstallClick}
+                    className="p-2 text-gray-400 hover:text-cyan-400 hover:bg-gray-800 rounded-lg transition-colors"
+                    aria-label="アプリをインストール"
+                    title="ホーム画面に追加"
+                  >
+                    <Download className="h-5 w-5" aria-hidden="true" />
+                  </button>
+                )}
                 <button
                   className="header-auth-button"
                   onClick={() => handleAuthClick('login')}
@@ -519,6 +541,18 @@ export const Header: React.FC = () => {
 
           {/* Mobile Right Actions */}
           <div className="md:hidden flex items-center space-x-3">
+            {/* PWA Install Button */}
+            {isInstallable && (
+              <button
+                onClick={handleInstallClick}
+                className="p-2 text-gray-400 hover:text-cyan-400 transition-colors"
+                aria-label="アプリをインストール"
+                title="ホーム画面に追加"
+              >
+                <Download className="h-6 w-6" aria-hidden="true" />
+              </button>
+            )}
+            
             {/* Mobile Notification Icon - ログインユーザーのみ表示 */}
             {user && (
               <div className="relative notification-dropdown-container">

@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 
 // Layouts
@@ -110,9 +110,16 @@ function RouterContent() {
   // ページ遷移時にスクロール位置をトップにリセット
   useScrollToTop();
 
+  const location = useLocation();
+  const { user } = useAuthStore();
+
+  const isBattleRoute = location.pathname === '/battles' || location.pathname.startsWith('/battle');
+  const shouldShowBottomNav = Boolean(user) || isBattleRoute;
+  const containerClassName = shouldShowBottomNav ? 'min-h-screen pb-24 md:pb-0' : 'min-h-screen md:pb-0';
+
   return (
     <>
-      <div className="min-h-screen pb-24 md:pb-0">{/* pb for bottom nav space on mobile */}
+      <div className={containerClassName}>{/* pb for bottom nav space on mobile */}
         <Header />
         <main id="main-content" className="w-full pt-16" role="main">
           <Routes>
@@ -166,7 +173,7 @@ function RouterContent() {
         </main>
         <Footer />
         {/* Mobile Bottom Navigation */}
-        <BottomNav />
+        {shouldShowBottomNav && <BottomNav />}
       </div>
     </>
   );
