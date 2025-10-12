@@ -270,10 +270,6 @@ export const BattleFilters: React.FC<BattleFiltersProps> = ({
     </button>
   );
 
-  const filterGridClass = isMobileLayout
-    ? 'grid-cols-1 sm:grid-cols-2'
-    : 'grid-cols-1';
-
   return (
     <section className="rounded-3xl border border-white/10 bg-gradient-to-br from-gray-950/95 via-gray-900/90 to-gray-950/95 p-4 shadow-[0_10px_40px_rgba(0,0,0,0.45)] backdrop-blur-xl sm:p-6">
       <div className="flex flex-wrap items-center gap-2">
@@ -322,8 +318,6 @@ export const BattleFilters: React.FC<BattleFiltersProps> = ({
             </div>
           )}
         </div>
-
-        {!isMobileLayout && renderFormatSelect('desktop')}
 
         <div className="relative" ref={moreMenuRef}>
           <button
@@ -414,32 +408,26 @@ export const BattleFilters: React.FC<BattleFiltersProps> = ({
             </div>
           )}
         </div>
+
+        {renderFormatSelect(isMobileLayout ? 'mobile' : 'desktop')}
       </div>
 
-      <div className={`mt-5 grid gap-3 ${filterGridClass}`}>
-        <div className={!isMobileLayout ? 'flex items-center gap-3' : ''}>
-          <div className={`relative ${!isMobileLayout ? 'flex-1' : ''}`}>
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-cyan-400" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(event) => setSearchQuery(event.target.value)}
-              placeholder={t('battleFilters.searchPlaceholder', 'Search battlers, crews, or tags...')}
-              className="w-full rounded-2xl border border-white/10 bg-gray-900/80 pl-10 pr-4 py-2.5 text-sm text-white transition-all placeholder:text-gray-500 focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/40"
-              aria-label={t('battleFilters.searchAriaLabel', 'Search battles')}
-            />
-          </div>
-          {!isMobileLayout && renderResetButton('desktop')}
+      <div className="mt-5 flex w-full flex-wrap items-center gap-3">
+        <div className="relative flex-1 min-w-[220px]">
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-cyan-400" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(event) => setSearchQuery(event.target.value)}
+            placeholder={t('battleFilters.searchPlaceholder', 'Search battlers, crews, or tags...')}
+            className="w-full rounded-2xl border border-white/10 bg-gray-900/80 pl-10 pr-4 py-2.5 text-sm text-white transition-all placeholder:text-gray-500 focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/40"
+            aria-label={t('battleFilters.searchAriaLabel', 'Search battles')}
+          />
         </div>
 
-        {isMobileLayout && (
-          <>
-            {renderFormatSelect('mobile')}
-            <div className="flex items-center justify-end">
-              {renderResetButton('mobile')}
-            </div>
-          </>
-        )}
+        <div className="flex-shrink-0">
+          {renderResetButton('desktop')}
+        </div>
       </div>
 
       {stats.length > 0 && (
