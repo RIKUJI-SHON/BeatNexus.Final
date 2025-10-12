@@ -647,7 +647,18 @@
       "title": "Install App",
       "description": "Add BeatNexus to your home screen for a better experience.",
       "button": "Install",
-      "later": "Later"
+      "later": "Later",
+      "buttonLabel": "Install the app",
+      "buttonTitle": "Add to Home Screen"
+    },
+    "installIos": {
+      "title": "How to add to Home Screen",
+      "subtitle": "You can add BeatNexus from Safari's share menu",
+      "buttonLabel": "See how to add to Home Screen",
+      "buttonTitle": "View the steps to add to Home Screen",
+      "step1": "Tap the share button in Safari",
+      "step2": "Select \"Add to Home Screen\"",
+      "step3": "Tap Add in the top-right corner to finish"
     }
   },
   "offline": {

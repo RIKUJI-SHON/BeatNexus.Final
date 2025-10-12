@@ -662,7 +662,18 @@
       "title": "アプリをインストール",
       "description": "BeatNexusをホーム画面に追加して、より快適にご利用いただけます。",
       "button": "インストール",
-      "later": "後で"
+      "later": "後で",
+      "buttonLabel": "アプリをインストール",
+      "buttonTitle": "ホーム画面に追加"
+    },
+    "installIos": {
+      "title": "ホーム画面に追加する手順",
+      "subtitle": "Safariの共有メニューから追加できます",
+      "buttonLabel": "ホーム画面に追加する方法を見る",
+      "buttonTitle": "ホーム画面に追加する手順を確認",
+      "step1": "Safariで共有ボタンをタップ",
+      "step2": "「ホーム画面に追加」を選択",
+      "step3": "画面右上の追加ボタンを押して完了"
     }
   },
   "offline": {
