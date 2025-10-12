@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { ExternalLink, ChevronRight } from 'lucide-react';
 import { useNews } from '../../hooks/useNews';
 import { ArticleModal } from '../ui/ArticleModal';
+import { AdSlot } from '../ads/AdSlot';
 import type { NewsItem } from '../../types/news';
 
 interface NewsSidebarProps {
@@ -59,18 +60,28 @@ const NewsSidebar: React.FC<NewsSidebarProps> = ({ className = '' }) => {
       <aside className={`space-y-4 ${className}`}>
         {/* Latest News Section */}
         <div className="bg-gray-900/50 border border-gray-700/50 rounded-xl p-4 backdrop-blur-sm">
-          <h2 className="text-white font-bold text-lg mb-4 uppercase tracking-wide flex items-center gap-2">
-            <span className="text-cyan-400">●</span>
+          <h2 className="text-white font-bold text-lg mb-4 uppercase tracking-wide">
             {t('news.latestNews', 'LATEST NEWS')}
           </h2>
           
           <div className="space-y-3">
-            {news.map((item) => (
-              <NewsSidebarCard
-                key={item.id}
-                newsItem={item}
-                onClick={() => setSelectedArticle(item)}
-              />
+            {news.map((item, index) => (
+              <React.Fragment key={item.id}>
+                <NewsSidebarCard
+                  newsItem={item}
+                  onClick={() => setSelectedArticle(item)}
+                />
+                {/* 1個目の記事の後に広告を配置 */}
+                {index === 0 && (
+                  <div className="relative w-full aspect-square rounded-lg overflow-hidden">
+                    <AdSlot
+                      placementKey="home.hero.section.after.carousel"
+                      variant="carousel"
+                      className="h-full w-full"
+                    />
+                  </div>
+                )}
+              </React.Fragment>
             ))}
           </div>
         </div>
