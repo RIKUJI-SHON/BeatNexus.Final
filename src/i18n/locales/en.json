@@ -458,29 +458,48 @@
   "votedAria": "You have already voted on this battle"
   },
   "battleFilters": {
-    "searchPlaceholder": "Search by username...",
+    "searchPlaceholder": "Search battlers, crews, or tags...",
+    "searchAriaLabel": "Search battles",
+    "formatAriaLabel": "Filter by format",
+    "sortAriaLabel": "Sort battles",
+    "reset": "Reset",
+    "pastBattles": "Completed Battles",
+    "myBattlesOnly": "My Battles",
+    "unvotedOnly": "Unvoted Only",
+    "tabs": {
+      "active": "Active",
+      "more": "More"
+    },
+    "format": {
+      "all": "All Formats",
+      "main": "Main Battle",
+      "mini": "Mini Battle",
+      "theme": "Theme Challenge"
+    },
+    "sortOptions": {
+      "popular": "Sort by Popularity",
+      "newest": "Sort by Newest",
+      "oldest": "Sort by Oldest"
+    },
+    "buttons": {
+      "profile": "Profile",
+      "ranking": "Ranking",
+      "battleStart": "Battle Start",
+      "tournament": "Tournament"
+    },
+    "searchTitle": "Username Search",
+    "filtersTitle": "Filters & Sort",
+    "activeFilters": "Active Filters:",
+    "loading": "Loading...",
+    "noRankings": "No Rankings",
+    "activeBattles": "Active battles",
     "myBattles": "MY BATTLES",
     "allFormats": "All Formats",
     "recent": "Recent",
     "trending": "Trending",
     "endingSoon": "Ending Soon",
     "completed": "Completed",
-    "searchTitle": "Username Search",
-    "filtersTitle": "Filters & Sort",
-    "myBattlesOnly": "My Battles",
-  "unvotedOnly": "Unvoted Only",
-  "unvoted": "Unvoted",
-    "activeFilters": "Active Filters:",
-    "loading": "Loading...",
-    "noRankings": "No Rankings",
-    "activeBattles": "Active battles",
-    "pastBattles": "Past battles",
-    "buttons": {
-      "profile": "Profile",
-      "ranking": "Ranking",
-      "battleStart": "Battle Start",
-      "tournament": "Tournament"
-    }
+    "unvoted": "Unvoted"
   },
   "monthlyLimit": {
     "title": "Monthly Post Limit",

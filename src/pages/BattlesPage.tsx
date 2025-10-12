@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Trophy, Mic, Archive } from 'lucide-react';
 import { BattleCard } from '../components/battle/BattleCard';
 import { AdSlot } from '../components/ads/AdSlot';
 import { injectAdSlots, isAdSlotPlaceholder, generateBattleAdRules, generateArchivedBattleAdRules } from '../utils/injectAdSlots';
 import { ArchivedBattleCard } from '../components/battle/ArchivedBattleCard';
-import { BattleFilters, BattleFilterActions, BattleFilterControls } from '../components/battle/BattleFilters';
+import { BattleFilters, BattleFilterActions, BattleFilterStat, BattleSortKey } from '../components/battle/BattleFilters';
 import { Pagination } from '../components/ui/Pagination';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
@@ -19,15 +19,21 @@ import { UserInfoCard } from '../components/ui/UserInfoCard';
 import { TabbedRanking } from '../components/ui/TabbedRanking';
 
 import NewsCarousel from '../components/battle/NewsCarousel';
+import { BattleFormat } from '../types';
+
+const DEFAULT_SORT: BattleSortKey = 'trending';
+const DEFAULT_BATTLE_FORMAT = 'ALL' as const;
 
 const BattlesPage: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+
   const [searchQuery, setSearchQuery] = useState('');
-  const [sortBy, setSortBy] = useState<'recent' | 'trending' | 'ending' | null>('ending');
+  const [sortBy, setSortBy] = useState<BattleSortKey>(DEFAULT_SORT);
   const [showMyBattlesOnly, setShowMyBattlesOnly] = useState(false);
   const [showUnvotedOnly, setShowUnvotedOnly] = useState(false); // 新規: 未投票のみ表示
   const [showCompletedBattles, setShowCompletedBattles] = useState(false); // 新規: 完了済み表示トグル
+  const [battleFormatFilter, setBattleFormatFilter] = useState<'ALL' | BattleFormat>(DEFAULT_BATTLE_FORMAT);
   const [isSwitchingBattleType, setIsSwitchingBattleType] = useState(false); // バトルタイプ切り替え時のローディング
 
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
@@ -42,6 +48,111 @@ const BattlesPage: React.FC = () => {
   const { user } = useAuthStore();
   
   // TabbedRanking handles its own limit
+
+  const setCompletedWithTransition = useCallback((value: boolean) => {
+    setShowCompletedBattles((previous) => {
+      if (previous === value) {
+        return previous;
+      }
+      setIsSwitchingBattleType(true);
+      return value;
+    });
+  }, [setIsSwitchingBattleType, setShowCompletedBattles]);
+
+  const handleResetFilters = useCallback(() => {
+    setSortBy(DEFAULT_SORT);
+    setSearchQuery('');
+    setShowMyBattlesOnly(false);
+    setShowUnvotedOnly(false);
+    setBattleFormatFilter(DEFAULT_BATTLE_FORMAT);
+    if (showCompletedBattles) {
+      setCompletedWithTransition(false);
+    }
+  }, [setBattleFormatFilter, setCompletedWithTransition, setSearchQuery, setShowMyBattlesOnly, setShowUnvotedOnly, setSortBy, showCompletedBattles]);
+
+  const numberFormatter = useMemo(() => new Intl.NumberFormat(), []);
+
+  const filterStats = useMemo<BattleFilterStat[]>(() => {
+    const activeBattlesCount = battles?.length ?? 0;
+    const archivedBattlesCount = archivedBattles?.length ?? 0;
+    const totalBattles = activeBattlesCount + archivedBattlesCount;
+
+    const activeHotCount = (battles ?? []).filter((battle) => {
+      const totalVotes = (battle.votes_a ?? 0) + (battle.votes_b ?? 0);
+      return totalVotes >= 5;
+    }).length;
+
+    const archivedHotCount = (archivedBattles ?? []).filter((battle) => {
+      const totalVotes = (battle.final_votes_a ?? 0) + (battle.final_votes_b ?? 0);
+      return totalVotes >= 5;
+    }).length;
+
+    const uniqueProducers = new Set<string>();
+    (battles ?? []).forEach((battle) => {
+      if (battle.contestant_a_id) {
+        uniqueProducers.add(battle.contestant_a_id);
+      }
+      if (battle.contestant_b_id) {
+        uniqueProducers.add(battle.contestant_b_id);
+      }
+    });
+    (archivedBattles ?? []).forEach((battle) => {
+      if (battle.player1_user_id) {
+        uniqueProducers.add(battle.player1_user_id);
+      }
+      if (battle.player2_user_id) {
+        uniqueProducers.add(battle.player2_user_id);
+      }
+    });
+
+    const activeStats: BattleFilterStat[] = [
+      {
+        value: numberFormatter.format(activeHotCount),
+        label: t('battleFilters.stats.hottest', 'Battles On Fire'),
+        accent: 'fire',
+      },
+      {
+        value: numberFormatter.format(activeBattlesCount),
+        label: t('battleFilters.stats.active', 'Active Battles'),
+        accent: 'aqua',
+      },
+      {
+        value: numberFormatter.format(totalBattles),
+        label: t('battleFilters.stats.total', 'Total Battles'),
+        accent: 'emerald',
+      },
+      {
+        value: numberFormatter.format(uniqueProducers.size),
+        label: t('battleFilters.stats.producers', 'Producers Competing'),
+        accent: 'violet',
+      },
+    ];
+
+    const archivedStats: BattleFilterStat[] = [
+      {
+        value: numberFormatter.format(archivedHotCount),
+        label: t('battleFilters.stats.hottest', 'Battles On Fire'),
+        accent: 'fire',
+      },
+      {
+        value: numberFormatter.format(archivedBattlesCount),
+        label: t('battleFilters.stats.archived', 'Archived Battles'),
+        accent: 'aqua',
+      },
+      {
+        value: numberFormatter.format(totalBattles),
+        label: t('battleFilters.stats.total', 'Total Battles'),
+        accent: 'emerald',
+      },
+      {
+        value: numberFormatter.format(uniqueProducers.size),
+        label: t('battleFilters.stats.producers', 'Producers Competing'),
+        accent: 'violet',
+      },
+    ];
+
+    return showCompletedBattles ? archivedStats : activeStats;
+  }, [archivedBattles, battles, numberFormatter, showCompletedBattles, t]);
 
   useEffect(() => {
     const initializeData = async () => {
@@ -77,6 +188,10 @@ const BattlesPage: React.FC = () => {
     try {
       let battleList = [...(battles || [])];
 
+      if (battleFormatFilter !== 'ALL') {
+        battleList = battleList.filter((battle) => battle.battle_format === battleFormatFilter);
+      }
+
       // MY BATTLES フィルター
       if (showMyBattlesOnly && user) {
         battleList = battleList.filter(battle =>
@@ -105,35 +220,34 @@ const BattlesPage: React.FC = () => {
             const bTime = b.created_at ? new Date(b.created_at).getTime() : 0;
             return bTime - aTime;
           });
-        case 'trending':
-          return battleList.sort((a, b) => 
-            ((b.votes_a || 0) + (b.votes_b || 0)) - ((a.votes_a || 0) + (a.votes_b || 0))
-          );
-        case 'ending':
+        case 'oldest':
           return battleList.sort((a, b) => {
-            const aTime = a.end_voting_at ? new Date(a.end_voting_at).getTime() : 0;
-            const bTime = b.end_voting_at ? new Date(b.end_voting_at).getTime() : 0;
+            const aTime = a.created_at ? new Date(a.created_at).getTime() : 0;
+            const bTime = b.created_at ? new Date(b.created_at).getTime() : 0;
             return aTime - bTime;
           });
+        case 'trending':
         case null:
         default:
-          // フィルターが外れている場合はending順（終了間際順）
-          return battleList.sort((a, b) => {
-            const aTime = a.end_voting_at ? new Date(a.end_voting_at).getTime() : 0;
-            const bTime = b.end_voting_at ? new Date(b.end_voting_at).getTime() : 0;
-            return aTime - bTime;
-          });
+          // デフォルトは投票数の多いバトル順
+          return battleList.sort(
+            (a, b) => ((b.votes_a || 0) + (b.votes_b || 0)) - ((a.votes_a || 0) + (a.votes_b || 0))
+          );
       }
     } catch (error) {
       console.error('Error in filteredBattles:', error);
       return [];
     }
-  }, [battles, sortBy, searchQuery, showMyBattlesOnly, showUnvotedOnly, user]);
+  }, [battles, sortBy, searchQuery, showMyBattlesOnly, showUnvotedOnly, user, battleFormatFilter]);
 
   // アクティブシーズンが無い場合、最新の終了シーズンのアーカイブのみを投票数順で表示する
   const filteredArchivedBattles = useMemo(() => {
     try {
       let battleList = [...(archivedBattles || [])];
+
+      if (battleFormatFilter !== 'ALL') {
+        battleList = battleList.filter((battle) => battle.battle_format === battleFormatFilter);
+      }
 
       // アクティブシーズンがない場合は、シーズンに関係なく投票総数の降順で表示
       if (!currentSeason) {
@@ -141,8 +255,7 @@ const BattlesPage: React.FC = () => {
         if (sortBy === 'trending') {
           return battleList.sort((a, b) => ((b.final_votes_a || 0) + (b.final_votes_b || 0)) - ((a.final_votes_a || 0) + (a.final_votes_b || 0)));
         }
-        if (sortBy === 'ending') {
-          // もっとも古くアーカイブされた順（昇順）
+        if (sortBy === 'oldest') {
           return battleList.sort((a, b) => {
             const aTime = a.archived_at ? new Date(a.archived_at).getTime() : 0;
             const bTime = b.archived_at ? new Date(b.archived_at).getTime() : 0;
@@ -175,8 +288,7 @@ const BattlesPage: React.FC = () => {
       if (sortBy === 'trending') {
         return battleList.sort((a, b) => ((b.final_votes_a || 0) + (b.final_votes_b || 0)) - ((a.final_votes_a || 0) + (a.final_votes_b || 0)));
       }
-      if (sortBy === 'ending') {
-        // もっとも古いアーカイブ（日付昇順）
+      if (sortBy === 'oldest') {
         return battleList.sort((a, b) => {
           const aTime = a.archived_at ? new Date(a.archived_at).getTime() : 0;
           const bTime = b.archived_at ? new Date(b.archived_at).getTime() : 0;
@@ -193,7 +305,7 @@ const BattlesPage: React.FC = () => {
       console.error('Error in filteredArchivedBattles:', error);
       return [];
     }
-  }, [archivedBattles, searchQuery, showMyBattlesOnly, user, currentSeason, sortBy]);
+  }, [archivedBattles, searchQuery, showMyBattlesOnly, user, currentSeason, sortBy, battleFormatFilter]);
 
   // ページネーション用の計算
   const activeBattlesTotalItems = showCompletedBattles ? 0 : filteredBattles.length;
@@ -254,7 +366,7 @@ const BattlesPage: React.FC = () => {
   // フィルターが変更されたときにページを1に戻す
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchQuery, sortBy, showMyBattlesOnly, showUnvotedOnly, showCompletedBattles]);
+  }, [searchQuery, sortBy, showMyBattlesOnly, showUnvotedOnly, showCompletedBattles, battleFormatFilter]);
 
   // Active/Past battles切り替え時に一時的にローディング状態を表示
   useEffect(() => {
@@ -278,34 +390,11 @@ const BattlesPage: React.FC = () => {
         {/* News Carousel - Enhanced Design */}
         <NewsCarousel />
 
-        <main className="grid grid-cols-1 gap-6 lg:grid-cols-5" role="main">
-          {/* Left Sidebar - User Actions */}
-          <aside className="lg:col-span-1 hidden lg:block" aria-label="Battle filters">
-            <div className="filter-sticky">
-              <BattleFilterControls
-                sortBy={sortBy}
-                setSortBy={setSortBy}
-                searchQuery={searchQuery}
-                setSearchQuery={setSearchQuery}
-                showMyBattlesOnly={showMyBattlesOnly}
-                setShowMyBattlesOnly={setShowMyBattlesOnly}
-                showUnvotedOnly={showUnvotedOnly}
-                setShowUnvotedOnly={setShowUnvotedOnly}
-                showCompletedBattles={showCompletedBattles}
-                setShowCompletedBattles={(value) => {
-                  setShowCompletedBattles(value);
-                  setIsSwitchingBattleType(true);
-                }}
-                isLoggedIn={!!user}
-                className="mb-0"
-                radioName="battle-range-pc"
-              />
-            </div>
-          </aside>
-
+        <main className="grid grid-cols-1 gap-6 lg:grid-cols-4" role="main">
           {/* Main Content */}
-          <section className={user ? 'lg:col-span-3' : 'lg:col-span-3'} aria-label="Battle listings">
-            <div className="lg:hidden filter-sticky mb-6">
+          <section className="lg:col-span-2 lg:col-start-2" aria-label="Battle listings">
+            <div className="filter-sticky mb-6 space-y-4">
+              <BattleFilterActions />
               <BattleFilters
                 sortBy={sortBy}
                 setSortBy={setSortBy}
@@ -316,17 +405,15 @@ const BattlesPage: React.FC = () => {
                 showUnvotedOnly={showUnvotedOnly}
                 setShowUnvotedOnly={setShowUnvotedOnly}
                 showCompletedBattles={showCompletedBattles}
-                setShowCompletedBattles={(value) => {
-                  setShowCompletedBattles(value);
-                  setIsSwitchingBattleType(true);
-                }}
+                setShowCompletedBattles={setCompletedWithTransition}
                 isLoggedIn={!!user}
-                radioName="battle-range-mobile"
+                battleFormat={battleFormatFilter}
+                setBattleFormat={setBattleFormatFilter}
+                defaultSortBy={DEFAULT_SORT}
+                stats={filterStats}
+                onResetFilters={handleResetFilters}
+                isMobileLayout={true}
               />
-            </div>
-
-            <div className="hidden lg:block mb-6">
-              <BattleFilterActions />
             </div>
             
             <div className="space-y-4 sm:space-y-6 mt-4 sm:mt-6 md:mt-8" role="region" aria-label="Battle results">

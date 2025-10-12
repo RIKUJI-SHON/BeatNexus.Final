@@ -344,29 +344,48 @@
   "votedAria": "あなたはこのバトルに投票済み"
   },
   "battleFilters": {
-    "searchPlaceholder": "ユーザー名で検索...",
+    "searchPlaceholder": "バトラー・クルー・タグで検索...",
+    "searchAriaLabel": "バトルを検索",
+    "formatAriaLabel": "フォーマットで絞り込む",
+    "sortAriaLabel": "表示順を選択",
+    "reset": "リセット",
+    "pastBattles": "完了済みバトル",
+    "myBattlesOnly": "自分のバトルのみ",
+    "unvotedOnly": "未投票のみ",
+    "tabs": {
+      "active": "アクティブ",
+      "more": "その他"
+    },
+    "format": {
+      "all": "すべての形式",
+      "main": "メインバトル",
+      "mini": "ミニバトル",
+      "theme": "テーマチャレンジ"
+    },
+    "sortOptions": {
+      "popular": "人気順",
+      "newest": "新着順",
+      "oldest": "古い順"
+    },
+    "buttons": {
+      "profile": "プロフィール",
+      "ranking": "ランキング",
+      "battleStart": "バトルスタート",
+      "tournament": "トーナメント"
+    },
+    "searchTitle": "ユーザー名検索",
+    "filtersTitle": "フィルター & ソート",
+    "activeFilters": "アクティブフィルター:",
+    "loading": "読み込み中...",
+    "noRankings": "ランキングがありません",
+    "activeBattles": "開催中のバトル",
     "myBattles": "MY BATTLES",
     "allFormats": "すべての形式",
     "recent": "最新",
     "trending": "人気",
     "endingSoon": "終了間近",
     "completed": "完了済み",
-    "searchTitle": "ユーザー名検索",
-    "filtersTitle": "フィルター & ソート",
-    "myBattlesOnly": "マイバトル",
-  "unvotedOnly": "未投票のみ",
-  "unvoted": "未投票",
-    "activeFilters": "アクティブフィルター:",
-    "loading": "読み込み中...",
-    "noRankings": "ランキングがありません",
-    "activeBattles": "開催中のバトル",
-    "pastBattles": "過去のバトル",
-    "buttons": {
-      "profile": "プロフィール",
-      "ranking": "ランキング",
-      "battleStart": "バトルスタート",
-      "tournament": "トーナメント"
-    }
+    "unvoted": "未投票"
   },
   "superTip": {
     "settingsCard": {

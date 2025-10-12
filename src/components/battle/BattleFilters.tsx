@@ -1,27 +1,47 @@
-import React from 'react';
-import { Search, SortDesc, Clock, User, Filter, TrendingUp, Check } from 'lucide-react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  Activity,
+  ArrowDownAZ,
+  Check,
+  ChevronDown,
+  Filter,
+  Search,
+  SlidersHorizontal,
+  Sparkles,
+  TrendingUp,
+  User,
+} from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { BattleFormat } from '../../types';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
-import { useTranslation } from 'react-i18next';
+
+export type BattleSortKey = 'recent' | 'trending' | 'oldest' | null;
+
+export interface BattleFilterStat {
+  value: string;
+  label: string;
+  accent?: 'fire' | 'aqua' | 'violet' | 'emerald';
+}
 
 export interface BattleFiltersProps {
-  sortBy: 'recent' | 'trending' | 'ending' | null;
-  setSortBy: (sort: 'recent' | 'trending' | 'ending' | null) => void;
+  sortBy: BattleSortKey;
+  setSortBy: (sort: BattleSortKey) => void;
   searchQuery: string;
   setSearchQuery: (query: string) => void;
   showMyBattlesOnly: boolean;
   setShowMyBattlesOnly: (show: boolean) => void;
-  showUnvotedOnly: boolean; // 新規: 未投票のみ
-  setShowUnvotedOnly: (show: boolean) => void; // 新規 setter
-  showCompletedBattles: boolean; // 新規: 完了済み表示
-  setShowCompletedBattles: (show: boolean) => void; // 新規 setter
+  showUnvotedOnly: boolean;
+  setShowUnvotedOnly: (show: boolean) => void;
+  showCompletedBattles: boolean;
+  setShowCompletedBattles: (show: boolean) => void;
   isLoggedIn: boolean;
-}
-
-interface BattleFilterControlsProps extends BattleFiltersProps {
-  className?: string;
-  isMobile?: boolean; // モバイル版でのレイアウト変更用
-  radioName?: string; // ラジオボタンのname属性（PC/モバイルで区別）
+  battleFormat: 'ALL' | BattleFormat;
+  setBattleFormat: (format: 'ALL' | BattleFormat) => void;
+  defaultSortBy: BattleSortKey;
+  stats: BattleFilterStat[];
+  onResetFilters: () => void;
+  isMobileLayout?: boolean;
 }
 
 export const BattleFilterActions: React.FC = () => {
@@ -98,7 +118,7 @@ export const BattleFilterActions: React.FC = () => {
   );
 };
 
-export const BattleFilterControls: React.FC<BattleFilterControlsProps> = ({
+export const BattleFilters: React.FC<BattleFiltersProps> = ({
   sortBy,
   setSortBy,
   searchQuery,
@@ -110,154 +130,345 @@ export const BattleFilterControls: React.FC<BattleFilterControlsProps> = ({
   showCompletedBattles,
   setShowCompletedBattles,
   isLoggedIn,
-  className,
-  isMobile = false,
-  radioName = 'battle-range',
+  battleFormat,
+  setBattleFormat,
+  defaultSortBy,
+  stats,
+  onResetFilters,
+  isMobileLayout = false,
 }) => {
   const { t } = useTranslation();
+  const [isMoreMenuOpen, setIsMoreMenuOpen] = useState(false);
+  const [isSortMenuOpen, setIsSortMenuOpen] = useState(false);
+  const moreMenuRef = useRef<HTMLDivElement>(null);
+  const sortMenuRef = useRef<HTMLDivElement>(null);
 
-  const sortButtons = [
-    {
-      key: 'ending',
-      icon: <Clock className="h-3 w-3" />,
-      label: t('battleFilters.endingSoon'),
-      colors: 'from-red-500 to-orange-500',
-    },
-    {
-      key: 'recent',
-      icon: <SortDesc className="h-3 w-3" />,
-      label: t('battleFilters.recent'),
-      colors: 'from-cyan-500 to-blue-500',
-    },
-    {
-      key: 'trending',
-      icon: <TrendingUp className="h-3 w-3" />,
-      label: t('battleFilters.trending'),
-      colors: 'from-purple-500 to-pink-500',
-    },
-  ];
+  useEffect(() => {
+    if (!isMoreMenuOpen && !isSortMenuOpen) return;
 
-  const handleSortClick = (sortKey: 'recent' | 'trending' | 'ending') => {
-    setSortBy(sortBy === sortKey ? null : sortKey);
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node;
+      if (moreMenuRef.current && !moreMenuRef.current.contains(target)) {
+        setIsMoreMenuOpen(false);
+      }
+      if (sortMenuRef.current && !sortMenuRef.current.contains(target)) {
+        setIsSortMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isMoreMenuOpen, isSortMenuOpen]);
+
+  const tabLabels = useMemo(
+    () => ({
+      active: t('battleFilters.tabs.active', 'Active'),
+      more: t('battleFilters.tabs.more', 'More'),
+    }),
+    [t]
+  );
+
+  const formatOptions = useMemo(
+    () => [
+      { value: 'ALL' as const, label: t('battleFilters.format.all', 'All Formats') },
+      { value: 'MAIN_BATTLE' as const, label: t('battleFilters.format.main', 'Main Battle') },
+      { value: 'MINI_BATTLE' as const, label: t('battleFilters.format.mini', 'Mini Battle') },
+    ],
+    [t]
+  );
+
+  const sortOptions = useMemo(
+    () => [
+      { value: 'trending' as const, label: t('battleFilters.sortOptions.popular', 'Sort by Popularity') },
+      { value: 'recent' as const, label: t('battleFilters.sortOptions.newest', 'Sort by Newest') },
+      { value: 'oldest' as const, label: t('battleFilters.sortOptions.oldest', 'Sort by Oldest') },
+    ],
+    [t]
+  );
+
+  const handleActiveSelect = useCallback(() => {
+    setShowCompletedBattles(false);
+    setSortBy('trending');
+    setIsMoreMenuOpen(false);
+  }, [setShowCompletedBattles, setSortBy]);
+
+  const handleFormatChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setBattleFormat(event.target.value as 'ALL' | BattleFormat);
   };
 
-  const containerClasses = `battle-card-simple mb-3 sm:mb-6 group cursor-default ${className ?? ''}`;
-
-  return (
-    <div className={containerClasses.trim()}>
-      <div className="battle-card-simple__content">
-        <div className="p-3 sm:p-4">
-          <div className="space-y-4">
-            {/* Active/Past battles toggle */}
-            <div>
-              <label className="radio-label">
-                <input
-                  type="radio"
-                  className="radio-input"
-                  name={radioName}
-                  checked={!showCompletedBattles}
-                  onChange={() => setShowCompletedBattles(false)}
-                />
-                <span className="radio-custom" aria-hidden="true"></span>
-                <span className="radio-text">{t('battleFilters.activeBattles')}</span>
-              </label>
-              <label className="radio-label">
-                <input
-                  type="radio"
-                  className="radio-input"
-                  name={radioName}
-                  checked={showCompletedBattles}
-                  onChange={() => setShowCompletedBattles(true)}
-                />
-                <span className="radio-custom" aria-hidden="true"></span>
-                <span className="radio-text">{t('battleFilters.pastBattles')}</span>
-              </label>
-            </div>
-
-            {/* Username Search */}
-            <div>
-              <div className="flex items-center gap-2 mb-2">
-                <Search className="h-4 w-4 text-cyan-400" />
-                <h3 className="text-sm font-semibold text-cyan-400">{t('battleFilters.searchTitle')}</h3>
-              </div>
-              <div className="relative">
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder={t('battleFilters.searchPlaceholder')}
-                  className="w-full bg-gray-800/60 border border-gray-600/50 rounded-lg pl-9 pr-3 py-2 text-sm text-white placeholder-gray-400 focus:outline-none focus:border-cyan-500/70 focus:shadow-md focus:shadow-cyan-500/20 transition-all duration-300"
-                />
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-              </div>
-            </div>
-
-            {/* Filters & Sort */}
-            <div>
-              <div className="flex items-center gap-2 mb-2">
-                <Filter className="h-4 w-4 text-purple-400" />
-                <h3 className="text-sm font-semibold text-purple-400">{t('battleFilters.filtersTitle')}</h3>
-              </div>
-
-              <div className={isMobile ? 'grid grid-cols-2 gap-2' : 'space-y-2'}>
-                {isLoggedIn && (
-                  <button
-                    onClick={() => setShowMyBattlesOnly(!showMyBattlesOnly)}
-                    className={`w-full px-3 py-2 rounded-md text-sm font-medium transition-all duration-300 border flex items-center justify-center gap-2 ${
-                      showMyBattlesOnly
-                        ? 'bg-gradient-to-r from-pink-500 to-purple-500 text-white border-pink-500/50'
-                        : 'bg-gray-800/60 text-gray-300 border-gray-600/50 hover:border-pink-500/50 hover:text-white'
-                    }`}
-                  >
-                    <User className="h-4 w-4" />
-                    <span>{t('battleFilters.myBattlesOnly')}</span>
-                  </button>
-                )}
-                {isLoggedIn && !showCompletedBattles && (
-                  <button
-                    onClick={() => setShowUnvotedOnly(!showUnvotedOnly)}
-                    className={`w-full px-3 py-2 rounded-md text-sm font-medium transition-all duration-300 border flex items-center justify-center gap-2 ${
-                      showUnvotedOnly
-                        ? 'bg-gradient-to-r from-emerald-500 to-green-500 text-white border-emerald-500/50'
-                        : 'bg-gray-800/60 text-gray-300 border-gray-600/50 hover:border-emerald-500/50 hover:text-white'
-                    }`}
-                  >
-                    <Check className="h-4 w-4" />
-                    <span>{t('battleFilters.unvotedOnly')}</span>
-                  </button>
-                )}
-
-                {(showCompletedBattles ? sortButtons.filter((b) => b.key !== 'ending') : sortButtons).map((button) => (
-                  <button
-                    key={button.key}
-                    onClick={() => handleSortClick(button.key as 'recent' | 'trending' | 'ending')}
-                    className={`w-full px-3 py-2 rounded-md text-sm font-medium transition-all duration-300 border flex items-center justify-center gap-2 ${
-                      sortBy === button.key
-                        ? `bg-gradient-to-r ${button.colors} text-white border-transparent`
-                        : 'bg-gray-800/60 text-gray-300 border-gray-600/50 hover:border-gray-500/50 hover:text-white'
-                    }`}
-                    title={button.label}
-                  >
-                    {button.icon}
-                    <span>{button.label}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+  const renderFormatSelect = (variant: 'desktop' | 'mobile') => (
+    <div className={`relative ${variant === 'desktop' ? 'min-w-[220px]' : ''}`}>
+      <Filter className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-purple-400" />
+      <select
+        name="battle-format"
+        value={battleFormat}
+        onChange={handleFormatChange}
+        className="w-full appearance-none rounded-2xl border border-white/10 bg-gray-900/80 pl-10 pr-10 py-2.5 text-sm text-white transition-all focus:border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-500/30"
+        aria-label={t('battleFilters.formatAriaLabel', 'Filter by format')}
+      >
+        {formatOptions.map((option) => (
+          <option key={option.value} value={option.value} className="bg-gray-950 text-white">
+            {option.label}
+          </option>
+        ))}
+      </select>
+      <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
     </div>
   );
-};
 
-export const BattleFilters: React.FC<BattleFilterControlsProps> = (props) => (
-  <div className="grid grid-cols-12 gap-4 sm:gap-6">
-    <div className="col-span-12">
-      <div className="space-y-3">
-        <BattleFilterActions />
-        <BattleFilterControls {...props} isMobile={true} />
+  const toggleMoreMenu = () => setIsMoreMenuOpen((prev) => !prev);
+  const toggleSortMenu = () => setIsSortMenuOpen((prev) => !prev);
+
+  const isActiveSelected = !showCompletedBattles && sortBy === 'trending';
+
+  const handleReset = () => {
+    onResetFilters();
+    setIsMoreMenuOpen(false);
+    setIsSortMenuOpen(false);
+  };
+
+  const isMoreActive = useMemo(
+    () => showCompletedBattles || showMyBattlesOnly || showUnvotedOnly || isMoreMenuOpen,
+    [showCompletedBattles, showMyBattlesOnly, showUnvotedOnly, isMoreMenuOpen]
+  );
+
+  const normalizedDefaultSort = defaultSortBy ?? 'trending';
+  const currentSort = sortBy ?? 'trending';
+  const currentSortLabel = useMemo(() => {
+    const match = sortOptions.find((option) => option.value === currentSort);
+  return match ? match.label : t('battleFilters.sortOptions.popular', 'Sort by Popularity');
+  }, [currentSort, sortOptions, t]);
+  const isSortMenuActive = isSortMenuOpen || currentSort !== normalizedDefaultSort;
+
+  const handleSortSelect = (value: BattleSortKey) => {
+    setSortBy(value);
+    setIsSortMenuOpen(false);
+  };
+
+  const isResetDisabled =
+    searchQuery.trim() === '' &&
+    sortBy === defaultSortBy &&
+    !showMyBattlesOnly &&
+    !showUnvotedOnly &&
+    !showCompletedBattles &&
+    battleFormat === 'ALL';
+
+  const renderResetButton = (variant: 'mobile' | 'desktop') => (
+    <button
+      type="button"
+      onClick={handleReset}
+      disabled={isResetDisabled}
+      className={`rounded-2xl border px-4 py-2 text-sm font-semibold uppercase tracking-wide transition-all ${
+        variant === 'mobile' ? 'w-full sm:w-auto' : 'flex-shrink-0 min-w-[120px]'
+      } ${
+        isResetDisabled
+          ? 'cursor-not-allowed border-white/5 bg-gray-900/60 text-gray-500'
+          : 'border-cyan-400/60 bg-cyan-400/20 text-cyan-200 hover:border-cyan-300 hover:bg-cyan-400/30 hover:text-white'
+      }`}
+    >
+      {t('battleFilters.reset', 'Reset')}
+    </button>
+  );
+
+  const filterGridClass = isMobileLayout
+    ? 'grid-cols-1 sm:grid-cols-2'
+    : 'grid-cols-1';
+
+  return (
+    <section className="rounded-3xl border border-white/10 bg-gradient-to-br from-gray-950/95 via-gray-900/90 to-gray-950/95 p-4 shadow-[0_10px_40px_rgba(0,0,0,0.45)] backdrop-blur-xl sm:p-6">
+      <div className="flex flex-wrap items-center gap-2">
+        <div className="relative" ref={sortMenuRef}>
+          <button
+            type="button"
+            onClick={toggleSortMenu}
+            className={`flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-wide transition-all duration-300 sm:text-sm ${
+              isSortMenuActive
+                ? 'border-cyan-300/60 bg-cyan-400/20 text-cyan-100 shadow-[0_6px_20px_-10px_rgba(6,182,212,0.8)]'
+                : 'border-white/10 bg-gray-900/80 text-gray-300 hover:border-cyan-400/50 hover:text-white'
+            }`}
+            aria-haspopup="listbox"
+            aria-expanded={isSortMenuOpen}
+            aria-label={t('battleFilters.sortAriaLabel', 'Sort battles')}
+          >
+            <ArrowDownAZ className="h-4 w-4" />
+            <span>{currentSortLabel}</span>
+            <ChevronDown className={`h-4 w-4 transition-transform ${isSortMenuOpen ? 'rotate-180' : ''}`} />
+          </button>
+
+          {isSortMenuOpen && (
+            <div className="absolute left-0 z-20 mt-3 w-64 rounded-2xl border border-white/10 bg-gray-950/95 p-3 shadow-[0_18px_40px_rgba(6,182,212,0.25)]">
+              <div className="space-y-2">
+                {sortOptions.map((option) => {
+                  const isActive = currentSort === option.value;
+                  return (
+                    <button
+                      key={option.value}
+                      type="button"
+                      onClick={() => handleSortSelect(option.value)}
+                      className={`flex w-full items-center justify-between rounded-xl border px-3 py-2 text-sm transition-all ${
+                        isActive
+                          ? 'border-cyan-300/60 bg-cyan-400/20 text-cyan-100'
+                          : 'border-white/10 bg-gray-900/70 text-gray-200 hover:border-cyan-400/40'
+                      }`}
+                      role="option"
+                      aria-selected={isActive}
+                    >
+                      <span>{option.label}</span>
+                      <Check className={`h-4 w-4 transition-opacity ${isActive ? 'opacity-100' : 'opacity-30'}`} />
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {!isMobileLayout && renderFormatSelect('desktop')}
+
+        <div className="relative" ref={moreMenuRef}>
+          <button
+            type="button"
+            onClick={toggleMoreMenu}
+            className={`flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-wide transition-all duration-300 sm:text-sm ${
+              isMoreActive
+                ? 'border-cyan-300/60 bg-cyan-400/20 text-cyan-200 shadow-[0_6px_20px_-10px_rgba(6,182,212,0.8)]'
+                : 'border-white/10 bg-gray-900/80 text-gray-300 hover:border-cyan-400/50 hover:text-white'
+            }`}
+          >
+            <SlidersHorizontal className="h-4 w-4" />
+            <span>{tabLabels.more}</span>
+            <ChevronDown className={`h-4 w-4 transition-transform ${isMoreMenuOpen ? 'rotate-180' : ''}`} />
+          </button>
+
+          {isMoreMenuOpen && (
+            <div className="absolute right-0 z-20 mt-3 w-60 rounded-2xl border border-white/10 bg-gray-950/95 p-3 shadow-[0_18px_40px_rgba(14,165,233,0.25)]">
+              <div className="space-y-2">
+                <button
+                  type="button"
+                  onClick={handleActiveSelect}
+                  className={`flex w-full items-center justify-between rounded-xl border px-3 py-2 text-sm transition-all ${
+                    isActiveSelected
+                      ? 'border-violet-300/60 bg-violet-400/20 text-violet-100'
+                      : 'border-white/10 bg-gray-900/70 text-gray-200 hover:border-cyan-400/40'
+                  }`}
+                >
+                  <span className="flex items-center gap-2">
+                    <Activity className="h-4 w-4" />
+                    {tabLabels.active}
+                  </span>
+                  <Check className={`h-4 w-4 transition-opacity ${isActiveSelected ? 'opacity-100' : 'opacity-30'}`} />
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setShowCompletedBattles(!showCompletedBattles)}
+                  className={`flex w-full items-center justify-between rounded-xl border px-3 py-2 text-sm transition-all ${
+                    showCompletedBattles
+                      ? 'border-emerald-300/60 bg-emerald-400/20 text-emerald-100'
+                      : 'border-white/10 bg-gray-900/70 text-gray-200 hover:border-cyan-400/40'
+                  }`}
+                >
+                  <span className="flex items-center gap-2">
+                    <TrendingUp className="h-4 w-4" />
+                    {t('battleFilters.pastBattles', 'Completed Battles')}
+                  </span>
+                  <Check className={`h-4 w-4 transition-opacity ${showCompletedBattles ? 'opacity-100' : 'opacity-30'}`} />
+                </button>
+
+                {isLoggedIn && (
+                  <button
+                    type="button"
+                    onClick={() => setShowMyBattlesOnly(!showMyBattlesOnly)}
+                    className={`flex w-full items-center justify-between rounded-xl border px-3 py-2 text-sm transition-all ${
+                      showMyBattlesOnly
+                        ? 'border-pink-300/60 bg-pink-400/20 text-pink-100'
+                        : 'border-white/10 bg-gray-900/70 text-gray-200 hover:border-cyan-400/40'
+                    }`}
+                  >
+                    <span className="flex items-center gap-2">
+                      <User className="h-4 w-4" />
+                      {t('battleFilters.myBattlesOnly', 'My Battles')}
+                    </span>
+                    <Check className={`h-4 w-4 transition-opacity ${showMyBattlesOnly ? 'opacity-100' : 'opacity-30'}`} />
+                  </button>
+                )}
+
+                {isLoggedIn && !showCompletedBattles && (
+                  <button
+                    type="button"
+                    onClick={() => setShowUnvotedOnly(!showUnvotedOnly)}
+                    className={`flex w-full items-center justify-between rounded-xl border px-3 py-2 text-sm transition-all ${
+                      showUnvotedOnly
+                        ? 'border-amber-300/60 bg-amber-400/20 text-amber-100'
+                        : 'border-white/10 bg-gray-900/70 text-gray-200 hover:border-cyan-400/40'
+                    }`}
+                  >
+                    <span className="flex items-center gap-2">
+                      <Sparkles className="h-4 w-4" />
+                      {t('battleFilters.unvotedOnly', 'Unvoted Only')}
+                    </span>
+                    <Check className={`h-4 w-4 transition-opacity ${showUnvotedOnly ? 'opacity-100' : 'opacity-30'}`} />
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
-    </div>
-  </div>
-);
+
+      <div className={`mt-5 grid gap-3 ${filterGridClass}`}>
+        <div className={!isMobileLayout ? 'flex items-center gap-3' : ''}>
+          <div className={`relative ${!isMobileLayout ? 'flex-1' : ''}`}>
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-cyan-400" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(event) => setSearchQuery(event.target.value)}
+              placeholder={t('battleFilters.searchPlaceholder', 'Search battlers, crews, or tags...')}
+              className="w-full rounded-2xl border border-white/10 bg-gray-900/80 pl-10 pr-4 py-2.5 text-sm text-white transition-all placeholder:text-gray-500 focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/40"
+              aria-label={t('battleFilters.searchAriaLabel', 'Search battles')}
+            />
+          </div>
+          {!isMobileLayout && renderResetButton('desktop')}
+        </div>
+
+        {isMobileLayout && (
+          <>
+            {renderFormatSelect('mobile')}
+            <div className="flex items-center justify-end">
+              {renderResetButton('mobile')}
+            </div>
+          </>
+        )}
+      </div>
+
+      {stats.length > 0 && (
+        <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
+          {stats.map((stat, index) => (
+            <div
+              key={`${stat.label}-${index}`}
+              className="rounded-2xl border border-white/10 bg-gray-900/70 p-4 text-center shadow-[0_12px_30px_rgba(14,116,144,0.12)]"
+            >
+              <div
+                className={`text-2xl font-bold text-white sm:text-3xl ${
+                  stat.accent === 'fire'
+                    ? 'text-orange-300'
+                    : stat.accent === 'violet'
+                    ? 'text-purple-300'
+                    : stat.accent === 'emerald'
+                    ? 'text-emerald-300'
+                    : 'text-cyan-300'
+                }`}
+              >
+                {stat.value}
+              </div>
+              <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-gray-400 sm:text-sm">
+                {stat.label}
+              </p>
+            </div>
+          ))}
+        </div>
+      )}
+    </section>
+  );
+};
