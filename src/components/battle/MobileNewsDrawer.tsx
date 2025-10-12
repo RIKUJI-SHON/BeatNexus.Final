@@ -5,6 +5,7 @@ import clsx from 'clsx';
 import { ArticleModal } from '../ui/ArticleModal';
 import type { NewsItem } from '../../types/news';
 import { NewsSidebarCard } from './NewsSidebar';
+import { AdSlot } from '../ads/AdSlot';
 
 interface MobileNewsDrawerProps {
   news: NewsItem[];
@@ -157,21 +158,21 @@ export const MobileNewsDrawer: React.FC<MobileNewsDrawerProps> = ({
     }
 
     return (
-      <div className="space-y-4">
-        <div className="rounded-xl border border-cyan-500/20 bg-cyan-500/10 p-4 text-xs text-cyan-100">
-          <p className="font-semibold text-cyan-200">
-            {t('news.drawer.introTitle', 'BeatNexus からのお知らせ')}
-          </p>
-          <p className="mt-1 leading-relaxed text-cyan-100/80">
-            {t('news.drawer.introBody', 'アップデート情報やイベント告知をここでまとめてチェックできます。')}
-          </p>
-        </div>
-
-        <div className="space-y-3">
-          {visibleNews.map((item) => (
-            <NewsSidebarCard key={item.id} newsItem={item} onClick={() => handleCardClick(item)} />
-          ))}
-        </div>
+      <div className="space-y-3">
+        {visibleNews.map((item, index) => (
+          <React.Fragment key={item.id}>
+            <NewsSidebarCard newsItem={item} onClick={() => handleCardClick(item)} />
+            {index === 0 && (
+              <div className="relative w-full overflow-hidden rounded-xl">
+                <AdSlot
+                  placementKey="home.hero.section.after.carousel"
+                  variant="carousel"
+                  className="h-full w-full"
+                />
+              </div>
+            )}
+          </React.Fragment>
+        ))}
       </div>
     );
   };
@@ -235,7 +236,7 @@ export const MobileNewsDrawer: React.FC<MobileNewsDrawerProps> = ({
             <Newspaper className="h-5 w-5 text-cyan-300" aria-hidden="true" />
             <div className="flex flex-col">
               <span className="text-xs uppercase tracking-widest text-cyan-300">{t('news.latestNews', 'LATEST NEWS')}</span>
-              <span className="text-sm text-gray-300">{t('news.mobileDrawer.subtitle', '運営からの新着情報をすぐに確認できます')}</span>
+              <span className="text-sm text-gray-300">{t('news.mobileDrawer.subtitle', 'Stay up to date with the latest announcements')}</span>
             </div>
           </div>
           <button
