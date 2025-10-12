@@ -140,11 +140,13 @@ export const BattleFilters: React.FC<BattleFiltersProps> = ({
   const { t } = useTranslation();
   const [isMoreMenuOpen, setIsMoreMenuOpen] = useState(false);
   const [isSortMenuOpen, setIsSortMenuOpen] = useState(false);
+  const [isFormatMenuOpen, setIsFormatMenuOpen] = useState(false);
   const moreMenuRef = useRef<HTMLDivElement>(null);
   const sortMenuRef = useRef<HTMLDivElement>(null);
+  const formatMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!isMoreMenuOpen && !isSortMenuOpen) return;
+    if (!isMoreMenuOpen && !isSortMenuOpen && !isFormatMenuOpen) return;
 
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as Node;
@@ -154,11 +156,14 @@ export const BattleFilters: React.FC<BattleFiltersProps> = ({
       if (sortMenuRef.current && !sortMenuRef.current.contains(target)) {
         setIsSortMenuOpen(false);
       }
+      if (formatMenuRef.current && !formatMenuRef.current.contains(target)) {
+        setIsFormatMenuOpen(false);
+      }
     };
 
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [isMoreMenuOpen, isSortMenuOpen]);
+  }, [isMoreMenuOpen, isSortMenuOpen, isFormatMenuOpen]);
 
   const tabLabels = useMemo(
     () => ({
@@ -192,27 +197,73 @@ export const BattleFilters: React.FC<BattleFiltersProps> = ({
     setIsMoreMenuOpen(false);
   }, [setShowCompletedBattles, setSortBy]);
 
-  const handleFormatChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setBattleFormat(event.target.value as 'ALL' | BattleFormat);
+  const handleFormatSelect = (format: 'ALL' | BattleFormat) => {
+    setBattleFormat(format);
+    setIsFormatMenuOpen(false);
   };
 
+  const toggleFormatMenu = () => setIsFormatMenuOpen((prev) => !prev);
+
+  const currentFormatLabel = useMemo(() => {
+    const match = formatOptions.find((option) => option.value === battleFormat);
+    return match ? match.label : t('battleFilters.format.all', 'All Formats');
+  }, [battleFormat, formatOptions, t]);
+
+  const isFormatMenuActive = isFormatMenuOpen || battleFormat !== 'ALL';
+
   const renderFormatSelect = (variant: 'desktop' | 'mobile') => (
-    <div className={`relative ${variant === 'desktop' ? 'min-w-[220px]' : ''}`}>
-      <Filter className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-purple-400" />
-      <select
-        name="battle-format"
-        value={battleFormat}
-        onChange={handleFormatChange}
-        className="w-full appearance-none rounded-2xl border border-white/10 bg-gray-900/80 pl-10 pr-10 py-2.5 text-sm text-white transition-all focus:border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-500/30"
+    <div className={`relative ${variant === 'desktop' ? 'min-w-[220px]' : 'w-full'}`} ref={formatMenuRef}>
+      <button
+        type="button"
+        onClick={toggleFormatMenu}
+        className={`flex w-full items-center gap-2 rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-wide transition-all duration-300 sm:text-sm ${
+          isFormatMenuActive
+            ? battleFormat === 'MINI_BATTLE'
+              ? 'border-blue-300/60 bg-blue-400/20 text-blue-100 shadow-[0_6px_20px_-10px_rgba(59,130,246,0.8)]'
+              : battleFormat === 'MAIN_BATTLE'
+              ? 'border-red-300/60 bg-red-400/20 text-red-100 shadow-[0_6px_20px_-10px_rgba(239,68,68,0.8)]'
+              : 'border-cyan-300/60 bg-cyan-400/20 text-cyan-100 shadow-[0_6px_20px_-10px_rgba(6,182,212,0.8)]'
+            : 'border-white/10 bg-gray-900/80 text-gray-300 hover:border-cyan-400/50 hover:text-white'
+        }`}
+        aria-haspopup="listbox"
+        aria-expanded={isFormatMenuOpen}
         aria-label={t('battleFilters.formatAriaLabel', 'Filter by format')}
       >
-        {formatOptions.map((option) => (
-          <option key={option.value} value={option.value} className="bg-gray-950 text-white">
-            {option.label}
-          </option>
-        ))}
-      </select>
-      <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+        <Filter className="h-4 w-4" />
+        <span className="flex-1 text-left">{currentFormatLabel}</span>
+        <ChevronDown className={`h-4 w-4 transition-transform ${isFormatMenuOpen ? 'rotate-180' : ''}`} />
+      </button>
+
+      {isFormatMenuOpen && (
+        <div className="absolute left-0 z-20 mt-3 w-full min-w-[220px] rounded-2xl border border-white/10 bg-gray-950/95 p-3 shadow-[0_18px_40px_rgba(6,182,212,0.25)]">
+          <div className="space-y-2">
+            {formatOptions.map((option) => {
+              const isActive = battleFormat === option.value;
+              return (
+                <button
+                  key={option.value}
+                  type="button"
+                  onClick={() => handleFormatSelect(option.value)}
+                  className={`flex w-full items-center justify-between rounded-xl border px-3 py-2 text-sm transition-all ${
+                    isActive
+                      ? option.value === 'MINI_BATTLE'
+                        ? 'border-blue-300/60 bg-blue-400/20 text-blue-100'
+                        : option.value === 'MAIN_BATTLE'
+                        ? 'border-red-300/60 bg-red-400/20 text-red-100'
+                        : 'border-cyan-300/60 bg-cyan-400/20 text-cyan-100'
+                      : 'border-white/10 bg-gray-900/70 text-gray-200 hover:border-cyan-400/40'
+                  }`}
+                  role="option"
+                  aria-selected={isActive}
+                >
+                  <span>{option.label}</span>
+                  <Check className={`h-4 w-4 transition-opacity ${isActive ? 'opacity-100' : 'opacity-30'}`} />
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </div>
   );
 
@@ -225,6 +276,7 @@ export const BattleFilters: React.FC<BattleFiltersProps> = ({
     onResetFilters();
     setIsMoreMenuOpen(false);
     setIsSortMenuOpen(false);
+    setIsFormatMenuOpen(false);
   };
 
   const isMoreActive = useMemo(
