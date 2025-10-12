@@ -21,6 +21,8 @@ import { TabbedRanking } from '../components/ui/TabbedRanking';
 import GuideHeroSection from '../components/battle/GuideHeroSection';
 import NewsSidebar from '../components/battle/NewsSidebar';
 import { BattleFormat } from '../types';
+import { useNews } from '../hooks/useNews';
+import { MobileNewsDrawer } from '../components/battle/MobileNewsDrawer';
 
 const DEFAULT_SORT: BattleSortKey = 'trending';
 const DEFAULT_BATTLE_FORMAT = 'ALL' as const;
@@ -47,6 +49,7 @@ const BattlesPage: React.FC = () => {
   const { battles, archivedBattles, loading, archiveLoading, error, fetchBattles, fetchArchivedBattles } = useBattleStore();
   const { fetchRankings, currentSeason, fetchSeasons } = useRankingStore();
   const { user } = useAuthStore();
+  const newsState = useNews({ limit: 8 });
   
   // TabbedRanking handles its own limit
 
@@ -394,7 +397,13 @@ const BattlesPage: React.FC = () => {
         <main className="grid grid-cols-1 gap-6 lg:grid-cols-5" role="main">
           {/* Left Sidebar - PC表示のみ（ニュースのみ） */}
           <aside className="hidden lg:block lg:col-span-1 lg:sticky lg:top-24 lg:self-start" aria-label="News and updates">
-            <NewsSidebar />
+            <NewsSidebar
+              news={newsState.news}
+              loading={newsState.loading}
+              error={newsState.error}
+              onRetry={newsState.refetch}
+              limit={5}
+            />
           </aside>
 
           {/* Main Content */}
@@ -697,6 +706,13 @@ const BattlesPage: React.FC = () => {
         </main>
 
       </div>
+
+      <MobileNewsDrawer
+        news={newsState.news}
+        loading={newsState.loading}
+        error={newsState.error}
+        onRetry={newsState.refetch}
+      />
       
       {/* Weekly Pickup - Mobile only between list and rankings */}
       {weeklyPickupBattle && (

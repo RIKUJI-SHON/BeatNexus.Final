@@ -1,19 +1,31 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ExternalLink, ChevronRight } from 'lucide-react';
-import { useNews } from '../../hooks/useNews';
 import { ArticleModal } from '../ui/ArticleModal';
 import { AdSlot } from '../ads/AdSlot';
 import type { NewsItem } from '../../types/news';
 
-interface NewsSidebarProps {
+export interface NewsSidebarProps {
   className?: string;
+  news: NewsItem[];
+  loading: boolean;
+  error: string | null;
+  onRetry?: () => void;
+  limit?: number;
 }
 
-const NewsSidebar: React.FC<NewsSidebarProps> = ({ className = '' }) => {
+export const NewsSidebar: React.FC<NewsSidebarProps> = ({
+  className = '',
+  news,
+  loading,
+  error,
+  onRetry,
+  limit = 3,
+}) => {
   const { t } = useTranslation();
-  const { news, loading, error } = useNews({ limit: 3 }); // 最新3件のみ表示
   const [selectedArticle, setSelectedArticle] = useState<NewsItem | null>(null);
+
+  const visibleNews = limit ? news.slice(0, limit) : news;
 
   if (loading) {
     return (
@@ -34,13 +46,22 @@ const NewsSidebar: React.FC<NewsSidebarProps> = ({ className = '' }) => {
     return (
       <aside className={`space-y-4 ${className}`}>
         <div className="bg-red-900/10 border border-red-500/20 rounded-xl p-4">
-          <p className="text-red-400 text-sm">{t('news.errorLoading', 'ニュースの読み込みに失敗しました')}</p>
+          <p className="text-red-400 text-sm mb-3">{t('news.errorLoading', 'ニュースの読み込みに失敗しました')}</p>
+          {onRetry && (
+            <button
+              type="button"
+              onClick={onRetry}
+              className="text-xs text-cyan-300 hover:text-cyan-200 underline"
+            >
+              {t('common.retry', '再試行する')}
+            </button>
+          )}
         </div>
       </aside>
     );
   }
 
-  if (news.length === 0) {
+  if (visibleNews.length === 0) {
     return (
       <aside className={`space-y-4 ${className}`}>
         <div className="bg-gray-900/50 border border-gray-700/50 rounded-xl p-6">
@@ -58,20 +79,18 @@ const NewsSidebar: React.FC<NewsSidebarProps> = ({ className = '' }) => {
   return (
     <>
       <aside className={`space-y-4 ${className}`}>
-        {/* Latest News Section */}
         <div className="bg-gray-900/50 border border-gray-700/50 rounded-xl p-4 backdrop-blur-sm">
           <h2 className="text-white font-bold text-lg mb-4 uppercase tracking-wide">
             {t('news.latestNews', 'LATEST NEWS')}
           </h2>
-          
+
           <div className="space-y-3">
-            {news.map((item, index) => (
+            {visibleNews.map((item, index) => (
               <React.Fragment key={item.id}>
                 <NewsSidebarCard
                   newsItem={item}
                   onClick={() => setSelectedArticle(item)}
                 />
-                {/* 1個目の記事の後に広告を配置 */}
                 {index === 0 && (
                   <div className="relative w-full aspect-square rounded-lg overflow-hidden">
                     <AdSlot
@@ -87,7 +106,6 @@ const NewsSidebar: React.FC<NewsSidebarProps> = ({ className = '' }) => {
         </div>
       </aside>
 
-      {/* Article Modal */}
       {selectedArticle && (
         <ArticleModal
           news={selectedArticle}
@@ -99,12 +117,12 @@ const NewsSidebar: React.FC<NewsSidebarProps> = ({ className = '' }) => {
   );
 };
 
-interface NewsSidebarCardProps {
+export interface NewsSidebarCardProps {
   newsItem: NewsItem;
   onClick: () => void;
 }
 
-const NewsSidebarCard: React.FC<NewsSidebarCardProps> = ({ newsItem, onClick }) => {
+export const NewsSidebarCard: React.FC<NewsSidebarCardProps> = ({ newsItem, onClick }) => {
   const hasExternalLink = !!newsItem.link_url;
 
   return (
@@ -121,7 +139,6 @@ const NewsSidebarCard: React.FC<NewsSidebarCardProps> = ({ newsItem, onClick }) 
       }}
       aria-label={`${newsItem.title} を読む`}
     >
-      {/* Image */}
       {newsItem.image_url ? (
         <div className="relative h-32 overflow-hidden">
           <img
@@ -138,12 +155,11 @@ const NewsSidebarCard: React.FC<NewsSidebarCardProps> = ({ newsItem, onClick }) 
         </div>
       )}
 
-      {/* Content */}
       <div className="p-3">
         <h3 className="text-white font-semibold text-sm mb-1 line-clamp-2 group-hover:text-cyan-300 transition-colors">
           {newsItem.title}
         </h3>
-        
+
         {newsItem.meta_description && (
           <p className="text-gray-400 text-xs line-clamp-2 mb-2">
             {newsItem.meta_description}
@@ -171,7 +187,6 @@ const NewsSidebarCard: React.FC<NewsSidebarCardProps> = ({ newsItem, onClick }) 
         </div>
       </div>
 
-      {/* Hover effect border glow */}
       <div className="absolute inset-0 border border-cyan-500/0 group-hover:border-cyan-500/20 rounded-lg transition-colors pointer-events-none"></div>
     </div>
   );
