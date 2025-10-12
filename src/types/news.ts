@@ -5,6 +5,7 @@ export interface NewsItem {
   title: string;
   body: string;
   image_url?: string;
+  link_url?: string; // 外部リンクURL（任意）
   content_type: ContentType;
   article_content: string; // articleタイプのみなので必須にする
   meta_description?: string;

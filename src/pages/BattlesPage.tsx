@@ -18,7 +18,8 @@ import { useTranslation } from 'react-i18next';
 import { UserInfoCard } from '../components/ui/UserInfoCard';
 import { TabbedRanking } from '../components/ui/TabbedRanking';
 
-import NewsCarousel from '../components/battle/NewsCarousel';
+import GuideHeroSection from '../components/battle/GuideHeroSection';
+import NewsSidebar from '../components/battle/NewsSidebar';
 import { BattleFormat } from '../types';
 
 const DEFAULT_SORT: BattleSortKey = 'trending';
@@ -387,12 +388,17 @@ const BattlesPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black py-6 sm:py-8 md:py-10">
       <div className="container-ultra-wide">
-        {/* News Carousel - Enhanced Design */}
-        <NewsCarousel />
+        {/* Guide Hero Section - 固定で表示 */}
+        <GuideHeroSection />
 
-        <main className="grid grid-cols-1 gap-6 lg:grid-cols-4" role="main">
+        <main className="grid grid-cols-1 gap-6 lg:grid-cols-5" role="main">
+          {/* Left Sidebar - PC表示のみ（ニュースのみ） */}
+          <aside className="hidden lg:block lg:col-span-1 lg:sticky lg:top-24 lg:self-start" aria-label="News and updates">
+            <NewsSidebar />
+          </aside>
+
           {/* Main Content */}
-          <section className="lg:col-span-2 lg:col-start-2" aria-label="Battle listings">
+          <section className="lg:col-span-3" aria-label="Battle listings">
             <div className="filter-sticky mb-6 space-y-4">
               <BattleFilterActions />
               <BattleFilters
