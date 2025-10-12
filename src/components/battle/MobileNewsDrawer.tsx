@@ -27,7 +27,7 @@ export const MobileNewsDrawer: React.FC<MobileNewsDrawerProps> = ({
   limit = 6,
   className,
 }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [open, setOpen] = useState(false);
   const [selectedArticle, setSelectedArticle] = useState<NewsItem | null>(null);
   const touchStartX = useRef<number | null>(null);
@@ -36,6 +36,7 @@ export const MobileNewsDrawer: React.FC<MobileNewsDrawerProps> = ({
   const drawerPanelId = 'mobile-news-drawer-panel';
 
   const visibleNews = useMemo(() => (limit ? news.slice(0, limit) : news), [limit, news]);
+  const isJapanese = i18n.language === 'ja';
 
   useEffect(() => {
     if (!open) {
@@ -191,7 +192,7 @@ export const MobileNewsDrawer: React.FC<MobileNewsDrawerProps> = ({
         type="button"
         onClick={() => setOpen(true)}
         className={clsx(
-          'fixed top-1/2 left-0 z-[60] flex transform -translate-x-1/2 -translate-y-1/2 items-stretch rounded-r-3xl bg-gray-950/90 border border-cyan-500/50 border-l-transparent pl-3 pr-4 py-4 shadow-lg shadow-cyan-900/40 backdrop-blur focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300 transition-opacity duration-200',
+          'fixed top-1/2 left-0 z-[60] flex transform -translate-x-[60%] -translate-y-1/2 items-stretch rounded-r-3xl bg-gray-950/90 border border-cyan-500/50 border-l-transparent pl-3 pr-4 py-4 shadow-lg shadow-cyan-900/40 backdrop-blur focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300 transition-opacity duration-200',
           open && 'pointer-events-none opacity-0'
         )}
         aria-label={t('news.openLatest', '最新ニュースを開く')}
@@ -203,20 +204,37 @@ export const MobileNewsDrawer: React.FC<MobileNewsDrawerProps> = ({
             <Newspaper className="h-4 w-4" aria-hidden="true" />
           </div>
           <div className="flex flex-1 flex-col items-end justify-center border-l border-cyan-500/40 pl-3 text-[11px] font-semibold tracking-widest">
-            <div className="flex flex-col items-end leading-none">
-              <span className="uppercase">L</span>
-              <span className="uppercase">A</span>
-              <span className="uppercase">T</span>
-              <span className="uppercase">E</span>
-              <span className="uppercase">S</span>
-              <span className="uppercase">T</span>
-            </div>
-            <div className="mt-2 flex flex-col items-end leading-none text-cyan-200">
-              <span className="uppercase">N</span>
-              <span className="uppercase">E</span>
-              <span className="uppercase">W</span>
-              <span className="uppercase">S</span>
-            </div>
+            {isJapanese ? (
+              <>
+                <div className="flex flex-col items-end leading-none">
+                  <span>最</span>
+                  <span>新</span>
+                </div>
+                <div className="mt-2 flex flex-col items-end leading-none text-cyan-200">
+                  <span>ニ</span>
+                  <span>ュ</span>
+                  <span>｜</span>
+                  <span>ス</span>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="flex flex-col items-end leading-none">
+                  <span className="uppercase">L</span>
+                  <span className="uppercase">A</span>
+                  <span className="uppercase">T</span>
+                  <span className="uppercase">E</span>
+                  <span className="uppercase">S</span>
+                  <span className="uppercase">T</span>
+                </div>
+                <div className="mt-2 flex flex-col items-end leading-none text-cyan-200">
+                  <span className="uppercase">N</span>
+                  <span className="uppercase">E</span>
+                  <span className="uppercase">W</span>
+                  <span className="uppercase">S</span>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </button>
