@@ -13,8 +13,15 @@ export const usePWAInstall = () => {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [isInstallable, setIsInstallable] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
+  const [isIOS, setIsIOS] = useState(false);
 
   useEffect(() => {
+    const navigatorWithStandalone = window.navigator as NavigatorWithStandalone & { maxTouchPoints?: number };
+    const userAgent = window.navigator.userAgent.toLowerCase();
+    const platform = (window.navigator.platform || '').toLowerCase();
+    const detectedIOS = /iphone|ipad|ipod/.test(userAgent) || (platform === 'macintel' && (navigatorWithStandalone.maxTouchPoints ?? 0) > 1);
+    setIsIOS(detectedIOS);
+
     // PWAが既にインストールされているかチェック
     const checkIfInstalled = () => {
       // display-modeがstandaloneの場合、PWAとして起動している
@@ -23,7 +30,7 @@ export const usePWAInstall = () => {
         return true;
       }
       // iOSの場合はnavigator.standaloneをチェック
-      if ((window.navigator as NavigatorWithStandalone).standalone === true) {
+      if (navigatorWithStandalone.standalone === true) {
         setIsInstalled(true);
         return true;
       }
@@ -84,6 +91,7 @@ export const usePWAInstall = () => {
   return {
     isInstallable,
     isInstalled,
+    isIOS,
     handleInstallClick,
   };
 };

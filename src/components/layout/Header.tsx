@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X, Bell, Plus, Swords, Clock, CheckCircle, Trophy, Award, Handshake, RefreshCw, Download } from 'lucide-react';
 import { HoverCard } from '../ui/HoverCard';
@@ -43,7 +43,10 @@ export const Header: React.FC = () => {
     removeNotification,
     fetchNotifications,
   } = useNotificationStore();
-  const { isInstallable, handleInstallClick } = usePWAInstall();
+  const { isInstallable, isInstalled, isIOS, handleInstallClick } = usePWAInstall();
+  const [showInstallTooltip, setShowInstallTooltip] = useState(false);
+  const desktopInstallRef = useRef<HTMLDivElement | null>(null);
+  const mobileInstallRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (user) {
@@ -87,6 +90,38 @@ export const Header: React.FC = () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [isNotificationDropdownOpen]);
+
+  useEffect(() => {
+    if (!showInstallTooltip) {
+      return;
+    }
+
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node;
+      if (
+        (desktopInstallRef.current && desktopInstallRef.current.contains(target)) ||
+        (mobileInstallRef.current && mobileInstallRef.current.contains(target))
+      ) {
+        return;
+      }
+      setShowInstallTooltip(false);
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showInstallTooltip]);
+
+  useEffect(() => {
+    if (!isIOS || isInstalled) {
+      setShowInstallTooltip(false);
+    }
+  }, [isIOS, isInstalled]);
+
+  useEffect(() => {
+    setShowInstallTooltip(false);
+  }, [location.pathname]);
 
   const fetchUserProfile = async () => {
     try {
@@ -181,6 +216,83 @@ export const Header: React.FC = () => {
     } else {
       return t('notifications.timeAgo.justNow');
     }
+  };
+
+  const shouldShowInstallButton = !isInstalled && (isInstallable || isIOS);
+
+  const handleInstallButtonClick = () => {
+    if (isIOS) {
+      setShowInstallTooltip((prev) => !prev);
+      return;
+    }
+
+    handleInstallClick();
+  };
+
+  const renderInstallButton = (variant: 'desktop' | 'mobile') => {
+    if (!shouldShowInstallButton) {
+      return null;
+    }
+
+    const containerRef = variant === 'desktop' ? desktopInstallRef : mobileInstallRef;
+    const baseClasses =
+      variant === 'desktop'
+        ? 'p-2 text-gray-400 hover:text-cyan-400 hover:bg-gray-800 rounded-lg transition-colors'
+        : 'p-2 text-gray-400 hover:text-cyan-400 transition-colors';
+    const iconClass = variant === 'desktop' ? 'h-5 w-5' : 'h-6 w-6';
+    const tooltipPositionClass = variant === 'desktop' ? 'absolute right-0 mt-3 w-64' : 'absolute right-0 mt-3 w-64';
+    const tooltipId = variant === 'desktop' ? 'ios-install-tooltip-desktop' : 'ios-install-tooltip-mobile';
+    const ariaLabel = isIOS
+      ? t('pwa.installIos.buttonLabel', 'ホーム画面に追加する方法を見る')
+      : t('pwa.install.buttonLabel', 'アプリをインストール');
+
+    return (
+      <div className="relative" ref={containerRef}>
+        <button
+          onClick={handleInstallButtonClick}
+          className={baseClasses}
+          aria-label={ariaLabel}
+          aria-expanded={isIOS ? showInstallTooltip : undefined}
+          aria-controls={isIOS ? tooltipId : undefined}
+          title={isIOS ? t('pwa.installIos.buttonTitle', 'ホーム画面に追加する手順を確認') : t('pwa.install.buttonTitle', 'ホーム画面に追加')}
+        >
+          <Download className={iconClass} aria-hidden="true" />
+        </button>
+        {isIOS && showInstallTooltip && (
+          <div
+            id={tooltipId}
+            className={`${tooltipPositionClass} z-50`}
+            role="dialog"
+            aria-modal="false"
+          >
+            <div className="rounded-lg border border-cyan-500/40 bg-gray-900/95 shadow-xl backdrop-blur-sm p-4 space-y-2">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="text-sm font-semibold text-white">
+                    {t('pwa.installIos.title', 'ホーム画面に追加する手順')}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    {t('pwa.installIos.subtitle', 'Safariの共有メニューから追加できます')}
+                  </p>
+                </div>
+                <button
+                  onClick={() => setShowInstallTooltip(false)}
+                  className="text-gray-400 hover:text-white transition-colors"
+                  aria-label={t('common.close', '閉じる')}
+                >
+                  <X className="h-4 w-4" aria-hidden="true" />
+                </button>
+              </div>
+              <ol className="list-decimal list-inside space-y-1 text-xs text-gray-200">
+                <li>{t('pwa.installIos.step1', 'Safariで共有ボタンをタップ')}</li>
+                <li>{t('pwa.installIos.step2', '「ホーム画面に追加」を選択')}</li>
+                <li>{t('pwa.installIos.step3', '画面右上の追加ボタンを押して完了')}</li>
+              </ol>
+            </div>
+          </div>
+        )}
+      </div>
+    );
   };
 
   return (
@@ -483,16 +595,7 @@ export const Header: React.FC = () => {
                   <Plus className="h-5 w-5" aria-hidden="true" />
                 </Link>
                 <NotificationDropdown />
-                {isInstallable && (
-                  <button
-                    onClick={handleInstallClick}
-                    className="p-2 text-gray-400 hover:text-cyan-400 hover:bg-gray-800 rounded-lg transition-colors"
-                    aria-label="アプリをインストール"
-                    title="ホーム画面に追加"
-                  >
-                    <Download className="h-5 w-5" aria-hidden="true" />
-                  </button>
-                )}
+                {renderInstallButton('desktop')}
                 <HoverCard userProfile={userProfile}>
                   <Link 
                     to="/profile"
@@ -509,16 +612,7 @@ export const Header: React.FC = () => {
               </>
             ) : (
               <>
-                {isInstallable && (
-                  <button
-                    onClick={handleInstallClick}
-                    className="p-2 text-gray-400 hover:text-cyan-400 hover:bg-gray-800 rounded-lg transition-colors"
-                    aria-label="アプリをインストール"
-                    title="ホーム画面に追加"
-                  >
-                    <Download className="h-5 w-5" aria-hidden="true" />
-                  </button>
-                )}
+                {renderInstallButton('desktop')}
                 <button
                   className="header-auth-button"
                   onClick={() => handleAuthClick('login')}
@@ -542,16 +636,7 @@ export const Header: React.FC = () => {
           {/* Mobile Right Actions */}
           <div className="md:hidden flex items-center space-x-3">
             {/* PWA Install Button */}
-            {isInstallable && (
-              <button
-                onClick={handleInstallClick}
-                className="p-2 text-gray-400 hover:text-cyan-400 transition-colors"
-                aria-label="アプリをインストール"
-                title="ホーム画面に追加"
-              >
-                <Download className="h-6 w-6" aria-hidden="true" />
-              </button>
-            )}
+            {renderInstallButton('mobile')}
             
             {/* Mobile Notification Icon - ログインユーザーのみ表示 */}
             {user && (
