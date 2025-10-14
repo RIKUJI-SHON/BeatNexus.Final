@@ -24,7 +24,7 @@ import { BattleFormat } from '../types';
 import { useNews } from '../hooks/useNews';
 import { MobileNewsDrawer } from '../components/battle/MobileNewsDrawer';
 
-const DEFAULT_SORT: BattleSortKey = 'trending';
+const DEFAULT_SORT: BattleSortKey = 'oldest';
 const DEFAULT_BATTLE_FORMAT = 'ALL' as const;
 
 const BattlesPage: React.FC = () => {
