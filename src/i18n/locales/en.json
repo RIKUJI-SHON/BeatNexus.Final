@@ -413,7 +413,8 @@
   "navigateNext": "Next battle",
   "navigateNextTitle": "Jump to a random unvoted battle",
   "randomFromUnvoted": "Random from unvoted",
-  "noUnvotedBattles": "No unvoted battles"
+  "noUnvotedBattles": "No unvoted battles",
+  "seasonRanking": "Season Ranking"
   },
   "battleCard": {
     "votingEndsIn": "{{days}}d {{hours}}h left",

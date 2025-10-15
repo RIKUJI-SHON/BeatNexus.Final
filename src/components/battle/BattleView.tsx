@@ -631,7 +631,10 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                         <div className="text-sm font-medium text-white flex items-center gap-2">
                           <span>{playerRatings.playerA.rating}</span>
                           {playerRatings.playerA.rank && playerRatings.playerA.rating !== 1200 && (
-                            <span className="text-xs text-cyan-300 font-semibold">#{playerRatings.playerA.rank}</span>
+                            <span className="text-xs text-cyan-300 font-semibold flex items-center gap-1">
+                              <span className="text-gray-400">{t('battleView.seasonRanking')}</span>
+                              <span>#{playerRatings.playerA.rank}</span>
+                            </span>
                           )}
                         </div>
                       )}
@@ -679,7 +682,10 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                         <div className="text-sm font-medium text-white flex items-center gap-2">
                           <span>{playerRatings.playerA.rating}</span>
                           {playerRatings.playerA.rank && playerRatings.playerA.rating !== 1200 && (
-                            <span className="text-xs text-cyan-300 font-semibold">#{playerRatings.playerA.rank}</span>
+                            <span className="text-xs text-cyan-300 font-semibold flex items-center gap-1">
+                              <span className="text-gray-400">{t('battleView.seasonRanking')}</span>
+                              <span>#{playerRatings.playerA.rank}</span>
+                            </span>
                           )}
                         </div>
                       )}
@@ -759,7 +765,10 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                         <div className="text-sm font-medium text-white flex items-center gap-2">
                           <span>{playerRatings.playerB.rating}</span>
                           {playerRatings.playerB.rank && playerRatings.playerB.rating !== 1200 && (
-                            <span className="text-xs text-pink-300 font-semibold">#{playerRatings.playerB.rank}</span>
+                            <span className="text-xs text-pink-300 font-semibold flex items-center gap-1">
+                              <span className="text-gray-400">{t('battleView.seasonRanking')}</span>
+                              <span>#{playerRatings.playerB.rank}</span>
+                            </span>
                           )}
                         </div>
                       )}
@@ -839,7 +848,10 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
                         <div className="text-sm font-medium text-white flex items-center gap-2">
                           <span>{playerRatings.playerB.rating}</span>
                           {playerRatings.playerB.rank && playerRatings.playerB.rating !== 1200 && (
-                            <span className="text-xs text-pink-300 font-semibold">#{playerRatings.playerB.rank}</span>
+                            <span className="text-xs text-pink-300 font-semibold flex items-center gap-1">
+                              <span className="text-gray-400">{t('battleView.seasonRanking')}</span>
+                              <span>#{playerRatings.playerB.rank}</span>
+                            </span>
                           )}
                         </div>
                       )}
