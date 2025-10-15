@@ -163,32 +163,55 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
     }
   };
 
-  // Load player season points
+  // Load player season points and rankings
   const loadPlayerRatings = useCallback(async () => {
     try {
-      // Player Aのシーズンポイント取得
-      const { data: playerAData, error: errorA } = await supabase
-        .from('profiles')
-        .select('season_points')
-        .eq('id', battle.player1_user_id)
-        .single();
+      // アクティブシーズンのランキングビューから両プレイヤーの情報を取得
+      const { data: rankingsData, error: rankingsError } = await supabase
+        .from('season_rankings_view')
+        .select('user_id, season_points, position')
+        .in('user_id', [battle.player1_user_id, battle.player2_user_id]);
 
-      // Player Bのシーズンポイント取得
-      const { data: playerBData, error: errorB } = await supabase
-        .from('profiles')
-        .select('season_points')
-        .eq('id', battle.player2_user_id)
-        .single();
-      const ratingA = typeof playerAData?.season_points === 'number' ? playerAData.season_points : 1200;
-      const ratingB = typeof playerBData?.season_points === 'number' ? playerBData.season_points : 1200;
+      if (rankingsError) {
+        console.warn('⚠️ Rankings view fetch error:', rankingsError);
+        throw rankingsError;
+      }
 
-      // ランキング取得: season_points がそれより大きいユーザー数 + 1
-      const [rankARes, rankBRes] = await Promise.all([
-        supabase.from('profiles').select('id', { count: 'exact', head: true }).gt('season_points', ratingA),
-        supabase.from('profiles').select('id', { count: 'exact', head: true }).gt('season_points', ratingB)
-      ]);
-      const rankA = typeof rankARes.count === 'number' ? rankARes.count + 1 : null;
-      const rankB = typeof rankBRes.count === 'number' ? rankBRes.count + 1 : null;
+      // プレイヤーAとBのランキングデータを取得
+      const playerARanking = rankingsData?.find(r => r.user_id === battle.player1_user_id);
+      const playerBRanking = rankingsData?.find(r => r.user_id === battle.player2_user_id);
+
+      // ランキングデータが取得できない場合、profilesから直接season_pointsのみ取得
+      let ratingA = 1200;
+      let ratingB = 1200;
+      let rankA: number | null = null;
+      let rankB: number | null = null;
+
+      if (playerARanking) {
+        ratingA = playerARanking.season_points || 1200;
+        rankA = playerARanking.position || null;
+      } else {
+        // フォールバック: profilesから直接取得
+        const { data: playerAData } = await supabase
+          .from('profiles')
+          .select('season_points')
+          .eq('id', battle.player1_user_id)
+          .single();
+        ratingA = typeof playerAData?.season_points === 'number' ? playerAData.season_points : 1200;
+      }
+
+      if (playerBRanking) {
+        ratingB = playerBRanking.season_points || 1200;
+        rankB = playerBRanking.position || null;
+      } else {
+        // フォールバック: profilesから直接取得
+        const { data: playerBData } = await supabase
+          .from('profiles')
+          .select('season_points')
+          .eq('id', battle.player2_user_id)
+          .single();
+        ratingB = typeof playerBData?.season_points === 'number' ? playerBData.season_points : 1200;
+      }
 
       setPlayerRatings({
         playerA: { 
@@ -203,10 +226,8 @@ export const BattleView: React.FC<BattleViewProps> = ({ battle, isArchived = fal
         }
       });
 
-      if (errorA) console.warn('⚠️ Player A season points fetch error:', errorA);
-      if (errorB) console.warn('⚠️ Player B season points fetch error:', errorB);
     } catch (error) {
-      console.error('❌ Failed to load player season points:', error);
+      console.error('❌ Failed to load player season rankings:', error);
       setPlayerRatings({
         playerA: { rating: 1200, rank: null, loading: false },
         playerB: { rating: 1200, rank: null, loading: false }
