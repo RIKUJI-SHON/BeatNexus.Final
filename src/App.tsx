@@ -51,6 +51,9 @@ import RewardEarnedModal from './components/ui/RewardEarnedModal';
 // Season End Modal
 import { SeasonEndModal } from './components/ui/SeasonEndModal';
 
+// Profile Settings Modal
+import { ProfileSettingsModal } from './components/profile/ProfileSettingsModal';
+
 // Pages
 import HomePage from './pages/HomePage';
 import HomepageTestPage from './pages/HomepageTestPage';
@@ -282,6 +285,8 @@ function AppContent() {
   <RewardEarnedModal />
   {/* Season End Modal - Global Level */}
   <SeasonEndModal />
+  {/* Profile Settings Modal - Global Level */}
+  <ProfileSettingsModal />
     </Router>
   );
 }

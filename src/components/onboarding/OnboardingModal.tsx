@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import { X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useOnboardingStore } from '../../store/onboardingStore';
@@ -8,13 +8,12 @@ import WelcomeSlide from './slides/WelcomeSlide';
 import BattleGuideSlide from './slides/BattleGuideSlide';
 // 新しいVotingSlideコンポーネントを使用 - Updated 2025-01-27
 import VotingSlideNew from './slides/VotingSlideNew';
-import ProfileSetupSlide, { ProfileSetupHandle } from './slides/ProfileSetupSlide';
+import ProfileSetupSlide from './slides/ProfileSetupSlide';
 import GetStartedSlide from './slides/GetStartedSlide';
 
 const OnboardingModal: React.FC = () => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { user } = useAuthStore();
-  const profileSetupRef = useRef<ProfileSetupHandle | null>(null);
   const {
     isOnboardingModalOpen,
     currentSlide,
@@ -62,7 +61,7 @@ const OnboardingModal: React.FC = () => {
         console.log('[OnboardingModal] Rendering VotingSlideNew');
         return <VotingSlideNew />;
       case 3:
-        return <ProfileSetupSlide ref={profileSetupRef} />;
+        return <ProfileSetupSlide />;
       case 4:
         return <GetStartedSlide />;
       default:
@@ -79,13 +78,8 @@ const OnboardingModal: React.FC = () => {
     }
   };
 
-  // モバイル用 次へ（スライド3では保存してから遷移）
+  // モバイル用 次へ（スライド3では何もせずに遷移）
   const handleNextMobile = async () => {
-    if (currentSlide === 3) {
-      const ok = await profileSetupRef.current?.saveBio?.();
-      if (ok) nextSlide();
-      return;
-    }
     if (currentSlide === 4) {
       await handleComplete();
       return;
@@ -235,9 +229,7 @@ const OnboardingModal: React.FC = () => {
               variant="primary"
               className="px-6 py-2"
             >
-              {currentSlide === 3
-                ? `${t('onboarding.slide4.bio.saveAndNext', { defaultValue: i18n.language?.startsWith('ja') ? '保存して次へ' : 'Save & Next' })} ❯`
-                : currentSlide === 5
+              {currentSlide === 4
                 ? t('onboarding.getStarted')
                 : `${t('common.next')} ❯`}
             </Button3D>
