@@ -156,10 +156,11 @@ const ProfilePageV2: React.FC = () => {
     const wins = userArchivedBattles.filter(battle => battle.winner_id === displayedUserId).length;
     const totalBattles = userArchivedBattles.length;
 
-    // キルストリーク計算（簡易版）
+    // キルストリーク計算
     let currentStreak = 0;
     let highestStreak = 0;
     let tempStreak = 0;
+    let isCurrentStreakSet = false; // 現在の連勝が設定されたかのフラグ
 
     // 最新から順に確認
     const sortedBattles = [...userArchivedBattles].sort((a, b) => 
@@ -168,17 +169,26 @@ const ProfilePageV2: React.FC = () => {
 
     for (const battle of sortedBattles) {
       if (battle.winner_id === displayedUserId) {
+        // 勝利の場合
         tempStreak++;
+        
+        // 最高連勝を更新
         if (tempStreak > highestStreak) {
           highestStreak = tempStreak;
         }
-        if (currentStreak === 0) {
+        
+        // 現在の連勝をまだ設定していない場合（最新のバトルから連続している勝利）
+        if (!isCurrentStreakSet) {
           currentStreak = tempStreak;
         }
       } else if (battle.winner_id !== null) {
-        if (currentStreak === 0) {
-          currentStreak = 0;
+        // 敗北の場合
+        // 現在の連勝を確定
+        if (!isCurrentStreakSet) {
+          currentStreak = tempStreak;
+          isCurrentStreakSet = true;
         }
+        // 連勝をリセット
         tempStreak = 0;
       }
     }
